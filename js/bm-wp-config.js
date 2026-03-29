@@ -1,0 +1,7 @@
+/* BizManga WordPress API 設定 */
+var BM_WP_CONFIG = {
+  apiBase: 'https://bizmanga.contentsx.jp/wp-json/contentsx/v1',
+  enabled: true,
+  timeout: 5000,
+  cacheTTL: 5 * 60 * 1000
+};

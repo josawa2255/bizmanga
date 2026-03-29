@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bizmanga.contentsx.jp/sitemap.xml
