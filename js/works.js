@@ -29,6 +29,8 @@ const mangaData = {};
 
 // ===== ページネーション状態（initLibraryUIより前に宣言が必要） =====
 let gridCurrentPage = 1;
+const ITEMS_PER_PAGE = 20;
+const gridPagination = document.getElementById('gridPagination');
 
 // ===== ヘルパー: ギャラリーURL or パスから画像src取得 =====
 function getImageSrc(data, pageIndex) {
@@ -268,8 +270,6 @@ worksGrid.addEventListener('mouseenter', (e) => {
 }, true);
 
 // ===== Card Grid Pagination =====
-const ITEMS_PER_PAGE = 20;
-const gridPagination = document.getElementById('gridPagination');
 
 function updateGridPagination() {
   const visibleCards = Array.from(document.querySelectorAll('.work-card:not(.filter-hidden)'));
