@@ -209,14 +209,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #000;
 }
 
-/* --- 作品カルーセル背景 (5行マーキー) --- */
+/* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */
 .bm-hero-works-bg {
   position: absolute;
   inset: 0;
-  padding-top: 72px;
+  padding-top: 70px;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -268,7 +268,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-hero-overlay {
   position: absolute; inset: 0;
   z-index: 2;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);
   pointer-events: none;
 }
 

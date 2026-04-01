@@ -255,9 +255,17 @@
   // 即座にフォールバックで構築
   buildMarquee(FALLBACK_WORKS);
 
-  // WP APIデータが来たら上書き
+  // WP APIデータが来たら上書き（show_hero_site でフィルタ）
   window.addEventListener('bm-data-ready', function() {
-    var works = window.BM_WORKS_DATA || [];
+    var allWorks = window.BM_WORKS_DATA || [];
+    // show_hero_site: 'both' or 'bizmanga' → BizMangaヒーローに表示
+    // 後方互換: show_hero_site がない場合は show_hero フラグで判定
+    var works = allWorks.filter(function(w) {
+      if ('show_hero_site' in w) {
+        return w.show_hero_site === 'both' || w.show_hero_site === 'bizmanga';
+      }
+      return w.show_hero !== false;
+    });
     if (works.length > 0) {
       buildMarquee(works);
     }
