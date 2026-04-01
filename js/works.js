@@ -25,7 +25,18 @@ if (header) {
 }
 
 // ===== Manga data registry =====
-const mangaData = {
+const mangaData = {};
+
+// ===== ヘルパー: ギャラリーURL or パスから画像src取得 =====
+function getImageSrc(data, pageIndex) {
+  if (data.gallery && data.gallery.length > pageIndex) {
+    return data.gallery[pageIndex];
+  }
+  return data.path + String(pageIndex + 1).padStart(2, '0') + '.webp';
+}
+
+// ===== フォールバック用ローカルデータ =====
+const FALLBACK_WORKS = {
   'bms-unso': {
     title: 'BMS 運送 - 採用マンガ', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso/',
@@ -100,29 +111,31 @@ const mangaData = {
   },
 };
 
-const allWorks = Object.values(mangaData);
-
-// ===== Generate Filter Buttons =====
+// ===== フィルタボタン生成 =====
 const worksFilter = document.getElementById('worksFilter');
-const categories = ['すべて'];
-allWorks.forEach(d => {
-  if (!categories.includes(d.category)) categories.push(d.category);
-});
 
-const catCount = {};
-allWorks.forEach(d => {
-  catCount[d.category] = (catCount[d.category] || 0) + 1;
-});
-catCount['すべて'] = allWorks.length;
+function buildFilterButtons() {
+  worksFilter.innerHTML = '';
+  const allWorks = Object.values(mangaData);
+  const categories = ['すべて'];
+  allWorks.forEach(d => {
+    if (d.category && !categories.includes(d.category)) categories.push(d.category);
+  });
+  const catCount = {};
+  allWorks.forEach(d => {
+    if (d.category) catCount[d.category] = (catCount[d.category] || 0) + 1;
+  });
+  catCount['すべて'] = allWorks.length;
 
-categories.forEach(cat => {
-  const btn = document.createElement('button');
-  btn.className = 'filter-btn' + (cat === 'すべて' ? ' active' : '');
-  btn.dataset.cat = cat;
-  btn.innerHTML = `${cat} <span class="filter-count">${catCount[cat]}</span>`;
-  btn.addEventListener('click', () => filterWorks(cat, btn));
-  worksFilter.appendChild(btn);
-});
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === 'すべて' ? ' active' : '');
+    btn.dataset.cat = cat;
+    btn.innerHTML = `${cat} <span class="filter-count">${catCount[cat]}</span>`;
+    btn.addEventListener('click', () => filterWorks(cat, btn));
+    worksFilter.appendChild(btn);
+  });
+}
 
 function filterWorks(category, activeBtn) {
   worksFilter.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -141,32 +154,90 @@ function filterWorks(category, activeBtn) {
   updateGridPagination();
 }
 
-// ===== Generate Work Cards with Event Delegation =====
+// ===== カード生成 =====
 const worksGrid = document.getElementById('worksGrid');
-Object.entries(mangaData).forEach(([key, data]) => {
-  const card = document.createElement('div');
-  card.className = 'work-card';
-  card.setAttribute('data-manga', key);
-  card.setAttribute('data-category', data.category);
-  const tallClass = data.tallCover ? ' tall-cover' : '';
-  card.innerHTML = `
-    <div class="work-card-img-wrapper${tallClass}">
-      <img class="work-card-img" src="${data.path}01.webp" alt="${data.title}" loading="lazy">
-      <span class="work-card-page-count">${data.pages}P</span>
-    </div>
-    <div class="work-card-body">
-      <span class="work-card-category">${data.category}</span>
-      <div class="work-card-title">${data.title}</div>
-      <div class="work-card-tags">
-        ${data.tags.map(t => `<span class="work-tag">${t}</span>`).join('')}
+
+function buildWorkCards() {
+  worksGrid.innerHTML = '';
+  Object.entries(mangaData).forEach(([key, data]) => {
+    // 制作過程（赤ペン・ネーム専用）エントリはカードに出さない
+    if (data._isPreProduction) return;
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.setAttribute('data-manga', key);
+    card.setAttribute('data-category', data.category);
+    const tallClass = data.tallCover ? ' tall-cover' : '';
+    const coverSrc = data.thumbnail || getImageSrc(data, 0);
+    card.innerHTML = `
+      <div class="work-card-img-wrapper${tallClass}">
+        <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
+        <span class="work-card-page-count">${data.pages}P</span>
       </div>
-      <div class="work-card-footer">
-        <div class="work-card-arrow">→</div>
+      <div class="work-card-body">
+        <span class="work-card-category">${data.category || ''}</span>
+        <div class="work-card-title">${data.title}</div>
+        <div class="work-card-tags">
+          ${(data.tags || []).map(t => `<span class="work-tag">${t}</span>`).join('')}
+        </div>
+        <div class="work-card-footer">
+          <div class="work-card-arrow">→</div>
+        </div>
       </div>
-    </div>
-  `;
-  worksGrid.appendChild(card);
-});
+    `;
+    worksGrid.appendChild(card);
+  });
+}
+
+// ===== UI構築（フォールバック → API上書き） =====
+function initLibraryUI() {
+  buildFilterButtons();
+  buildWorkCards();
+  gridCurrentPage = 1;
+  updateGridPagination();
+}
+
+// フォールバックデータで即座に構築
+Object.assign(mangaData, FALLBACK_WORKS);
+initLibraryUI();
+
+// WP API からデータ取得して上書き
+(function fetchLibraryFromAPI() {
+  fetch('https://cms.contentsx.jp/wp-json/contentsx/v1/library')
+    .then(function(res) { return res.json(); })
+    .then(function(works) {
+      if (!Array.isArray(works) || works.length === 0) return;
+
+      // mangaData をクリアしてAPIデータで再構築
+      Object.keys(mangaData).forEach(function(k) {
+        // 制作過程エントリは残す
+        if (!mangaData[k]._isPreProduction) delete mangaData[k];
+      });
+
+      works.forEach(function(w) {
+        mangaData[w.id] = {
+          title: w.title_ja || '',
+          pages: w.pages || 0,
+          path: 'https://contentsx.jp/material/manga/' + w.id + '/',
+          tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
+          category: w.category || '',
+          viewType: 'spread',
+          thumbnail: w.thumbnail || '',
+          gallery: w.gallery || [],
+          akapen_gallery: w.akapen_gallery || [],
+          name_gallery: w.name_gallery || [],
+        };
+      });
+
+      // UIを再構築
+      initLibraryUI();
+
+      // 赤ペン・ネームカルーセルも再構築
+      if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+    })
+    .catch(function(err) {
+      console.warn('WP API取得失敗、フォールバックデータを使用:', err);
+    });
+})();
 
 // Event delegation for card clicks + hover preloading
 worksGrid.addEventListener('click', (e) => {
@@ -184,10 +255,9 @@ worksGrid.addEventListener('mouseenter', (e) => {
     const key = card.dataset.manga;
     const data = mangaData[key];
     if (data) {
-      // Preload first 4 pages on hover
       const preloadSrcs = [];
-      for (let i = 1; i <= Math.min(4, data.pages); i++) {
-        preloadSrcs.push(data.path + String(i).padStart(2, '0') + '.webp');
+      for (let i = 0; i < Math.min(4, data.pages); i++) {
+        preloadSrcs.push(getImageSrc(data, i));
       }
       preloadSrcs.forEach(src => getCachedImage(src));
     }
@@ -434,6 +504,7 @@ function hideVerticalElements() {
 function openVerticalViewer(key, data) {
   modalTitle.textContent = data.title;
   modalTotalPages = data.pages;
+  currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
   modalPage.textContent = `1 / ${data.pages}`;
   modalProgress.style.width = '0%';
 
@@ -468,7 +539,7 @@ function openVerticalViewer(key, data) {
   const pagesFrag = document.createDocumentFragment();
   for (let i = 1; i <= data.pages; i++) {
     const img = document.createElement('img');
-    img.src = data.path + String(i).padStart(2, '0') + '.webp';
+    img.src = getImageSrc(data, i - 1);
     img.alt = `${data.title} - ${i}ページ`;
     img.loading = i <= 3 ? 'eager' : 'lazy';
     pagesFrag.appendChild(img);
@@ -482,7 +553,7 @@ function openVerticalViewer(key, data) {
   for (let i = 0; i < data.pages; i++) {
     const img = document.createElement('img');
     img.className = 'modal-thumb-item' + (i === 0 ? ' active' : '');
-    img.src = data.path + String(i + 1).padStart(2, '0') + '.webp';
+    img.src = getImageSrc(data, i);
     img.alt = 'P' + (i + 1);
     const idx = i;
     img.addEventListener('click', () => {
@@ -550,9 +621,9 @@ function openManga(key) {
   if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
 
   // Preload first pages then open viewer immediately with loading state
-  var firstPages = [data.path + '01.webp', data.path + '02.webp'];
-  if (data.pages >= 3) firstPages.push(data.path + '03.webp');
-  if (data.pages >= 4) firstPages.push(data.path + '04.webp');
+  var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
+  if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
+  if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
 
   // Show modal immediately with loading indicator
   mangaModal.classList.add('open');
@@ -620,6 +691,7 @@ const hintRight = document.getElementById('hintRight');
 let currentViewMode = 'vertical';
 let currentMangaKey = '';
 let currentMangaPath = '';
+let currentMangaGallery = null; // WP API gallery URLs
 let spreadTotalPages = 0;
 let currentSpread = 0;
 let spreads = [];
@@ -629,6 +701,10 @@ let currentMobilePage = 0;
 // Pre-compute padStart strings for spread sources
 const padStartCache = new Map();
 function spreadPageSrc(path, num) {
+  // ギャラリーURLがあればそちらを優先
+  if (currentMangaGallery && currentMangaGallery.length >= num) {
+    return currentMangaGallery[num - 1];
+  }
   const key = path + num;
   if (!padStartCache.has(key)) {
     padStartCache.set(key, path + String(num).padStart(2, '0') + '.webp');
@@ -775,6 +851,7 @@ function updateSpreadUI() {
 function openSpreadViewer(key, data) {
   currentMangaKey = key;
   currentMangaPath = data.path;
+  currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
   spreadTotalPages = data.pages;
   currentSpread = 0;
   spreads = buildSpreads(spreadTotalPages);
@@ -1182,7 +1259,7 @@ const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
 
-if (isDirectMode && mangaData[autoOpen]) {
+if (isDirectMode && (mangaData[autoOpen] || FALLBACK_WORKS[autoOpen])) {
   // Hide library entirely (skip building DOM entirely)
   document.querySelector('.header').style.display = 'none';
   document.querySelector('.page-hero').style.display = 'none';
@@ -1201,31 +1278,99 @@ if (isDirectMode && mangaData[autoOpen]) {
 // ===== Pre-production Carousels (赤ペン・ネーム) =====
 // pauseAllCarousels / resumeAllCarousels はファイル先頭で宣言済み
 
-(function() {
-  const preData = {
-    red: [
-      { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
-      { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: 'https://contentsx.jp/material/pre/red/life-ent-red/', pages: 27 },
-      { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
-    ],
-    name: [
-      { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
-      { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
-      { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
-    ]
-  };
+// フォールバック用の赤ペン・ネームデータ
+const FALLBACK_PRE_DATA = {
+  red: [
+    { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
+    { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: 'https://contentsx.jp/material/pre/red/life-ent-red/', pages: 27 },
+    { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
+  ],
+  name: [
+    { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
+    { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
+    { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
+  ]
+};
 
-  // Register pre-production items into mangaData so openManga() can handle them
-  Object.values(preData).flat().forEach(item => {
-    mangaData[item.key] = {
-      title: item.title,
-      pages: item.pages,
-      path: item.path,
-      tags: [],
-      category: '制作過程',
-      viewType: 'spread'
-    };
+// 現在有効な preData（API取得後に上書きされる可能性あり）
+let preData = FALLBACK_PRE_DATA;
+
+// WP APIデータから赤ペン・ネームデータを構築
+function buildPreDataFromAPI() {
+  const apiRed = [];
+  const apiName = [];
+  Object.entries(mangaData).forEach(function([key, data]) {
+    if (data._isPreProduction) return;
+    if (data.akapen_gallery && data.akapen_gallery.length > 0) {
+      const akapenKey = 'pre-red-' + key;
+      apiRed.push({
+        key: akapenKey,
+        title: data.title + ' 赤入れ',
+        path: '',
+        pages: data.akapen_gallery.length,
+        gallery: data.akapen_gallery
+      });
+      // mangaDataに登録してopenManga()で開けるようにする
+      mangaData[akapenKey] = {
+        title: data.title + ' 赤入れ',
+        pages: data.akapen_gallery.length,
+        path: '',
+        gallery: data.akapen_gallery,
+        tags: [],
+        category: '制作過程',
+        viewType: 'vertical',
+        _isPreProduction: true
+      };
+    }
+    if (data.name_gallery && data.name_gallery.length > 0) {
+      const nameKey = 'pre-name-' + key;
+      apiName.push({
+        key: nameKey,
+        title: data.title + ' ネーム',
+        path: '',
+        pages: data.name_gallery.length,
+        gallery: data.name_gallery
+      });
+      mangaData[nameKey] = {
+        title: data.title + ' ネーム',
+        pages: data.name_gallery.length,
+        path: '',
+        gallery: data.name_gallery,
+        tags: [],
+        category: '制作過程',
+        viewType: 'vertical',
+        _isPreProduction: true
+      };
+    }
   });
+  if (apiRed.length > 0 || apiName.length > 0) {
+    preData = {
+      red: apiRed.length > 0 ? apiRed : FALLBACK_PRE_DATA.red,
+      name: apiName.length > 0 ? apiName : FALLBACK_PRE_DATA.name
+    };
+  }
+}
+
+function registerFallbackPreData() {
+  Object.values(preData).flat().forEach(item => {
+    if (!mangaData[item.key]) {
+      mangaData[item.key] = {
+        title: item.title,
+        pages: item.pages,
+        path: item.path,
+        gallery: item.gallery || [],
+        tags: [],
+        category: '制作過程',
+        viewType: 'spread',
+        _isPreProduction: true
+      };
+    }
+  });
+}
+
+(function() {
+  // フォールバックデータを登録
+  registerFallbackPreData();
 
   function initCarousel(type) {
     const track = document.getElementById(type + 'Track');
@@ -1233,6 +1378,7 @@ if (isDirectMode && mangaData[autoOpen]) {
     if (!track || !dotsContainer) return null;
 
     const items = preData[type];
+    if (!items || items.length === 0) return null;
     const slidesPerView = window.innerWidth <= 768 ? 1 : 3;
     let current = 0;
     let autoTimer = null;
@@ -1242,12 +1388,15 @@ if (isDirectMode && mangaData[autoOpen]) {
     const allSlides = [];
     items.forEach((item) => {
       for (let p = 1; p <= item.pages; p++) {
+        const src = (item.gallery && item.gallery.length >= p)
+          ? item.gallery[p - 1]
+          : item.path + String(p).padStart(2, '0') + '.webp';
         allSlides.push({
           key: item.key,
           title: item.title,
           page: p,
           totalPages: item.pages,
-          src: item.path + String(p).padStart(2, '0') + '.webp'
+          src: src
         });
       }
     });
@@ -1375,4 +1524,24 @@ if (isDirectMode && mangaData[autoOpen]) {
 
   try { initCarousel('red'); } catch(e) { console.error('Red carousel error:', e); }
   try { initCarousel('name'); } catch(e) { console.error('Name carousel error:', e); }
+
+  // API取得後にカルーセルを再構築するためのグローバル関数
+  window.rebuildPreCarousels = function() {
+    // APIデータから赤ペン・ネームデータを構築
+    buildPreDataFromAPI();
+    registerFallbackPreData();
+
+    // 既存タイマーを停止
+    preCarouselTimers.forEach(function(t) { t.pause(); });
+    preCarouselTimers = [];
+
+    // トラックをクリアして再構築
+    ['red', 'name'].forEach(function(type) {
+      var track = document.getElementById(type + 'Track');
+      if (track) track.innerHTML = '';
+    });
+
+    try { initCarousel('red'); } catch(e) { console.error('Red carousel rebuild error:', e); }
+    try { initCarousel('name'); } catch(e) { console.error('Name carousel rebuild error:', e); }
+  };
 })();

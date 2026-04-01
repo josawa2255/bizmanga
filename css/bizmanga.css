@@ -280,12 +280,11 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   pointer-events: none;
 }
 .bm-hero-logo {
-  width: clamp(240px, 35vw, 500px);
+  width: clamp(280px, 40vw, 650px);
   height: auto;
-  filter: drop-shadow(0 0 30px rgba(255,255,255,0.9))
-          drop-shadow(0 0 60px rgba(255,255,255,0.5))
-          drop-shadow(0 4px 24px rgba(0,0,0,0.3));
-  animation: bmHeroLogoIn 1.2s ease forwards;
+  opacity: 0;
+  filter: drop-shadow(0 4px 24px rgba(0,0,0,0.5));
+  animation: bmHeroLogoIn 1.5s ease 1s forwards;
 }
 @keyframes bmHeroLogoIn {
   0% { opacity: 0; transform: scale(0.85); }
