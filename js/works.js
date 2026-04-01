@@ -29,7 +29,7 @@ const mangaData = {};
 
 // ===== ページネーション状態（initLibraryUIより前に宣言が必要） =====
 let gridCurrentPage = 1;
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 18; // 3列 × 6行
 const gridPagination = document.getElementById('gridPagination');
 
 // ===== ヘルパー: ギャラリーURL or パスから画像src取得 =====
@@ -177,10 +177,10 @@ function buildWorkCards() {
     card.innerHTML = `
       <div class="work-card-img-wrapper">
         <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
+        ${data.category ? `<span class="work-card-category">${data.category}</span>` : ''}
         <span class="work-card-page-count">${data.pages}P</span>
       </div>
       <div class="work-card-body">
-        <span class="work-card-category">${data.category || ''}</span>
         <div class="work-card-title">${data.title}</div>
         <div class="work-card-footer">
           <div class="work-card-arrow">→</div>

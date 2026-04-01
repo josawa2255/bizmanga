@@ -232,14 +232,19 @@ body {
 .work-card-body {
   padding: 18px 20px 20px;
 }
+/* カテゴリバッジ：画像左上オーバーレイ */
 .work-card-category {
+  position: absolute;
+  top: 10px; left: 10px;
+  z-index: 3;
   display: inline-block;
   font-size: 11px; font-weight: 800;
-  padding: 5px 14px;
-  border-radius: 6px;
-  background: #333;
+  padding: 4px 12px;
+  border-radius: 5px;
+  background: rgba(30,30,30,0.82);
   color: #fff;
-  margin-bottom: 10px;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(2px);
 }
 .work-card-title {
   font-size: 15px;
@@ -1244,17 +1249,16 @@ body {
   .filter-btn { padding: 7px 14px; font-size: 12px; }
   .works-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 8px;
   }
-  .work-card { border-radius: 12px; }
-  .work-card-img-wrapper { padding: 12px; aspect-ratio: 4 / 3; }
-  .work-card-img { width: 70%; }
-  .work-card-body { padding: 12px 14px 14px; }
-  .work-card-title { font-size: 13px; margin-bottom: 6px; }
-  .work-card-category { font-size: 10px; padding: 4px 10px; margin-bottom: 8px; }
-  .work-card-tags { margin-bottom: 8px; }
-  .work-tag { font-size: 10px; }
-  .work-card-arrow { width: 30px; height: 30px; font-size: 14px; }
+  .work-card { border-radius: 10px; }
+  .work-card-img-wrapper { padding: 10px; aspect-ratio: 4 / 3.5; }
+  .work-card-img { width: 65%; }
+  .work-card-category { font-size: 10px; padding: 3px 8px; top: 7px; left: 7px; }
+  .work-card-page-count { font-size: 10px; padding: 3px 7px; top: 7px; right: 7px; }
+  .work-card-body { padding: 8px 10px 10px; }
+  .work-card-title { font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
+  .work-card-arrow { width: 28px; height: 28px; font-size: 13px; }
   .footer-inner { justify-content: center; text-align: center; }
   .footer-links { justify-content: center; gap: 16px; }
   .footer-links a { font-size: 12px; }
@@ -1262,11 +1266,10 @@ body {
 }
 @media (max-width: 480px) {
   .works-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    max-width: 400px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
   }
-  .work-card-img { width: 55%; }
+  .work-card-img { width: 65%; }
   .work-card-img-wrapper { aspect-ratio: 4 / 3.5; padding: 20px; }
   .work-card-body { padding: 16px 18px 18px; }
   .work-card-title { font-size: 15px; }
