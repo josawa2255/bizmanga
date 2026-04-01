@@ -14,9 +14,9 @@
   var skipBtn = document.getElementById('bmOpeningSkip');
   if (!opening || !video) return;
 
-  // 動画残り2秒でロゴをフェードイン
+  // 動画残り4秒でロゴをフェードイン（0.7倍速のため体感で約5.7秒前から）
   var logoShown = false;
-  var LOGO_APPEAR_BEFORE = 2.0; // 終了何秒前から表示するか
+  var LOGO_APPEAR_BEFORE = 4.0; // 終了何秒前（動画時間）から表示するか
   video.addEventListener('timeupdate', function() {
     if (logoShown || !logo) return;
     if (video.duration && (video.duration - video.currentTime) <= LOGO_APPEAR_BEFORE) {
@@ -55,7 +55,8 @@
     });
   }
 
-  // 動画再生開始
+  // 動画再生開始（0.7倍速）
+  video.playbackRate = 0.7;
   video.play().catch(function(err) {
     // 自動再生ブロック時は即スキップ
     console.warn('[BM-Opening] 自動再生できません:', err.message);

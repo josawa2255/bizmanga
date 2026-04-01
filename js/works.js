@@ -27,6 +27,9 @@ if (header) {
 // ===== Manga data registry =====
 const mangaData = {};
 
+// ===== ページネーション状態（initLibraryUIより前に宣言が必要） =====
+let gridCurrentPage = 1;
+
 // ===== ヘルパー: ギャラリーURL or パスから画像src取得 =====
 function getImageSrc(data, pageIndex) {
   if (data.gallery && data.gallery.length > pageIndex) {
@@ -266,7 +269,6 @@ worksGrid.addEventListener('mouseenter', (e) => {
 
 // ===== Card Grid Pagination =====
 const ITEMS_PER_PAGE = 20;
-let gridCurrentPage = 1;
 const gridPagination = document.getElementById('gridPagination');
 
 function updateGridPagination() {

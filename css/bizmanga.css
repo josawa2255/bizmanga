@@ -45,7 +45,7 @@
   z-index: 5;
   opacity: 0;
   filter: drop-shadow(0 4px 32px rgba(0,0,0,0.7));
-  transition: opacity 1.8s ease;
+  transition: opacity 3.5s ease;
   pointer-events: none;
 }
 .bm-opening-logo.visible {
@@ -1159,6 +1159,52 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-page-header p {
   font-size: 15px; color: var(--bm-text-muted);
+}
+
+/* ============================================
+   Image Hero (pricing / faq pages)
+   ============================================ */
+.bm-img-hero {
+  position: relative;
+  width: 100%;
+  height: clamp(260px, 38vw, 480px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bm-img-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.bm-img-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.55) 100%);
+}
+.bm-img-hero-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: 80px 24px 40px;
+}
+.bm-img-hero-text h1 {
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.bm-img-hero-text p {
+  font-size: clamp(13px, 1.6vw, 16px);
+  opacity: 0.9;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
 }
 
 /* ============================================
