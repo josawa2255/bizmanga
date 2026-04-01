@@ -173,7 +173,8 @@ function buildWorkCards() {
     card.className = 'work-card';
     card.setAttribute('data-manga', key);
     card.setAttribute('data-category', data.category);
-    const tallClass = data.tallCover ? ' tall-cover' : '';
+    const isVertical = data.tallCover || data.viewType === 'vertical';
+    const tallClass = isVertical ? ' tall-cover' : '';
     const coverSrc = data.thumbnail || getImageSrc(data, 0);
     card.innerHTML = `
       <div class="work-card-img-wrapper${tallClass}">
@@ -191,6 +192,18 @@ function buildWorkCards() {
         </div>
       </div>
     `;
+    // 縦長画像を自動検知してtall-coverを付与（WP APIがviewTypeを返さない場合の保険）
+    if (!isVertical) {
+      const imgEl = card.querySelector('.work-card-img');
+      const wrapperEl = card.querySelector('.work-card-img-wrapper');
+      const detectTall = function() {
+        if (imgEl.naturalHeight > imgEl.naturalWidth * 1.5) {
+          wrapperEl.classList.add('tall-cover');
+        }
+      };
+      imgEl.addEventListener('load', detectTall);
+      if (imgEl.complete && imgEl.naturalHeight) detectTall();
+    }
     worksGrid.appendChild(card);
   });
 }
@@ -227,7 +240,7 @@ initLibraryUI();
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
-          viewType: 'spread',
+          viewType: w.view_type || 'spread',
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
