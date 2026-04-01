@@ -945,7 +945,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    Pricing Page
    ============================================ */
 .bm-pricing-page {
-  padding: 48px 0 80px;
+  padding: 16px 0 80px;
   min-height: 80vh;
 }
 .bm-pricing-grid {
