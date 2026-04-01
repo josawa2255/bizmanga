@@ -41,77 +41,79 @@ function getImageSrc(data, pageIndex) {
 }
 
 // ===== フォールバック用ローカルデータ =====
+// タグ・カテゴリはWordPress manga_category タクソノミーと統一
+// 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
 const FALLBACK_WORKS = {
   'bms-unso': {
     title: 'BMS 運送 - 採用マンガ', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso/',
-    tags: ['採用', 'セールス'], category: '営業',
+    tags: ['採用'], category: '採用',
     viewType: 'spread'
   },
   'kyoiku-manual': {
     title: '教育マニュアル', pages: 10,
     path: 'https://contentsx.jp/material/manga/kyoiku-manual/',
-    tags: ['研修', 'マニュアル'], category: '研修',
+    tags: ['研修'], category: '研修',
     viewType: 'spread'
   },
   'shohin-shokai': {
     title: '商品紹介マンガ', pages: 11,
     path: 'https://contentsx.jp/material/manga/shohin-shokai/',
-    tags: ['商品紹介', '営業'], category: '営業',
+    tags: ['営業'], category: '営業',
     viewType: 'spread'
   },
   'tagengo': {
     title: '多言語対応マンガ', pages: 12,
     path: 'https://contentsx.jp/material/manga/tagengo/',
-    tags: ['多言語', 'グローバル'], category: 'その他',
+    tags: ['研修'], category: '研修',
     viewType: 'spread'
   },
   'merumaga': {
     title: 'メルマガ漫画', pages: 10,
     path: 'https://contentsx.jp/material/manga/merumaga/',
-    tags: ['メルマガ', 'セールス'], category: '営業',
+    tags: ['集客'], category: '集客',
     viewType: 'spread'
   },
   'life-school': {
     title: 'スクール紹介', pages: 26,
     path: 'https://contentsx.jp/material/manga/life-school/',
-    tags: ['スクール', 'プロモーション'], category: 'プロモーション',
+    tags: ['集客'], category: '集客',
     viewType: 'spread'
   },
   'seko': {
     title: '瀬古恭介 始まりのものがたり', pages: 25,
     path: 'https://contentsx.jp/material/manga/seko/',
-    tags: ['創業ストーリー', '社長漫画'], category: '創業ストーリー',
+    tags: ['ブランド'], category: 'ブランド',
     viewType: 'spread'
   },
   'sixtones': {
     title: 'SixTONES 提案用', pages: 4,
     path: 'https://contentsx.jp/material/manga/sixtones/',
-    tags: ['提案', 'エンタメ'], category: 'プロモーション',
+    tags: ['IP'], category: 'IP',
     viewType: 'spread'
   },
   'life-buzfes': {
     title: 'バズフェス', pages: 25,
     path: 'https://contentsx.jp/material/manga/life-buzfes/',
-    tags: ['イベント', 'プロモーション'], category: 'プロモーション',
+    tags: ['集客'], category: '集客',
     viewType: 'spread'
   },
   'lady-column': {
     title: '大人なLADYになるわよコラム', pages: 4,
     path: 'https://contentsx.jp/material/manga/lady-column/',
-    tags: ['コラム', 'エンタメ'], category: 'プロモーション',
+    tags: ['紹介'], category: '紹介',
     viewType: 'vertical', tallCover: true
   },
   'ichinohe-home': {
     title: '一戸ホーム', pages: 22,
     path: 'https://contentsx.jp/material/manga/ichinohe-home/',
-    tags: ['住宅', '紹介'], category: '営業',
+    tags: ['営業'], category: '営業',
     viewType: 'spread'
   },
   'bms-unso-remake': {
     title: 'BMS 運送（リメイク版）', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso-remake/',
-    tags: ['採用', 'セールス', 'リメイク'], category: '営業',
+    tags: ['採用'], category: '採用',
     viewType: 'spread'
   },
 };
