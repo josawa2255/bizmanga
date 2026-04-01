@@ -50,12 +50,11 @@
         '</div>' +
         '<p class="bm-new-works-card-title">' + (item.title_ja || '') + '</p>';
 
-      // クリック → 制作事例モーダル
+      // クリック → ビズ書庫で漫画を直接開く
       (function(workItem) {
+        card.style.cursor = 'pointer';
         card.addEventListener('click', function() {
-          if (window.openWorkDetail) {
-            window.openWorkDetail(workItem.id);
-          }
+          location.href = 'biz-library?manga=' + workItem.id;
         });
       })(item);
 
