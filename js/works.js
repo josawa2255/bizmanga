@@ -173,11 +173,9 @@ function buildWorkCards() {
     card.className = 'work-card';
     card.setAttribute('data-manga', key);
     card.setAttribute('data-category', data.category);
-    const isVertical = data.tallCover || data.viewType === 'vertical';
-    const tallClass = isVertical ? ' tall-cover' : '';
     const coverSrc = data.thumbnail || getImageSrc(data, 0);
     card.innerHTML = `
-      <div class="work-card-img-wrapper${tallClass}">
+      <div class="work-card-img-wrapper">
         <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
         <span class="work-card-page-count">${data.pages}P</span>
       </div>
@@ -189,18 +187,6 @@ function buildWorkCards() {
         </div>
       </div>
     `;
-    // 縦長画像を自動検知してtall-coverを付与（WP APIがviewTypeを返さない場合の保険）
-    if (!isVertical) {
-      const imgEl = card.querySelector('.work-card-img');
-      const wrapperEl = card.querySelector('.work-card-img-wrapper');
-      const detectTall = function() {
-        if (imgEl.naturalHeight > imgEl.naturalWidth * 1.5) {
-          wrapperEl.classList.add('tall-cover');
-        }
-      };
-      imgEl.addEventListener('load', detectTall);
-      if (imgEl.complete && imgEl.naturalHeight) detectTall();
-    }
     worksGrid.appendChild(card);
   });
 }
