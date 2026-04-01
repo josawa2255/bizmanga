@@ -184,9 +184,6 @@ function buildWorkCards() {
       <div class="work-card-body">
         <span class="work-card-category">${data.category || ''}</span>
         <div class="work-card-title">${data.title}</div>
-        <div class="work-card-tags">
-          ${(data.tags || []).map(t => `<span class="work-tag">${t}</span>`).join('')}
-        </div>
         <div class="work-card-footer">
           <div class="work-card-arrow">→</div>
         </div>
