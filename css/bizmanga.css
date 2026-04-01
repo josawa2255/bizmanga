@@ -986,6 +986,97 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-pricing-features li:last-child { border-bottom: none; }
 
+/* --- Price Hero (per-page pricing) --- */
+.bm-price-hero {
+  text-align: center;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, var(--bm-navy) 0%, #2a3d8f 100%);
+  border-radius: var(--bm-radius);
+  color: #fff;
+  margin-top: 48px;
+}
+.bm-price-hero-label {
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 2px; margin-bottom: 8px;
+  opacity: 0.85;
+}
+.bm-price-hero-num {
+  font-size: 64px; font-weight: 900;
+  line-height: 1.1; margin-bottom: 12px;
+}
+.bm-price-hero-yen {
+  font-size: 32px; vertical-align: top;
+  margin-right: 2px;
+}
+.bm-price-hero-suffix {
+  font-size: 20px; font-weight: 500;
+  opacity: 0.8;
+}
+.bm-price-hero-note {
+  font-size: 13px; opacity: 0.7;
+}
+
+/* --- Included grid --- */
+.bm-included-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 32px;
+}
+.bm-included-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  background: var(--bm-card-bg);
+  border: 1px solid var(--bm-border);
+  border-radius: var(--bm-radius);
+  padding: 24px 20px;
+}
+.bm-included-icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bm-accent); color: #fff;
+  font-size: 14px; font-weight: 900;
+  border-radius: 50%;
+}
+.bm-included-title {
+  font-size: 15px; font-weight: 700; color: #222;
+  margin-bottom: 4px;
+}
+.bm-included-desc {
+  font-size: 13px; color: var(--bm-text-muted);
+  line-height: 1.6;
+}
+
+/* --- Color option grid --- */
+.bm-color-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 32px;
+}
+.bm-color-card {
+  background: var(--bm-card-bg);
+  border: 2px solid var(--bm-border);
+  border-radius: var(--bm-radius);
+  padding: 32px 24px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.bm-color-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+}
+.bm-color-label {
+  font-size: 18px; font-weight: 700; color: #222;
+  margin-bottom: 12px;
+}
+.bm-color-desc {
+  font-size: 14px; color: var(--bm-text-muted);
+  line-height: 1.7;
+}
+
+/* --- Pricing footnote --- */
+.bm-pricing-footnote {
+  text-align: center; margin-top: 48px;
+  font-size: 14px; color: var(--bm-text-muted);
+}
+
 /* ============================================
    Contact Page
    ============================================ */
@@ -1192,6 +1283,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-testimonials-grid { grid-template-columns: repeat(2, 1fr); }
   .bm-artists-grid { grid-template-columns: repeat(2, 1fr); }
   .bm-pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  .bm-included-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -1243,6 +1335,13 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-pricing-label, .bm-pricing-other, .bm-pricing-bm { padding: 14px 8px; }
   .bm-pricing-label { font-size: 13px; }
   .bm-pricing-bm strong { font-size: 14px; }
+
+  /* 料金ページ新セクション: モバイル */
+  .bm-price-hero-num { font-size: 44px; }
+  .bm-price-hero-yen { font-size: 22px; }
+  .bm-price-hero-suffix { font-size: 16px; }
+  .bm-included-grid { grid-template-columns: 1fr; }
+  .bm-color-grid { grid-template-columns: 1fr; }
 
   /* Works cards: モバイル縦並び */
   .bm-works-card { flex-direction: column; gap: 16px; padding: 24px 0; }

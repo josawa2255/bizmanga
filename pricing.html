@@ -49,62 +49,135 @@
 
   <!-- ===== ページヘッダー ===== -->
   <div class="bm-page-header">
-    <h1 data-ja="料金プラン" data-en="Pricing Plans">料金プラン</h1>
-    <p data-ja="ご予算・用途に合わせたプランをご用意しています" data-en="We offer plans tailored to your budget and needs">ご予算・用途に合わせたプランをご用意しています</p>
+    <h1 data-ja="料金" data-en="Pricing">料金</h1>
+    <p data-ja="大手制作会社の約1/5。圧倒的なコストパフォーマンスで高品質な漫画を制作します。" data-en="About 1/5 the cost of major production companies. High-quality manga at outstanding cost performance.">大手制作会社の約1/5。圧倒的なコストパフォーマンスで高品質な漫画を制作します。</p>
   </div>
 
-  <!-- ===== 料金プラン ===== -->
+  <!-- ===== ページ単価セクション ===== -->
   <section class="bm-pricing-page">
     <div class="bm-container">
-      <div class="bm-pricing-grid">
-        <!-- ライトプラン -->
-        <div class="bm-pricing-card">
-          <p class="bm-pricing-plan" data-ja="LIGHT" data-en="LIGHT">LIGHT</p>
-          <p class="bm-pricing-price" data-ja="30万円〜" data-en="From ¥300,000">30<span data-ja="万円〜" data-en="from ¥">万円〜</span></p>
-          <p class="bm-pricing-desc" data-ja="SNSや社内資料向けのコンパクトな漫画制作" data-en="Compact manga production for social media and internal documents">SNSや社内資料向けの<br>コンパクトな漫画制作</p>
-          <ul class="bm-pricing-features">
-            <li data-ja="4〜6ページ" data-en="4-6 pages">4〜6ページ</li>
-            <li data-ja="シナリオ作成込み" data-en="Scenario creation included">シナリオ作成込み</li>
-            <li data-ja="修正2回まで" data-en="Up to 2 revisions">修正2回まで</li>
-            <li data-ja="デジタル納品" data-en="Digital delivery">デジタル納品</li>
-            <li data-ja="制作期間：約3週間" data-en="Production period: approx. 3 weeks">制作期間：約3週間</li>
-          </ul>
-          <a href="contact?plan=light" class="bm-btn bm-btn--outline" style="width:100%;" data-ja="相談する" data-en="Inquire">相談する</a>
-        </div>
 
-        <!-- スタンダードプラン -->
-        <div class="bm-pricing-card featured">
-          <p class="bm-pricing-plan" data-ja="STANDARD" data-en="STANDARD">STANDARD</p>
-          <p class="bm-pricing-price" data-ja="50万円〜" data-en="From ¥500,000">50<span data-ja="万円〜" data-en="from ¥">万円〜</span></p>
-          <p class="bm-pricing-desc" data-ja="営業・採用・研修などビジネス活用に最適" data-en="Perfect for business use such as sales, recruitment, and training">営業・採用・研修など<br>ビジネス活用に最適</p>
-          <ul class="bm-pricing-features">
-            <li data-ja="8〜12ページ" data-en="8-12 pages">8〜12ページ</li>
-            <li data-ja="シナリオ作成込み" data-en="Scenario creation included">シナリオ作成込み</li>
-            <li data-ja="修正3回まで" data-en="Up to 3 revisions">修正3回まで</li>
-            <li data-ja="デジタル+印刷対応" data-en="Digital + Print compatible">デジタル+印刷対応</li>
-            <li data-ja="制作期間：約4〜5週間" data-en="Production period: approx. 4-5 weeks">制作期間：約4〜5週間</li>
-          </ul>
-          <a href="contact?plan=standard" class="bm-btn bm-btn--primary" style="width:100%;" data-ja="相談する" data-en="Inquire">相談する</a>
-        </div>
+      <!-- メイン単価表示 -->
+      <div class="bm-price-hero">
+        <p class="bm-price-hero-label" data-ja="ページ単価" data-en="Per Page">ページ単価</p>
+        <p class="bm-price-hero-num"><span class="bm-price-hero-yen" data-ja="¥" data-en="¥">¥</span>14,700<span class="bm-price-hero-suffix" data-ja="〜 / P" data-en="~ / page">〜 / P</span></p>
+        <p class="bm-price-hero-note" data-ja="※ ページ数・画風・用途によって変動します" data-en="* Varies by number of pages, art style, and purpose">※ ページ数・画風・用途によって変動します</p>
+      </div>
 
-        <!-- プレミアムプラン -->
-        <div class="bm-pricing-card">
-          <p class="bm-pricing-plan" data-ja="PREMIUM" data-en="PREMIUM">PREMIUM</p>
-          <p class="bm-pricing-price" data-ja="100万円〜" data-en="From ¥1,000,000">100<span data-ja="万円〜" data-en="from ¥">万円〜</span></p>
-          <p class="bm-pricing-desc" data-ja="ブランディング・プロモーション向け本格制作" data-en="Full-scale production for branding and promotion">ブランディング・プロモーション<br>向け本格制作</p>
-          <ul class="bm-pricing-features">
-            <li data-ja="16ページ以上" data-en="16+ pages">16ページ以上</li>
-            <li data-ja="取材+シナリオ作成" data-en="Interview + Scenario creation">取材+シナリオ作成</li>
-            <li data-ja="修正回数無制限" data-en="Unlimited revisions">修正回数無制限</li>
-            <li data-ja="全フォーマット対応" data-en="All formats supported">全フォーマット対応</li>
-            <li data-ja="制作期間：約6〜8週間" data-en="Production period: approx. 6-8 weeks">制作期間：約6〜8週間</li>
-          </ul>
-          <a href="contact?plan=premium" class="bm-btn bm-btn--outline" style="width:100%;" data-ja="相談する" data-en="Inquire">相談する</a>
+      <!-- 他社比較テーブル -->
+      <h2 class="bm-section-title" style="margin-top:64px;" data-ja="他社との比較" data-en="Comparison">他社との比較</h2>
+      <div class="bm-pricing-table-wrap">
+        <table class="bm-pricing-table">
+          <thead>
+            <tr>
+              <th class="bm-pricing-th-label"></th>
+              <th class="bm-pricing-th-other" data-ja="他社" data-en="Competitors">他社</th>
+              <th class="bm-pricing-th-bm" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="bm-pricing-label" data-ja="ページ単価" data-en="Price per Page">ページ単価</td>
+              <td class="bm-pricing-other" data-ja="50,000円〜80,000円 / P" data-en="¥50,000~¥80,000 / page">50,000円〜80,000円 / P</td>
+              <td class="bm-pricing-bm" data-ja="14,700円〜 / P" data-en="¥14,700~ / page"><strong>14,700円〜 / P</strong></td>
+            </tr>
+            <tr>
+              <td class="bm-pricing-label" data-ja="納期" data-en="Delivery Time">納期</td>
+              <td class="bm-pricing-other" data-ja="1〜3ヵ月" data-en="1~3 months">1〜3ヵ月</td>
+              <td class="bm-pricing-bm" data-ja="最短2週間" data-en="From 2 weeks"><strong>最短2週間</strong></td>
+            </tr>
+            <tr>
+              <td class="bm-pricing-label" data-ja="修正対応" data-en="Revisions">修正対応</td>
+              <td class="bm-pricing-other" data-ja="回数制限あり 追加費用大" data-en="Limited, high extra cost">回数制限あり<br>追加費用 大</td>
+              <td class="bm-pricing-bm" data-ja="絵コンテ1回 セリフ3回" data-en="1 storyboard + 3 dialogue"><strong>絵コンテ1回</strong><br><strong>セリフ3回</strong></td>
+            </tr>
+            <tr>
+              <td class="bm-pricing-label" data-ja="品質管理" data-en="Quality Control">品質管理</td>
+              <td class="bm-pricing-other" data-ja="制作者に依存" data-en="Depends on creator">制作者に依存</td>
+              <td class="bm-pricing-bm" data-ja="プロ漫画家監修 125項目チェック" data-en="Pro manga artist supervision, 125-point check"><strong>プロ漫画家監修</strong><br><strong>125項目チェック</strong></td>
+            </tr>
+            <tr>
+              <td class="bm-pricing-label" data-ja="著作権リスク" data-en="Copyright Risk">著作権リスク</td>
+              <td class="bm-pricing-other" data-ja="確認が必要" data-en="Requires verification">確認が必要</td>
+              <td class="bm-pricing-bm" data-ja="リスクゼロ（原画資産方式）" data-en="Zero risk (Original Art Asset method)"><strong>リスクゼロ</strong><br><span class="bm-pricing-note" data-ja="（原画資産方式）" data-en="(Original Art Asset method)">（原画資産方式）</span></td>
+            </tr>
+            <tr>
+              <td class="bm-pricing-label" data-ja="利用範囲" data-en="Usage Rights">利用範囲</td>
+              <td class="bm-pricing-other" data-ja="二次利用制限あり 別途契約" data-en="Secondary use restricted, separate contract">二次利用制限あり<br>別途契約</td>
+              <td class="bm-pricing-bm" data-ja="制限なし" data-en="Unlimited"><strong>制限なし</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 含まれるもの -->
+      <h2 class="bm-section-title" style="margin-top:64px;" data-ja="料金に含まれるもの" data-en="What's Included">料金に含まれるもの</h2>
+      <p class="bm-section-sub" data-ja="すべての案件で以下が標準提供されます" data-en="The following are included as standard for every project">すべての案件で以下が標準提供されます</p>
+      <div class="bm-included-grid">
+        <div class="bm-included-item">
+          <span class="bm-included-icon">1</span>
+          <div>
+            <p class="bm-included-title" data-ja="ヒアリング・コンサルティング" data-en="Hearing & Consulting">ヒアリング・コンサルティング</p>
+            <p class="bm-included-desc" data-ja="課題発掘から漫画の活用戦略までプロがアドバイスします" data-en="Our professionals advise on everything from problem discovery to manga utilization strategy">課題発掘から漫画の活用戦略までプロがアドバイスします</p>
+          </div>
+        </div>
+        <div class="bm-included-item">
+          <span class="bm-included-icon">2</span>
+          <div>
+            <p class="bm-included-title" data-ja="シナリオ設計" data-en="Scenario Design">シナリオ設計</p>
+            <p class="bm-included-desc" data-ja="脚本家がビジネス目的に最適化したストーリーを設計します" data-en="Our scriptwriters design stories optimized for your business goals">脚本家がビジネス目的に最適化したストーリーを設計します</p>
+          </div>
+        </div>
+        <div class="bm-included-item">
+          <span class="bm-included-icon">3</span>
+          <div>
+            <p class="bm-included-title" data-ja="ネーム（絵コンテ）作成" data-en="Storyboard Creation">ネーム（絵コンテ）作成</p>
+            <p class="bm-included-desc" data-ja="プロの漫画家がコマ割り・構成を設計します" data-en="Professional manga artists design panel layouts and composition">プロの漫画家がコマ割り・構成を設計します</p>
+          </div>
+        </div>
+        <div class="bm-included-item">
+          <span class="bm-included-icon">4</span>
+          <div>
+            <p class="bm-included-title" data-ja="作画・仕上げ" data-en="Artwork & Finishing">作画・仕上げ</p>
+            <p class="bm-included-desc" data-ja="人の手7割×AIテクノロジー3割のハイブリッド制作で高品質を実現" data-en="High quality achieved through hybrid production: 70% human craftsmanship × 30% AI technology">人の手7割×AIテクノロジー3割のハイブリッド制作で高品質を実現</p>
+          </div>
+        </div>
+        <div class="bm-included-item">
+          <span class="bm-included-icon">5</span>
+          <div>
+            <p class="bm-included-title" data-ja="修正対応" data-en="Revision Support">修正対応</p>
+            <p class="bm-included-desc" data-ja="絵コンテ段階1回・セリフ修正3回を標準で対応します" data-en="Standard: 1 storyboard revision + 3 dialogue revisions">絵コンテ段階1回・セリフ修正3回を標準で対応します</p>
+          </div>
+        </div>
+        <div class="bm-included-item">
+          <span class="bm-included-icon">6</span>
+          <div>
+            <p class="bm-included-title" data-ja="各種フォーマット納品" data-en="Multi-format Delivery">各種フォーマット納品</p>
+            <p class="bm-included-desc" data-ja="Web用・印刷用・SNS用など用途に応じたフォーマットで納品します" data-en="Delivered in formats suited to your needs: web, print, social media, etc.">Web用・印刷用・SNS用など用途に応じたフォーマットで納品します</p>
+          </div>
         </div>
       </div>
 
-      <p style="text-align:center;margin-top:48px;font-size:14px;color:var(--bm-text-muted);" data-ja="※ 上記は目安です。ページ数・タッチ・用途によって変動します。まずはお気軽にご相談ください。" data-en="* The above is a guideline. Prices may vary depending on the number of pages, style, and purpose. Please feel free to contact us first.">
-        ※ 上記は目安です。ページ数・タッチ・用途によって変動します。まずはお気軽にご相談ください。
+      <!-- カラーリング -->
+      <h2 class="bm-section-title" style="margin-top:64px;" data-ja="カラーリング" data-en="Coloring Options">カラーリング</h2>
+      <p class="bm-section-sub" data-ja="ご予算・用途に合わせて3つのカラーリングからお選びいただけます" data-en="Choose from 3 coloring options to match your budget and needs">ご予算・用途に合わせて3つのカラーリングからお選びいただけます</p>
+      <div class="bm-color-grid">
+        <div class="bm-color-card">
+          <p class="bm-color-label" data-ja="フルカラー" data-en="Full Color">フルカラー</p>
+          <p class="bm-color-desc" data-ja="高品質・ブランド訴求向け。LP・広告・プロモーションに最適です。" data-en="High quality for brand promotion. Ideal for LPs, ads, and promotions.">高品質・ブランド訴求向け。LP・広告・プロモーションに最適です。</p>
+        </div>
+        <div class="bm-color-card">
+          <p class="bm-color-label" data-ja="パステル / 限定カラー" data-en="Pastel / Limited Color">パステル / 限定カラー</p>
+          <p class="bm-color-desc" data-ja="親しみやすさ重視。SNSや社内資料、採用コンテンツにおすすめです。" data-en="Emphasizes approachability. Recommended for SNS, internal docs, and recruitment content.">親しみやすさ重視。SNSや社内資料、採用コンテンツにおすすめです。</p>
+        </div>
+        <div class="bm-color-card">
+          <p class="bm-color-label" data-ja="モノクロ" data-en="Monochrome">モノクロ</p>
+          <p class="bm-color-desc" data-ja="コスト効率が高い。研修・マニュアル・DM漫画に適しています。" data-en="Cost-efficient. Suitable for training, manuals, and DM manga.">コスト効率が高い。研修・マニュアル・DM漫画に適しています。</p>
+        </div>
+      </div>
+
+      <p class="bm-pricing-footnote" data-ja="※ 最終的な料金はページ数・画風・用途によって異なります。まずはお気軽にご相談ください。" data-en="* Final pricing varies by page count, art style, and purpose. Please feel free to contact us.">
+        ※ 最終的な料金はページ数・画風・用途によって異なります。まずはお気軽にご相談ください。
       </p>
     </div>
   </section>
