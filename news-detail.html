@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ニュース | ビズマンガ</title>
+  <meta name="description" content="ビズマンガの最新ニュース・お知らせ。">
+  <link rel="canonical" href="https://bizmanga.contentsx.jp/news-detail">
+  <!-- OG Tags -->
+  <meta property="og:title" content="ニュース | ビズマンガ">
+  <meta property="og:description" content="ビズマンガの最新ニュース・お知らせ。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://bizmanga.contentsx.jp/news-detail">
+  <meta property="og:site_name" content="ビズマンガ">
+  <meta property="og:image" content="https://contentsx.jp/material/images/logo/bizmanga-logo.webp">
+  <meta property="og:locale" content="ja_JP">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ニュース | ビズマンガ">
+  <meta name="twitter:description" content="ビズマンガの最新ニュース・お知らせ。">
+  <meta name="twitter:image" content="https://contentsx.jp/material/images/logo/bizmanga-logo.webp">
+  <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
+  <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    .bm-news-detail-section {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      min-height: 60vh;
+    }
+    .bm-news-detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e85500;
+      text-decoration: none;
+      margin-bottom: 32px;
+      transition: opacity 0.3s;
+    }
+    .bm-news-detail-back:hover {
+      opacity: 0.7;
+    }
+    .bm-news-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .bm-news-detail-date {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e85500;
+    }
+    .bm-news-detail-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a1a1a;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      padding: 3px 10px;
+      border-radius: 3px;
+    }
+    .bm-news-detail-title {
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .bm-news-detail-content {
+      font-size: 15px;
+      line-height: 1.9;
+      color: #555;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 32px;
+    }
+    .bm-news-detail-content p {
+      margin-bottom: 1.2em;
+    }
+    .bm-news-detail-content a {
+      color: #e85500;
+      text-decoration: underline;
+    }
+    .bm-news-detail-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .bm-news-detail-loading {
+      text-align: center;
+      padding: 60px 0;
+      color: #888;
+      font-size: 14px;
+    }
+    .bm-news-detail-error {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .bm-news-detail-error p {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="bm-header" id="header">
+    <div class="bm-header-inner">
+      <a href="./" class="bm-logo">
+        <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
+      </a>
+      <nav class="bm-nav" id="bmNav"><!-- bm-nav.js が生成 --></nav>
+      <div class="bm-header-right">
+        <a href="contact" class="bm-nav-cta" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        <button class="bm-hamburger" id="bmHamburger" aria-label="メニュー">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ニュース詳細 ===== -->
+  <section class="bm-news-detail-section" id="newsDetail">
+    <div class="bm-container">
+      <a href="./#news" class="bm-news-detail-back">← ニュース一覧に戻る</a>
+
+      <div id="newsDetailLoading" class="bm-news-detail-loading">読み込み中...</div>
+
+      <div id="newsDetailError" class="bm-news-detail-error" style="display:none;">
+        <p>ニュースが見つかりませんでした。</p>
+        <a href="./#news" class="bm-news-detail-back">ニュース一覧へ</a>
+      </div>
+
+      <article id="newsDetailArticle" style="display:none;">
+        <div class="bm-news-detail-meta">
+          <time class="bm-news-detail-date" id="newsDate"></time>
+          <span class="bm-news-detail-tag" id="newsTag"></span>
+        </div>
+        <h1 class="bm-news-detail-title" id="newsTitle"></h1>
+        <div class="bm-news-detail-content" id="newsContent"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer class="bm-footer">
+    <div class="bm-container">
+      <div class="bm-footer-inner">
+        <div class="bm-footer-brand">
+          <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
+          <p class="bm-footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
+          <p class="bm-footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="Meguro 2-11-15, Meguro Ward, Tokyo 8F">東京都目黒区目黒2-11-15 8階</p>
+        </div>
+        <div class="bm-footer-links">
+          <a href="./" data-ja="ホーム" data-en="Home">ホーム</a>
+          <a href="works" data-ja="制作事例" data-en="Our Works">制作事例</a>
+          <a href="biz-library" data-ja="ビズ書庫" data-en="Biz Library">ビズ書庫</a>
+          <a href="pricing" data-ja="料金" data-en="Pricing">料金</a>
+          <a href="faq" data-ja="FAQ" data-en="FAQ">FAQ</a>
+          <a href="contact" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        </div>
+      </div>
+      <div class="bm-footer-bottom">
+        <p>© Contents X Co., Ltd. 2026 All rights reserved.</p>
+        <a href="https://contentsx.jp/" class="bm-footer-parent">ContentsX Corporate Site →</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/bm-nav.js" defer></script>
+  <script src="js/bm-wp-config.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', async function() {
+      var params = new URLSearchParams(window.location.search);
+      var newsId = params.get('id');
+
+      var loadingEl = document.getElementById('newsDetailLoading');
+      var errorEl   = document.getElementById('newsDetailError');
+      var articleEl = document.getElementById('newsDetailArticle');
+
+      if (!newsId) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        var apiBase = (typeof BM_WP_CONFIG !== 'undefined' && BM_WP_CONFIG.enabled && BM_WP_CONFIG.apiBase)
+          ? BM_WP_CONFIG.apiBase.replace(/\/+$/, '')
+          : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+
+        var controller = new AbortController();
+        var timeout = setTimeout(function() { controller.abort(); }, 8000);
+
+        var res = await fetch(apiBase + '/news/' + newsId, { signal: controller.signal });
+        clearTimeout(timeout);
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+
+        /* ページタイトル更新 */
+        document.title = (data.title_ja || 'ニュース') + ' | ビズマンガ';
+
+        /* データ反映 */
+        document.getElementById('newsDate').textContent = data.date || '';
+        document.getElementById('newsTag').textContent = data.tag_ja || '';
+        document.getElementById('newsTitle').textContent = data.title_ja || '';
+        document.getElementById('newsContent').innerHTML = data.content || '<p>詳細情報はありません。</p>';
+
+        loadingEl.style.display = 'none';
+        articleEl.style.display = 'block';
+
+      } catch(e) {
+        console.warn('[BM News Detail] Failed:', e.message);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+      }
+    });
+  </script>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "ニュース | ビズマンガ",
+  "description": "ビズマンガの最新ニュース・お知らせ。",
+  "url": "https://bizmanga.contentsx.jp/news-detail",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ビズマンガ",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"
+    }
+  }
+}
+</script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
+<!-- End of HubSpot Embed Code -->
+</body>
+</html>

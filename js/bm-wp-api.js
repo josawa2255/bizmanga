@@ -88,20 +88,21 @@
       tag.className = 'bm-news-tag';
       tag.textContent = item.tag_ja || '';
 
-      var a = document.createElement('a');
-      a.className = 'bm-news-link';
-      if (item.url) {
-        a.href = item.url;
-      } else if (item.has_detail && item.id) {
-        a.href = 'news-detail?id=' + item.id;
+      var hasLink = item.url || (item.has_detail && item.id);
+      var titleEl;
+      if (hasLink) {
+        titleEl = document.createElement('a');
+        titleEl.className = 'bm-news-link';
+        titleEl.href = item.url || ('news-detail?id=' + item.id);
       } else {
-        a.href = '#';
+        titleEl = document.createElement('span');
+        titleEl.className = 'bm-news-link bm-news-link--plain';
       }
-      a.textContent = item.title_ja || '';
+      titleEl.textContent = item.title_ja || '';
 
       li.appendChild(time);
       li.appendChild(tag);
-      li.appendChild(a);
+      li.appendChild(titleEl);
       list.appendChild(li);
     });
 
