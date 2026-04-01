@@ -68,15 +68,24 @@
   }
 
   /* ── ニュースDOM を動的に生成 ── */
+  var NEWS_HOME_LIMIT = 5;
+
   async function loadNews() {
-    var data = await apiFetch('/news?site=bizmanga');
+    var data = await apiFetch('/news?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
+
+    /* 全データをグローバルに保存（一覧ページ用） */
+    window.BM_NEWS_DATA = data;
 
     var list = document.getElementById('bmNewsList');
     if (!list) return;
 
+    /* ホームでは最大5件表示 */
+    var isHome = !document.body.hasAttribute('data-page-news');
+    var displayData = isHome ? data.slice(0, NEWS_HOME_LIMIT) : data;
+
     list.innerHTML = '';
-    data.forEach(function(item) {
+    displayData.forEach(function(item) {
       var li = document.createElement('li');
       li.className = 'bm-news-item';
 
@@ -84,9 +93,17 @@
       time.className = 'bm-news-date';
       time.textContent = item.date || '';
 
-      var tag = document.createElement('span');
-      tag.className = 'bm-news-tag';
-      tag.textContent = item.tag_ja || '';
+      /* タグが空の場合はタグ要素を生成しない */
+      var tagText = item.tag_ja || '';
+      if (tagText) {
+        var tag = document.createElement('span');
+        tag.className = 'bm-news-tag';
+        tag.textContent = tagText;
+        li.appendChild(time);
+        li.appendChild(tag);
+      } else {
+        li.appendChild(time);
+      }
 
       var hasLink = item.url || (item.has_detail && item.id);
       var titleEl;
@@ -100,13 +117,17 @@
       }
       titleEl.textContent = item.title_ja || '';
 
-      li.appendChild(time);
-      li.appendChild(tag);
       li.appendChild(titleEl);
       list.appendChild(li);
     });
 
-    console.log('[BM-WP-API] ニュース: ' + data.length + '件 rendered');
+    /* 5件以上ある場合、ホームに「一覧を見る」リンクを表示 */
+    if (isHome && data.length > NEWS_HOME_LIMIT) {
+      var moreLink = document.getElementById('bmNewsMore');
+      if (moreLink) moreLink.style.display = '';
+    }
+
+    console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
   /* ── 初期化 ── */
