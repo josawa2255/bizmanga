@@ -801,7 +801,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    Works Page (works.html)
    ============================================ */
 .bm-works-page {
-  padding: 48px 0 80px;
+  padding: 120px 0 80px;
   min-height: 80vh;
 }
 
