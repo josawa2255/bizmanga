@@ -10,8 +10,20 @@
 
   var opening = document.getElementById('bmOpening');
   var video = document.getElementById('bmOpeningVideo');
+  var logo = document.getElementById('bmOpeningLogo');
   var skipBtn = document.getElementById('bmOpeningSkip');
   if (!opening || !video) return;
+
+  // 動画残り2秒でロゴをフェードイン
+  var logoShown = false;
+  var LOGO_APPEAR_BEFORE = 2.0; // 終了何秒前から表示するか
+  video.addEventListener('timeupdate', function() {
+    if (logoShown || !logo) return;
+    if (video.duration && (video.duration - video.currentTime) <= LOGO_APPEAR_BEFORE) {
+      logo.classList.add('visible');
+      logoShown = true;
+    }
+  });
 
   // セッション中に既に見た場合はスキップ
   if (sessionStorage.getItem('bm_opening_seen')) {
