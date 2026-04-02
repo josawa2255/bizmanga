@@ -1260,16 +1260,22 @@ const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
 
 if (isDirectMode && (mangaData[autoOpen] || FALLBACK_WORKS[autoOpen])) {
-  // Hide library entirely (skip building DOM entirely)
-  document.querySelector('.header').style.display = 'none';
-  document.querySelector('.page-hero').style.display = 'none';
-  document.querySelector('.works-section').style.display = 'none';
+  // Hide library entirely
+  // biz-library.html uses .bm-header; works.html uses .header — handle both
+  const headerEl = document.querySelector('.bm-header') || document.querySelector('.header');
+  if (headerEl) headerEl.style.display = 'none';
+  const pageHeroEl = document.querySelector('.page-hero');
+  if (pageHeroEl) pageHeroEl.style.display = 'none';
+  const worksSectionEl = document.querySelector('.works-section');
+  if (worksSectionEl) worksSectionEl.style.display = 'none';
   const preSection = document.querySelector('.pre-section');
   if (preSection) preSection.style.display = 'none';
-  document.querySelector('.footer').style.display = 'none';
+  const footerEl = document.querySelector('.footer');
+  if (footerEl) footerEl.style.display = 'none';
 
   // Hide close button (no library to return to)
-  document.getElementById('modalClose').style.display = 'none';
+  const modalCloseEl = document.getElementById('modalClose');
+  if (modalCloseEl) modalCloseEl.style.display = 'none';
 
   // Open manga immediately
   openManga(autoOpen);

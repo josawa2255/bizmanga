@@ -47,15 +47,6 @@
     </div>
   </header>
 
-  <!-- ===== オープニング動画 ===== -->
-  <div class="bm-opening" id="bmOpening">
-    <video class="bm-opening-video" id="bmOpeningVideo" muted playsinline preload="auto">
-      <source src="material/videos/biz_hp_opening_trimmed.mp4" type="video/mp4">
-    </video>
-    <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" class="bm-opening-logo" id="bmOpeningLogo" alt="ビズマンガ">
-    <button class="bm-opening-skip" id="bmOpeningSkip">SKIP ▸</button>
-  </div>
-
   <!-- ===== Hero (集英社スタイル マーキーカルーセル) ===== -->
   <section class="bm-hero" id="hero">
     <!-- 作品カルーセル背景 (5行マーキー) -->
@@ -82,6 +73,25 @@
     <div class="bm-hero-scroll-hint">
       <span data-ja="SCROLL" data-en="SCROLL">SCROLL</span>
       <div class="bm-hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="bm-about" id="about">
+    <div class="bm-container">
+      <h2 class="bm-about-heading"
+          data-ja="文章では届かない想いを、マンガで動かす。<br>伝える力を、進化させる。"
+          data-en="Move hearts with manga, not words.<br>Evolve the power to communicate.">
+        文章では届かない想いを、マンガで動かす。<br>伝える力を、進化させる。
+      </h2>
+      <p class="bm-about-text"
+         data-ja="情報が多すぎて、誰も立ち止まらない時代。想いを伝える最短の方法、それがビズマンガ。文字では描けない空気感や温度感も、マンガなら伝わる。難しい説明も、物語に変えれば、想いとして届く。長い説明はいらない。ひと目で&quot;伝わる&quot;物語があれば、誰にでも響く。ビズマンガは、企業の想いを広げる、新しい伝え方。"
+         data-en="In an era of information overload, no one stops to read. BizManga is the fastest way to convey your message. Emotions and atmosphere that words can't capture — manga delivers them. Complex explanations become stories that resonate. No lengthy copy needed. One glance at a story that &quot;gets through&quot; reaches everyone. BizManga is a new way to amplify your company's message.">
+        情報が多すぎて、誰も立ち止まらない時代。想いを伝える最短の方法、それがビズマンガ。
+        文字では描けない空気感や温度感も、マンガなら伝わる。難しい説明も、物語に変えれば、想いとして届く。
+        長い説明はいらない。ひと目で"伝わる"物語があれば、誰にでも響く。
+        ビズマンガは、企業の想いを広げる、新しい伝え方。
+      </p>
     </div>
   </section>
 
@@ -294,7 +304,7 @@
     </div>
   </div>
 
-  <script src="js/bm-opening.js" defer></script>
+
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-wp-config.js" defer></script>
   <script src="js/bm-wp-api.js" defer></script>
