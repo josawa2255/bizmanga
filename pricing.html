@@ -55,6 +55,26 @@
     </div>
   </div>
 
+  <!-- ===== 料金クイズセクション ===== -->
+  <section class="bm-quiz-section">
+    <div class="bm-container">
+      <h2 class="bm-section-title">あなたに合った料金を調べる</h2>
+      <p class="bm-section-sub">4つの質問に答えるだけで概算見積もりがわかります</p>
+
+      <div class="bm-quiz-container">
+        <!-- プログレスバー -->
+        <div class="bm-quiz-progress-wrap">
+          <div class="bm-quiz-progress-track">
+            <div class="bm-quiz-progress-bar"></div>
+          </div>
+          <span class="bm-quiz-progress-label">STEP 1 / 4</span>
+        </div>
+        <!-- クイズ本体（JSが差し込む） -->
+        <div class="bm-quiz-body"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== ページ単価セクション ===== -->
   <section class="bm-pricing-page">
     <div class="bm-container">
@@ -67,7 +87,7 @@
       </div>
 
       <!-- 他社比較テーブル -->
-      <h2 class="bm-section-title" style="margin-top:64px;" data-ja="他社との比較" data-en="Comparison">他社との比較</h2>
+      <h2 class="bm-section-title" style="margin-top:24px;" data-ja="他社との比較" data-en="Comparison">他社との比較</h2>
       <div class="bm-pricing-table-wrap">
         <table class="bm-pricing-table">
           <thead>
@@ -219,6 +239,7 @@
   </footer>
 
   <script src="js/bm-nav.js" defer></script>
+  <script src="js/bm-pricing-quiz.js" defer></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {

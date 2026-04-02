@@ -1255,11 +1255,14 @@ window.addEventListener('popstate', () => {
 });
 
 // ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
+// 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
+registerFallbackPreData();
+
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
 
-if (isDirectMode && (mangaData[autoOpen] || FALLBACK_WORKS[autoOpen])) {
+if (isDirectMode && mangaData[autoOpen]) {
   // Hide library entirely
   // biz-library.html uses .bm-header; works.html uses .header — handle both
   const headerEl = document.querySelector('.bm-header') || document.querySelector('.header');

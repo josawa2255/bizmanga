@@ -1,16 +1,14 @@
 /**
- * BizManga ホームページ — 新作漫画トラック生成
- * ContentsX の script.js 新作情報セクションと同じ仕様:
- *   - 新しい順にソート → 最大10件
- *   - 横スクロールカード表示
- *   - クリックで制作事例モーダル（openWorkDetail）
- *   - ドラッグスクロール対応
- *   - WP APIデータ到着時に再構築
+ * BizManga ホームページ — 新作漫画ギャラリーカルーセル
+ * - 自動スクロール（ホバーで一時停止）
+ * - 無限ループ（最後→先頭に自然に繋がる）
+ * - WP APIデータ到着時に再構築
  */
 (function() {
   'use strict';
 
   var MAX_NEW_WORKS = 10;
+  var SCROLL_SPEED  = 0.6;    // px per frame
   var track = document.getElementById('bmNewWorksTrack');
   if (!track) return;
 
@@ -28,78 +26,94 @@
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, added: '2026-02-28' }
   ];
 
+  var scrollPos = 0;
+  var animId = null;
+  var isPaused = false;
+  var singleSetWidth = 0;
+
   // ===== カード生成 =====
-  function buildNewWorksCards(data) {
-    // 新しい順にソート → 最大10件
+  function buildGalleryCards(data) {
     var sorted = data.slice().sort(function(a, b) {
       return new Date(b.added) - new Date(a.added);
     }).slice(0, MAX_NEW_WORKS);
 
     track.innerHTML = '';
-    var frag = document.createDocumentFragment();
 
-    sorted.forEach(function(item) {
-      var card = document.createElement('div');
-      card.className = 'bm-new-works-card';
+    // 無限ループ用に2セット分のカードを作る
+    var sets = [sorted, sorted];
+    sets.forEach(function(set, setIdx) {
+      set.forEach(function(item) {
+        var card = document.createElement('div');
+        card.className = 'bm-gallery-card';
 
-      var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
+        var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
 
-      card.innerHTML =
-        '<div class="bm-new-works-card-cover">' +
-          '<img src="' + coverSrc + '" alt="' + (item.title_ja || '') + '" loading="lazy" style="object-position:top center;">' +
-        '</div>' +
-        '<p class="bm-new-works-card-title">' + (item.title_ja || '') + '</p>';
+        card.innerHTML =
+          '<div class="bm-gallery-card-cover">' +
+            '<img src="' + coverSrc + '" alt="' + (item.title_ja || '') + '" loading="lazy">' +
+          '</div>' +
+          '<p class="bm-gallery-card-title">' + (item.title_ja || '') + '</p>';
 
-      // クリック → ビズ書庫で漫画を直接開く
-      (function(workItem) {
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', function() {
-          location.href = 'biz-library?manga=' + workItem.id;
-        });
-      })(item);
+        // クリック → ビズ書庫で漫画を直接開く
+        (function(workItem) {
+          card.addEventListener('click', function() {
+            location.href = 'biz-library?manga=' + workItem.id;
+          });
+        })(item);
 
-      frag.appendChild(card);
+        track.appendChild(card);
+      });
     });
 
-    track.appendChild(frag);
-  }
+    // 1セット分の幅を計算
+    requestAnimationFrame(function() {
+      var cards = track.querySelectorAll('.bm-gallery-card');
+      var half = Math.floor(cards.length / 2);
+      if (half === 0) return;
 
-  // ===== ドラッグスクロール =====
-  var wrapper = track.parentElement;
-  if (wrapper) {
-    var isDragging = false;
-    var startX, scrollLeft;
+      // 最初のセットの末尾カードの右端位置 + gap
+      var lastCard = cards[half - 1];
+      var gap = 28; // CSS gap
+      singleSetWidth = lastCard.offsetLeft + lastCard.offsetWidth + gap;
 
-    wrapper.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      wrapper.style.cursor = 'grabbing';
-      startX = e.pageX - wrapper.offsetLeft;
-      scrollLeft = wrapper.scrollLeft;
-    });
-    wrapper.addEventListener('mouseleave', function() {
-      isDragging = false;
-      wrapper.style.cursor = '';
-    });
-    wrapper.addEventListener('mouseup', function() {
-      isDragging = false;
-      wrapper.style.cursor = '';
-    });
-    wrapper.addEventListener('mousemove', function(e) {
-      if (!isDragging) return;
-      e.preventDefault();
-      var x = e.pageX - wrapper.offsetLeft;
-      wrapper.scrollLeft = scrollLeft - (x - startX);
+      scrollPos = 0;
+      startAutoScroll();
     });
   }
+
+  // ===== 自動スクロール =====
+  function startAutoScroll() {
+    if (animId) cancelAnimationFrame(animId);
+
+    function step() {
+      if (!isPaused) {
+        scrollPos += SCROLL_SPEED;
+
+        // 1セット分スクロールしたらリセット（無限ループ）
+        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+          scrollPos -= singleSetWidth;
+        }
+
+        track.style.transform = 'translateX(' + (-scrollPos) + 'px)';
+      }
+      animId = requestAnimationFrame(step);
+    }
+
+    animId = requestAnimationFrame(step);
+  }
+
+  // カーソルを合わせてもカルーセルは止めない（常時自動スクロール）
 
   // ===== 初期表示（フォールバック） =====
-  buildNewWorksCards(FALLBACK_NEW_WORKS);
+  buildGalleryCards(FALLBACK_NEW_WORKS);
 
   // ===== WP APIデータ到着時に再構築 =====
   window.addEventListener('bm-data-ready', function() {
     var wpData = window.BM_NEW_WORKS_DATA;
     if (wpData && wpData.length > 0) {
-      buildNewWorksCards(wpData);
+      scrollPos = 0;
+      if (animId) cancelAnimationFrame(animId);
+      buildGalleryCards(wpData);
     }
   });
 })();

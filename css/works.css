@@ -1,11 +1,13 @@
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
-  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
+    -apple-system, BlinkMacSystemFont, sans-serif;
   color: #333;
   background: #fff;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
@@ -199,25 +201,32 @@ body {
 .work-card-img-wrapper.tall-cover::after {
   display: none;
 }
-/* Decorative fan effect */
+/* Decorative character cards */
 .work-card-img-wrapper::before,
 .work-card-img-wrapper::after {
   content: '';
   position: absolute;
-  width: 55%;
-  height: 75%;
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 50%;
+  height: 74%;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
   z-index: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
+/* 左キャラ：手を振る子（右端から顔が出る） */
 .work-card-img-wrapper::before {
-  transform: rotate(-6deg) translateX(-4px);
-  top: 15%; left: 14%;
+  background-image: url('../material/images/card-chara-left.webp');
+  background-position: right top;
+  transform: rotate(-4deg);
+  top: 16%; left: -20%;
 }
+/* 右キャラ：拳・集中線（左端から顔が出る） */
 .work-card-img-wrapper::after {
-  transform: rotate(4deg) translateX(4px);
-  top: 12%; right: 14%;
+  background-image: url('../material/images/card-chara-right.webp');
+  background-position: left top;
+  transform: rotate(4deg);
+  top: 16%; right: -20%;
 }
 .work-card-page-count {
   position: absolute;

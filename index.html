@@ -80,17 +80,26 @@
   <section class="bm-about" id="about">
     <div class="bm-container">
       <h2 class="bm-about-heading"
-          data-ja="文章では届かない想いを、マンガで動かす。<br>伝える力を、進化させる。"
-          data-en="Move hearts with manga, not words.<br>Evolve the power to communicate.">
-        文章では届かない想いを、マンガで動かす。<br>伝える力を、進化させる。
+          data-ja="文章では届かない。マンガなら、届く。<br>伝えたいことを、伝わる形に。"
+          data-en="Words can't reach. Manga can.<br>Turn your message into something that connects.">
+        文章では届かない。マンガなら、届く。<br>伝えたいことを、伝わる形に。
       </h2>
       <p class="bm-about-text"
-         data-ja="情報が多すぎて、誰も立ち止まらない時代。想いを伝える最短の方法、それがビズマンガ。文字では描けない空気感や温度感も、マンガなら伝わる。難しい説明も、物語に変えれば、想いとして届く。長い説明はいらない。ひと目で&quot;伝わる&quot;物語があれば、誰にでも響く。ビズマンガは、企業の想いを広げる、新しい伝え方。"
-         data-en="In an era of information overload, no one stops to read. BizManga is the fastest way to convey your message. Emotions and atmosphere that words can't capture — manga delivers them. Complex explanations become stories that resonate. No lengthy copy needed. One glance at a story that &quot;gets through&quot; reaches everyone. BizManga is a new way to amplify your company's message.">
-        情報が多すぎて、誰も立ち止まらない時代。想いを伝える最短の方法、それがビズマンガ。
-        文字では描けない空気感や温度感も、マンガなら伝わる。難しい説明も、物語に変えれば、想いとして届く。
-        長い説明はいらない。ひと目で"伝わる"物語があれば、誰にでも響く。
-        ビズマンガは、企業の想いを広げる、新しい伝え方。
+         data-ja="企業の想いも、商品の良さも、働く人の魅力も。伝えたいことはたくさんある。でもどれだけ想いを込めた文章でも、読まれなければ届かない。人は説明ではなく、共感で動く。難しい話も、物語にすればスッと届く。マンガなら、読まれる。伝わる。そして記憶に残る。"
+         data-en="Your company's passion, your product's value, your people's appeal — there's so much to convey. But even heartfelt words go unread if no one stops to look. People are moved by empathy, not explanation. Even complex topics land easily as stories. With manga, your message gets read, understood, and remembered.">
+        企業の想いも、商品の良さも、働く人の魅力も。伝えたいことはたくさんある。でもどれだけ想いを込めた文章でも、読まれなければ届かない。人は説明ではなく、共感で動く。難しい話も、物語にすればスッと届く。マンガなら、読まれる。伝わる。そして記憶に残る。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== ビズマンガとは？ ===== -->
+  <section class="bm-whatis" id="whatis">
+    <div class="bm-container">
+      <h2 class="bm-whatis-heading" data-ja="ビズマンガとは？" data-en="What is BizManga?">ビズマンガとは？</h2>
+      <p class="bm-whatis-text"
+         data-ja="採用・営業・研修・会社紹介・創業ストーリー。企業の課題解決に特化したマンガ制作サービスです。課題のヒアリングからシナリオ設計、作画、納品まで全部おまかせ。伝えたいことを、伝わるマンガに仕上げます。一度つくれば、Web・SNS・説明会など、あらゆる場面に広がります。"
+         data-en="Recruitment, sales, training, company introductions, founding stories — a manga production service specialized in solving business challenges. From hearing your needs to scenario design, artwork, and delivery — leave it all to us. We turn what you want to say into manga that truly connects. Once created, it works across every channel: web, social media, presentations, and more.">
+        採用・営業・研修・会社紹介・創業ストーリー。企業の課題解決に特化したマンガ制作サービスです。課題のヒアリングからシナリオ設計、作画、納品まで全部おまかせ。伝えたいことを、伝わるマンガに仕上げます。一度つくれば、Web・SNS・説明会など、あらゆる場面に広がります。
       </p>
     </div>
   </section>
@@ -123,105 +132,71 @@
     </div>
   </section>
 
-  <!-- ===== 新作漫画 (ContentsX同様 横スクロールカード) ===== -->
-  <section class="bm-new-works" id="newWorks">
-    <div class="bm-container">
-      <div class="bm-new-works-header">
-        <h2 class="bm-new-works-heading" data-ja="新作漫画" data-en="New Comics">新作漫画</h2>
-        <a href="biz-library" class="bm-new-works-more" data-ja="ビズ書庫 →" data-en="BizArchive →">ビズ書庫 →</a>
-      </div>
-      <div class="bm-new-works-track-wrapper">
-        <div class="bm-new-works-track" id="bmNewWorksTrack">
-          <!-- WP APIから動的に生成 -->
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== お客様コメント (カード型グリッド) ===== -->
+  <!-- ===== お客様の声 (横スクロールカルーセル) ===== -->
   <section class="bm-testimonials" id="testimonials">
     <div class="bm-container">
-      <h2 class="bm-section-title" data-ja="お客様の声" data-en="Customer Testimonials">お客様の声</h2>
-      <p class="bm-section-sub" data-ja="ビズマンガをご利用いただいたお客様からのコメント" data-en="Comments from customers who have used BizManga">ビズマンガをご利用いただいたお客様からのコメント</p>
-      <div class="bm-testimonials-grid" id="bmTestimonialsGrid">
-        <div class="bm-testimonial-card">
-          <div class="bm-testimonial-cover">
-            <img src="https://contentsx.jp/material/manga/bms-unso/01.webp" alt="BMS運送">
-          </div>
-          <span class="bm-testimonial-tag" data-ja="営業" data-en="Sales">営業</span>
-          <h3 class="bm-testimonial-title" data-ja="採用応募数が2倍に増加" data-en="Application numbers doubled">採用応募数が2倍に増加</h3>
-          <p class="bm-testimonial-text" data-ja="漫画にしたことで、求職者に仕事の魅力がダイレクトに伝わるようになりました。面接でも「漫画を見て興味を持った」という声が増えています。" data-en="By converting to manga, the appeal of the job is communicated directly to job seekers. In interviews, we hear more voices saying 'I became interested after seeing the manga.'">漫画にしたことで、求職者に仕事の魅力がダイレクトに伝わるようになりました。面接でも「漫画を見て興味を持った」という声が増えています。</p>
-          <p class="bm-testimonial-author" data-ja="— 運送会社 採用担当" data-en="— Transportation Company, HR Department">— 運送会社 採用担当</p>
+      <div class="bm-testimonials-header">
+        <div>
+          <h2 class="bm-section-title" data-ja="お客様の声" data-en="Customer Testimonials">お客様の声</h2>
+          <p class="bm-section-sub" data-ja="ビズマンガをご利用いただいたお客様からのコメント" data-en="Comments from customers who have used BizManga">ビズマンガをご利用いただいたお客様からのコメント</p>
         </div>
-        <div class="bm-testimonial-card">
-          <div class="bm-testimonial-cover">
-            <img src="https://contentsx.jp/material/manga/kyoiku-manual/01.webp" alt="教育マニュアル">
-          </div>
-          <span class="bm-testimonial-tag" data-ja="研修" data-en="Training">研修</span>
-          <h3 class="bm-testimonial-title" data-ja="研修の理解度が大幅に向上" data-en="Training comprehension significantly improved">研修の理解度が大幅に向上</h3>
-          <p class="bm-testimonial-text" data-ja="テキストだけのマニュアルでは何度説明しても伝わらなかった内容が、漫画にした途端スッと理解してもらえるようになりました。" data-en="Content that was never understood with text-only manuals is now easily grasped once converted to manga.">テキストだけのマニュアルでは何度説明しても伝わらなかった内容が、漫画にした途端スッと理解してもらえるようになりました。</p>
-          <p class="bm-testimonial-author" data-ja="— 教育事業会社 人事部長" data-en="— Education Company, HR Director">— 教育事業会社 人事部長</p>
-        </div>
-        <div class="bm-testimonial-card">
-          <div class="bm-testimonial-cover">
-            <img src="https://contentsx.jp/material/manga/ichinohe-home/01.webp" alt="一戸ホーム">
-          </div>
-          <span class="bm-testimonial-tag" data-ja="営業" data-en="Sales">営業</span>
-          <h3 class="bm-testimonial-title" data-ja="商談がスムーズになった" data-en="Business negotiations became smoother">商談がスムーズになった</h3>
-          <p class="bm-testimonial-text" data-ja="漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。" data-en="By converting to manga, our business negotiations with customers have become smoother. Our passion for housing that couldn't be conveyed through print alone now comes through.">漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。</p>
-          <p class="bm-testimonial-author" data-ja="— 住宅メーカー 営業部" data-en="— Housing Manufacturer, Sales Department">— 住宅メーカー 営業部</p>
-        </div>
-        <div class="bm-testimonial-card">
-          <div class="bm-testimonial-cover">
-            <img src="https://contentsx.jp/material/manga/shohin-shokai/01.webp" alt="商品紹介">
-          </div>
-          <span class="bm-testimonial-tag" data-ja="プロモーション" data-en="Promotion">プロモーション</span>
-          <h3 class="bm-testimonial-title" data-ja="SNSでの反応が3倍に" data-en="3x increase in social media engagement">SNSでの反応が3倍に</h3>
-          <p class="bm-testimonial-text" data-ja="漫画コンテンツはSNSでの拡散力が段違いでした。広告費を抑えながら認知拡大ができ、費用対効果に大変満足しています。" data-en="Manga content had remarkable viral power on SNS. We were able to increase brand awareness while controlling advertising costs, and we're very satisfied with the return on investment.">漫画コンテンツはSNSでの拡散力が段違いでした。広告費を抑えながら認知拡大ができ、費用対効果に大変満足しています。</p>
-          <p class="bm-testimonial-author" data-ja="— IT企業 マーケティング部" data-en="— IT Company, Marketing Department">— IT企業 マーケティング部</p>
+        <a href="testimonials" class="bm-testimonials-all" data-ja="全てを見る →" data-en="View All →">全てを見る →</a>
+      </div>
+      <div class="bm-testimonials-scroll">
+        <div class="bm-testimonials-grid" id="bmTestimonialsGrid">
+          <!-- bm-testimonials.js が動的に生成 -->
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== 漫画家紹介 ===== -->
-  <section class="bm-artists" id="artists">
+  <!-- ===== 新作漫画ギャラリー (自動カルーセル) ===== -->
+  <section class="bm-gallery" id="newWorks">
+    <!-- 背景漫画ページ画像 -->
+    <div class="bm-gallery-bg">
+      <img src="https://contentsx.jp/material/manga/bms-unso/02.webp" alt="" loading="lazy">
+      <img src="https://contentsx.jp/material/manga/kyoiku-manual/03.webp" alt="" loading="lazy">
+      <img src="https://contentsx.jp/material/manga/ichinohe-home/04.webp" alt="" loading="lazy">
+      <img src="https://contentsx.jp/material/manga/seko/02.webp" alt="" loading="lazy">
+      <img src="https://contentsx.jp/material/manga/life-school/03.webp" alt="" loading="lazy">
+    </div>
+    <div class="bm-gallery-overlay"></div>
+    <div class="bm-container bm-gallery-inner">
+      <div class="bm-gallery-header">
+        <h2 class="bm-gallery-heading" data-ja="ギャラリー" data-en="Gallery">ギャラリー</h2>
+        <a href="biz-library" class="bm-gallery-more" data-ja="ビズ書庫 →" data-en="BizArchive →">ビズ書庫 →</a>
+      </div>
+      <div class="bm-gallery-carousel" id="bmGalleryCarousel">
+        <div class="bm-gallery-track" id="bmNewWorksTrack">
+          <!-- JSが動的に生成 -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 制作過程 ===== -->
+  <section class="bm-pre-section" id="preProduction">
     <div class="bm-container">
-      <h2 class="bm-section-title" data-ja="漫画家紹介" data-en="Manga Artists">漫画家紹介</h2>
-      <p class="bm-section-sub" data-ja="ビズマンガを支えるプロの漫画家たち" data-en="Professional manga artists supporting BizManga">ビズマンガを支えるプロの漫画家たち</p>
-      <div class="bm-artists-grid" id="bmArtistsGrid">
-        <!-- WP APIまたは静的データから生成 -->
-        <div class="bm-artist-card">
-          <div class="bm-artist-avatar">
-            <img src="https://contentsx.jp/material/manga/bms-unso/01.webp" alt="漫画家A">
-          </div>
-          <h3 class="bm-artist-name" data-ja="漫画家 A" data-en="Manga Artist A">漫画家 A</h3>
-          <p class="bm-artist-genre" data-ja="営業・採用漫画が得意" data-en="Specializes in sales and recruitment manga">営業・採用漫画が得意</p>
-          <p class="bm-artist-bio" data-ja="10年以上のキャリアを持つベテラン。リアルな人物描写とストーリー構成力に定評があります。" data-en="Veteran with over 10 years of experience. Known for realistic character drawing and strong storytelling ability.">10年以上のキャリアを持つベテラン。リアルな人物描写とストーリー構成力に定評があります。</p>
+      <h2 class="bm-pre-section-title" data-ja="制作過程" data-en="Production Process">制作<em data-ja="過程" data-en="Process">過程</em></h2>
+      <p class="bm-pre-section-subtitle" data-ja="PRE-PRODUCTION" data-en="PRE-PRODUCTION">PRE-PRODUCTION</p>
+
+      <!-- ネーム carousel -->
+      <div class="bm-pre-carousel-wrap">
+        <div class="bm-pre-carousel-label" data-ja="ネーム（下描き）" data-en="Name (Rough Sketch)">ネーム（下描き）</div>
+        <div class="bm-pre-carousel" id="bmNameCarousel">
+          <div class="bm-pre-carousel-track" id="bmNameTrack"></div>
+          <button class="bm-pre-carousel-btn prev" data-carousel="name">&#10094;</button>
+          <button class="bm-pre-carousel-btn next" data-carousel="name">&#10095;</button>
         </div>
-        <div class="bm-artist-card">
-          <div class="bm-artist-avatar">
-            <img src="https://contentsx.jp/material/manga/kyoiku-manual/01.webp" alt="漫画家B">
-          </div>
-          <h3 class="bm-artist-name" data-ja="漫画家 B" data-en="Manga Artist B">漫画家 B</h3>
-          <p class="bm-artist-genre" data-ja="研修・教育マニュアルが得意" data-en="Specializes in training and educational manual manga">研修・教育マニュアルが得意</p>
-          <p class="bm-artist-bio" data-ja="分かりやすいイラストと丁寧な構成で、教育コンテンツの漫画化を数多く手がけています。" data-en="Handles many educational content adaptations with clear illustrations and careful composition.">分かりやすいイラストと丁寧な構成で、教育コンテンツの漫画化を数多く手がけています。</p>
-        </div>
-        <div class="bm-artist-card">
-          <div class="bm-artist-avatar">
-            <img src="https://contentsx.jp/material/manga/life-school/01.webp" alt="漫画家C">
-          </div>
-          <h3 class="bm-artist-name" data-ja="漫画家 C" data-en="Manga Artist C">漫画家 C</h3>
-          <p class="bm-artist-genre" data-ja="プロモーション漫画が得意" data-en="Specializes in promotional manga">プロモーション漫画が得意</p>
-          <p class="bm-artist-bio" data-ja="ポップで目を引く作風が特徴。SNS向けの漫画コンテンツ制作で多くの実績があります。" data-en="Known for a pop and eye-catching style. Has extensive experience producing manga content for social media.">ポップで目を引く作風が特徴。SNS向けの漫画コンテンツ制作で多くの実績があります。</p>
-        </div>
-        <div class="bm-artist-card">
-          <div class="bm-artist-avatar">
-            <img src="https://contentsx.jp/material/manga/sixtones/01.webp" alt="漫画家D">
-          </div>
-          <h3 class="bm-artist-name" data-ja="漫画家 D" data-en="Manga Artist D">漫画家 D</h3>
-          <p class="bm-artist-genre" data-ja="エンタメ・創業ストーリーが得意" data-en="Specializes in entertainment and founder story manga">エンタメ・創業ストーリーが得意</p>
-          <p class="bm-artist-bio" data-ja="エモーショナルなストーリーテリングが得意。創業ストーリーやブランドストーリーの漫画化で高い評価を受けています。" data-en="Expert in emotional storytelling. Highly regarded for adapting founder stories and brand stories into manga.">エモーショナルなストーリーテリングが得意。創業ストーリーやブランドストーリーの漫画化で高い評価を受けています。</p>
+      </div>
+
+      <!-- 赤ペン carousel -->
+      <div class="bm-pre-carousel-wrap">
+        <div class="bm-pre-carousel-label" data-ja="赤ペン（修正指示）" data-en="Red Pen (Revision Notes)">赤ペン（修正指示）</div>
+        <div class="bm-pre-carousel" id="bmRedCarousel">
+          <div class="bm-pre-carousel-track" id="bmRedTrack"></div>
+          <button class="bm-pre-carousel-btn prev" data-carousel="red">&#10094;</button>
+          <button class="bm-pre-carousel-btn next" data-carousel="red">&#10095;</button>
         </div>
       </div>
     </div>
@@ -235,6 +210,17 @@
       <a href="contact" class="bm-btn bm-btn--white" data-ja="無料相談する" data-en="Free consultation">無料相談する</a>
     </div>
   </section>
+
+  <!-- ===== 固定CTAバー（PC: hero以降ずっと表示） ===== -->
+  <div class="bm-sticky-cta" id="bmStickyCta">
+    <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-sticky-cta-btn bm-sticky-cta-line" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z"/></svg>
+      LINEで相談
+    </a>
+    <a href="contact" class="bm-sticky-cta-btn bm-sticky-cta-contact">
+      お問い合わせ
+    </a>
+  </div>
 
   <!-- ===== フッター ===== -->
   <footer class="bm-footer">
@@ -305,13 +291,35 @@
   </div>
 
 
+  <!-- 固定CTAバー: hero以降で表示 -->
+  <script>
+  (function(){
+    var cta = document.getElementById('bmStickyCta');
+    var hero = document.getElementById('hero');
+    if (!cta || !hero) return;
+    function check() {
+      var heroBottom = hero.getBoundingClientRect().bottom;
+      if (heroBottom < 0) {
+        cta.classList.add('visible');
+      } else {
+        cta.classList.remove('visible');
+      }
+    }
+    window.addEventListener('scroll', check, { passive: true });
+    check();
+  })();
+  </script>
+
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-wp-config.js" defer></script>
   <script src="js/bm-wp-api.js" defer></script>
   <script src="js/bm-hero.js" defer></script>
   <script src="js/bm-viewer.js" defer></script>
   <script src="js/bm-works.js" defer></script>
+  <script src="js/bm-testimonials.js" defer></script>
   <script src="js/bm-home.js" defer></script>
+  <script src="js/bm-pre-production.js" defer></script>
+  <script src="js/bm-scroll-anim.js" defer></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
