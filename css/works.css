@@ -201,7 +201,7 @@ body {
 .work-card-img-wrapper.tall-cover::after {
   display: none;
 }
-/* Decorative character cards */
+/* Decorative paper cards (白紙の紙) */
 .work-card-img-wrapper::before,
 .work-card-img-wrapper::after {
   content: '';
@@ -209,24 +209,17 @@ body {
   width: 50%;
   height: 74%;
   border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
   z-index: 0;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: #fff;
 }
-/* 左キャラ：手を振る子（右端から顔が出る） */
 .work-card-img-wrapper::before {
-  background-image: url('../material/images/card-chara-left.webp');
-  background-position: right top;
-  transform: rotate(-4deg);
-  top: 16%; left: -20%;
+  transform: rotate(-12deg);
+  top: 10%; left: 15%;
 }
-/* 右キャラ：拳・集中線（左端から顔が出る） */
 .work-card-img-wrapper::after {
-  background-image: url('../material/images/card-chara-right.webp');
-  background-position: left top;
-  transform: rotate(4deg);
-  top: 16%; right: -20%;
+  transform: rotate(12deg);
+  top: 10%; right: 15%;
 }
 .work-card-page-count {
   position: absolute;

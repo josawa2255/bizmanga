@@ -1255,12 +1255,35 @@ window.addEventListener('popstate', () => {
 });
 
 // ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
-// 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
-registerFallbackPreData();
-
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
+
+// 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
+// FALLBACK_PRE_DATA を直接 mangaData に登録
+(function() {
+  var fb = {
+    red: [
+      { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
+      { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: 'https://contentsx.jp/material/pre/red/life-ent-red/', pages: 27 },
+      { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
+    ],
+    name: [
+      { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
+      { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
+      { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
+    ]
+  };
+  [].concat(fb.red, fb.name).forEach(function(item) {
+    if (!mangaData[item.key]) {
+      mangaData[item.key] = {
+        title: item.title, pages: item.pages, path: item.path,
+        gallery: [], tags: [], category: '制作過程',
+        viewType: 'spread', _isPreProduction: true
+      };
+    }
+  });
+})();
 
 if (isDirectMode && mangaData[autoOpen]) {
   // Hide library entirely
