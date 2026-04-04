@@ -2,7 +2,7 @@
  * BizManga — ホーム用 制作過程カルーセル
  * ネーム（下描き）と赤ペン（修正指示）を表示
  * クリックでビズ書庫のビューアで漫画を表示
- * フォールバック静的データ + WP API 対応
+ * translateX方式の無限ループ自動カルーセル
  */
 (function () {
   'use strict';
@@ -32,7 +32,7 @@
     window.location.href = 'biz-library?manga=' + encodeURIComponent(key);
   }
 
-  /* ---------- カルーセル初期化 ---------- */
+  /* ---------- カルーセル初期化（translateX方式） ---------- */
   function initCarousel(type) {
     var trackId = type === 'name' ? 'bmNameTrack' : 'bmRedTrack';
     var track = document.getElementById(trackId);
@@ -41,10 +41,12 @@
     var items = preData[type];
     if (!items || items.length === 0) return;
 
-    var slidesPerView = window.innerWidth <= 768 ? 1 : 3;
+    var GAP = 8;
+    var AUTO_INTERVAL = 2500;
     var current = 0;
-    var autoTimer = null;
-    var rafId = null;
+    var animId = null;
+    var isPaused = false;
+    var lastAutoTime = 0;
 
     // 全ページをスライドに展開
     var allSlides = [];
@@ -92,16 +94,18 @@
     track.appendChild(frag);
 
     var totalSlides = allSlides.length;
+    var slidesPerView = window.innerWidth <= 768 ? 1 : 3;
     var maxIndex = Math.max(0, totalSlides - slidesPerView);
 
     function getSlideWidth() {
-      return track.parentElement.offsetWidth / slidesPerView;
+      if (!track.children[0]) return 0;
+      return track.children[0].offsetWidth + GAP;
     }
 
     function goTo(index) {
       current = Math.max(0, Math.min(index, maxIndex));
       var px = current * getSlideWidth();
-      track.scrollTo({ left: px, behavior: 'smooth' });
+      track.style.transform = 'translateX(' + (-px) + 'px)';
     }
 
     function autoNext() {
@@ -117,57 +121,45 @@
       goTo(prev < 0 ? maxIndex : prev);
     }
 
-    // スクロール同期
-    var scrollSyncTimer = null;
-    track.addEventListener('scroll', function () {
-      clearTimeout(scrollSyncTimer);
-      scrollSyncTimer = setTimeout(function () {
-        var sw = getSlideWidth();
-        if (sw > 0) {
-          current = Math.round(track.scrollLeft / sw);
-          current = Math.max(0, Math.min(current, maxIndex));
-        }
-      }, 150);
-    }, { passive: true });
-
     // ボタン
     var carousel = track.parentElement;
-    carousel.querySelector('.prev').addEventListener('click', function (e) { e.stopPropagation(); btnPrev(); resetAuto(); });
-    carousel.querySelector('.next').addEventListener('click', function (e) { e.stopPropagation(); btnNext(); resetAuto(); });
+    var prevBtn = carousel.querySelector('.prev');
+    var nextBtn = carousel.querySelector('.next');
+    if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); btnPrev(); resetAuto(); });
+    if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); btnNext(); resetAuto(); });
 
-    // 自動スライド（2.5秒間隔）
-    var AUTO_INTERVAL = 2500;
-    var lastAutoTime = 0;
-
+    // 自動スライド（requestAnimationFrame + 2.5秒間隔）
     function scheduleAuto() {
-      if (!autoTimer) return;
+      if (!animId && animId !== 0) return;
       var now = Date.now();
-      if (now - lastAutoTime >= AUTO_INTERVAL) {
+      if (!isPaused && now - lastAutoTime >= AUTO_INTERVAL) {
         lastAutoTime = now;
         autoNext();
       }
-      rafId = requestAnimationFrame(scheduleAuto);
+      animId = requestAnimationFrame(scheduleAuto);
     }
 
     function startAuto() {
       lastAutoTime = Date.now();
-      autoTimer = true;
-      rafId = requestAnimationFrame(scheduleAuto);
+      animId = requestAnimationFrame(scheduleAuto);
     }
     function stopAuto() {
-      if (rafId) cancelAnimationFrame(rafId);
-      autoTimer = null;
+      if (animId) cancelAnimationFrame(animId);
+      animId = null;
     }
     function resetAuto() { stopAuto(); startAuto(); }
 
     startAuto();
 
     // ホバーで一時停止
-    carousel.addEventListener('mouseenter', function () { stopAuto(); });
-    carousel.addEventListener('mouseleave', function () { startAuto(); });
+    carousel.addEventListener('mouseenter', function () { isPaused = true; });
+    carousel.addEventListener('mouseleave', function () { isPaused = false; });
 
-    // マウスホイール時にリセット
-    track.addEventListener('wheel', function () { resetAuto(); }, { passive: true });
+    // タッチ操作
+    carousel.addEventListener('touchstart', function () { isPaused = true; }, { passive: true });
+    carousel.addEventListener('touchend', function () {
+      setTimeout(function () { isPaused = false; }, 2000);
+    }, { passive: true });
   }
 
   /* ---------- WP API から制作過程データ取得 ---------- */
