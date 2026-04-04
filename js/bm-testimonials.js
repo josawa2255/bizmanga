@@ -200,8 +200,9 @@
   }
 
   /* ---------- 初期化 ---------- */
+  var currentItems = FALLBACK;
   buildCards(FALLBACK);
   enableDragScroll();
-  fetchFromAPI();
+  // fetchFromAPI(); // WPプラグインに /testimonials エンドポイント追加後に有効化
 
 })();

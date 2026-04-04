@@ -1207,7 +1207,15 @@ function handleSpreadKeyboard(e) {
 }
 
 function closeManga() {
-  if (isDirectMode) return;
+  // ダイレクトモード: 前のページに戻るか、ホームへ遷移
+  if (isDirectMode) {
+    if (document.referrer && document.referrer.indexOf(location.hostname) !== -1) {
+      history.back();
+    } else {
+      location.href = './';
+    }
+    return;
+  }
 
   // Clean up modal DOM
   while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
@@ -1231,14 +1239,20 @@ function closeManga() {
 }
 
 document.getElementById('modalClose').addEventListener('click', () => {
-  if (!isDirectMode) {
+  if (isDirectMode) {
+    closeManga(); // ダイレクトモード: 前のページに戻るかホームへ
+  } else {
     history.back(); // triggers popstate → closeManga
   }
 });
 document.addEventListener('keydown', (e) => {
   if (!mangaModal.classList.contains('open')) return;
-  if (e.key === 'Escape' && !isDirectMode) {
-    history.back();
+  if (e.key === 'Escape') {
+    if (isDirectMode) {
+      closeManga();
+    } else {
+      history.back();
+    }
   }
   // Spread mode keyboard handling
   if (mangaModal.classList.contains('mode-spread')) {
@@ -1299,9 +1313,7 @@ if (isDirectMode && mangaData[autoOpen]) {
   const footerEl = document.querySelector('.footer');
   if (footerEl) footerEl.style.display = 'none';
 
-  // Hide close button (no library to return to)
-  const modalCloseEl = document.getElementById('modalClose');
-  if (modalCloseEl) modalCloseEl.style.display = 'none';
+  // ×ボタンは常に表示（クリックで前のページに戻るかホームへ遷移）
 
   // Open manga immediately
   openManga(autoOpen);

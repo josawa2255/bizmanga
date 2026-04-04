@@ -5,8 +5,8 @@
   'use strict';
 
   /* ---------- 料金マスター ---------- */
-  const PRICE_PER_PAGE = { 1: 18900, 3: 16900, 5: 15800 };
-  const MANUSCRIPT_FEE = 19800;
+  const PRICE_PER_PAGE = { 1: 15800, 3: 14800, 5: 13800 };
+  const MANUSCRIPT_FEE = 0;
   const PLAN_ADD = { light: 0, standard: 15000, premium: 80000 };
 
   /* ---------- クイズ定義 ---------- */
@@ -28,9 +28,9 @@
       question: '本数を選んでください。',
       sub: '本数が多いほどページ単価がお得になります',
       options: [
-        { value: 1, label: '1本',     right: '18,900円 / P' },
-        { value: 3, label: '3本',     right: '16,900円 / P', badge: 'おすすめ' },
-        { value: 5, label: '5本以上',  right: '15,800円 / P', badge: 'お得' },
+        { value: 1, label: '1本',     right: '15,800円 / P' },
+        { value: 3, label: '3本',     right: '14,800円 / P', badge: 'おすすめ' },
+        { value: 5, label: '5本以上',  right: '13,800円 / P', badge: 'お得' },
       ],
     },
     {

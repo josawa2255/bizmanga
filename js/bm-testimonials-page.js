@@ -168,6 +168,6 @@
 
   /* ---------- 初期化 ---------- */
   buildCards(FALLBACK);
-  fetchFromAPI();
+  // fetchFromAPI(); // WPプラグインに /testimonials エンドポイント追加後に有効化
 
 })();
