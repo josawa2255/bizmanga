@@ -376,6 +376,14 @@ body {
   display: flex; justify-content: space-between; align-items: center;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
+.modal-header-left {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; flex: 1;
+}
+.modal-header-right {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
 /* Vertical mode header */
 .manga-modal.mode-vertical .modal-header {
   background: linear-gradient(to bottom,
@@ -412,31 +420,57 @@ body {
   color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600;
   background: rgba(255,255,255,0.12);
   padding: 4px 12px; border-radius: 20px;
-  margin-left: 16px;
+  white-space: nowrap;
 }
 .manga-modal.mode-spread .modal-page {
   color: rgba(237,224,208,0.8);
   background: rgba(255,200,120,0.1);
   border: 1px solid rgba(255,200,120,0.12);
 }
+/* ===== View Toggle Button (spread ⇔ vertical) ===== */
+.view-toggle-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(200,16,100,0.15);
+  border: 1.5px solid rgba(200,16,100,0.5);
+  color: #fff; font-size: 13px; font-weight: 700;
+  padding: 8px 18px; border-radius: 22px;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+}
+.view-toggle-btn:hover {
+  background: rgba(200,16,100,0.35);
+  border-color: rgba(200,16,100,0.7);
+}
+.view-toggle-icon { display: flex; align-items: center; line-height: 1; }
+.manga-modal.mode-spread .view-toggle-btn {
+  background: rgba(200,16,100,0.12);
+  border-color: rgba(200,16,100,0.4);
+  color: #f0dce6;
+}
+.manga-modal.mode-spread .view-toggle-btn:hover {
+  background: rgba(200,16,100,0.3);
+  border-color: rgba(200,16,100,0.6);
+}
+@media (max-width: 768px) {
+  .view-toggle-btn { display: none !important; }
+}
 .modal-close {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #fff; font-size: 20px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(200,16,100,0.15);
+  border: 1.5px solid rgba(200,16,100,0.5);
+  color: #fff; font-size: 22px;
   cursor: pointer; display: flex;
   align-items: center; justify-content: center;
   transition: all 0.2s;
-  margin-left: 12px;
 }
 .manga-modal.mode-spread .modal-close {
-  background: rgba(255,200,120,0.08);
-  border-color: rgba(255,200,120,0.12);
-  color: #ede0d0;
+  background: rgba(200,16,100,0.12);
+  border-color: rgba(200,16,100,0.4);
+  color: #f0dce6;
 }
 .modal-close:hover {
-  background: rgba(238,107,29,0.3);
-  border-color: rgba(238,107,29,0.4);
+  background: rgba(200,16,100,0.35);
+  border-color: rgba(200,16,100,0.7);
 }
 
 /* ===== Manga Container ===== */

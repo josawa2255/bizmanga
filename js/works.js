@@ -102,7 +102,7 @@ const FALLBACK_WORKS = {
     title: '大人なLADYになるわよコラム', pages: 4,
     path: 'https://contentsx.jp/material/manga/lady-column/',
     tags: ['紹介'], category: '紹介',
-    viewType: 'vertical', tallCover: true
+    viewType: 'vertical', tallCover: true, verticalOnly: true
   },
   'ichinohe-home': {
     title: '一戸ホーム', pages: 22,
@@ -174,8 +174,9 @@ function buildWorkCards() {
     card.setAttribute('data-manga', key);
     card.setAttribute('data-category', data.category);
     const coverSrc = data.thumbnail || getImageSrc(data, 0);
+    const tallClass = data.tallCover ? ' tall-cover' : '';
     card.innerHTML = `
-      <div class="work-card-img-wrapper">
+      <div class="work-card-img-wrapper${tallClass}">
         <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
         ${data.category ? `<span class="work-card-category">${data.category}</span>` : ''}
         <span class="work-card-page-count">${data.pages}P</span>
@@ -199,9 +200,38 @@ function initLibraryUI() {
   updateGridPagination();
 }
 
+// ===== 表紙の縦長自動検出（カード表示修正用） =====
+function probeCoverImages() {
+  document.querySelectorAll('.work-card').forEach(function(card) {
+    var key = card.dataset.manga;
+    var data = mangaData[key];
+    if (!data || data.tallCover) return; // 既にtallCoverなら不要
+    var wrapper = card.querySelector('.work-card-img-wrapper');
+    var img = card.querySelector('.work-card-img');
+    if (!wrapper || !img) return;
+
+    function checkTall() {
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        var ratio = img.naturalHeight / img.naturalWidth;
+        if (ratio > 1.8) {
+          data.tallCover = true;
+          data.viewType = data.viewType || 'vertical';
+          wrapper.classList.add('tall-cover');
+        }
+      }
+    }
+    if (img.complete && img.naturalWidth > 0) {
+      checkTall();
+    } else {
+      img.addEventListener('load', checkTall);
+    }
+  });
+}
+
 // フォールバックデータで即座に構築
 Object.assign(mangaData, FALLBACK_WORKS);
 initLibraryUI();
+probeCoverImages();  // 表紙の縦長自動検出
 
 // WP API からデータ取得して上書き
 (function fetchLibraryFromAPI() {
@@ -224,15 +254,22 @@ initLibraryUI();
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
           viewType: w.view_type || 'spread',
+          verticalOnly: w.view_type === 'vertical_only',
+          tallCover: w.tall_cover || w.view_type === 'vertical_only',
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
           name_gallery: w.name_gallery || [],
         };
+        // vertical_only はviewTypeをverticalに正規化
+        if (w.view_type === 'vertical_only') {
+          mangaData[w.id].viewType = 'vertical';
+        }
       });
 
       // UIを再構築
       initLibraryUI();
+      probeCoverImages();  // WP APIデータでも表紙の縦長自動検出
 
       // 赤ペン・ネームカルーセルも再構築
       if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
@@ -616,7 +653,13 @@ function openManga(key) {
       const ratio = probe.naturalHeight / probe.naturalWidth;
       if (ratio > 1.8) {
         data.viewType = 'vertical';
+        data.tallCover = true;
+        data.verticalOnly = true; // 見開き不可
       }
+    }
+    // WPでvertical_only指定の場合もロック
+    if (data.verticalOnly) {
+      data.viewType = 'vertical';
     }
 
     // viewTypeに基づいてビューアモードを決定
@@ -630,6 +673,10 @@ function openManga(key) {
     mangaModal.classList.add('mode-' + mode);
 
     modalTitle.textContent = data.title;
+    currentMangaKey = key; // トグルボタン用に早期セット
+
+    // 切り替えボタンの表示制御（PC + 非verticalOnlyのみ）
+    updateViewToggle(mode, data.verticalOnly);
 
     // Pause pre-production carousels while modal is open
     if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
@@ -1259,6 +1306,62 @@ function closeManga() {
 
   // Resume pre-production carousels from same position
   if (typeof resumeAllCarousels === 'function') resumeAllCarousels();
+}
+
+// ===== View Toggle Button (PC: spread ⇔ vertical) =====
+var viewToggleBtn = document.getElementById('viewToggle');
+var viewToggleIcon = document.getElementById('viewToggleIcon');
+var viewToggleLabel = document.getElementById('viewToggleLabel');
+
+function updateViewToggle(mode, verticalOnly) {
+  if (!viewToggleBtn) return;
+  // スマホ or verticalOnly → ボタン非表示
+  if (!isPC() || verticalOnly) {
+    viewToggleBtn.style.display = 'none';
+    return;
+  }
+  viewToggleBtn.style.display = 'flex';
+  if (mode === 'vertical') {
+    viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg>';
+    viewToggleLabel.textContent = '見開き';
+  } else {
+    viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg>';
+    viewToggleLabel.textContent = '縦読み';
+  }
+}
+
+if (viewToggleBtn) {
+  viewToggleBtn.addEventListener('click', function() {
+    if (!currentMangaKey || !mangaData[currentMangaKey]) return;
+    var data = mangaData[currentMangaKey];
+    if (data.verticalOnly) return; // 切り替え不可
+
+    // 現在のモードを切り替え
+    var newMode = (currentViewMode === 'spread') ? 'vertical' : 'spread';
+    currentViewMode = newMode;
+
+    // CSS class 切り替え
+    mangaModal.classList.remove('mode-vertical', 'mode-spread');
+    mangaModal.classList.add('mode-' + newMode);
+
+    // ボタンラベル更新
+    updateViewToggle(newMode, false);
+
+    // ビューア切り替え
+    if (newMode === 'vertical') {
+      showVerticalElements();
+      hideSpreadElements();
+      openVerticalViewer(currentMangaKey, data);
+    } else {
+      hideVerticalElements();
+      showSpreadElements();
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          openSpreadViewer(currentMangaKey, data);
+        });
+      });
+    }
+  });
 }
 
 document.getElementById('modalClose').addEventListener('click', () => {
