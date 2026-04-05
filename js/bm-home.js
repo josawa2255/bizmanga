@@ -14,16 +14,16 @@
 
   // ===== フォールバック用データ =====
   var FALLBACK_NEW_WORKS = [
-    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', pages: 10, added: '2026-03-20' },
-    { id: 'kyoiku-manual', title_ja: '教育マニュアル', pages: 10, added: '2026-03-18' },
-    { id: 'shohin-shokai', title_ja: '商品紹介', pages: 8, added: '2026-03-15' },
-    { id: 'ichinohe-home', title_ja: '一戸ホーム', pages: 22, added: '2026-03-12' },
-    { id: 'life-school', title_ja: 'ライフスクール', pages: 10, added: '2026-03-10' },
-    { id: 'merumaga', title_ja: 'メルマガ漫画', pages: 6, added: '2026-03-08' },
-    { id: 'seko', title_ja: '施工会社紹介', pages: 8, added: '2026-03-05' },
-    { id: 'tagengo', title_ja: '多言語マンガ', pages: 10, added: '2026-03-03' },
-    { id: 'sixtones', title_ja: 'SixTones', pages: 10, added: '2026-03-01' },
-    { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, added: '2026-02-28' }
+    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10, added: '2026-03-20' },
+    { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, added: '2026-03-18' },
+    { id: 'shohin-shokai', title_ja: '商品紹介', title_en: 'Product Introduction', pages: 8, added: '2026-03-15' },
+    { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },
+    { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, added: '2026-03-10' },
+    { id: 'merumaga', title_ja: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 6, added: '2026-03-08' },
+    { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, added: '2026-03-05' },
+    { id: 'tagengo', title_ja: '多言語マンガ', title_en: 'Multilingual Manga', pages: 10, added: '2026-03-03' },
+    { id: 'sixtones', title_ja: 'SixTones', title_en: 'SixTones', pages: 10, added: '2026-03-01' },
+    { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, added: '2026-02-28' }
   ];
 
   var scrollPos = 0;
@@ -48,11 +48,13 @@
 
         var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
 
+        var titleJa = item.title_ja || '';
+        var titleEn = item.title_en || titleJa;
         card.innerHTML =
           '<div class="bm-gallery-card-cover">' +
-            '<img src="' + coverSrc + '" alt="' + (item.title_ja || '') + '" loading="lazy">' +
+            '<img src="' + coverSrc + '" alt="' + titleJa + '" loading="lazy">' +
           '</div>' +
-          '<p class="bm-gallery-card-title">' + (item.title_ja || '') + '</p>';
+          '<p class="bm-gallery-card-title" data-ja="' + titleJa + '" data-en="' + titleEn + '">' + titleJa + '</p>';
 
         // クリック → ビズ書庫で漫画を直接開く
         (function(workItem) {
@@ -78,6 +80,16 @@
 
       scrollPos = 0;
       startAutoScroll();
+
+      // 現在の言語が英語なら即座に反映（i18n システムに委譲）
+      var lang = document.documentElement.lang || 'ja';
+      if (lang === 'en') {
+        if (window.i18n && window.i18n.translateAll) {
+          window.i18n.translateAll();
+        } else if (typeof window.bmSwitchLang === 'function') {
+          window.bmSwitchLang('en');
+        }
+      }
     });
   }
 

@@ -62,28 +62,32 @@
   }
 
   // ===== 言語切替ロジック =====
+  // bm-i18n.js が読み込まれていればそちらに委譲
+  // bm-i18n.js は JSON辞書ベースの翻訳 + MutationObserver で動的DOM対応
   function switchLang(lang) {
-    currentLang = lang;
-    try { localStorage.setItem('bm-lang', lang); } catch(e) {}
+    if (window.i18n && typeof window.i18n.switchLang === 'function') {
+      // i18n システムに委譲（辞書翻訳 + data-ja/data-en + 自動検出すべて処理）
+      window.i18n.switchLang(lang);
+    } else {
+      // フォールバック: i18n.js 未読み込み時は従来方式
+      currentLang = lang;
+      try { localStorage.setItem('bm-lang', lang); } catch(e) {}
 
-    // ボタンの active 切替
-    document.querySelectorAll('.bm-lang-btn').forEach(function(b) {
-      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-    });
+      document.querySelectorAll('.bm-lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
 
-    // data-ja / data-en を持つ全要素のテキストを切替
-    document.querySelectorAll('[data-ja][data-en]').forEach(function(el) {
-      var newText = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
-      el.textContent = newText;
-    });
+      document.querySelectorAll('[data-ja][data-en]').forEach(function(el) {
+        var newText = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
+        el.textContent = newText;
+      });
 
-    // お問い合わせCTAボタン
-    document.querySelectorAll('.bm-nav-cta').forEach(function(el) {
-      el.textContent = lang === 'en' ? 'Contact' : 'お問い合わせ';
-    });
+      document.querySelectorAll('.bm-nav-cta').forEach(function(el) {
+        el.textContent = lang === 'en' ? 'Contact' : 'お問い合わせ';
+      });
 
-    // html lang 属性も更新
-    document.documentElement.lang = lang;
+      document.documentElement.lang = lang;
+    }
   }
 
   // ボタンにイベント登録
@@ -95,7 +99,11 @@
 
   // 初回: localStorageにENが保存されていればEN表示に切替
   if (currentLang === 'en') {
-    switchLang('en');
+    // bm-i18n.js の init() が辞書ロード後に自動で EN 適用するので、
+    // i18n が存在する場合は二重実行を避ける
+    if (!window.i18n) {
+      switchLang('en');
+    }
   }
 
   // ===== ハンバーガーメニュー =====

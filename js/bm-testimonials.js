@@ -54,6 +54,13 @@
     }
   ];
 
+  /* ---------- タグ英訳マップ ---------- */
+  var TAG_EN = {
+    '営業': 'Sales', '採用': 'Recruitment', '研修': 'Training',
+    '集客': 'Marketing', '紹介': 'Introduction', 'ブランド': 'Branding',
+    'IP': 'IP', 'プロモーション': 'Promotion', 'その他': 'Other'
+  };
+
   /* ---------- カード生成 ---------- */
   function buildCards(items) {
     grid.innerHTML = '';
@@ -63,8 +70,9 @@
       var card = document.createElement('div');
       card.className = 'bm-testimonial-card';
 
+      var tagEn = item.tag_en || TAG_EN[item.tag] || item.tag || '';
       var tagHtml = item.tag
-        ? '<span class="bm-testimonial-tag" data-ja="' + item.tag + '">' + item.tag + '</span>'
+        ? '<span class="bm-testimonial-tag" data-ja="' + item.tag + '" data-en="' + tagEn + '">' + item.tag + '</span>'
         : '';
 
       card.innerHTML =
@@ -87,6 +95,16 @@
     });
 
     grid.appendChild(frag);
+
+    // 現在の言語が英語なら即座に反映（i18n システムに委譲）
+    var lang = document.documentElement.lang || 'ja';
+    if (lang === 'en') {
+      if (window.i18n && window.i18n.translateAll) {
+        window.i18n.translateAll();
+      } else if (typeof window.bmSwitchLang === 'function') {
+        window.bmSwitchLang('en');
+      }
+    }
   }
 
   /* ---------- 詳細モーダル ---------- */
