@@ -123,7 +123,8 @@ const worksFilter = document.getElementById('worksFilter');
 
 function buildFilterButtons() {
   worksFilter.innerHTML = '';
-  const allWorks = Object.values(mangaData);
+  // 制作過程エントリはフィルタから除外
+  const allWorks = Object.values(mangaData).filter(d => !d._isPreProduction);
   const categories = ['すべて'];
   allWorks.forEach(d => {
     if (d.category && !categories.includes(d.category)) categories.push(d.category);
@@ -205,17 +206,24 @@ function probeCoverImages() {
   document.querySelectorAll('.work-card').forEach(function(card) {
     var key = card.dataset.manga;
     var data = mangaData[key];
-    if (!data || data.tallCover) return; // 既にtallCoverなら不要
+    if (!data) return;
     var wrapper = card.querySelector('.work-card-img-wrapper');
     var img = card.querySelector('.work-card-img');
     if (!wrapper || !img) return;
+
+    // WPでvertical指定済み → プローブ不要、tall-coverだけ確実に付ける
+    if (data.tallCover) {
+      wrapper.classList.add('tall-cover');
+      return;
+    }
 
     function checkTall() {
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
         var ratio = img.naturalHeight / img.naturalWidth;
         if (ratio > 1.8) {
           data.tallCover = true;
-          data.viewType = data.viewType || 'vertical';
+          data.verticalOnly = true;
+          data.viewType = 'vertical';
           wrapper.classList.add('tall-cover');
         }
       }
@@ -254,15 +262,15 @@ probeCoverImages();  // 表紙の縦長自動検出
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
           viewType: w.view_type || 'spread',
-          verticalOnly: w.view_type === 'vertical_only',
-          tallCover: w.tall_cover || w.view_type === 'vertical_only',
+          verticalOnly: w.view_type === 'vertical_only' || w.view_type === 'vertical',
+          tallCover: w.tall_cover || w.view_type === 'vertical_only' || w.view_type === 'vertical',
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
           name_gallery: w.name_gallery || [],
         };
-        // vertical_only はviewTypeをverticalに正規化
-        if (w.view_type === 'vertical_only') {
+        // vertical / vertical_only はviewTypeをverticalに正規化
+        if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
           mangaData[w.id].viewType = 'vertical';
         }
       });
