@@ -45,77 +45,84 @@ function getImageSrc(data, pageIndex) {
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
 const FALLBACK_WORKS = {
   'bms-unso': {
-    title: 'BMS 運送 - 採用マンガ', pages: 10,
+    title: 'BMS 運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso/',
     tags: ['採用'], category: '採用',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'kyoiku-manual': {
-    title: '教育マニュアル', pages: 10,
+    title: '教育マニュアル', title_en: 'Education Manual', pages: 10,
     path: 'https://contentsx.jp/material/manga/kyoiku-manual/',
     tags: ['研修'], category: '研修',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'shohin-shokai': {
-    title: '商品紹介マンガ', pages: 11,
+    title: '商品紹介マンガ', title_en: 'Product Introduction Manga', pages: 11,
     path: 'https://contentsx.jp/material/manga/shohin-shokai/',
     tags: ['営業'], category: '営業',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'tagengo': {
-    title: '多言語対応マンガ', pages: 12,
+    title: '多言語対応マンガ', title_en: 'Multilingual Manga', pages: 12,
     path: 'https://contentsx.jp/material/manga/tagengo/',
     tags: ['研修'], category: '研修',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'merumaga': {
-    title: 'メルマガ漫画', pages: 10,
+    title: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 10,
     path: 'https://contentsx.jp/material/manga/merumaga/',
     tags: ['集客'], category: '集客',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'life-school': {
-    title: 'スクール紹介', pages: 26,
+    title: 'スクール紹介', title_en: 'School Introduction', pages: 26,
     path: 'https://contentsx.jp/material/manga/life-school/',
     tags: ['集客'], category: '集客',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'seko': {
-    title: '瀬古恭介 始まりのものがたり', pages: 25,
+    title: '瀬古恭介 始まりのものがたり', title_en: 'Seko Kyosuke - The Beginning', pages: 25,
     path: 'https://contentsx.jp/material/manga/seko/',
     tags: ['ブランド'], category: 'ブランド',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'sixtones': {
-    title: 'SixTONES 提案用', pages: 4,
+    title: 'SixTONES 提案用', title_en: 'SixTONES Proposal', pages: 4,
     path: 'https://contentsx.jp/material/manga/sixtones/',
     tags: ['IP'], category: 'IP',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'life-buzfes': {
-    title: 'バズフェス', pages: 25,
+    title: 'バズフェス', title_en: 'BuzzFes', pages: 25,
     path: 'https://contentsx.jp/material/manga/life-buzfes/',
     tags: ['集客'], category: '集客',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'lady-column': {
-    title: '大人なLADYになるわよコラム', pages: 4,
+    title: '大人なLADYになるわよコラム', title_en: 'Becoming a Grown LADY Column', pages: 4,
     path: 'https://contentsx.jp/material/manga/lady-column/',
     tags: ['紹介'], category: '紹介',
     viewType: 'vertical', tallCover: true, verticalOnly: true
   },
   'ichinohe-home': {
-    title: '一戸ホーム', pages: 22,
+    title: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22,
     path: 'https://contentsx.jp/material/manga/ichinohe-home/',
     tags: ['営業'], category: '営業',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
   'bms-unso-remake': {
-    title: 'BMS 運送（リメイク版）', pages: 10,
+    title: 'BMS 運送（リメイク版）', title_en: 'BMS Transport (Remake)', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso-remake/',
     tags: ['採用'], category: '採用',
-    viewType: 'vertical'
+    viewType: 'spread'
   },
+};
+
+// ===== カテゴリ英訳マップ =====
+const CATEGORY_EN_MAP = {
+  'すべて': 'All', '営業': 'Sales', '採用': 'Recruitment', '研修': 'Training',
+  '集客': 'Marketing', '紹介': 'Introduction', 'ブランド': 'Branding',
+  'IP': 'IP', 'プロモーション': 'Promotion', 'その他': 'Other', '創業ストーリー': 'Founding Story'
 };
 
 // ===== フィルタボタン生成 =====
@@ -135,11 +142,15 @@ function buildFilterButtons() {
   });
   catCount['すべて'] = allWorks.length;
 
+  const isEn = getBmLang() === 'en';
   categories.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (cat === 'すべて' ? ' active' : '');
     btn.dataset.cat = cat;
-    btn.innerHTML = `${cat} <span class="filter-count">${catCount[cat]}</span>`;
+    const catEn = CATEGORY_EN_MAP[cat] || cat;
+    const labelJa = cat;
+    const labelEn = catEn;
+    btn.innerHTML = `<span data-ja="${labelJa}" data-en="${labelEn}">${isEn ? labelEn : labelJa}</span> <span class="filter-count">${catCount[cat]}</span>`;
     btn.addEventListener('click', () => filterWorks(cat, btn));
     worksFilter.appendChild(btn);
   });
@@ -167,6 +178,7 @@ const worksGrid = document.getElementById('worksGrid');
 
 function buildWorkCards() {
   worksGrid.innerHTML = '';
+  const isEn = getBmLang() === 'en';
   Object.entries(mangaData).forEach(([key, data]) => {
     // 制作過程（赤ペン・ネーム専用）エントリはカードに出さない
     if (data._isPreProduction) return;
@@ -176,14 +188,16 @@ function buildWorkCards() {
     card.setAttribute('data-category', data.category);
     const coverSrc = data.thumbnail || getImageSrc(data, 0);
     const tallClass = data.tallCover ? ' tall-cover' : '';
+    const titleEn = data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title);
+    const catEn = CATEGORY_EN_MAP[data.category] || data.category || '';
     card.innerHTML = `
       <div class="work-card-img-wrapper${tallClass}">
         <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
-        ${data.category ? `<span class="work-card-category">${data.category}</span>` : ''}
+        ${data.category ? `<span class="work-card-category" data-ja="${data.category}" data-en="${catEn}">${isEn ? catEn : data.category}</span>` : ''}
         <span class="work-card-page-count">${data.pages}P</span>
       </div>
       <div class="work-card-body">
-        <div class="work-card-title">${data.title}</div>
+        <div class="work-card-title" data-ja="${data.title}" data-en="${titleEn}">${isEn ? titleEn : data.title}</div>
         <div class="work-card-footer">
           <div class="work-card-arrow">→</div>
         </div>
@@ -241,6 +255,15 @@ Object.assign(mangaData, FALLBACK_WORKS);
 initLibraryUI();
 probeCoverImages();  // 表紙の縦長自動検出
 
+// 現在の言語が英語なら即座に反映
+if (getBmLang() === 'en') {
+  if (window.i18n && window.i18n.translateAll) {
+    window.i18n.translateAll();
+  } else if (typeof window.bmSwitchLang === 'function') {
+    window.bmSwitchLang('en');
+  }
+}
+
 // WP API からデータ取得して上書き
 (function fetchLibraryFromAPI() {
   fetch('https://cms.contentsx.jp/wp-json/contentsx/v1/library')
@@ -261,9 +284,9 @@ probeCoverImages();  // 表紙の縦長自動検出
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
-          viewType: w.view_type || 'vertical',
-          verticalOnly: w.view_type === 'vertical_only' || w.view_type === 'vertical',
-          tallCover: w.tall_cover || w.view_type === 'vertical_only' || w.view_type === 'vertical',
+          viewType: w.view_type || 'spread',
+          verticalOnly: w.view_type === 'vertical_only',
+          tallCover: w.tall_cover || w.view_type === 'vertical_only',
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
@@ -284,7 +307,7 @@ probeCoverImages();  // 表紙の縦長自動検出
 
       // ダイレクトモードで既にモーダルが開いている場合、APIの正しいviewTypeで再オープン
       if (isDirectMode && autoOpen && mangaData[autoOpen] && mangaModal.classList.contains('open')) {
-        var newMode = mangaData[autoOpen].viewType || 'vertical';
+        var newMode = mangaData[autoOpen].viewType || 'spread';
         if (newMode !== currentViewMode) {
           console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
           // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
@@ -566,7 +589,9 @@ function hideVerticalElements() {
 
 // Open vertical scroll viewer
 function openVerticalViewer(key, data) {
-  modalTitle.textContent = data.title;
+  modalTitle.setAttribute('data-ja', data.title);
+  modalTitle.setAttribute('data-en', data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
+  modalTitle.textContent = getBmLang() === 'en' ? (data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title)) : data.title;
   modalTotalPages = data.pages;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
   modalPage.textContent = `1 / ${data.pages}`;
@@ -691,7 +716,7 @@ function openManga(key) {
 
     // viewTypeに基づいてビューアモードを決定
     // スマホではspreadタイプも縦スクロールで表示
-    const dataMode = data.viewType || 'vertical';
+    const dataMode = data.viewType || 'spread';
     const mode = (!isPC() && dataMode === 'spread') ? 'vertical' : dataMode;
     currentViewMode = mode;
 
@@ -699,7 +724,9 @@ function openManga(key) {
     mangaModal.classList.remove('mode-vertical', 'mode-spread');
     mangaModal.classList.add('mode-' + mode);
 
-    modalTitle.textContent = data.title;
+    modalTitle.setAttribute('data-ja', data.title);
+    modalTitle.setAttribute('data-en', data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
+    modalTitle.textContent = getBmLang() === 'en' ? (data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title)) : data.title;
     currentMangaKey = key; // トグルボタン用に早期セット
 
     // 切り替えボタンの表示制御（PC + 非verticalOnlyのみ）
@@ -785,7 +812,7 @@ const navNext = document.getElementById('navNext');
 const hintLeft = document.getElementById('hintLeft');
 const hintRight = document.getElementById('hintRight');
 
-let currentViewMode = 'vertical';
+let currentViewMode = 'spread';
 let currentMangaKey = '';
 let currentMangaPath = '';
 let currentMangaGallery = null; // WP API gallery URLs
@@ -851,7 +878,27 @@ function buildSpreadThumbnails() {
   navThumbs.appendChild(thumbsFrag);
 }
 
-function showSpread(index) {
+// 画像ロード完了を待つヘルパー（タイムアウト付き）
+function waitForImage(imgEl, callback, timeout) {
+  if (imgEl.complete && imgEl.naturalWidth > 0) {
+    callback();
+    return;
+  }
+  var done = false;
+  function finish() {
+    if (done) return;
+    done = true;
+    imgEl.onload = null;
+    imgEl.onerror = null;
+    callback();
+  }
+  imgEl.onload = finish;
+  imgEl.onerror = finish;
+  // 安全策: 最大待ち時間
+  setTimeout(finish, timeout || 3000);
+}
+
+function showSpread(index, onReady) {
   if (index < 0 || index >= spreads.length) return;
   currentSpread = index;
   const spread = spreads[index];
@@ -906,6 +953,20 @@ function showSpread(index) {
   }
 
   updateSpreadUI();
+
+  // 画像ロード完了コールバック（goNext/goPrev で isSpreadAnimating 解除に使用）
+  if (typeof onReady === 'function') {
+    if (leftNum === null || pageLeft.style.display === 'none') {
+      // 右ページのみ
+      waitForImage(imgRight, onReady);
+    } else {
+      // 両ページのロード待ち
+      var count = 2;
+      function check() { if (--count <= 0) onReady(); }
+      waitForImage(imgRight, check);
+      waitForImage(imgLeft, check);
+    }
+  }
 }
 
 function updateSpreadUI() {
@@ -1039,8 +1100,9 @@ function goNext() {
     pageShadowRight.style.transition = 'none';
     pageShadowRight.style.opacity = '';
 
-    showSpread(nextIndex);
-    isSpreadAnimating = false;
+    showSpread(nextIndex, function() {
+      isSpreadAnimating = false;
+    });
   }, FLIP_DURATION + 30);
 }
 
@@ -1102,8 +1164,9 @@ function goPrev() {
     pageShadowLeft.style.transition = 'none';
     pageShadowLeft.style.opacity = '';
 
-    showSpread(prevIndex);
-    isSpreadAnimating = false;
+    showSpread(prevIndex, function() {
+      isSpreadAnimating = false;
+    });
   }, FLIP_DURATION + 30);
 }
 
@@ -1340,6 +1403,8 @@ var viewToggleBtn = document.getElementById('viewToggle');
 var viewToggleIcon = document.getElementById('viewToggleIcon');
 var viewToggleLabel = document.getElementById('viewToggleLabel');
 
+function getBmLang() { return document.documentElement.lang || 'ja'; }
+
 function updateViewToggle(mode, verticalOnly) {
   if (!viewToggleBtn) return;
   // スマホ or verticalOnly → ボタン非表示
@@ -1348,12 +1413,17 @@ function updateViewToggle(mode, verticalOnly) {
     return;
   }
   viewToggleBtn.style.display = 'flex';
+  var isEn = getBmLang() === 'en';
   if (mode === 'vertical') {
     viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg>';
-    viewToggleLabel.textContent = '見開き';
+    viewToggleLabel.setAttribute('data-ja', '見開き');
+    viewToggleLabel.setAttribute('data-en', 'Spread View');
+    viewToggleLabel.textContent = isEn ? 'Spread View' : '見開き';
   } else {
     viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg>';
-    viewToggleLabel.textContent = '縦読み';
+    viewToggleLabel.setAttribute('data-ja', '縦読み');
+    viewToggleLabel.setAttribute('data-en', 'Vertical Scroll');
+    viewToggleLabel.textContent = isEn ? 'Vertical Scroll' : '縦読み';
   }
 }
 

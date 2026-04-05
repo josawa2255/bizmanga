@@ -12,44 +12,104 @@
   var filterContainer = document.getElementById('bmCategoryFilter');
   if (!grid) return;
 
+  // ===== 言語ヘルパー =====
+  function getLang() { return document.documentElement.lang || 'ja'; }
+  function t(ja) {
+    if (getLang() !== 'en') return ja;
+    if (window.i18n && window.i18n.t) {
+      var result = window.i18n.t(ja);
+      return (result !== ja) ? result : ja;
+    }
+    return ja;
+  }
+
+  // ===== カテゴリ英訳マップ =====
+  var CATEGORY_EN = {
+    'すべて': 'All',
+    '営業': 'Sales',
+    '採用': 'Recruitment',
+    '研修': 'Training',
+    '集客': 'Marketing',
+    '紹介': 'Introduction',
+    'ブランド': 'Branding',
+    'IP': 'IP',
+    'プロモーション': 'Promotion',
+    'その他': 'Other',
+    '創業ストーリー': 'Founding Story'
+  };
+
+  // ===== メディア英訳マップ =====
+  var MEDIA_EN = {
+    '採用パンフレット': 'Recruitment Pamphlet',
+    'Web掲載': 'Web Publication',
+    '研修資料': 'Training Material',
+    '営業資料': 'Sales Material',
+    '多言語Web': 'Multilingual Web',
+    'SNS': 'SNS',
+    'メールマガジン': 'Email Newsletter',
+    'Webサイト': 'Website',
+    '営業ツール': 'Sales Tool',
+    'イベント配布': 'Event Distribution',
+    'Web': 'Web',
+    'イベント': 'Event',
+    'Webコラム': 'Web Column',
+    '採用サイト': 'Recruitment Site',
+    'パンフレット': 'Pamphlet',
+    '社内説明・営業研修': 'Internal Briefing / Sales Training',
+    'Webサイト（製品紹介ページ）': 'Website (Product Page)',
+    'SNS（X・Instagram）': 'SNS (X / Instagram)'
+  };
+
   // ===== フォールバック用データ（bm-hero.jsと同じ構造） =====
   var FALLBACK_WORKS = [
-    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', pages: 10, category: '営業',
-      media: ['採用パンフレット', 'Web掲載'], spec: { pages: '10P', period: '2週間' },
-      point: '運送業の魅力をストーリー漫画で伝える採用ツール。', comment: '応募数が増えました。' },
-    { id: 'kyoiku-manual', title_ja: '教育マニュアル', pages: 10, category: '研修',
-      media: ['研修資料'], spec: { pages: '10P', period: '2週間' },
-      point: '新人研修用の教育マニュアルを漫画化。', comment: '理解度が上がりました。' },
-    { id: 'shohin-shokai', title_ja: '商品紹介', pages: 8, category: '営業',
-      media: ['営業資料', 'Web掲載'], spec: { pages: '8P', period: '10日間' },
-      point: '商品の特徴を分かりやすく漫画で紹介。', comment: '商談がスムーズになりました。' },
-    { id: 'tagengo', title_ja: '多言語マンガ', pages: 10, category: 'プロモーション',
-      media: ['多言語Web', 'SNS'], spec: { pages: '10P', period: '3週間' },
-      point: '多言語対応の漫画コンテンツ。', comment: '海外展開に活用しています。' },
-    { id: 'merumaga', title_ja: 'メルマガ漫画', pages: 6, category: 'プロモーション',
-      media: ['メールマガジン'], spec: { pages: '6P', period: '1週間' },
-      point: 'メルマガの開封率を漫画で向上。', comment: '開封率が大幅に上がりました。' },
-    { id: 'life-school', title_ja: 'ライフスクール', pages: 10, category: 'プロモーション',
-      media: ['Webサイト', 'SNS'], spec: { pages: '10P', period: '2週間' },
-      point: 'スクールの魅力を漫画で発信。', comment: '問い合わせが増えました。' },
-    { id: 'seko', title_ja: '施工会社紹介', pages: 8, category: '営業',
-      media: ['営業ツール'], spec: { pages: '8P', period: '10日間' },
-      point: '施工実績を漫画でビジュアル化。', comment: '信頼感が増しました。' },
-    { id: 'sixtones', title_ja: 'SixTones', pages: 10, category: 'プロモーション',
-      media: ['イベント配布', 'Web'], spec: { pages: '10P', period: '2週間' },
-      point: 'プロモーション漫画制作。', comment: 'ファンに好評でした。' },
-    { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, category: 'プロモーション',
-      media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間' },
-      point: 'イベント告知を漫画で訴求。', comment: '集客効果がありました。' },
-    { id: 'lady-column', title_ja: 'レディコラム', pages: 6, category: 'その他',
-      media: ['Webコラム'], spec: { pages: '6P', period: '1週間' },
-      point: 'コラム連載の漫画化。', comment: 'PVが伸びました。' },
-    { id: 'ichinohe-home', title_ja: '一戸ホーム', pages: 22, category: '営業',
-      media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間' },
-      point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', comment: '商談がスムーズになりました。' },
-    { id: 'bms-unso-remake', title_ja: 'BMS運送リメイク', pages: 10, category: '創業ストーリー',
-      media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間' },
-      point: 'リメイク版で新たな魅力を訴求。', comment: '応募者の質が上がりました。' }
+    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10, category: '営業',
+      media: ['採用パンフレット', 'Web掲載'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
+      point: '運送業の魅力をストーリー漫画で伝える採用ツール。', point_en: 'A recruitment tool that conveys the appeal of the transport industry through story manga.',
+      comment: '応募数が増えました。', comment_en: 'The number of applicants increased.' },
+    { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, category: '研修',
+      media: ['研修資料'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
+      point: '新人研修用の教育マニュアルを漫画化。', point_en: 'Training manual for new employees converted to manga.',
+      comment: '理解度が上がりました。', comment_en: 'Comprehension improved.' },
+    { id: 'shohin-shokai', title_ja: '商品紹介', title_en: 'Product Introduction', pages: 8, category: '営業',
+      media: ['営業資料', 'Web掲載'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
+      point: '商品の特徴を分かりやすく漫画で紹介。', point_en: 'Product features clearly introduced through manga.',
+      comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
+    { id: 'tagengo', title_ja: '多言語マンガ', title_en: 'Multilingual Manga', pages: 10, category: 'プロモーション',
+      media: ['多言語Web', 'SNS'], spec: { pages: '10P', period: '3週間', period_en: '3 weeks' },
+      point: '多言語対応の漫画コンテンツ。', point_en: 'Multilingual manga content.',
+      comment: '海外展開に活用しています。', comment_en: 'Being utilized for overseas expansion.' },
+    { id: 'merumaga', title_ja: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 6, category: 'プロモーション',
+      media: ['メールマガジン'], spec: { pages: '6P', period: '1週間', period_en: '1 week' },
+      point: 'メルマガの開封率を漫画で向上。', point_en: 'Improved newsletter open rates with manga.',
+      comment: '開封率が大幅に上がりました。', comment_en: 'Open rates increased significantly.' },
+    { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, category: 'プロモーション',
+      media: ['Webサイト', 'SNS'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
+      point: 'スクールの魅力を漫画で発信。', point_en: 'Promoting school appeal through manga.',
+      comment: '問い合わせが増えました。', comment_en: 'Inquiries increased.' },
+    { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, category: '営業',
+      media: ['営業ツール'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
+      point: '施工実績を漫画でビジュアル化。', point_en: 'Construction achievements visualized through manga.',
+      comment: '信頼感が増しました。', comment_en: 'Trust and credibility increased.' },
+    { id: 'sixtones', title_ja: 'SixTones', title_en: 'SixTones', pages: 10, category: 'プロモーション',
+      media: ['イベント配布', 'Web'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
+      point: 'プロモーション漫画制作。', point_en: 'Promotional manga production.',
+      comment: 'ファンに好評でした。', comment_en: 'Well received by fans.' },
+    { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, category: 'プロモーション',
+      media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
+      point: 'イベント告知を漫画で訴求。', point_en: 'Event promotion through manga.',
+      comment: '集客効果がありました。', comment_en: 'Effective in attracting visitors.' },
+    { id: 'lady-column', title_ja: 'レディコラム', title_en: 'Lady Column', pages: 6, category: 'その他',
+      media: ['Webコラム'], spec: { pages: '6P', period: '1週間', period_en: '1 week' },
+      point: 'コラム連載の漫画化。', point_en: 'Serialized column converted to manga.',
+      comment: 'PVが伸びました。', comment_en: 'Page views increased.' },
+    { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, category: '営業',
+      media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間', period_en: '3 weeks' },
+      point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', point_en: 'A sales tool that conveys the appeal of a home builder through story manga.',
+      comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
+    { id: 'bms-unso-remake', title_ja: 'BMS運送リメイク', title_en: 'BMS Transport Remake', pages: 10, category: '創業ストーリー',
+      media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
+      point: 'リメイク版で新たな魅力を訴求。', point_en: 'Remake version showcasing renewed appeal.',
+      comment: '応募者の質が上がりました。', comment_en: 'Quality of applicants improved.' }
   ];
 
   // ===== O(1) ルックアップ用マップ =====
@@ -69,6 +129,7 @@
       });
     }
 
+    var isEn = getLang() === 'en';
     var frag = document.createDocumentFragment();
     filtered.forEach(function(w) {
       var card = document.createElement('article');
@@ -76,8 +137,14 @@
       card.dataset.workId = w.id;
 
       var coverSrc = w.thumbnail || 'https://contentsx.jp/material/manga/' + w.id + '/01.webp';
-      var mediaStr = (w.media || []).join(' / ');
+      var mediaArr = (w.media || []);
+      var mediaStrJa = mediaArr.join(' / ');
+      var mediaStrEn = mediaArr.map(function(m) { return MEDIA_EN[m] || m; }).join(' / ');
       var pagesStr = w.spec ? w.spec.pages : (w.pages + 'P');
+
+      var catEn = w.category_en || CATEGORY_EN[w.category] || w.category || '';
+      var titleEn = w.title_en || w.title_ja || '';
+      var pointEn = w.point_en || w.point || '';
 
       card.innerHTML =
         '<div class="bm-works-card-thumb">' +
@@ -85,11 +152,11 @@
           '<span class="bm-works-card-badge">' + pagesStr + '</span>' +
         '</div>' +
         '<div class="bm-works-card-body">' +
-          '<span class="bm-works-card-category">' + (w.category || '') + '</span>' +
-          '<h3 class="bm-works-card-title">' + (w.title_ja || '') + '</h3>' +
-          (w.point ? '<p class="bm-works-card-desc">' + w.point + '</p>' : '') +
+          '<span class="bm-works-card-category" data-ja="' + (w.category || '') + '" data-en="' + catEn + '">' + (w.category || '') + '</span>' +
+          '<h3 class="bm-works-card-title" data-ja="' + (w.title_ja || '') + '" data-en="' + titleEn + '">' + (w.title_ja || '') + '</h3>' +
+          (w.point ? '<p class="bm-works-card-desc" data-ja="' + w.point + '" data-en="' + pointEn + '">' + w.point + '</p>' : '') +
           '<div class="bm-works-card-meta">' +
-            (mediaStr ? '<span class="bm-works-card-media">' + mediaStr + '</span>' : '') +
+            (mediaStrJa ? '<span class="bm-works-card-media" data-ja="' + mediaStrJa + '" data-en="' + mediaStrEn + '">' + mediaStrJa + '</span>' : '') +
           '</div>' +
         '</div>';
 
@@ -106,6 +173,15 @@
 
     // カテゴリフィルター構築
     buildFilter(works, filterCategory);
+
+    // 現在の言語が英語なら即座に反映
+    if (isEn) {
+      if (window.i18n && window.i18n.translateAll) {
+        window.i18n.translateAll();
+      } else if (typeof window.bmSwitchLang === 'function') {
+        window.bmSwitchLang('en');
+      }
+    }
   }
 
   // ===== カテゴリフィルター =====
@@ -121,12 +197,20 @@
       }
     });
 
+    var isEn = getLang() === 'en';
     var currentWorks = works;
     Object.keys(categories).forEach(function(cat) {
       var btn = document.createElement('button');
       var isActive = (!activeCategory && cat === 'すべて') || activeCategory === cat;
       btn.className = 'bm-filter-btn' + (isActive ? ' active' : '');
-      btn.textContent = cat + '（' + categories[cat] + '）';
+
+      var catEn = CATEGORY_EN[cat] || cat;
+      var labelJa = cat + '（' + categories[cat] + '）';
+      var labelEn = catEn + ' (' + categories[cat] + ')';
+      btn.setAttribute('data-ja', labelJa);
+      btn.setAttribute('data-en', labelEn);
+      btn.textContent = isEn ? labelEn : labelJa;
+
       btn.addEventListener('click', function() {
         renderWorks(currentWorks, cat);
       });
@@ -156,15 +240,47 @@
     var work = worksMap[workId];
     if (!work) return;
 
-    if (wdTitle) wdTitle.textContent = work.title_ja || '';
-    if (wdCategory) wdCategory.textContent = work.category || '';
-    if (wdMedia) wdMedia.innerHTML = (work.media || []).map(function(m) { return '<li>' + m + '</li>'; }).join('');
+    var isEn = getLang() === 'en';
+    var titleJa = work.title_ja || '';
+    var titleEn = work.title_en || titleJa;
+    var catJa = work.category || '';
+    var catEn = work.category_en || CATEGORY_EN[catJa] || catJa;
+
+    if (wdTitle) {
+      wdTitle.setAttribute('data-ja', titleJa);
+      wdTitle.setAttribute('data-en', titleEn);
+      wdTitle.textContent = isEn ? titleEn : titleJa;
+    }
+    if (wdCategory) {
+      wdCategory.setAttribute('data-ja', catJa);
+      wdCategory.setAttribute('data-en', catEn);
+      wdCategory.textContent = isEn ? catEn : catJa;
+    }
+    if (wdMedia) {
+      wdMedia.innerHTML = (work.media || []).map(function(m) {
+        var mEn = MEDIA_EN[m] || m;
+        return '<li data-ja="' + m + '" data-en="' + mEn + '">' + (isEn ? mEn : m) + '</li>';
+      }).join('');
+    }
     if (wdSpec) {
       var spec = work.spec || {};
-      wdSpec.innerHTML = '<li>ページ数：' + (spec.pages || '—') + '</li><li>納期：' + (spec.period || '—') + '</li>';
+      var periodEn = spec.period_en || spec.period || '—';
+      wdSpec.innerHTML =
+        '<li data-ja="ページ数：' + (spec.pages || '—') + '" data-en="Pages: ' + (spec.pages || '—') + '">' + (isEn ? 'Pages: ' : 'ページ数：') + (spec.pages || '—') + '</li>' +
+        '<li data-ja="納期：' + (spec.period || '—') + '" data-en="Delivery: ' + periodEn + '">' + (isEn ? 'Delivery: ' + periodEn : '納期：' + (spec.period || '—')) + '</li>';
     }
-    if (wdPoint) wdPoint.textContent = work.point || '';
-    if (wdComment) wdComment.textContent = work.comment || '';
+    if (wdPoint) {
+      var pointEn = work.point_en || work.point || '';
+      wdPoint.setAttribute('data-ja', work.point || '');
+      wdPoint.setAttribute('data-en', pointEn);
+      wdPoint.textContent = isEn ? pointEn : (work.point || '');
+    }
+    if (wdComment) {
+      var commentEn = work.comment_en || work.comment || '';
+      wdComment.setAttribute('data-ja', work.comment || '');
+      wdComment.setAttribute('data-en', commentEn);
+      wdComment.textContent = isEn ? commentEn : (work.comment || '');
+    }
 
     var previewPages = Math.min(work.pages || 5, 5);
     wdTotalPages = previewPages;
