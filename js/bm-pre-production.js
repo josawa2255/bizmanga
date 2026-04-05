@@ -26,7 +26,7 @@
   };
 
   var preData = FALLBACK;
-  var SCROLL_SPEED = 0.5; // px per frame
+  var SCROLL_SPEED = 1.0; // px per frame
   var GAP = 8;
 
   /* ---------- 漫画を開く（ビズ書庫のビューアに遷移） ---------- */
