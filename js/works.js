@@ -605,49 +605,72 @@ function openManga(key) {
   const data = mangaData[key];
   if (!data) return;
 
-  // viewTypeに基づいてビューアモードを決定
-  // スマホではspreadタイプも縦スクロールで表示
-  const dataMode = data.viewType || 'vertical';
-  const mode = (!isPC() && dataMode === 'spread') ? 'vertical' : dataMode;
-  currentViewMode = mode;
+  // 1枚目の画像をプローブして縦長判定 → 自動でverticalに切り替え
+  const firstSrc = getImageSrc(data, 0);
+  const probe = new Image();
+  probe.src = firstSrc;
 
-  // Set mode class for CSS background switching
-  mangaModal.classList.remove('mode-vertical', 'mode-spread');
-  mangaModal.classList.add('mode-' + mode);
+  function proceedOpen() {
+    // 縦長自動検出: height/width > 1.8 なら縦読みに強制切り替え
+    if (probe.naturalWidth > 0 && probe.naturalHeight > 0) {
+      const ratio = probe.naturalHeight / probe.naturalWidth;
+      if (ratio > 1.8) {
+        data.viewType = 'vertical';
+      }
+    }
 
-  modalTitle.textContent = data.title;
+    // viewTypeに基づいてビューアモードを決定
+    // スマホではspreadタイプも縦スクロールで表示
+    const dataMode = data.viewType || 'vertical';
+    const mode = (!isPC() && dataMode === 'spread') ? 'vertical' : dataMode;
+    currentViewMode = mode;
 
-  // Pause pre-production carousels while modal is open
-  if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
+    // Set mode class for CSS background switching
+    mangaModal.classList.remove('mode-vertical', 'mode-spread');
+    mangaModal.classList.add('mode-' + mode);
 
-  // Preload first pages then open viewer immediately with loading state
-  var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
-  if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
-  if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
+    modalTitle.textContent = data.title;
 
-  // Show modal immediately with loading indicator
-  mangaModal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+    // Pause pre-production carousels while modal is open
+    if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
 
-  if (mode === 'vertical') {
-    showVerticalElements();
-    hideSpreadElements();
-    openVerticalViewer(key, data);
-  } else {
-    hideVerticalElements();
-    showSpreadElements();
-    // Double rAF ensures layout is fully computed before reading dimensions
-    requestAnimationFrame(function() {
+    // Preload first pages then open viewer immediately with loading state
+    var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
+    if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
+    if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
+
+    // Show modal immediately with loading indicator
+    mangaModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    if (mode === 'vertical') {
+      showVerticalElements();
+      hideSpreadElements();
+      openVerticalViewer(key, data);
+    } else {
+      hideVerticalElements();
+      showSpreadElements();
+      // Double rAF ensures layout is fully computed before reading dimensions
       requestAnimationFrame(function() {
-        openSpreadViewer(key, data);
+        requestAnimationFrame(function() {
+          openSpreadViewer(key, data);
+        });
       });
+    }
+
+    // Preload in background
+    preloadImages(firstPages, 2000).then(function() {
+      // Modal already visible, preload continues for subsequent pages
     });
   }
 
-  // Preload in background
-  preloadImages(firstPages, 2000).then(function() {
-    // Modal already visible, preload continues for subsequent pages
-  });
+  // 画像がキャッシュ済みなら即座に、そうでなければロード後に判定
+  if (probe.complete && probe.naturalWidth > 0) {
+    proceedOpen();
+  } else {
+    probe.onload = proceedOpen;
+    probe.onerror = proceedOpen;
+  }
 
   // Library mode: push history so browser back closes manga
   if (!isDirectMode) {
