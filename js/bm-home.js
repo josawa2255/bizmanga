@@ -107,8 +107,12 @@
   var carousel = document.getElementById('bmGalleryCarousel');
   if (carousel) {
     carousel.addEventListener('wheel', function(e) {
-      var delta = e.deltaX || e.deltaY;
-      if (Math.abs(delta) > 0) {
+      // 横スクロール（トラックパッド横スワイプ or Shift+ホイール）のみカルーセルを操作
+      // 縦スクロール（deltaYが主体）はページスクロールとして通す
+      var isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      var isShiftWheel = e.shiftKey && Math.abs(e.deltaY) > 0;
+      if (isHorizontal || isShiftWheel) {
+        var delta = isShiftWheel ? e.deltaY : e.deltaX;
         e.preventDefault();
         scrollPos += delta * 0.8;
         if (scrollPos < 0) scrollPos += singleSetWidth;
@@ -116,6 +120,7 @@
           scrollPos -= singleSetWidth;
         }
       }
+      // deltaYが主体の場合はpreventDefaultしない → ページが縦スクロールする
     }, { passive: false });
   }
 

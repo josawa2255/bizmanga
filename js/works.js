@@ -48,55 +48,55 @@ const FALLBACK_WORKS = {
     title: 'BMS 運送 - 採用マンガ', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso/',
     tags: ['採用'], category: '採用',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'kyoiku-manual': {
     title: '教育マニュアル', pages: 10,
     path: 'https://contentsx.jp/material/manga/kyoiku-manual/',
     tags: ['研修'], category: '研修',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'shohin-shokai': {
     title: '商品紹介マンガ', pages: 11,
     path: 'https://contentsx.jp/material/manga/shohin-shokai/',
     tags: ['営業'], category: '営業',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'tagengo': {
     title: '多言語対応マンガ', pages: 12,
     path: 'https://contentsx.jp/material/manga/tagengo/',
     tags: ['研修'], category: '研修',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'merumaga': {
     title: 'メルマガ漫画', pages: 10,
     path: 'https://contentsx.jp/material/manga/merumaga/',
     tags: ['集客'], category: '集客',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'life-school': {
     title: 'スクール紹介', pages: 26,
     path: 'https://contentsx.jp/material/manga/life-school/',
     tags: ['集客'], category: '集客',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'seko': {
     title: '瀬古恭介 始まりのものがたり', pages: 25,
     path: 'https://contentsx.jp/material/manga/seko/',
     tags: ['ブランド'], category: 'ブランド',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'sixtones': {
     title: 'SixTONES 提案用', pages: 4,
     path: 'https://contentsx.jp/material/manga/sixtones/',
     tags: ['IP'], category: 'IP',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'life-buzfes': {
     title: 'バズフェス', pages: 25,
     path: 'https://contentsx.jp/material/manga/life-buzfes/',
     tags: ['集客'], category: '集客',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'lady-column': {
     title: '大人なLADYになるわよコラム', pages: 4,
@@ -108,13 +108,13 @@ const FALLBACK_WORKS = {
     title: '一戸ホーム', pages: 22,
     path: 'https://contentsx.jp/material/manga/ichinohe-home/',
     tags: ['営業'], category: '営業',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
   'bms-unso-remake': {
     title: 'BMS 運送（リメイク版）', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso-remake/',
     tags: ['採用'], category: '採用',
-    viewType: 'spread'
+    viewType: 'vertical'
   },
 };
 
@@ -261,7 +261,7 @@ probeCoverImages();  // 表紙の縦長自動検出
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
-          viewType: w.view_type || 'spread',
+          viewType: w.view_type || 'vertical',
           verticalOnly: w.view_type === 'vertical_only' || w.view_type === 'vertical',
           tallCover: w.tall_cover || w.view_type === 'vertical_only' || w.view_type === 'vertical',
           thumbnail: w.thumbnail || '',
@@ -281,6 +281,25 @@ probeCoverImages();  // 表紙の縦長自動検出
 
       // 赤ペン・ネームカルーセルも再構築
       if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+
+      // ダイレクトモードで既にモーダルが開いている場合、APIの正しいviewTypeで再オープン
+      if (isDirectMode && autoOpen && mangaData[autoOpen] && mangaModal.classList.contains('open')) {
+        var newMode = mangaData[autoOpen].viewType || 'vertical';
+        if (newMode !== currentViewMode) {
+          console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
+          // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
+          while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
+          if (verticalObserver) { verticalObserver.disconnect(); verticalObserver = null; }
+          modalPageEls = []; modalThumbItems = []; modalDots = [];
+          mangaModal.classList.remove('open');
+          document.body.style.overflow = '';
+          setTimeout(function() { openManga(autoOpen); }, 50);
+        }
+      }
+      // ダイレクトモードでまだモーダルが開いていない場合（mangaDataに無かった）
+      if (isDirectMode && autoOpen && mangaData[autoOpen] && !mangaModal.classList.contains('open')) {
+        openManga(autoOpen);
+      }
     })
     .catch(function(err) {
       console.warn('WP API取得失敗、フォールバックデータを使用:', err);
@@ -1427,7 +1446,7 @@ const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
       mangaData[item.key] = {
         title: item.title, pages: item.pages, path: item.path,
         gallery: [], tags: [], category: '制作過程',
-        viewType: 'spread', _isPreProduction: true
+        viewType: 'vertical', _isPreProduction: true
       };
     }
   });
@@ -1539,7 +1558,7 @@ function registerFallbackPreData() {
         gallery: item.gallery || [],
         tags: [],
         category: '制作過程',
-        viewType: 'spread',
+        viewType: 'vertical',
         _isPreProduction: true
       };
     }
