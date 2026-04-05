@@ -2091,7 +2091,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-pre-carousel-slide {
   flex: 0 0 calc((100% - 16px) / 3);
   min-width: calc((100% - 16px) / 3);
-  padding: 4px;
+  padding: 0;
   cursor: pointer;
   transition: transform 0.3s;
   box-sizing: border-box;
@@ -2104,10 +2104,6 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   border-radius: 6px;
   background: #e8e8e8;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  height: 500px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
 }
 .bm-pre-slide-img-wrap img {
   width: 100%;
@@ -2156,7 +2152,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-pre-section { padding: 32px 0 40px; }
   .bm-pre-section-title { font-size: 20px; }
   .bm-pre-carousel-wrap { max-width: 95%; padding: 0 16px; }
-  .bm-pre-slide-img-wrap { height: 500px; }
+  .bm-pre-slide-img-wrap { /* auto height */ }
 }
 
 /* ===== お客様の声 一覧ページ ===== */

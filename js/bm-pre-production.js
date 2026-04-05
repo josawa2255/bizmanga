@@ -129,8 +129,9 @@
     if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); btnNext(); resetAuto(); });
 
     // 自動スライド（requestAnimationFrame + 2.5秒間隔）
+    var running = false;
     function scheduleAuto() {
-      if (!animId && animId !== 0) return;
+      if (!running) return;
       var now = Date.now();
       if (!isPaused && now - lastAutoTime >= AUTO_INTERVAL) {
         lastAutoTime = now;
@@ -140,10 +141,12 @@
     }
 
     function startAuto() {
+      running = true;
       lastAutoTime = Date.now();
       animId = requestAnimationFrame(scheduleAuto);
     }
     function stopAuto() {
+      running = false;
       if (animId) cancelAnimationFrame(animId);
       animId = null;
     }
