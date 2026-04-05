@@ -102,16 +102,21 @@
     animId = requestAnimationFrame(step);
   }
 
-  // ===== ホバーで一時停止（クリック可能にする） =====
+  // ===== 常時スクロール（ホバーで停止しない） =====
+  // 横スクロール（マウスホイール）対応
   var carousel = document.getElementById('bmGalleryCarousel');
   if (carousel) {
-    carousel.addEventListener('mouseenter', function() { isPaused = true; });
-    carousel.addEventListener('mouseleave', function() { isPaused = false; });
-    // タッチ操作もサポート
-    carousel.addEventListener('touchstart', function() { isPaused = true; }, { passive: true });
-    carousel.addEventListener('touchend', function() {
-      setTimeout(function() { isPaused = false; }, 2000);
-    }, { passive: true });
+    carousel.addEventListener('wheel', function(e) {
+      var delta = e.deltaX || e.deltaY;
+      if (Math.abs(delta) > 0) {
+        e.preventDefault();
+        scrollPos += delta * 0.8;
+        if (scrollPos < 0) scrollPos += singleSetWidth;
+        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+          scrollPos -= singleSetWidth;
+        }
+      }
+    }, { passive: false });
   }
 
   // ===== 初期表示（フォールバック） =====

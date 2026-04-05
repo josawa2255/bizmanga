@@ -1,8 +1,8 @@
 /**
  * BizManga — ホーム用 制作過程カルーセル
- * ネーム（下描き）と赤ペン（修正指示）を表示
- * クリックでビズ書庫のビューアで漫画を表示
- * translateX方式の無限ループ自動カルーセル
+ * ギャラリーと同じ連続スクロール方式（毎フレーム px 移動）
+ * 無限ループ・横スクロール（マウスホイール）対応
+ * クリックでビズ書庫のビューアに遷移
  */
 (function () {
   'use strict';
@@ -26,13 +26,15 @@
   };
 
   var preData = FALLBACK;
+  var SCROLL_SPEED = 0.5; // px per frame
+  var GAP = 8;
 
   /* ---------- 漫画を開く（ビズ書庫のビューアに遷移） ---------- */
   function openManga(key) {
     window.location.href = 'biz-library?manga=' + encodeURIComponent(key);
   }
 
-  /* ---------- カルーセル初期化（translateX方式） ---------- */
+  /* ---------- カルーセル初期化（連続スクロール方式） ---------- */
   function initCarousel(type) {
     var trackId = type === 'name' ? 'bmNameTrack' : 'bmRedTrack';
     var track = document.getElementById(trackId);
@@ -41,12 +43,9 @@
     var items = preData[type];
     if (!items || items.length === 0) return;
 
-    var GAP = 8;
-    var AUTO_INTERVAL = 2500;
-    var current = 0;
+    var scrollPos = 0;
     var animId = null;
-    var isPaused = false;
-    var lastAutoTime = 0;
+    var singleSetWidth = 0;
 
     // 全ページをスライドに展開
     var allSlides = [];
@@ -65,104 +64,113 @@
       }
     });
 
-    // スライドDOM生成
+    // スライドDOM生成（2セット分 = 無限ループ用）
     track.innerHTML = '';
     var frag = document.createDocumentFragment();
-    allSlides.forEach(function (s) {
-      var slide = document.createElement('div');
-      slide.className = 'bm-pre-carousel-slide';
+    // 2回繰り返してシームレスループ
+    for (var rep = 0; rep < 2; rep++) {
+      allSlides.forEach(function (s) {
+        var slide = document.createElement('div');
+        slide.className = 'bm-pre-carousel-slide';
 
-      var imgWrap = document.createElement('div');
-      imgWrap.className = 'bm-pre-slide-img-wrap';
-      var img = document.createElement('img');
-      img.src = s.src;
-      img.alt = s.title + ' ' + s.page + 'P';
-      img.loading = 'lazy';
-      imgWrap.appendChild(img);
+        var imgWrap = document.createElement('div');
+        imgWrap.className = 'bm-pre-slide-img-wrap';
+        var img = document.createElement('img');
+        img.src = s.src;
+        img.alt = s.title + ' ' + s.page + 'P';
+        img.loading = 'lazy';
+        imgWrap.appendChild(img);
 
-      var title = document.createElement('div');
-      title.className = 'bm-pre-slide-title';
-      title.textContent = s.title + '（' + s.page + '/' + s.totalPages + '）';
+        var title = document.createElement('div');
+        title.className = 'bm-pre-slide-title';
+        title.textContent = s.title + '\uFF08' + s.page + '/' + s.totalPages + '\uFF09';
 
-      slide.appendChild(imgWrap);
-      slide.appendChild(title);
-      slide.addEventListener('click', function () {
-        openManga(s.key);
+        slide.appendChild(imgWrap);
+        slide.appendChild(title);
+        slide.addEventListener('click', function () {
+          openManga(s.key);
+        });
+        frag.appendChild(slide);
       });
-      frag.appendChild(slide);
-    });
+    }
     track.appendChild(frag);
 
-    var totalSlides = allSlides.length;
-    var slidesPerView = window.innerWidth <= 768 ? 1 : 3;
-    var maxIndex = Math.max(0, totalSlides - slidesPerView);
+    // 1セット分の幅を計算
+    requestAnimationFrame(function () {
+      var slideEls = track.querySelectorAll('.bm-pre-carousel-slide');
+      var half = Math.floor(slideEls.length / 2);
+      if (half === 0) return;
+      var lastCard = slideEls[half - 1];
+      singleSetWidth = lastCard.offsetLeft + lastCard.offsetWidth + GAP;
 
-    function getSlideWidth() {
-      if (!track.children[0]) return 0;
-      return track.children[0].offsetWidth + GAP;
+      scrollPos = 0;
+      startAutoScroll();
+    });
+
+    // 自動スクロール（毎フレーム連続移動）
+    function startAutoScroll() {
+      if (animId) cancelAnimationFrame(animId);
+
+      function step() {
+        scrollPos += SCROLL_SPEED;
+
+        // 1セット分スクロールしたらリセット（無限ループ）
+        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+          scrollPos -= singleSetWidth;
+        }
+
+        track.style.transform = 'translateX(' + (-scrollPos) + 'px)';
+        animId = requestAnimationFrame(step);
+      }
+
+      animId = requestAnimationFrame(step);
     }
 
-    function goTo(index) {
-      current = Math.max(0, Math.min(index, maxIndex));
-      var px = current * getSlideWidth();
-      track.style.transform = 'translateX(' + (-px) + 'px)';
-    }
-
-    function autoNext() {
-      var next = current + 1;
-      goTo(next > maxIndex ? 0 : next);
-    }
-    function btnNext() {
-      var next = current + 3;
-      goTo(next > maxIndex ? 0 : next);
-    }
-    function btnPrev() {
-      var prev = current - 3;
-      goTo(prev < 0 ? maxIndex : prev);
-    }
-
-    // ボタン
+    // 横スクロール（マウスホイール）対応
     var carousel = track.parentElement;
+    carousel.addEventListener('wheel', function (e) {
+      // 横方向 or Shift+縦方向
+      var delta = e.deltaX || e.deltaY;
+      if (Math.abs(delta) > 0) {
+        e.preventDefault();
+        scrollPos += delta * 0.8;
+        if (scrollPos < 0) scrollPos += singleSetWidth;
+        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+          scrollPos -= singleSetWidth;
+        }
+      }
+    }, { passive: false });
+
+    // タッチスワイプ対応
+    var touchStartX = 0;
+    carousel.addEventListener('touchstart', function (e) {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    carousel.addEventListener('touchmove', function (e) {
+      var dx = touchStartX - e.touches[0].clientX;
+      touchStartX = e.touches[0].clientX;
+      scrollPos += dx;
+      if (scrollPos < 0) scrollPos += singleSetWidth;
+      if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+        scrollPos -= singleSetWidth;
+      }
+    }, { passive: true });
+
+    // ボタン操作
     var prevBtn = carousel.querySelector('.prev');
     var nextBtn = carousel.querySelector('.next');
-    if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); btnPrev(); resetAuto(); });
-    if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); btnNext(); resetAuto(); });
-
-    // 自動スライド（requestAnimationFrame + 2.5秒間隔）
-    var running = false;
-    function scheduleAuto() {
-      if (!running) return;
-      var now = Date.now();
-      if (!isPaused && now - lastAutoTime >= AUTO_INTERVAL) {
-        lastAutoTime = now;
-        autoNext();
+    if (prevBtn) prevBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      scrollPos -= 400;
+      if (scrollPos < 0) scrollPos += singleSetWidth;
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      scrollPos += 400;
+      if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
+        scrollPos -= singleSetWidth;
       }
-      animId = requestAnimationFrame(scheduleAuto);
-    }
-
-    function startAuto() {
-      running = true;
-      lastAutoTime = Date.now();
-      animId = requestAnimationFrame(scheduleAuto);
-    }
-    function stopAuto() {
-      running = false;
-      if (animId) cancelAnimationFrame(animId);
-      animId = null;
-    }
-    function resetAuto() { stopAuto(); startAuto(); }
-
-    startAuto();
-
-    // ホバーで一時停止
-    carousel.addEventListener('mouseenter', function () { isPaused = true; });
-    carousel.addEventListener('mouseleave', function () { isPaused = false; });
-
-    // タッチ操作
-    carousel.addEventListener('touchstart', function () { isPaused = true; }, { passive: true });
-    carousel.addEventListener('touchend', function () {
-      setTimeout(function () { isPaused = false; }, 2000);
-    }, { passive: true });
+    });
   }
 
   /* ---------- WP API から制作過程データ取得 ---------- */
@@ -202,7 +210,6 @@
             red: apiRed.length > 0 ? apiRed : FALLBACK.red,
             name: apiName.length > 0 ? apiName : FALLBACK.name
           };
-          // カルーセル再構築
           initCarousel('name');
           initCarousel('red');
         }
