@@ -161,10 +161,7 @@
     document.querySelectorAll('.bm-faq-q').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var item = btn.parentElement;
-        var isOpen = item.classList.contains('open');
-        // 他を閉じる
-        document.querySelectorAll('.bm-faq-item.open').forEach(function(el) { el.classList.remove('open'); });
-        if (!isOpen) item.classList.add('open');
+        item.classList.toggle('open');
       });
     });
   </script>
