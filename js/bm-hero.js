@@ -195,30 +195,20 @@
       }
       function isVerticalRatio(r) { return r < 0.2; }
 
+      // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
       var hasGallery = work.gallery && work.gallery.length > 0;
-      var firstSrc = hasGallery && work.gallery[0] ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
       var secondSrc = hasGallery && work.gallery[1] ? work.gallery[1] : 'https://contentsx.jp/material/manga/' + work.id + '/02.webp';
 
-      var testImg1 = new Image();
-      testImg1.src = firstSrc;
-      testImg1.onload = function() {
-        if (isVerticalRatio(testImg1.naturalWidth / testImg1.naturalHeight)) {
+      var testImg = new Image();
+      testImg.src = secondSrc;
+      testImg.onload = function() {
+        if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVerticalMode();
         } else {
-          // 1ページ目は表紙の可能性 → 2ページ目も判定
-          var testImg2 = new Image();
-          testImg2.src = secondSrc;
-          testImg2.onload = function() {
-            if (isVerticalRatio(testImg2.naturalWidth / testImg2.naturalHeight)) {
-              applyVerticalMode();
-            } else {
-              applyCarouselMode();
-            }
-          };
-          testImg2.onerror = function() { applyCarouselMode(); };
+          applyCarouselMode();
         }
       };
-      testImg1.onerror = function() { applyCarouselMode(); };
+      testImg.onerror = function() { applyCarouselMode(); };
     }
 
     wdOverlay.classList.add('active');
