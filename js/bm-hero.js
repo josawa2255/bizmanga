@@ -195,6 +195,9 @@
       }
       function isVerticalRatio(r) { return r < 0.2; }
 
+      // 即座にカルーセルモードで仮表示（体感速度向上）
+      applyCarouselMode();
+
       // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
       var hasGallery = work.gallery && work.gallery.length > 0;
       var secondSrc = hasGallery && work.gallery[1] ? work.gallery[1] : 'https://contentsx.jp/material/manga/' + work.id + '/02.webp';
@@ -204,11 +207,8 @@
       testImg.onload = function() {
         if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVerticalMode();
-        } else {
-          applyCarouselMode();
         }
       };
-      testImg.onerror = function() { applyCarouselMode(); };
     }
 
     wdOverlay.classList.add('active');
