@@ -1157,15 +1157,16 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-works-card:first-child { border-top: 1px solid var(--bm-border); }
 .bm-works-card:hover { background: var(--bm-bg-light); }
 .bm-works-card-thumb {
-  flex: 0 0 200px; height: 150px;
+  flex: none;
+  height: 150px;
   position: relative; overflow: hidden;
   border-radius: 8px;
-  background: #f5f5f5;
-  display: flex; align-items: center; justify-content: center;
 }
 .bm-works-card-thumb img {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain;
+  height: 100%;
+  width: auto;
+  display: block;
+  border-radius: 8px;
 }
 .bm-works-card-badge {
   position: absolute; top: 8px; left: 8px;
@@ -2049,7 +2050,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 
   /* Works cards: スマホもPC同様の横並び */
   .bm-works-card { gap: 16px; padding: 20px 0; }
-  .bm-works-card-thumb { flex: 0 0 120px; height: 100px; }
+  .bm-works-card-thumb { flex: none; height: 100px; }
   .bm-works-card-title { font-size: 15px; }
   .bm-works-card-desc { display: none; }
 
