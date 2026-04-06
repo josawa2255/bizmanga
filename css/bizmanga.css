@@ -1157,14 +1157,15 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-works-card:first-child { border-top: 1px solid var(--bm-border); }
 .bm-works-card:hover { background: var(--bm-bg-light); }
 .bm-works-card-thumb {
-  flex: none;
+  flex: 0 0 130px;
   height: 180px;
   position: relative; overflow: hidden;
   border-radius: 8px;
 }
 .bm-works-card-thumb img {
-  height: 100%;
-  width: auto;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
   display: block;
   border-radius: 8px;
 }
