@@ -1148,8 +1148,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   gap: 0; max-width: 900px; margin: 0 auto;
 }
 .bm-works-card {
-  display: flex; gap: 24px;
-  padding: 32px 0;
+  display: flex; gap: 32px;
+  padding: 36px 0;
   border-bottom: 1px solid var(--bm-border);
   cursor: pointer;
   transition: background 0.2s;
@@ -1158,7 +1158,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-works-card:hover { background: var(--bm-bg-light); }
 .bm-works-card-thumb {
   flex: none;
-  height: 150px;
+  height: 240px;
   position: relative; overflow: hidden;
   border-radius: 8px;
 }
@@ -2050,7 +2050,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 
   /* Works cards: スマホもPC同様の横並び */
   .bm-works-card { gap: 16px; padding: 20px 0; }
-  .bm-works-card-thumb { flex: none; height: 100px; }
+  .bm-works-card-thumb { flex: none; height: 160px; }
   .bm-works-card-title { font-size: 15px; }
   .bm-works-card-desc { display: none; }
 
