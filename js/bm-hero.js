@@ -198,12 +198,12 @@
       // 即座にカルーセルモードで仮表示（体感速度向上）
       applyCarouselMode();
 
-      // 2ページ目で縦読み判定（1ページ目は表紙の可能性があるため）
+      // 1ページ目で縦読み判定
       var hasGallery = work.gallery && work.gallery.length > 0;
-      var secondSrc = hasGallery && work.gallery[1] ? work.gallery[1] : 'https://contentsx.jp/material/manga/' + work.id + '/02.webp';
+      var firstSrc = hasGallery && work.gallery[0] ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
 
       var testImg = new Image();
-      testImg.src = secondSrc;
+      testImg.src = firstSrc;
       testImg.onload = function() {
         if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
           applyVerticalMode();
