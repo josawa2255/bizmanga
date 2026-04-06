@@ -377,12 +377,13 @@ body {
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 .modal-header-left {
-  display: flex; align-items: center; gap: 12px;
-  min-width: 0; flex: 1;
-}
-.modal-header-right {
   display: flex; align-items: center; gap: 8px;
   flex-shrink: 0;
+}
+.modal-header-right {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; flex: 1;
+  justify-content: flex-end;
 }
 /* Vertical mode header */
 .manga-modal.mode-vertical .modal-header {
