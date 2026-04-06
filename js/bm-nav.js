@@ -109,7 +109,9 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function() {
+    hamburger.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
     });
