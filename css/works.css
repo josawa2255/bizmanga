@@ -187,7 +187,7 @@ body {
 }
 /* Tall-page cover: crop to show top portion */
 .work-card-img-wrapper.tall-cover {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 3.5;
 }
 .work-card-img-wrapper.tall-cover .work-card-img {
   width: 100%;
