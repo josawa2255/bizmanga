@@ -1160,10 +1160,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   flex: 0 0 200px; height: 150px;
   position: relative; overflow: hidden;
   border-radius: 8px;
+  background: #f5f5f5;
+  display: flex; align-items: center; justify-content: center;
 }
 .bm-works-card-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: top center;
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
 }
 .bm-works-card-badge {
   position: absolute; top: 8px; left: 8px;
@@ -2045,10 +2047,11 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-quiz-opt-label { font-size: 14px; }
   .bm-quiz-opt-right { font-size: 12px; }
 
-  /* Works cards: モバイル縦並び */
-  .bm-works-card { flex-direction: column; gap: 16px; padding: 24px 0; }
-  .bm-works-card-thumb { flex: none; width: 100%; height: 200px; }
-  .bm-works-card-title { font-size: 16px; }
+  /* Works cards: スマホもPC同様の横並び */
+  .bm-works-card { gap: 16px; padding: 20px 0; }
+  .bm-works-card-thumb { flex: 0 0 120px; height: 100px; }
+  .bm-works-card-title { font-size: 15px; }
+  .bm-works-card-desc { display: none; }
 
   /* モーダル: スマホは縦並び — 漫画+詳細が一体でスクロール */
   .work-detail-overlay {
