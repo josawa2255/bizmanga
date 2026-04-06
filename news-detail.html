@@ -223,10 +223,10 @@
         var tempDiv = document.createElement('div');
         tempDiv.innerHTML = rawContent;
         /* script, iframe, onXxx属性を除去 */
-        tempDiv.querySelectorAll('script,iframe,object,embed').forEach(function(el) { el.remove(); });
+        tempDiv.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
         tempDiv.querySelectorAll('*').forEach(function(el) {
           Array.from(el.attributes).forEach(function(attr) {
-            if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().startsWith('javascript:')) {
+            if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('javascript:') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('data:text/html')) {
               el.removeAttribute(attr.name);
             }
           });

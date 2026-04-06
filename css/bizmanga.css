@@ -635,7 +635,6 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 /* 横スクロール */
 .bm-testimonials-scroll {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   margin: 0 -24px;
   padding: 0 24px;
@@ -2049,7 +2048,6 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     padding: 0;
     align-items: flex-start;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
   .work-detail-content {
     flex-direction: column;
