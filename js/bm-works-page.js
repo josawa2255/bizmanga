@@ -149,7 +149,6 @@
       card.innerHTML =
         '<div class="bm-works-card-thumb">' +
           '<img src="' + coverSrc + '" alt="' + (w.title_ja || '') + '" loading="lazy">' +
-          '<span class="bm-works-card-badge">' + pagesStr + '</span>' +
         '</div>' +
         '<div class="bm-works-card-body">' +
           '<span class="bm-works-card-category" data-ja="' + (w.category || '') + '" data-en="' + catEn + '">' + (w.category || '') + '</span>' +
