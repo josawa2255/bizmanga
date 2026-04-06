@@ -164,50 +164,61 @@
         wdCarousel.appendChild(frag);
       }
 
-      // 1ページ目の画像で縦長判定
-      var testImg = new Image();
-      var firstSrc = (work.gallery && work.gallery[0]) ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
-      testImg.src = firstSrc;
-      testImg.onload = function() {
-        var ratio = testImg.naturalWidth / testImg.naturalHeight;
-        if (ratio < 0.2) {
-          // 縦スクロールモード
-          wdCarousel.classList.add('vertical-scroll');
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
-          wdCarousel.style.transform = '';
-          buildPages(true);
-          if (wdDots) wdDots.style.display = 'none';
-          if (wdPrev) wdPrev.style.display = 'none';
-          if (wdNext) wdNext.style.display = 'none';
-        } else {
-          wdCarousel.classList.remove('vertical-scroll');
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
-          buildPages(false);
-          if (wdDots) {
-            wdDots.style.display = 'flex';
-            wdDots.innerHTML = '';
-            for (var j = 0; j < previewPages; j++) {
-              var dot = document.createElement('div');
-              dot.className = 'work-detail-dot' + (j === 0 ? ' active' : '');
-              (function(idx) {
-                dot.addEventListener('click', function() { goToPage(idx); });
-              })(j);
-              wdDots.appendChild(dot);
-            }
-          }
-          if (wdPrev) wdPrev.style.display = '';
-          if (wdNext) wdNext.style.display = '';
-        }
-        testImg.onload = null;
-        testImg.onerror = null;
-      };
-      testImg.onerror = function() {
+      // 縦読み判定: 1ページ目 or 2ページ目が縦長なら縦スクロール
+      function applyVerticalMode() {
+        wdCarousel.classList.add('vertical-scroll');
+        if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
+        wdCarousel.style.transform = '';
+        buildPages(true);
+        if (wdDots) wdDots.style.display = 'none';
+        if (wdPrev) wdPrev.style.display = 'none';
+        if (wdNext) wdNext.style.display = 'none';
+      }
+      function applyCarouselMode() {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
         buildPages(false);
-        testImg.onload = null;
-        testImg.onerror = null;
+        if (wdDots) {
+          wdDots.style.display = 'flex';
+          wdDots.innerHTML = '';
+          for (var j = 0; j < previewPages; j++) {
+            var dot = document.createElement('div');
+            dot.className = 'work-detail-dot' + (j === 0 ? ' active' : '');
+            (function(idx) {
+              dot.addEventListener('click', function() { goToPage(idx); });
+            })(j);
+            wdDots.appendChild(dot);
+          }
+        }
+        if (wdPrev) wdPrev.style.display = '';
+        if (wdNext) wdNext.style.display = '';
+      }
+      function isVerticalRatio(r) { return r < 0.2; }
+
+      var hasGallery = work.gallery && work.gallery.length > 0;
+      var firstSrc = hasGallery && work.gallery[0] ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
+      var secondSrc = hasGallery && work.gallery[1] ? work.gallery[1] : 'https://contentsx.jp/material/manga/' + work.id + '/02.webp';
+
+      var testImg1 = new Image();
+      testImg1.src = firstSrc;
+      testImg1.onload = function() {
+        if (isVerticalRatio(testImg1.naturalWidth / testImg1.naturalHeight)) {
+          applyVerticalMode();
+        } else {
+          // 1ページ目は表紙の可能性 → 2ページ目も判定
+          var testImg2 = new Image();
+          testImg2.src = secondSrc;
+          testImg2.onload = function() {
+            if (isVerticalRatio(testImg2.naturalWidth / testImg2.naturalHeight)) {
+              applyVerticalMode();
+            } else {
+              applyCarouselMode();
+            }
+          };
+          testImg2.onerror = function() { applyCarouselMode(); };
+        }
       };
+      testImg1.onerror = function() { applyCarouselMode(); };
     }
 
     wdOverlay.classList.add('active');
