@@ -1158,7 +1158,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-works-card:hover { background: var(--bm-bg-light); }
 .bm-works-card-thumb {
   flex: none;
-  height: 240px;
+  height: 360px;
   position: relative; overflow: hidden;
   border-radius: 8px;
 }
