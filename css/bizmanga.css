@@ -1980,6 +1980,20 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   }
   .bm-header-right .bm-nav-cta { display: none; }
 
+  /* カテゴリフィルター: スマホ用コンパクト表示 */
+  .bm-category-filter {
+    gap: 8px;
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .bm-filter-btn {
+    padding: 8px 0;
+    font-size: 12px;
+    justify-content: center;
+    border-width: 1.5px;
+  }
+
   /* Hero: モバイルで4-5行目も表示 */
   .bm-hero-works-row--4,
   .bm-hero-works-row--5 { display: flex; }
