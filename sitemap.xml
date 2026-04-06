@@ -8,6 +8,7 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -18,6 +19,7 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/works"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/works"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/works"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -28,6 +30,7 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/biz-library"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/biz-library"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/biz-library"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -38,6 +41,7 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/pricing"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/pricing"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/pricing"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -48,6 +52,7 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/faq"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/faq"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/faq"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -58,8 +63,42 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/contact"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/contact"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/contact"/>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+  </url>
+
+  <!-- ニュース一覧 -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/news</loc>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/news"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/news"/>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ニュース詳細 -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/news-detail</loc>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/news-detail"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/news-detail"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/news-detail"/>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- お客様の声 -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/testimonials</loc>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/testimonials"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/testimonials"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/testimonials"/>
+    <lastmod>2026-04-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
 </urlset>

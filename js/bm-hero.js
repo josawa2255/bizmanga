@@ -211,6 +211,7 @@
     }
 
     wdOverlay.classList.add('active');
+    wdOverlay.scrollTop = 0;
     document.body.style.overflow = 'hidden';
   }
 

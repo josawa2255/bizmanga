@@ -35,16 +35,41 @@
       var imgUrl = w.thumbnail || (w.gallery && w.gallery[0]) || '';
       var pageCount = w.gallery ? w.gallery.length : 0;
 
-      card.innerHTML =
-        '<div class="bm-work-card-img">' +
-          (imgUrl ? '<img src="' + imgUrl + '" alt="' + (w.title || '') + '" loading="lazy">' : '') +
-          (pageCount > 0 ? '<span class="bm-work-card-badge">' + pageCount + 'P</span>' : '') +
-        '</div>' +
-        '<div class="bm-work-card-body">' +
-          (w.category ? '<span class="bm-work-card-category">' + w.category + '</span>' : '') +
-          '<h3 class="bm-work-card-title">' + (w.title || '') + '</h3>' +
-          (w.tags ? '<p class="bm-work-card-tags">' + w.tags.map(function(t){return '#' + t;}).join(' ') + '</p>' : '') +
-        '</div>';
+      var cardImg = document.createElement('div');
+      cardImg.className = 'bm-work-card-img';
+      if (imgUrl) {
+        var img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = w.title || '';
+        img.loading = 'lazy';
+        cardImg.appendChild(img);
+      }
+      if (pageCount > 0) {
+        var badge = document.createElement('span');
+        badge.className = 'bm-work-card-badge';
+        badge.textContent = pageCount + 'P';
+        cardImg.appendChild(badge);
+      }
+      var cardBody = document.createElement('div');
+      cardBody.className = 'bm-work-card-body';
+      if (w.category) {
+        var catSpan = document.createElement('span');
+        catSpan.className = 'bm-work-card-category';
+        catSpan.textContent = w.category;
+        cardBody.appendChild(catSpan);
+      }
+      var titleEl = document.createElement('h3');
+      titleEl.className = 'bm-work-card-title';
+      titleEl.textContent = w.title || '';
+      cardBody.appendChild(titleEl);
+      if (w.tags) {
+        var tagsP = document.createElement('p');
+        tagsP.className = 'bm-work-card-tags';
+        tagsP.textContent = w.tags.map(function(t){return '#' + t;}).join(' ');
+        cardBody.appendChild(tagsP);
+      }
+      card.appendChild(cardImg);
+      card.appendChild(cardBody);
 
       grid.appendChild(card);
     });
