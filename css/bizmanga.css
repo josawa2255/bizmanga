@@ -1696,6 +1696,16 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   background: var(--bm-accent);
   color: #fff;
 }
+.bm-sticky-cta-company {
+  background: #fff;
+  color: var(--bm-text);
+  border: 1.5px solid var(--bm-border);
+}
+.bm-sticky-cta-company:hover {
+  background: var(--bm-bg-light);
+  border-color: var(--bm-accent);
+  color: var(--bm-accent);
+}
 
 /* モバイルでは横並び＋画面下固定バー */
 @media (max-width: 768px) {
