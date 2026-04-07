@@ -15,7 +15,6 @@
   var FALLBACK = {
     red: [
       { key: 'pre-red-bms',      title: 'BMS 運送 赤入れ',              title_en: 'BMS Transport Red Pen',          path: 'https://contentsx.jp/material/pre/red/bms-unso-red/',  pages: 8 },
-      { key: 'pre-red-life',     title: 'ライフエンターテイメント 赤入れ', title_en: 'Life Entertainment Red Pen',      path: 'https://contentsx.jp/material/pre/red/life-ent-red/',   pages: 27 },
       { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ',             title_en: 'Ichinohe Home Red Pen',           path: 'https://contentsx.jp/material/pre/red/ichinohe-red/',   pages: 20 }
     ],
     name: [
@@ -192,10 +191,10 @@
     });
   }
 
-  /* ---------- WP API から制作過程データ取得 ---------- */
+  /* ---------- WP API から制作過程データ取得（専用エンドポイント） ---------- */
   function fetchFromAPI() {
     var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
-    fetch(apiBase + '/works?per_page=100')
+    fetch(apiBase + '/preproduction')
       .then(function (r) {
         if (!r.ok) throw new Error('API error');
         return r.json();
@@ -205,23 +204,18 @@
         var apiRed = [];
         var apiName = [];
         data.forEach(function (item) {
-          if (item.akapen_gallery && item.akapen_gallery.length > 0) {
-            apiRed.push({
-              key: 'pre-red-' + item.slug,
-              title: item.title + ' 赤入れ',
-              path: '',
-              pages: item.akapen_gallery.length,
-              gallery: item.akapen_gallery
-            });
-          }
-          if (item.name_gallery && item.name_gallery.length > 0) {
-            apiName.push({
-              key: 'pre-name-' + item.slug,
-              title: item.title + ' ネーム',
-              path: '',
-              pages: item.name_gallery.length,
-              gallery: item.name_gallery
-            });
+          var entry = {
+            key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-' + item.id,
+            title: item.title,
+            title_en: item.title_en || item.title,
+            path: '',
+            pages: item.pages,
+            gallery: item.gallery
+          };
+          if (item.type === 'akapen') {
+            apiRed.push(entry);
+          } else {
+            apiName.push(entry);
           }
         });
         if (apiRed.length > 0 || apiName.length > 0) {

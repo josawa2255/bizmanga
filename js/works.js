@@ -1496,8 +1496,7 @@ const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
   var fb = {
     red: [
       { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
-      { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: 'https://contentsx.jp/material/pre/red/life-ent-red/', pages: 27 },
-      { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
+        { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
     ],
     name: [
       { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
@@ -1543,7 +1542,6 @@ if (isDirectMode && mangaData[autoOpen]) {
 const FALLBACK_PRE_DATA = {
   red: [
     { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
-    { key: 'pre-red-life', title: 'ライフエンターテイメント 赤入れ', path: 'https://contentsx.jp/material/pre/red/life-ent-red/', pages: 27 },
     { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
   ],
   name: [
@@ -1786,23 +1784,68 @@ function registerFallbackPreData() {
   try { initCarousel('red'); } catch(e) { console.error('Red carousel error:', e); }
   try { initCarousel('name'); } catch(e) { console.error('Name carousel error:', e); }
 
-  // API取得後にカルーセルを再構築するためのグローバル関数
-  window.rebuildPreCarousels = function() {
-    // APIデータから赤ペン・ネームデータを構築
-    buildPreDataFromAPI();
-    registerFallbackPreData();
-
-    // 既存タイマーを停止
+  // カルーセル再描画の共通処理
+  function doRebuild() {
     preCarouselTimers.forEach(function(t) { t.pause(); });
     preCarouselTimers = [];
-
-    // トラックをクリアして再構築
     ['red', 'name'].forEach(function(type) {
       var track = document.getElementById(type + 'Track');
       if (track) track.innerHTML = '';
     });
-
     try { initCarousel('red'); } catch(e) { console.error('Red carousel rebuild error:', e); }
     try { initCarousel('name'); } catch(e) { console.error('Name carousel rebuild error:', e); }
+  }
+
+  // API取得後にカルーセルを再構築するためのグローバル関数
+  window.rebuildPreCarousels = function() {
+    // まず既存のmanga_workデータから赤ペン・ネームを構築
+    buildPreDataFromAPI();
+    registerFallbackPreData();
+
+    // 次に専用APIからも取得して統合
+    var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+    fetch(apiBase + '/preproduction')
+      .then(function(r) {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
+      .then(function(data) {
+        if (!data || data.length === 0) { doRebuild(); return; }
+        var apiRed = [];
+        var apiName = [];
+        data.forEach(function(item) {
+          var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
+          var entry = {
+            key: key,
+            title: item.title,
+            path: '',
+            pages: item.pages,
+            gallery: item.gallery
+          };
+          if (item.type === 'akapen') {
+            apiRed.push(entry);
+          } else {
+            apiName.push(entry);
+          }
+          // mangaDataに登録してビューアで開けるようにする
+          mangaData[key] = {
+            title: item.title,
+            pages: item.pages,
+            path: '',
+            gallery: item.gallery,
+            tags: [],
+            category: '制作過程',
+            viewType: 'vertical',
+            _isPreProduction: true
+          };
+        });
+        // 専用APIのデータがあればフォールバック＋manga_workデータを上書き
+        if (apiRed.length > 0) preData.red = apiRed;
+        if (apiName.length > 0) preData.name = apiName;
+        doRebuild();
+      })
+      .catch(function() {
+        doRebuild();
+      });
   };
 })();

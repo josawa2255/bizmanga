@@ -445,7 +445,15 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   color: #222;
   margin-bottom: 28px;
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.bm-whatis-logo {
+  height: clamp(28px, 3.6vw, 42px);
+  width: auto;
+  vertical-align: middle;
 }
 .bm-whatis-heading::after {
   content: '';
