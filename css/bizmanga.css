@@ -2055,9 +2055,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-works-card-title { font-size: 15px; }
   .bm-works-card-desc { display: none; }
 
-  /* FAQ・料金ページのhero画像: スマホではビズちゃんが見切れないように */
+  /* FAQ・料金ページのhero画像: スマホではビズちゃんの顔を優先表示 */
   .bm-img-hero img {
-    object-position: 65% 30%;
+    object-position: 65% 15%;
+  }
+  .bm-img-hero {
+    height: clamp(200px, 32vw, 300px);
   }
 
   /* モーダル: スマホは縦並び — 漫画+詳細が一体でスクロール */
