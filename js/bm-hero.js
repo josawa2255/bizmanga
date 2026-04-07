@@ -90,8 +90,9 @@
         var img = document.createElement('img');
         img.src = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
         img.alt = item.title_ja || item.title || '';
-        img.loading = 'lazy';
+        img.loading = 'eager';
         img.decoding = 'async';
+        img.fetchPriority = 'high';
         img.style.objectPosition = 'top center';
         div.appendChild(img);
         frag.appendChild(div);

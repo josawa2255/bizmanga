@@ -130,18 +130,21 @@
     console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
-  /* ── 初期化 ── */
+  /* ── 初期化（Hero優先読み込み） ── */
   document.addEventListener('DOMContentLoaded', async function() {
     try {
+      // Heroデータを最優先で取得 → 即座にイベント発火
+      await loadWorks();
+      window.dispatchEvent(new CustomEvent('bm-data-ready'));
+
+      // 残りは並列で取得（Heroをブロックしない）
       await Promise.all([
-        loadWorks(),
         loadNewWorks(),
         loadNews(),
         loadLibrary()
       ]);
-
-      /* Hero・新作漫画トラックの再描画イベント発火 */
-      window.dispatchEvent(new CustomEvent('bm-data-ready'));
+      // 全データ揃った後の再描画
+      window.dispatchEvent(new CustomEvent('bm-all-data-ready'));
     } catch(e) {
       console.warn('[BM-WP-API] 初期化エラー:', e);
     }
