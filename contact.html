@@ -146,10 +146,19 @@
         var email      = document.getElementById('bmEmail').value;
         var message    = document.getElementById('bmMessage').value;
 
-        // HubSpotにビズマンガからの問い合わせと分かるようにトラッキング情報を付加
-        var trackingNote = '\n\n---\n[BizManga経由のお問い合わせ]';
-        if (plan) trackingNote += '\n選択プラン: ' + (plan.charAt(0).toUpperCase() + plan.slice(1));
-        trackingNote += '\nページ: ' + window.location.href;
+        // 流入元トラッキング情報を付加
+        var tracking = ['[BizManga経由のお問い合わせ]'];
+        if (plan) tracking.push('選択プラン: ' + (plan.charAt(0).toUpperCase() + plan.slice(1)));
+        var utmSource   = params.get('utm_source');
+        var utmMedium   = params.get('utm_medium');
+        var utmCampaign = params.get('utm_campaign');
+        var source      = params.get('source');
+        if (utmSource)   tracking.push('流入元: ' + utmSource);
+        if (utmMedium)   tracking.push('媒体: ' + utmMedium);
+        if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
+        if (source)      tracking.push('参照ページ: ' + source);
+        tracking.push('ページ: ' + window.location.href);
+        var trackingNote = '\n\n---\n' + tracking.join('\n');
 
         var payload = {
           fields: [
