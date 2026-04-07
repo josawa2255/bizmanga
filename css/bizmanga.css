@@ -2056,13 +2056,10 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-works-card-desc { display: none; }
 
   /* FAQ・料金ページのhero画像: ヘッダー分下げてビズちゃんの顔を表示 */
-  .bm-img-hero {
-    padding-top: 72px;
-    height: auto;
-    min-height: 280px;
-  }
   .bm-img-hero img {
-    object-position: 65% 20%;
+    top: 72px;
+    height: calc(100% - 72px);
+    object-position: 65% 0%;
   }
 
   /* モーダル: スマホは縦並び — 漫画+詳細が一体でスクロール */
