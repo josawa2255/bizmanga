@@ -111,6 +111,7 @@
 
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
+  <script src="js/bm-tracking.js" defer></script>
   <script>
     /**
      * BizManga お問い合わせフォーム → HubSpot送信
@@ -158,7 +159,8 @@
         if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
         if (source)      tracking.push('参照ページ: ' + source);
         tracking.push('ページ: ' + window.location.href);
-        var trackingNote = '\n\n---\n' + tracking.join('\n');
+        var behaviorLog = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
+        var trackingNote = '\n\n---\n' + tracking.join('\n') + behaviorLog;
 
         var payload = {
           fields: [

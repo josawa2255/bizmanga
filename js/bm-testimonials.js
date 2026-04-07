@@ -69,6 +69,7 @@
     items.forEach(function (item) {
       var card = document.createElement('div');
       card.className = 'bm-testimonial-card';
+      if (item.id) card.id = 'testimonial-' + item.id;
 
       var tagEn = item.tag_en || TAG_EN[item.tag] || item.tag || '';
       var tagHtml = item.tag
@@ -95,6 +96,18 @@
     });
 
     grid.appendChild(frag);
+
+    // URLハッシュでお客様の声にスクロール（ディープリンク）
+    if (window.location.hash && window.location.hash.startsWith('#testimonial-')) {
+      var target = document.getElementById(window.location.hash.slice(1));
+      if (target) {
+        setTimeout(function() {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.style.boxShadow = '0 0 0 3px var(--bm-accent)';
+          setTimeout(function() { target.style.boxShadow = ''; }, 2000);
+        }, 300);
+      }
+    }
 
     // 現在の言語が英語なら即座に反映（i18n システムに委譲）
     var lang = document.documentElement.lang || 'ja';
