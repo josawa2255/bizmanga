@@ -44,12 +44,6 @@ function getImageSrc(data, pageIndex) {
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
 const FALLBACK_WORKS = {
-  'bms-unso': {
-    title: 'BMS 運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10,
-    path: 'https://contentsx.jp/material/manga/bms-unso/',
-    tags: ['採用'], category: '採用',
-    viewType: 'spread'
-  },
   'kyoiku-manual': {
     title: '教育マニュアル', title_en: 'Education Manual', pages: 10,
     path: 'https://contentsx.jp/material/manga/kyoiku-manual/',
