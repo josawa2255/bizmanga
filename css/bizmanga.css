@@ -230,7 +230,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-hero {
   position: relative;
   width: 100%;
-  max-width: 100%; /* Windows スクロールバー幅起因の溢れ防止 */
+  max-width: 100%;
+  background: #1a1a1a; /* 画像読み込み前の背景色 */
   height: 100vh;
   height: 100dvh;
   max-height: 100dvh;
@@ -277,6 +278,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
 }
 .bm-hero-works-cover:hover {
   transform: scale(1.08);
