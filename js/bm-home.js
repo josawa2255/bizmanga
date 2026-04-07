@@ -14,7 +14,6 @@
 
   // ===== フォールバック用データ =====
   var FALLBACK_NEW_WORKS = [
-    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10, added: '2026-03-20' },
     { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, added: '2026-03-18' },
     { id: 'shohin-shokai', title_ja: '商品紹介', title_en: 'Product Introduction', pages: 8, added: '2026-03-15' },
     { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },

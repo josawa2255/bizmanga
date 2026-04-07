@@ -105,7 +105,7 @@ const FALLBACK_WORKS = {
     viewType: 'spread'
   },
   'bms-unso-remake': {
-    title: 'BMS 運送（リメイク版）', title_en: 'BMS Transport (Remake)', pages: 10,
+    title: 'BMS運送', title_en: 'BMS Transport', pages: 10,
     path: 'https://contentsx.jp/material/manga/bms-unso-remake/',
     tags: ['採用'], category: '採用',
     viewType: 'spread'
@@ -1485,7 +1485,7 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
+// ===== Direct access mode (QR code: works.html?manga=bms-unso-remake) =====
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library

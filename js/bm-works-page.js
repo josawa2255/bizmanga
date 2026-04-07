@@ -62,10 +62,6 @@
 
   // ===== フォールバック用データ（bm-hero.jsと同じ構造） =====
   var FALLBACK_WORKS = [
-    { id: 'bms-unso', title_ja: 'BMS運送 - 採用マンガ', title_en: 'BMS Transport - Recruitment Manga', pages: 10, category: '営業',
-      media: ['採用パンフレット', 'Web掲載'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
-      point: '運送業の魅力をストーリー漫画で伝える採用ツール。', point_en: 'A recruitment tool that conveys the appeal of the transport industry through story manga.',
-      comment: '応募数が増えました。', comment_en: 'The number of applicants increased.' },
     { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, category: '研修',
       media: ['研修資料'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
       point: '新人研修用の教育マニュアルを漫画化。', point_en: 'Training manual for new employees converted to manga.',
@@ -106,7 +102,7 @@
       media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間', period_en: '3 weeks' },
       point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', point_en: 'A sales tool that conveys the appeal of a home builder through story manga.',
       comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
-    { id: 'bms-unso-remake', title_ja: 'BMS運送リメイク', title_en: 'BMS Transport Remake', pages: 10, category: '創業ストーリー',
+    { id: 'bms-unso-remake', title_ja: 'BMS運送', title_en: 'BMS Transport', pages: 10, category: '創業ストーリー',
       media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
       point: 'リメイク版で新たな魅力を訴求。', point_en: 'Remake version showcasing renewed appeal.',
       comment: '応募者の質が上がりました。', comment_en: 'Quality of applicants improved.' }
