@@ -2061,7 +2061,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     margin-top: 72px;
   }
   .bm-img-hero img {
-    object-position: 60% 15%;
+    object-position: 50% 15%;
   }
 
   /* モーダル: スマホは縦並び — 漫画+詳細が一体でスクロール */
