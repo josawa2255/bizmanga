@@ -1275,7 +1275,7 @@ body {
   .nav-links.open .dropdown-menu li a { padding: 8px 0; font-size: 12px; }
   .hamburger { display: flex; }
   .header-inner { height: 56px; }
-  .page-hero { padding: 100px 16px 40px; min-height: 280px; background-position: right 20% top 15%; }
+  .page-hero { padding: 100px 16px 40px; min-height: 320px; background-position: right 30% top 20%; }
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
   .works-filter {
