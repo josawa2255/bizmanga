@@ -18,7 +18,6 @@
       { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ',             title_en: 'Ichinohe Home Red Pen',           path: 'https://contentsx.jp/material/pre/red/ichinohe-red/',   pages: 20 }
     ],
     name: [
-      { key: 'pre-name-merumaga',  title: 'BMS メルマガ ネーム', title_en: 'BMS Newsletter Rough', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/',   pages: 9 },
       { key: 'pre-name-fax',      title: 'BMS FAX ネーム',     title_en: 'BMS FAX Rough',        path: 'https://contentsx.jp/material/pre/name/bmsfax/',         pages: 9 },
       { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム',   title_en: 'Ichinohe Home Rough',  path: 'https://contentsx.jp/material/pre/name/ichinohe-name/',  pages: 20 }
     ]

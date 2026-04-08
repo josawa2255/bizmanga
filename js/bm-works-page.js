@@ -44,7 +44,7 @@
     'Web掲載': 'Web Publication',
     '研修資料': 'Training Material',
     '営業資料': 'Sales Material',
-    '多言語Web': 'Multilingual Web',
+
     'SNS': 'SNS',
     'メールマガジン': 'Email Newsletter',
     'Webサイト': 'Website',
@@ -62,22 +62,6 @@
 
   // ===== フォールバック用データ（bm-hero.jsと同じ構造） =====
   var FALLBACK_WORKS = [
-    { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, category: '研修',
-      media: ['研修資料'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
-      point: '新人研修用の教育マニュアルを漫画化。', point_en: 'Training manual for new employees converted to manga.',
-      comment: '理解度が上がりました。', comment_en: 'Comprehension improved.' },
-    { id: 'shohin-shokai', title_ja: '商品紹介', title_en: 'Product Introduction', pages: 8, category: '営業',
-      media: ['営業資料', 'Web掲載'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
-      point: '商品の特徴を分かりやすく漫画で紹介。', point_en: 'Product features clearly introduced through manga.',
-      comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
-    { id: 'tagengo', title_ja: '多言語マンガ', title_en: 'Multilingual Manga', pages: 10, category: 'プロモーション',
-      media: ['多言語Web', 'SNS'], spec: { pages: '10P', period: '3週間', period_en: '3 weeks' },
-      point: '多言語対応の漫画コンテンツ。', point_en: 'Multilingual manga content.',
-      comment: '海外展開に活用しています。', comment_en: 'Being utilized for overseas expansion.' },
-    { id: 'merumaga', title_ja: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 6, category: 'プロモーション',
-      media: ['メールマガジン'], spec: { pages: '6P', period: '1週間', period_en: '1 week' },
-      point: 'メルマガの開封率を漫画で向上。', point_en: 'Improved newsletter open rates with manga.',
-      comment: '開封率が大幅に上がりました。', comment_en: 'Open rates increased significantly.' },
     { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, category: 'プロモーション',
       media: ['Webサイト', 'SNS'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
       point: 'スクールの魅力を漫画で発信。', point_en: 'Promoting school appeal through manga.',

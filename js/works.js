@@ -44,30 +44,6 @@ function getImageSrc(data, pageIndex) {
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
 const FALLBACK_WORKS = {
-  'kyoiku-manual': {
-    title: '教育マニュアル', title_en: 'Education Manual', pages: 10,
-    path: 'https://contentsx.jp/material/manga/kyoiku-manual/',
-    tags: ['研修'], category: '研修',
-    viewType: 'spread'
-  },
-  'shohin-shokai': {
-    title: '商品紹介マンガ', title_en: 'Product Introduction Manga', pages: 11,
-    path: 'https://contentsx.jp/material/manga/shohin-shokai/',
-    tags: ['営業'], category: '営業',
-    viewType: 'spread'
-  },
-  'tagengo': {
-    title: '多言語対応マンガ', title_en: 'Multilingual Manga', pages: 12,
-    path: 'https://contentsx.jp/material/manga/tagengo/',
-    tags: ['研修'], category: '研修',
-    viewType: 'spread'
-  },
-  'merumaga': {
-    title: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 10,
-    path: 'https://contentsx.jp/material/manga/merumaga/',
-    tags: ['集客'], category: '集客',
-    viewType: 'spread'
-  },
   'life-school': {
     title: 'スクール紹介', title_en: 'School Introduction', pages: 26,
     path: 'https://contentsx.jp/material/manga/life-school/',
@@ -1499,7 +1475,6 @@ const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
         { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
     ],
     name: [
-      { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
       { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
       { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
     ]
@@ -1545,7 +1520,6 @@ const FALLBACK_PRE_DATA = {
     { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
   ],
   name: [
-    { key: 'pre-name-merumaga', title: 'BMS メルマガ ネーム', path: 'https://contentsx.jp/material/pre/name/bms-merumaga/', pages: 9 },
     { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
     { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
   ]

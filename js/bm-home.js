@@ -14,13 +14,9 @@
 
   // ===== フォールバック用データ =====
   var FALLBACK_NEW_WORKS = [
-    { id: 'kyoiku-manual', title_ja: '教育マニュアル', title_en: 'Education Manual', pages: 10, added: '2026-03-18' },
-    { id: 'shohin-shokai', title_ja: '商品紹介', title_en: 'Product Introduction', pages: 8, added: '2026-03-15' },
     { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },
     { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, added: '2026-03-10' },
-    { id: 'merumaga', title_ja: 'メルマガ漫画', title_en: 'Newsletter Manga', pages: 6, added: '2026-03-08' },
     { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, added: '2026-03-05' },
-    { id: 'tagengo', title_ja: '多言語マンガ', title_en: 'Multilingual Manga', pages: 10, added: '2026-03-03' },
     { id: 'sixtones', title_ja: 'SixTones', title_en: 'SixTones', pages: 10, added: '2026-03-01' },
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, added: '2026-02-28' }
   ];

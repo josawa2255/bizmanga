@@ -28,7 +28,7 @@
       heading_en: 'Training comprehension significantly improved',
       excerpt: 'テキストだけのマニュアルでは何度説明しても伝わらなかった内容が、漫画にした途端スッと理解してもらえるようになりました。',
       excerpt_en: 'Content that was never understood with text-only manuals is now easily grasped once converted to manga.',
-      thumbnail: 'https://contentsx.jp/material/manga/kyoiku-manual/01.webp',
+      thumbnail: 'https://contentsx.jp/material/manga/life-school/01.webp',
       img_position: 'center',
       tag: '研修'
     },
@@ -48,7 +48,7 @@
       heading_en: '3x increase in social media engagement',
       excerpt: '漫画コンテンツはSNSでの拡散力が段違いでした。広告費を抑えながら認知拡大ができ、費用対効果に大変満足しています。',
       excerpt_en: 'Manga content spreads far more effectively on social media.',
-      thumbnail: 'https://contentsx.jp/material/manga/shohin-shokai/01.webp',
+      thumbnail: 'https://contentsx.jp/material/manga/seko/01.webp',
       img_position: 'center',
       tag: 'プロモーション'
     }
