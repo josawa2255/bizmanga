@@ -1,26 +1,46 @@
 /* ===== 強みページ ===== */
 
-/* ===== 背景画像（非表示） ===== */
-.str-hero-bg { display: none; }
-.str-hero-overlay { display: none; }
+/* ===== 背景画像 ===== */
+.str-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.str-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.str-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.9);
+}
 
 /* ===== HERO ===== */
 .str-hero {
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   padding: 120px 24px 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
-  background: #fff;
+  overflow: hidden;
+  clip-path: inset(0);
 }
 
 /* ===== 巻物UI（PC: 横巻物） ===== */
 .str-scroll-wrap {
   position: relative;
-  z-index: 2;
-  width: clamp(700px, 80vw, 1100px);
+  z-index: 3;
+  width: clamp(800px, 90vw, 1300px);
 }
 .str-scroll-bg {
   width: 100%;
@@ -32,53 +52,58 @@
 
 .str-scroll-content {
   position: absolute;
-  inset: 16% 10% 14% 14%;
+  inset: 16% 14% 14% 14%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
+  overflow: hidden;
 }
 .str-scroll-title {
   font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
   font-size: clamp(22px, 3vw, 36px);
   font-weight: 400;
   color: #222;
-  margin-bottom: 12px;
+  margin-right: 16px;
   text-align: center;
+  writing-mode: vertical-rl;
 }
 .str-scroll-nav {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  justify-content: center;
+  gap: 8px 40px;
+  justify-content: flex-start;
   width: 100%;
 }
 .str-scroll-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
+  gap: 6px;
+  padding: 8px 12px;
   border-radius: 10px;
   text-decoration: none;
   color: #333;
   font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
-  font-size: clamp(14px, 1.4vw, 18px);
+  font-size: clamp(16px, 2vw, 24px);
   font-weight: 700;
   transition: background 0.2s, transform 0.2s;
   cursor: pointer;
 }
 .str-scroll-item:hover {
   background: rgba(235, 82, 0, 0.08);
-  transform: translateY(-2px);
+  transform: translateX(2px);
 }
 .str-scroll-num {
   font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
   font-size: 0.85em;
   color: var(--bm-accent);
   font-weight: 400;
-  min-width: 24px;
+}
+.str-scroll-item > span:not(.str-scroll-num) {
+  writing-mode: vertical-rl;
 }
 
 /* ===== セクション共通 ===== */
@@ -86,22 +111,18 @@
   position: relative;
   z-index: 1;
   padding: 100px 24px;
-  background: #fff;
+  background: #FFF8F2;
 }
 .str-section-alt {
-  background: #FAF8F5;
+  background: #FFF8F2;
 }
 .str-section-label {
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  color: var(--bm-accent);
-  font-weight: 700;
-  margin-bottom: 12px;
+  display: none;
 }
 .str-section-title {
-  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
   font-size: clamp(30px, 4.5vw, 48px);
-  font-weight: 400;
+  font-weight: 900;
   color: #222;
   margin-bottom: 24px;
   display: flex;
@@ -109,10 +130,13 @@
   gap: 14px;
 }
 .str-section-num {
-  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
-  font-size: 0.85em;
-  color: var(--bm-accent);
-  font-weight: 400;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 1em;
+  color: #222;
+  font-weight: 900;
+}
+.str-section-num::before {
+  content: '';
 }
 .str-section-lead {
   font-size: clamp(15px, 1.8vw, 19px);
@@ -125,55 +149,66 @@
 /* ===== 強み1: 価格比較 ===== */
 .str-compare {
   display: flex;
-  gap: 32px;
+  gap: 40px;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 700px;
+  align-items: stretch;
+  max-width: 800px;
   margin: 0 auto;
 }
 .str-compare-item {
   flex: 1;
-  min-width: 260px;
-  padding: 32px 24px;
-  border-radius: 12px;
+  min-width: 280px;
+  padding: 48px 32px;
+  border-radius: 0;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .str-compare-other {
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  background: #fff;
+  border: 3px solid #222;
 }
 .str-compare-bm {
-  background: #fff;
-  border: 2px solid var(--bm-accent);
+  background: #FFF5ED;
+  border: 3px solid var(--bm-accent);
   position: relative;
 }
 .str-compare-badge {
   position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: -18px;
+  right: -3px;
   background: var(--bm-accent);
   color: #fff;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  padding: 4px 16px;
-  border-radius: 20px;
+  padding: 8px 24px;
+  border-radius: 0;
   white-space: nowrap;
+  letter-spacing: 0.05em;
 }
 .str-compare-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 24px;
+}
+.str-compare-bm .str-compare-label {
+  color: var(--bm-accent);
+  font-size: 1.2rem;
+  font-weight: 900;
 }
 .str-compare-price {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(36px, 5vw, 56px);
   font-weight: 900;
-  color: #222;
+  color: #333;
+  white-space: nowrap;
 }
 .str-compare-price small {
   font-size: 0.45em;
-  font-weight: 600;
+  font-weight: 700;
 }
 .str-compare-accent {
   color: var(--bm-accent);
@@ -392,19 +427,26 @@
   .str-scroll-bg-sp { display: block; }
   .str-scroll-content {
     inset: 10% 16% 8%;
+    flex-direction: column;
   }
   .str-scroll-title {
     font-size: clamp(18px, 5vw, 26px);
     margin-bottom: 8px;
+    writing-mode: horizontal-tb;
+    margin-right: 0;
   }
   .str-scroll-nav {
     flex-direction: column;
     gap: 6px;
   }
   .str-scroll-item {
+    flex-direction: row;
     font-size: clamp(13px, 3.8vw, 16px);
     padding: 8px 12px;
     gap: 8px;
+  }
+  .str-scroll-item > span:not(.str-scroll-num) {
+    writing-mode: horizontal-tb;
   }
   .str-section { padding: 64px 16px; }
   .str-compare { flex-direction: column; }
@@ -413,4 +455,6 @@
   .str-speed-bar-bm { max-width: 60%; }
   .str-media-grid { grid-template-columns: repeat(2, 1fr); }
   .str-copyright-grid { flex-direction: column; }
+}
+mn; }
 }
