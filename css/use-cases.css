@@ -133,7 +133,7 @@
   display: flex;
   gap: 32px;
   align-items: center;
-  background: linear-gradient(135deg, #fff 0%, #FFF5ED 40%, #FFE8D6 100%);
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 24px;
@@ -146,7 +146,7 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 .uc-detail-alt {
-  background: linear-gradient(135deg, #fff 0%, #FFF5ED 40%, #FFE8D6 100%);
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
 }
 .uc-detail-img {
   flex-shrink: 0;

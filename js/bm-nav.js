@@ -16,7 +16,7 @@
   ];
 
   var path = location.pathname;
-  var currentFile = path.substring(path.lastIndexOf('/') + 1) || 'index';
+  var currentFile = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
 
   // ===== 言語状態の管理 =====
   var currentLang = 'ja';
@@ -49,15 +49,18 @@
 
       var sub = document.createElement('div');
       sub.className = 'bm-nav-dropdown-menu';
+      var childActive = false;
       item.children.forEach(function(child) {
         var ca = document.createElement('a');
         ca.href = child.href;
         ca.className = 'bm-nav-dropdown-item';
+        if (child.href === currentFile) { ca.className += ' active'; childActive = true; }
         ca.setAttribute('data-ja', child.label);
         ca.setAttribute('data-en', child.labelEn);
         ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
         sub.appendChild(ca);
       });
+      if (childActive) a.className += ' active';
       wrapper.appendChild(sub);
       nav.appendChild(wrapper);
     } else {

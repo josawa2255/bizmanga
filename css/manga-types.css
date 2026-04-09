@@ -156,7 +156,7 @@
   display: flex;
   gap: 24px;
   align-items: flex-start;
-  background: #fff;
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
   border-radius: 16px;
   padding: 36px 32px;
   margin-bottom: 24px;
@@ -169,7 +169,7 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 .mt-card-alt {
-  background: #FFFAF6;
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
 }
 .mt-card-icon {
   font-size: 2.4rem;
