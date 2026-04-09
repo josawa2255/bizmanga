@@ -152,7 +152,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   transform-origin: left center;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.bm-nav-link:hover { color: var(--bm-accent); }
+.bm-nav-link:hover { color: var(--bm-accent-hover); }
 .bm-nav-link:hover::before,
 .bm-nav-link:hover::after { transform: scaleX(1); }
 .bm-nav-link.active { color: var(--bm-accent); }
@@ -203,7 +203,13 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-nav-dropdown-item:hover {
   background: var(--bm-bg-light, #faf8f5);
+  color: var(--bm-accent-hover);
+  font-weight: 700;
+}
+.bm-nav-dropdown-item.active {
+  background: var(--bm-bg-light, #faf8f5);
   color: var(--bm-accent);
+  font-weight: 700;
 }
 
 /* ===== TOPに戻るボタン ===== */
