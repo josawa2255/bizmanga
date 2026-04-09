@@ -111,13 +111,22 @@
   position: relative;
   z-index: 1;
   padding: 100px 24px;
-  background: #FFF8F2;
+  background: #FFFCFA;
 }
 .str-section-alt {
-  background: #FFF8F2;
+  background: #FFFCFA;
 }
 .str-section-label {
   display: none;
+}
+.str-section-label-badge {
+  display: inline-block;
+  background: #222;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 24px;
+  margin-bottom: 20px;
 }
 .str-section-title {
   font-family: 'Noto Sans JP', sans-serif;
@@ -216,25 +225,30 @@
 
 /* ===== 強み2: スピード ===== */
 .str-speed-visual {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
 }
 .str-speed-headline {
   text-align: center;
-  font-size: clamp(18px, 2.5vw, 28px);
-  font-weight: 700;
+  font-size: clamp(20px, 3vw, 32px);
+  font-weight: 900;
   color: #333;
-  margin-bottom: 36px;
+  margin-bottom: 40px;
 }
 .str-speed-headline strong {
-  font-size: 2em;
+  font-size: 2.4em;
   color: var(--bm-accent);
 }
-.str-speed-bars {
+.str-speed-layout {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+.str-speed-left {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 24px;
 }
 .str-speed-row {
   display: flex;
@@ -242,48 +256,65 @@
   gap: 16px;
 }
 .str-speed-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #666;
-  min-width: 120px;
-  text-align: right;
+  font-size: clamp(14px, 1.4vw, 17px);
+  font-weight: 900;
+  color: #333;
+  width: 140px;
+  min-width: 140px;
+  text-align: left;
+  white-space: nowrap;
 }
-.str-speed-bar {
+.str-speed-label-bm {
+  color: var(--bm-accent);
+}
+.str-speed-bar-outer {
   flex: 1;
-  height: 40px;
-  border-radius: 6px;
+  height: 56px;
+  border: 1.5px solid #999;
+  background: #fff;
   display: flex;
-  align-items: center;
-  padding: 0 16px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
+  align-items: stretch;
 }
-.str-speed-bar-other {
-  background: #999;
+.str-speed-bar-fill-other {
+  width: 100%;
+  background: #ddd;
 }
-.str-speed-bar-bm {
+.str-speed-bar-fill-bm {
+  width: 36px;
+  height: 36px;
   background: var(--bm-accent);
-  max-width: 45%;
+  flex-shrink: 0;
+}
+.str-speed-bar-text {
+  font-size: clamp(14px, 1.4vw, 17px);
+  font-weight: 700;
+  color: #333;
+  white-space: nowrap;
+}
+.str-speed-bar-text-bm {
+  color: var(--bm-accent);
+  font-weight: 900;
 }
 .str-speed-note {
+  flex: 0 0 280px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: flex-start;
-  background: var(--bm-accent-soft, rgba(207,94,44,0.06));
-  border-radius: 10px;
-  padding: 20px;
+  background: #FFF5ED;
+  border: 1.5px solid #999;
+  border-radius: 0;
+  padding: 28px;
 }
-.str-speed-note-icon { font-size: 1.4rem; }
-.str-speed-note strong { display: block; margin-bottom: 4px; color: var(--bm-accent); font-size: 0.9rem; }
-.str-speed-note p { font-size: 0.85rem; color: #555; margin: 0; line-height: 1.7; }
+.str-speed-note-icon { font-size: 1.6rem; }
+.str-speed-note strong { display: block; margin-bottom: 8px; color: var(--bm-accent); font-size: 1.05rem; font-weight: 900; }
+.str-speed-note p { font-size: 0.95rem; color: #444; margin: 0; line-height: 1.9; }
 
 /* ===== 強み3: クオリティ ===== */
 .str-quality-box {
-  max-width: 550px;
-  margin: 0 auto 24px;
-  border-radius: 12px;
-  padding: 32px 24px;
+  max-width: 800px;
+  margin: 0 auto 28px;
+  border-radius: 16px;
+  padding: 40px 48px;
   text-align: center;
 }
 .str-quality-pro {
@@ -291,26 +322,60 @@
   color: #fff;
 }
 .str-quality-pro-title {
-  font-size: clamp(18px, 2.5vw, 24px);
+  font-size: clamp(28px, 4vw, 40px);
   font-weight: 900;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
-.str-quality-pro p { font-size: 0.9rem; opacity: 0.9; }
+.str-quality-pro p { font-size: clamp(18px, 2.5vw, 24px); opacity: 0.9; }
+.str-quality-btns {
+  display: flex;
+  gap: 16px;
+  margin-top: -14px;
+  margin-bottom: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.str-quality-btn {
+  display: inline-block;
+  padding: 14px 36px;
+  background: #fff;
+  color: var(--bm-accent);
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  border: 3px solid var(--bm-accent);
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.str-quality-btn:hover {
+  background: rgba(235, 82, 0, 0.06);
+  transform: translateY(-2px);
+}
 .str-quality-check {
   background: #fff;
-  border: 2px solid #e8e4e0;
+  border: 3px solid #222;
+  border-radius: 16px;
+  text-align: left;
+  padding: 40px 48px;
 }
 .str-quality-check-label {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 900;
   color: var(--bm-accent);
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .str-quality-check p {
-  font-size: clamp(15px, 1.8vw, 18px);
-  font-weight: 700;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 900;
   color: #333;
-  margin: 6px 0;
+  margin: 14px 0;
+  padding-left: 40px;
 }
 
 /* ===== 強み4: 著作権 ===== */
@@ -318,76 +383,76 @@
   display: flex;
   gap: 32px;
   flex-wrap: wrap;
-  align-items: flex-start;
-  max-width: 700px;
+  align-items: stretch;
+  max-width: 800px;
   margin: 0 auto;
 }
 .str-copyright-card {
   flex: 1;
-  min-width: 240px;
+  min-width: 260px;
   background: #fff;
-  border: 1px solid #e8e4e0;
-  border-radius: 12px;
-  padding: 28px 20px;
+  border: 3px solid #222;
+  border-radius: 0;
+  padding: 36px 24px;
   text-align: center;
 }
-.str-copyright-icon { font-size: 2.2rem; margin-bottom: 12px; }
-.str-copyright-card p { font-weight: 700; color: #333; margin-bottom: 12px; }
-.str-copyright-card small { font-size: 0.82rem; color: #777; line-height: 1.8; }
+.str-copyright-icon { font-size: 2.6rem; margin-bottom: 16px; }
+.str-copyright-card p { font-weight: 900; color: #333; margin-bottom: 16px; font-size: 1.1rem; }
+.str-copyright-card small { font-size: 0.88rem; color: #666; line-height: 1.9; }
 .str-copyright-badges {
   flex: 1;
-  min-width: 240px;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 .str-copyright-badge {
   background: var(--bm-accent);
   color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 16px 20px;
-  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  padding: 20px 24px;
+  border-radius: 0;
   text-align: center;
 }
 
 /* ===== 強み5: 媒体展開 ===== */
 .str-media-flow {
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
   text-align: center;
 }
 .str-media-source {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: var(--bm-accent);
   color: #fff;
-  font-weight: 700;
-  padding: 14px 32px;
-  border-radius: 10px;
-  font-size: 1rem;
+  font-weight: 900;
+  padding: 18px 40px;
+  border-radius: 0;
+  font-size: 1.1rem;
 }
 .str-media-arrow {
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: var(--bm-accent);
-  margin: 16px 0;
+  margin: 20px 0;
 }
 .str-media-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 20px;
 }
 .str-media-card {
   background: #fff;
-  border: 1px solid #e8e4e0;
-  border-radius: 10px;
-  padding: 20px 12px;
+  border: 3px solid #222;
+  border-radius: 0;
+  padding: 28px 16px;
   text-align: center;
 }
-.str-media-card span { font-size: 1.6rem; display: block; margin-bottom: 8px; }
-.str-media-card strong { font-size: 0.88rem; display: block; margin-bottom: 8px; color: #333; }
-.str-media-card small { font-size: 0.78rem; color: #777; line-height: 1.7; }
+.str-media-card span { font-size: 1.8rem; display: block; margin-bottom: 12px; }
+.str-media-card strong { font-size: 0.95rem; display: block; margin-bottom: 10px; color: #333; font-weight: 900; }
+.str-media-card small { font-size: 0.82rem; color: #666; line-height: 1.8; }
 
 /* ===== CTA ===== */
 .str-cta {
@@ -450,11 +515,12 @@
   }
   .str-section { padding: 64px 16px; }
   .str-compare { flex-direction: column; }
-  .str-speed-row { flex-direction: column; align-items: stretch; gap: 6px; }
-  .str-speed-label { text-align: left; min-width: 0; }
-  .str-speed-bar-bm { max-width: 60%; }
+  .str-speed-layout { flex-direction: column; gap: 24px; }
+  .str-speed-note { flex: auto; }
+  .str-speed-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .str-speed-label { min-width: 0; }
   .str-media-grid { grid-template-columns: repeat(2, 1fr); }
+  .str-compare-item { min-width: 0; }
   .str-copyright-grid { flex-direction: column; }
-}
-mn; }
+  .str-speed-bar { height: 44px; }
 }

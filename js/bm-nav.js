@@ -185,24 +185,27 @@
     });
   }
 
-  // ===== TOPに戻るボタン =====
-  var topBtn = document.createElement('button');
-  topBtn.className = 'bm-back-to-top';
-  topBtn.setAttribute('aria-label', 'TOPに戻る');
-  topBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3L3 9.5M9 3l6 6.5M9 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>TOP</span>';
-  document.body.appendChild(topBtn);
+  // ===== TOPに戻るボタン（フルスクリーンheroがあるページのみ） =====
+  var hasFullHero = document.querySelector('.str-hero, .uc-hero, .mt-hero');
+  if (hasFullHero) {
+    var topBtn = document.createElement('button');
+    topBtn.className = 'bm-back-to-top';
+    topBtn.setAttribute('aria-label', 'TOPに戻る');
+    topBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3L3 9.5M9 3l6 6.5M9 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>TOP</span>';
+    document.body.appendChild(topBtn);
 
-  topBtn.addEventListener('click', function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+    topBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 400) {
-      topBtn.classList.add('visible');
-    } else {
-      topBtn.classList.remove('visible');
-    }
-  }, { passive: true });
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 400) {
+        topBtn.classList.add('visible');
+      } else {
+        topBtn.classList.remove('visible');
+      }
+    }, { passive: true });
+  }
 
   // グローバルに公開
   window.bmSwitchLang = switchLang;
