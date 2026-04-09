@@ -1,0 +1,325 @@
+/* ===== マンガの種類ページ ===== */
+
+/* ===== ヒーロー ===== */
+.mt-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.mt-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.mt-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mt-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* ===== ヒーローコンテンツ ===== */
+.mt-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 80px 32px 40px;
+}
+
+/* タイトル — 左上 */
+.mt-hero-title {
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 0;
+  text-shadow: 0 2px 8px rgba(255,255,255,0.5);
+}
+.mt-hero-title-accent {
+  color: var(--bm-accent);
+}
+
+/* ===== ステージ: 絶対配置で参考画像を忠実再現 ===== */
+.mt-hero-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(600px, 75vw, 900px);
+}
+
+/* キャラ — 中央やや左 */
+.mt-hero-character {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-55%);
+  height: 85%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.12));
+  z-index: 2;
+}
+
+/* 吹き出し — キャラの右上 */
+.mt-hero-speech {
+  position: absolute;
+  top: 2%;
+  right: 14%;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px 28px;
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 700;
+  color: #222;
+  line-height: 1.8;
+  text-align: left;
+  border: 2.5px solid #222;
+  max-width: 380px;
+  z-index: 3;
+}
+.mt-hero-speech::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 25%;
+  border: 9px solid transparent;
+  border-top-color: #222;
+}
+.mt-hero-speech::before {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  left: 25%;
+  border: 9px solid transparent;
+  border-top-color: #fff;
+  z-index: 1;
+}
+.mt-accent {
+  color: var(--bm-accent);
+  font-weight: 900;
+}
+
+/* ===== ラベル共通 ===== */
+.mt-label {
+  position: absolute;
+  display: inline-block;
+  background: #fff;
+  color: #111;
+  font-size: clamp(18px, 2.4vw, 30px);
+  font-weight: 700;
+  padding: 18px 40px;
+  border-radius: 40px;
+  border: 2.5px solid #222;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  text-decoration: none;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+  z-index: 3;
+}
+.mt-label:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  border-color: var(--bm-accent);
+  color: var(--bm-accent);
+}
+
+/* 左ラベル: 階段状に右下へずれる（参考画像通り） */
+.mt-pos-l1 { top: 8%;   left: 4%; }
+.mt-pos-l2 { top: 28%;  left: 2%; }
+.mt-pos-l3 { top: 48%;  left: 5%; }
+.mt-pos-l4 { top: 72%;  left: 1%; }
+
+/* 右ラベル: 階段状に右下へずれる */
+.mt-pos-r1 { top: 32%;  right: 4%; }
+.mt-pos-r2 { top: 52%;  right: 2%; }
+.mt-pos-r3 { top: 72%;  right: 5%; }
+
+/* ===== 詳細セクション ===== */
+.mt-detail {
+  padding: 80px 0;
+  background: var(--bm-bg-light);
+}
+
+.mt-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e8e4e0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.mt-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.mt-card-alt {
+  background: #FFFAF6;
+}
+.mt-card-icon {
+  font-size: 2.4rem;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bm-accent-light);
+  border-radius: 14px;
+}
+.mt-card-body {
+  flex: 1;
+}
+.mt-card-title {
+  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 400;
+  color: #222;
+  margin-bottom: 8px;
+}
+.mt-card-lead {
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+.mt-card-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.mt-card-points li {
+  position: relative;
+  padding-left: 20px;
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: clamp(13px, 1.3vw, 15px);
+  color: #444;
+  line-height: 1.8;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+.mt-card-points li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--bm-accent);
+  font-weight: 700;
+}
+
+/* ===== CTA ===== */
+.mt-cta {
+  background: var(--bm-accent);
+  padding: 72px 24px;
+  text-align: center;
+}
+.mt-cta h2 {
+  color: #fff;
+  font-size: clamp(18px, 2.8vw, 28px);
+  font-weight: 900;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.mt-cta-btn {
+  display: inline-block;
+  padding: 16px 48px;
+  background: #fff;
+  color: var(--bm-accent);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.mt-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+  .mt-hero-content {
+    padding: 100px 16px 40px;
+  }
+  .mt-hero-stage {
+    height: auto;
+    display: grid;
+    grid-template-columns: 55% 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px 8px;
+    padding: 16px 0;
+    align-items: end;
+    position: relative;
+    overflow: visible;
+  }
+  /* 吹き出し: 上段全幅 */
+  .mt-hero-speech {
+    position: static;
+    grid-column: 1 / -1;
+    max-width: none;
+    padding: 16px 20px;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .mt-hero-speech::after,
+  .mt-hero-speech::before {
+    left: 20%;
+  }
+  /* 左にびずちゃん */
+  .mt-hero-character {
+    position: absolute;
+    left: -10%;
+    bottom: 0;
+    width: 55vw;
+    height: auto;
+    transform: none;
+    z-index: 2;
+  }
+  /* 右にラベル群 */
+  .mt-label {
+    position: static;
+    font-size: 16px;
+    padding: 12px 22px;
+    grid-column: 2;
+    justify-self: end;
+    margin-right: 4px;
+  }
+  .mt-pos-l1 { grid-row: 2; }
+  .mt-pos-l2 { grid-row: 3; }
+  .mt-pos-l3 { grid-row: 4; }
+  .mt-pos-l4 { grid-row: 5; }
+  .mt-pos-r1 { grid-row: 6; }
+  .mt-pos-r2 { grid-row: 7; }
+  .mt-pos-r3 { grid-row: 8; }
+  .mt-label {
+    z-index: 3;
+  }
+  .mt-card {
+    flex-direction: column;
+    padding: 24px 20px;
+  }
+  .mt-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.8rem;
+  }
+  .mt-detail {
+    padding: 48px 0;
+  }
+}

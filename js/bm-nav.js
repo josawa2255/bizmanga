@@ -7,6 +7,10 @@
     { label: 'ホーム',     labelEn: 'Home',       href: './' },
     { label: '制作事例',   labelEn: 'Works',      href: 'works' },
     { label: 'ビズ書庫',   labelEn: 'Library',    href: 'biz-library' },
+    { label: '強み',       labelEn: 'Strengths',  href: 'strength', children: [
+      { label: 'マンガの種類', labelEn: 'Manga Types',  href: 'manga-types' },
+      { label: '活用場面',     labelEn: 'Use Cases',    href: 'use-cases' }
+    ]},
     { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
     { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }
   ];
@@ -24,14 +28,48 @@
   nav.innerHTML = '';
 
   NAV_ITEMS.forEach(function(item) {
-    var a = document.createElement('a');
-    a.href = item.href;
-    a.className = 'bm-nav-link';
-    if (item.href === currentFile) a.className += ' active';
-    a.setAttribute('data-ja', item.label);
-    a.setAttribute('data-en', item.labelEn);
-    a.textContent = currentLang === 'en' ? item.labelEn : item.label;
-    nav.appendChild(a);
+    if (item.children && item.children.length > 0) {
+      // ドロップダウン
+      var wrapper = document.createElement('div');
+      wrapper.className = 'bm-nav-dropdown';
+
+      var a = document.createElement('a');
+      a.href = item.href;
+      a.className = 'bm-nav-link bm-nav-dropdown-toggle';
+      if (item.href === currentFile) a.className += ' active';
+      a.setAttribute('data-ja', item.label);
+      a.setAttribute('data-en', item.labelEn);
+      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+
+      var arrow = document.createElement('span');
+      arrow.className = 'bm-nav-dropdown-arrow';
+      arrow.textContent = '▾';
+      a.appendChild(arrow);
+      wrapper.appendChild(a);
+
+      var sub = document.createElement('div');
+      sub.className = 'bm-nav-dropdown-menu';
+      item.children.forEach(function(child) {
+        var ca = document.createElement('a');
+        ca.href = child.href;
+        ca.className = 'bm-nav-dropdown-item';
+        ca.setAttribute('data-ja', child.label);
+        ca.setAttribute('data-en', child.labelEn);
+        ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+        sub.appendChild(ca);
+      });
+      wrapper.appendChild(sub);
+      nav.appendChild(wrapper);
+    } else {
+      var a = document.createElement('a');
+      a.href = item.href;
+      a.className = 'bm-nav-link';
+      if (item.href === currentFile) a.className += ' active';
+      a.setAttribute('data-ja', item.label);
+      a.setAttribute('data-en', item.labelEn);
+      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+      nav.appendChild(a);
+    }
   });
 
   // ===== 言語切替ボタンの挿入 =====
@@ -79,7 +117,12 @@
 
       document.querySelectorAll('[data-ja][data-en]').forEach(function(el) {
         var newText = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
-        el.textContent = newText;
+        var arrow = el.querySelector('.bm-nav-dropdown-arrow');
+        if (arrow) {
+          el.firstChild.textContent = newText;
+        } else {
+          el.textContent = newText;
+        }
       });
 
       document.querySelectorAll('.bm-nav-cta').forEach(function(el) {
@@ -113,13 +156,50 @@
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
     });
-    nav.querySelectorAll('.bm-nav-link').forEach(function(link) {
+    nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', function() {
         nav.classList.remove('open');
         hamburger.classList.remove('active');
       });
     });
+    nav.querySelectorAll('.bm-nav-dropdown-item').forEach(function(link) {
+      link.addEventListener('click', function() {
+        nav.classList.remove('open');
+        hamburger.classList.remove('active');
+      });
+    });
+    // モバイル: ドロップダウン親をタップ → 1回目サブ開く、2回目遷移
+    nav.querySelectorAll('.bm-nav-dropdown-toggle').forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        if (nav.classList.contains('open')) {
+          var dd = this.closest('.bm-nav-dropdown');
+          if (!dd.classList.contains('is-open')) {
+            e.preventDefault();
+            dd.classList.add('is-open');
+          }
+        }
+      });
+    });
   }
+
+  // ===== TOPに戻るボタン =====
+  var topBtn = document.createElement('button');
+  topBtn.className = 'bm-back-to-top';
+  topBtn.setAttribute('aria-label', 'TOPに戻る');
+  topBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3L3 9.5M9 3l6 6.5M9 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>TOP</span>';
+  document.body.appendChild(topBtn);
+
+  topBtn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 400) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }, { passive: true });
 
   // グローバルに公開
   window.bmSwitchLang = switchLang;

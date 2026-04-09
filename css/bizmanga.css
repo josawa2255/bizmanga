@@ -158,6 +158,88 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-nav-link.active { color: var(--bm-accent); }
 .bm-nav-link.active::before,
 .bm-nav-link.active::after { transform: scaleX(1); }
+/* ===== ナビドロップダウン（縦型） ===== */
+.bm-nav-dropdown {
+  position: relative;
+}
+.bm-nav-dropdown-arrow {
+  font-size: 0.7em;
+  margin-left: 3px;
+  opacity: 0.6;
+  transition: transform 0.3s;
+}
+.bm-nav-dropdown:hover .bm-nav-dropdown-arrow {
+  transform: rotate(180deg);
+}
+.bm-nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  min-width: 160px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+  z-index: 100;
+}
+.bm-nav-dropdown:hover .bm-nav-dropdown-menu {
+  max-height: 200px;
+  opacity: 1;
+  padding: 8px 0;
+}
+.bm-nav-dropdown-item {
+  display: block;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bm-text-muted);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.bm-nav-dropdown-item:hover {
+  background: var(--bm-bg-light, #faf8f5);
+  color: var(--bm-accent);
+}
+
+/* ===== TOPに戻るボタン ===== */
+.bm-back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999;
+  padding: 16px 48px;
+  border-radius: 50px;
+  background: var(--bm-accent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, background 0.2s;
+}
+.bm-back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.bm-back-to-top:hover {
+  background: var(--bm-accent-hover);
+}
+
 /* bm-header-right は上のルールで上書き済み */
 .bm-nav-cta {
   display: inline-block;
@@ -1022,6 +1104,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    Footer
    ============================================ */
 .bm-footer {
+  position: relative;
+  z-index: 2;
   padding: 48px 0 24px;
   background: #f8f4f0;
   border-top: 1px solid var(--bm-border);
@@ -2060,6 +2144,23 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     border-bottom: 1px solid var(--bm-border);
   }
   .bm-header-right .bm-nav-cta { display: none; }
+  /* モバイルドロップダウン */
+  .bm-nav-dropdown-menu {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    display: none;
+    padding: 0 0 0 16px;
+    background: transparent;
+  }
+  .bm-nav-dropdown.is-open .bm-nav-dropdown-menu { display: block; }
+  .bm-nav-dropdown-item {
+    padding: 10px 0;
+    font-size: 15px;
+    border-bottom: 1px solid var(--bm-border);
+  }
 
   /* カテゴリフィルター: スマホ用コンパクト表示 */
   .bm-category-filter {
