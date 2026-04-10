@@ -67,7 +67,8 @@
 
       var frag = document.createDocumentFragment();
       var renderItems = items.concat(items, items, items);
-      renderItems.forEach(function(item) {
+      var itemCount = items.length;
+      renderItems.forEach(function(item, idx) {
         var div = document.createElement('div');
         div.className = 'bm-hero-works-cover';
         div.dataset.workId = item.id;
@@ -75,9 +76,11 @@
         var img = document.createElement('img');
         img.src = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
         img.alt = item.title_ja || item.title || '';
-        img.loading = 'eager';
+        /* 最初の1セットだけeager、複製分はlazyで帯域節約 */
+        var isFirstSet = idx < itemCount;
+        img.loading = isFirstSet ? 'eager' : 'lazy';
         img.decoding = 'async';
-        img.fetchPriority = 'high';
+        if (isFirstSet) img.fetchPriority = 'high';
         img.style.objectPosition = 'top center';
         div.appendChild(img);
         frag.appendChild(div);
