@@ -25,6 +25,14 @@
   <link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/">
   <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
   <link rel="preconnect" href="https://contentsx.jp" crossorigin>
+  <link rel="dns-prefetch" href="https://cms.contentsx.jp">
+  <!-- ヒーロー表紙preload（JS実行前にダウンロード開始） -->
+  <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/omatome-ninja/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/seko/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/life-buzfes/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/bms-unso/01.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -339,6 +347,14 @@
   <script src="js/bm-home.js" defer></script>
   <script src="js/bm-pre-production.js" defer></script>
   <script src="js/bm-scroll-anim.js" defer></script>
+<!-- Service Worker 登録 -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  });
+}
+</script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {

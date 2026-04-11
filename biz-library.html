@@ -33,6 +33,10 @@
   <link rel="preload" href="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" as="image" type="image/webp">
   <link rel="preload" href="https://contentsx.jp/material/images/bizmanga/output_05.webp" as="image" type="image/webp">
   <link rel="preload" href="js/works.js" as="script">
+  <!-- 最初に見える表紙preload -->
+  <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
+  <link rel="preload" href="https://contentsx.jp/material/manga/omatome-ninja/01.webp" as="image" type="image/webp">
   <link rel="prefetch" href="https://contentsx.jp/material/images/backgrounds/bg_02.webp" as="image" type="image/webp">
   <link rel="prefetch" href="https://contentsx.jp/material/images/backgrounds/manga_bg_06.webp" as="image" type="image/webp">
   <!-- DNS prefetch for external resources -->
@@ -208,6 +212,14 @@
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/works.js" defer></script>
+<!-- Service Worker 登録 -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  });
+}
+</script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
