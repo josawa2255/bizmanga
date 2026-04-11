@@ -86,7 +86,7 @@
       media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間', period_en: '3 weeks' },
       point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', point_en: 'A sales tool that conveys the appeal of a home builder through story manga.',
       comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
-    { id: 'bms-unso-remake', title_ja: 'BMS運送', title_en: 'BMS Transport', pages: 10, category: '創業ストーリー',
+    { id: 'bms-unso', title_ja: 'BMS運送', title_en: 'BMS Transport', pages: 10, category: '創業ストーリー',
       media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
       point: 'リメイク版で新たな魅力を訴求。', point_en: 'Remake version showcasing renewed appeal.',
       comment: '応募者の質が上がりました。', comment_en: 'Quality of applicants improved.' }

@@ -31,7 +31,7 @@
     { id: 'ichinohe-home', title_ja: '一戸ホーム', pages: 22, category: '営業',
       media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間' },
       point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', comment: '商談がスムーズになりました。' },
-    { id: 'bms-unso-remake', title_ja: 'BMS運送', pages: 10, category: '創業ストーリー',
+    { id: 'bms-unso', title_ja: 'BMS運送', pages: 10, category: '創業ストーリー',
       media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間' },
       point: 'リメイク版で新たな魅力を訴求。', comment: '応募者の質が上がりました。' }
   ];

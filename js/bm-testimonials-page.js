@@ -17,7 +17,7 @@
       heading_en: 'Application numbers doubled',
       excerpt: '漫画にしたことで、求職者に仕事の魅力がダイレクトに伝わるようになりました。面接でも「漫画を見て興味を持った」という声が増えています。',
       excerpt_en: 'By converting to manga, the appeal of the job is communicated directly to job seekers.',
-      thumbnail: 'https://contentsx.jp/material/manga/bms-unso-remake/01.webp',
+      thumbnail: 'https://contentsx.jp/material/manga/bms-unso/01.webp',
       img_position: 'center',
       tag: '営業'
     },

@@ -72,7 +72,7 @@ const FALLBACK_WORKS = (function() {
     ['seko','瀬古恭介 始まりのものがたり','Kyosuke Seko: A Story of Beginnings',25,'ブランド','spread'],
     ['life-buzfes','バズフェス','BuzzFes',25,'集客','spread'],
     ['life-school','バズスクール','Buzz School',26,'集客','spread'],
-    ['bms-unso-remake','BMS運送','BMS Transport',10,'採用','spread'],
+    ['bms-unso','BMS運送','BMS Transport',10,'採用','spread'],
     ['sixtones','SixTONES風キャラ','SixTONES-style Characters',4,'IP','spread'],
     ['torutoru-kun','トルトルくん','Torutoru-kun',21,'採用','spread'],
     ['hamada-masatada','濱田将匡 信頼を、つなぐ。','Masatada Hamada: Connecting Trust',20,'ブランド','spread'],
@@ -1505,7 +1505,7 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ===== Direct access mode (QR code: works.html?manga=bms-unso-remake) =====
+// ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
 const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
