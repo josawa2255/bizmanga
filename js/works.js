@@ -678,6 +678,11 @@ function openManga(key) {
   const data = mangaData[key];
   if (!data) return;
 
+  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込みを防止）
+  if (data.gallery && data.gallery.length > 0 && data.pages > data.gallery.length) {
+    data.pages = data.gallery.length;
+  }
+
   // 1枚目の画像をプローブして縦長判定 → 自動でverticalに切り替え
   const firstSrc = getImageSrc(data, 0);
   const probe = new Image();
