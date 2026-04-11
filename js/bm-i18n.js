@@ -214,6 +214,7 @@
    * DOM 全体を日本語に復元
    */
   function restoreAll() {
+    // originals に保存されたものを復元
     originals.forEach(function (data, target) {
       if (data.type === 'html') {
         target.innerHTML = data.value;
@@ -224,6 +225,25 @@
       }
     });
     originals.clear();
+
+    // data-ja/data-en 付き要素を確実に日本語に戻す
+    // （ページ遷移後は originals が空なのでこちらで対応）
+    var legacy = document.querySelectorAll('[data-ja][data-en]');
+    for (var i = 0; i < legacy.length; i++) {
+      var el = legacy[i];
+      var jaText = el.getAttribute('data-ja');
+      if (jaText.indexOf('<') !== -1) {
+        el.innerHTML = jaText;
+      } else {
+        var arrow = el.querySelector('.bm-nav-dropdown-arrow');
+        if (arrow) {
+          // ドロップダウン矢印を壊さないよう最初のテキストノードだけ
+          el.firstChild.textContent = jaText;
+        } else {
+          el.textContent = jaText;
+        }
+      }
+    }
   }
 
   /* ============================================================
