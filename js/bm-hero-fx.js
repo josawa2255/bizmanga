@@ -15,6 +15,30 @@
   var speedlines = hero.querySelector('.bm-hero-speedlines');
   var glow = hero.querySelector('.bm-hero-glow');
 
+  // ===== タグライン1文字ずつ分割 =====
+  var tagline = document.getElementById('heroTagline');
+  if (tagline) {
+    var text = tagline.textContent;
+    var charCount = text.length;
+    tagline.innerHTML = '';
+    for (var ci = 0; ci < charCount; ci++) {
+      var span = document.createElement('span');
+      span.className = 'tl-char';
+      span.textContent = text[ci];
+      span.style.setProperty('--d', (1.6 + ci * 0.06) + 's');
+      span.style.setProperty('--wd', (ci * 0.15) + 's');
+      tagline.appendChild(span);
+    }
+    // 波打ち登場完了後にシャインを開始
+    var lastCharDelay = 1.6 + (charCount - 1) * 0.06 + 0.6; // 最後の文字のdelay + duration
+    setTimeout(function() {
+      var chars = tagline.querySelectorAll('.tl-char');
+      for (var j = 0; j < chars.length; j++) {
+        chars[j].classList.add('wave-active');
+      }
+    }, lastCharDelay * 1000);
+  }
+
   // reduced-motion チェック
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

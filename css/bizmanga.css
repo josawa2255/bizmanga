@@ -324,7 +324,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #000;
+  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat;
 }
 
 /* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */
@@ -336,14 +336,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: clamp(4px, 0.6vw, 10px);
+  gap: clamp(2px, 0.3vw, 5px);
   transform-style: preserve-3d;
   transform: perspective(1200px) scale(1.08);
   transition: transform 0.15s ease-out;
 }
 .bm-hero-works-row {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   width: max-content;
 }
 /* マーキーは集合完了後にJSで開始 */
@@ -380,8 +380,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 
 .bm-hero-works-cover {
   flex-shrink: 0;
-  width: clamp(120px, 12vw, 200px);
-  height: clamp(168px, 16.8vw, 280px);
+  width: clamp(140px, 14vw, 220px);
+  height: clamp(196px, 19.6vw, 308px);
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
@@ -444,12 +444,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   display: block;
 }
 
-/* --- オーバーレイ（ビネット） --- */
+/* --- オーバーレイ --- */
 .bm-hero-overlay {
   position: absolute; inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.45) 100%);
+  background: none;
 }
 
 /* --- 集中線（マンガ的インパクト） --- */
@@ -516,18 +516,53 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   padding-bottom: 40px;
 }
 .bm-hero-tagline {
-  color: #fff;
-  font-size: clamp(16px, 2.5vw, 26px);
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(50px, 6vw, 90px));
+  transform: translateX(-50%);
+  z-index: 4;
+  font-size: clamp(18px, 3vw, 32px);
   font-weight: 800;
   letter-spacing: 0.14em;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  margin-top: 16px;
-  opacity: 0;
-  animation: bmTaglineIn 0.8s cubic-bezier(0.16,1,0.3,1) 1.6s forwards;
+  display: flex;
+  justify-content: center;
+  color: #fff;
+  white-space: nowrap;
 }
-@keyframes bmTaglineIn {
-  0% { opacity: 0; transform: translateY(10px); }
+.bm-hero-tagline .tl-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: bmCharWaveIn 0.6s cubic-bezier(0.16,1,0.3,1) var(--d) forwards;
+  /* Wave shine per character */
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    #fff 30%,
+    #ffbc5c 42%,
+    #ffd080 50%,
+    #ffbc5c 58%,
+    #fff 70%,
+    #fff 100%
+  );
+  background-size: 800% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 16px rgba(0,0,0,0.8)) drop-shadow(0 0 8px rgba(0,0,0,0.5));
+}
+.bm-hero-tagline .tl-char.wave-active {
+  animation: bmCharWaveIn 0.6s cubic-bezier(0.16,1,0.3,1) var(--d) forwards,
+             bmCharShine 8s ease-in-out var(--wd) infinite;
+}
+@keyframes bmCharWaveIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  60% { transform: translateY(-4px); }
   100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes bmCharShine {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
 }
 .bm-hero-logo {
   width: clamp(280px, 40vw, 650px);
@@ -2813,7 +2848,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-hero-works-row--4,
   .bm-hero-works-row--5 { animation: none !important; }
   .bm-hero-logo { animation: none !important; opacity: 1 !important; }
-  .bm-hero-tagline { animation: none !important; opacity: 1 !important; }
+  .bm-hero-tagline .tl-char { animation: none !important; opacity: 1 !important; transform: none !important; -webkit-text-fill-color: #fff !important; }
   .bm-hero-works-cover { transition: none !important; }
   .bm-hero-speedlines { animation: none !important; opacity: 0.6 !important; }
   .bm-hero-glow { animation: none !important; opacity: 1 !important; filter: blur(30px) !important; }
