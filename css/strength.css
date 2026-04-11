@@ -262,9 +262,9 @@
 }
 .str-compare-card {
   flex: 1;
-  max-width: 380px;
+  max-width: 320px;
   text-align: center;
-  padding: 40px 32px;
+  padding: 28px 24px;
 }
 .str-compare-card-label {
   font-size: clamp(14px, 1.5vw, 17px);
@@ -286,13 +286,14 @@
 }
 .str-compare-card-price {
   font-family: 'RocknRoll One', sans-serif;
-  font-size: clamp(40px, 6vw, 64px);
+  font-size: clamp(32px, 5vw, 48px);
   font-weight: 400;
   color: #333;
   line-height: 1.1;
+  white-space: nowrap;
 }
 .str-compare-card-price small {
-  font-size: 0.35em;
+  font-size: 0.4em;
   font-weight: 700;
   color: #888;
 }
@@ -626,6 +627,61 @@
   line-height: 1.8;
 }
 
+/* ===== 強み3: ビフォーアフター ===== */
+.str-ba-compare {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 900px;
+  margin-bottom: 32px;
+}
+.str-ba-item {
+  flex: 1;
+  position: relative;
+}
+.str-ba-img {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.str-ba-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.str-ba-img {
+  aspect-ratio: 7 / 10;
+}
+.str-ba-label {
+  display: inline-block;
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #888;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.str-ba-label--after {
+  background: var(--bm-accent);
+  color: #fff;
+  border-color: var(--bm-accent);
+}
+.str-ba-item--after .str-ba-img {
+  box-shadow: 0 4px 24px rgba(235,82,0,0.12);
+  border-color: rgba(235,82,0,0.2);
+}
+.str-ba-arrow {
+  font-size: clamp(24px, 4vw, 40px);
+  color: var(--bm-accent);
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
 /* ===== 強み3: クオリティ ===== */
 .str-quality-grid {
   display: grid;
@@ -848,6 +904,8 @@
   .str-speed-note { flex: auto; }
   .str-speed-row { flex-direction: column; align-items: stretch; gap: 8px; }
   .str-speed-label { min-width: 0; }
+  .str-ba-compare { flex-direction: column; gap: 12px; }
+  .str-ba-arrow { transform: rotate(90deg); }
   .str-quality-grid { grid-template-columns: 1fr; }
   .str-quality-pro-card { flex-direction: column; gap: 20px; }
   .str-quality-pro-img { flex: none; width: 100%; max-height: 200px; }

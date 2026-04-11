@@ -1194,17 +1194,134 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    CTA
    ============================================ */
 .bm-cta {
-  padding: 80px 0; text-align: center;
-  background: var(--bm-accent);
+  position: relative;
+  background: linear-gradient(135deg, var(--bm-accent) 0%, var(--bm-accent-hover) 100%);
+  overflow: clip;
+}
+.bm-cta-inner {
+  display: flex;
+  align-items: flex-end;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 40px 0;
+  gap: 24px;
+}
+.bm-cta-content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 48px;
 }
 .bm-cta h2 {
   font-size: clamp(24px, 4vw, 36px);
-  font-weight: 900; color: #fff;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.bm-cta-sub {
+  display: inline-block;
+  font-size: clamp(13px, 1.5vw, 15px);
+  font-weight: 700;
+  color: var(--bm-accent);
+  background: #fff;
+  padding: 4px 16px;
+  border-radius: 20px;
   margin-bottom: 12px;
 }
-.bm-cta p {
-  font-size: 16px; color: rgba(255,255,255,0.85);
-  margin-bottom: 32px;
+.bm-cta-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+/* --- Dual Buttons --- */
+.bm-cta-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.bm-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
+  white-space: nowrap;
+}
+.bm-cta-btn--contact {
+  background: #fff;
+  color: var(--bm-accent);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.bm-cta-btn--contact:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+}
+.bm-cta-btn--line {
+  background: #06C755;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+}
+.bm-cta-btn--line:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(6,199,85,0.4);
+}
+/* --- Trust Badges --- */
+.bm-cta-badges {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.bm-cta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+.bm-cta-badge svg {
+  flex-shrink: 0;
+}
+/* --- Character Image --- */
+.bm-cta-character {
+  flex-shrink: 0;
+  width: 240px;
+  align-self: flex-end;
+}
+.bm-cta-character img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
+  margin-bottom: 0;
+}
+/* --- CTA Mobile --- */
+@media (max-width: 768px) {
+  .bm-cta-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 48px 20px 0;
+    gap: 24px;
+  }
+  .bm-cta-buttons {
+    justify-content: center;
+  }
+  .bm-cta-badges {
+    justify-content: center;
+  }
+  .bm-cta-character {
+    display: none;
+  }
+  .bm-cta-btn {
+    padding: 14px 24px;
+    font-size: 14px;
+  }
 }
 
 /* ============================================
