@@ -99,9 +99,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-header {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0,0,0,0.06);
   height: 72px;
   transition: box-shadow 0.3s;
@@ -1599,6 +1599,64 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   background: var(--bm-bg-light);
   padding: 3px 10px; border-radius: 4px;
   border: 1px solid var(--bm-border);
+}
+
+/* Works Pagination */
+.bm-works-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 16px;
+  margin-top: 40px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  user-select: none;
+}
+.bm-works-pagination .pg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  background: #f5f0eb;
+  border: 1px solid #e0d6cc;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.bm-works-pagination .pg-btn:first-child { border-radius: 6px 0 0 6px; }
+.bm-works-pagination .pg-btn:last-child { border-radius: 0 6px 6px 0; }
+.bm-works-pagination .pg-btn:hover { background: #ebe4db; color: #333; }
+.bm-works-pagination .pg-btn.active {
+  background: var(--bm-accent);
+  border-color: var(--bm-accent);
+  color: #fff;
+  font-weight: 800;
+}
+.bm-works-pagination .pg-btn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.bm-works-pagination .pg-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  background: #f5f0eb;
+  border: 1px solid #e0d6cc;
+  color: #aaa;
+  font-size: 13px;
+}
+@media (max-width: 768px) {
+  .bm-works-pagination .pg-btn { min-width: 34px; height: 34px; font-size: 12px; padding: 0 8px; }
+  .bm-works-pagination .pg-ellipsis { min-width: 34px; height: 34px; }
 }
 
 /* ============================================

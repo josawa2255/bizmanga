@@ -99,19 +99,37 @@
     works.forEach(function(w) { worksMap[w.id] = w; });
   }
 
-  // ===== book.asahi.com 風カード生成 =====
-  function renderWorks(works, filterCategory) {
-    grid.innerHTML = '';
+  // ===== ページネーション設定 =====
+  var ITEMS_PER_PAGE = 20;
+  var currentPage = 1;
+  var currentFiltered = [];
+  var currentAllWorks = [];
+  var currentFilterCategory = null;
+
+  // ===== カード生成 =====
+  function renderWorks(works, filterCategory, page) {
+    currentAllWorks = works;
+    currentFilterCategory = filterCategory;
+    currentPage = page || 1;
+
     var filtered = works;
     if (filterCategory && filterCategory !== 'すべて') {
       filtered = works.filter(function(w) {
         return w.category === filterCategory;
       });
     }
+    currentFiltered = filtered;
 
+    var totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+
+    var start = (currentPage - 1) * ITEMS_PER_PAGE;
+    var pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+    grid.innerHTML = '';
     var isEn = getLang() === 'en';
     var frag = document.createDocumentFragment();
-    filtered.forEach(function(w) {
+    pageItems.forEach(function(w) {
       var card = document.createElement('article');
       card.className = 'bm-works-card';
       card.dataset.workId = w.id;
@@ -120,7 +138,6 @@
       var mediaArr = (w.media || []);
       var mediaStrJa = mediaArr.join(' / ');
       var mediaStrEn = mediaArr.map(function(m) { return MEDIA_EN[m] || m; }).join(' / ');
-      var pagesStr = w.spec ? w.spec.pages : (w.pages + 'P');
 
       var catEn = w.category_en || CATEGORY_EN[w.category] || w.category || '';
       var titleEn = w.title_en || w.title_ja || '';
@@ -140,7 +157,6 @@
           '</div>' +
         '</div>';
 
-      // クリック → 制作事例モーダル
       (function(workId) {
         card.addEventListener('click', function() {
           openWorkDetail(workId);
@@ -151,10 +167,13 @@
     });
     grid.appendChild(frag);
 
-    // カテゴリフィルター構築
+    // フィルター構築
     buildFilter(works, filterCategory);
 
-    // 現在の言語が英語なら即座に反映
+    // ページネーション構築
+    buildPagination(filtered.length, currentPage);
+
+    // 英語反映
     if (isEn) {
       if (window.i18n && window.i18n.translateAll) {
         window.i18n.translateAll();
@@ -162,6 +181,42 @@
         window.bmSwitchLang('en');
       }
     }
+  }
+
+  // ===== ページネーション構築 =====
+  function buildPagination(totalItems, activePage) {
+    var paginationEl = document.getElementById('bmWorksPagination');
+    if (!paginationEl) return;
+    var totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+
+    var html = '';
+    // Previous
+    html += '<button class="pg-btn' + (activePage <= 1 ? ' disabled' : '') + '" data-page="' + (activePage - 1) + '">' +
+      (getLang() === 'en' ? '‹ Previous' : '‹ 前へ') + '</button>';
+
+    for (var i = 1; i <= totalPages; i++) {
+      if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - activePage) > 1) {
+        if (i === 3 || i === totalPages - 2) html += '<span class="pg-ellipsis">…</span>';
+        continue;
+      }
+      html += '<button class="pg-btn' + (i === activePage ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+    }
+
+    // Next
+    html += '<button class="pg-btn' + (activePage >= totalPages ? ' disabled' : '') + '" data-page="' + (activePage + 1) + '">' +
+      (getLang() === 'en' ? 'Next ›' : '次へ ›') + '</button>';
+
+    paginationEl.innerHTML = html;
+
+    // イベント
+    paginationEl.querySelectorAll('.pg-btn:not(.disabled)').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var page = parseInt(btn.getAttribute('data-page'), 10);
+        renderWorks(currentAllWorks, currentFilterCategory, page);
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
   }
 
   // ===== カテゴリフィルター =====
@@ -192,7 +247,7 @@
       btn.textContent = isEn ? labelEn : labelJa;
 
       btn.addEventListener('click', function() {
-        renderWorks(currentWorks, cat);
+        renderWorks(currentWorks, cat, 1);
       });
       filterContainer.appendChild(btn);
     });
