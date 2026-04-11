@@ -262,9 +262,15 @@ if (getBmLang() === 'en') {
       });
 
       works.forEach(function(w) {
+        var galleryLen = (w.gallery && w.gallery.length) || 0;
+        var pages = w.pages || 0;
+        // ギャラリーがある場合、実画像数にpagesを補正（存在しないページ読み込み防止）
+        if (galleryLen > 0 && pages > galleryLen) {
+          pages = galleryLen;
+        }
         mangaData[w.id] = {
           title: w.title_ja || '',
-          pages: w.pages || 0,
+          pages: pages,
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
           tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
           category: w.category || '',
@@ -615,6 +621,7 @@ function openVerticalViewer(key, data) {
     img.src = getImageSrc(data, i - 1);
     img.alt = `${data.title} - ${i}ページ`;
     img.loading = i <= 3 ? 'eager' : 'lazy';
+    img.onerror = function() { this.style.display = 'none'; };
     pagesFrag.appendChild(img);
     verticalObserver.observe(img);
     modalPageEls.push(img);
