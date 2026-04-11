@@ -367,10 +367,54 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+  position: relative;
+}
+/* 表紙ローダー: img未ロード時に表示 */
+.bm-hero-works-cover .bm-cover-spinner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotateZ(45deg);
+  z-index: 2;
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  color: rgba(255,255,255,0.4);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.bm-hero-works-cover.img-loaded .bm-cover-spinner {
+  opacity: 0;
+}
+.bm-hero-works-cover .bm-cover-spinner::before,
+.bm-hero-works-cover .bm-cover-spinner::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  width: inherit; height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: bmLoaderSpin 1s linear infinite;
+}
+.bm-hero-works-cover .bm-cover-spinner::after {
+  color: #EB5200;
+  transform: rotateY(70deg);
+  animation-delay: 0.4s;
+}
+@keyframes bmLoaderSpin {
+  0%, 100% { box-shadow: .2em 0 0 0 currentcolor; }
+  12% { box-shadow: .2em .2em 0 0 currentcolor; }
+  25% { box-shadow: 0 .2em 0 0 currentcolor; }
+  37% { box-shadow: -.2em .2em 0 0 currentcolor; }
+  50% { box-shadow: -.2em 0 0 0 currentcolor; }
+  62% { box-shadow: -.2em -.2em 0 0 currentcolor; }
+  75% { box-shadow: 0 -.2em 0 0 currentcolor; }
+  87% { box-shadow: .2em -.2em 0 0 currentcolor; }
 }
 .bm-hero-works-cover:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transform: scale(1.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(235,82,0,0.4);
   z-index: 3;
 }
 .bm-hero-works-cover img {
@@ -388,6 +432,61 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   pointer-events: none;
 }
 
+/* --- 集中線（マンガ的インパクト） --- */
+.bm-hero-speedlines {
+  position: absolute; inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  animation: bmSpeedlinesIn 0.6s ease-out 0.8s forwards;
+}
+.bm-hero-speedlines::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 200vmax; height: 200vmax;
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    rgba(235, 82, 0, 0.06) 0deg 1.5deg,
+    transparent 1.5deg 6deg
+  );
+  mask-image: radial-gradient(ellipse 30% 25% at 50% 50%, transparent 60%, black 100%);
+  -webkit-mask-image: radial-gradient(ellipse 30% 25% at 50% 50%, transparent 60%, black 100%);
+}
+@keyframes bmSpeedlinesIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* --- ロゴ背後のアンビエントグロー --- */
+.bm-hero-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(300px, 50vw, 700px);
+  height: clamp(200px, 30vw, 450px);
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(235,82,0,0.25) 0%, rgba(235,82,0,0.08) 40%, transparent 70%);
+  opacity: 0;
+  animation: bmGlowIn 2s ease 0.6s forwards;
+  filter: blur(30px);
+}
+.bm-hero-glow::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,120,30,0.15) 0%, transparent 60%);
+  animation: bmGlowPulse 4s ease-in-out infinite;
+}
+@keyframes bmGlowIn {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes bmGlowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
 /* --- 中央ロゴ --- */
 .bm-hero-center {
   position: absolute; inset: 0;
@@ -399,12 +498,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   width: clamp(280px, 40vw, 650px);
   height: auto;
   opacity: 0;
-  filter: drop-shadow(0 4px 24px rgba(0,0,0,0.5));
-  animation: bmHeroLogoIn 1.5s ease 1s forwards;
+  filter: drop-shadow(0 4px 32px rgba(0,0,0,0.6)) drop-shadow(0 0 60px rgba(235,82,0,0.3));
+  animation: bmHeroLogoIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
 }
 @keyframes bmHeroLogoIn {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: scale(1.3); filter: drop-shadow(0 0 80px rgba(235,82,0,0.8)) brightness(2); }
+  30% { opacity: 1; filter: drop-shadow(0 0 40px rgba(235,82,0,0.5)) brightness(1.3); }
+  60% { transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 4px 32px rgba(0,0,0,0.6)) drop-shadow(0 0 60px rgba(235,82,0,0.3)); }
 }
 
 /* --- SCROLL indicator --- */
@@ -2484,4 +2585,77 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 @media (max-width: 480px) {
   .bm-tm-list-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Manga Loader (3D Orbital Spinner) ===== */
+.bm-manga-loader-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.bm-manga-loader-wrap.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.bm-manga-loader {
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  color: #fff;
+  position: relative;
+}
+.bm-manga-loader::before,
+.bm-manga-loader::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  width: inherit; height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: bmLoaderSpin 1s linear infinite;
+}
+.bm-manga-loader::after {
+  color: #EB5200;
+  transform: rotateY(70deg);
+  animation-delay: 0.4s;
+}
+@keyframes bmLoaderSpin {
+  0%, 100% { box-shadow: .2em 0 0 0 currentcolor; }
+  12% { box-shadow: .2em .2em 0 0 currentcolor; }
+  25% { box-shadow: 0 .2em 0 0 currentcolor; }
+  37% { box-shadow: -.2em .2em 0 0 currentcolor; }
+  50% { box-shadow: -.2em 0 0 0 currentcolor; }
+  62% { box-shadow: -.2em -.2em 0 0 currentcolor; }
+  75% { box-shadow: 0 -.2em 0 0 currentcolor; }
+  87% { box-shadow: .2em -.2em 0 0 currentcolor; }
+}
+
+/* --- reduced-motion: アニメーション無効化 --- */
+@media (prefers-reduced-motion: reduce) {
+  .bm-hero-works-row,
+  .bm-hero-works-row--1,
+  .bm-hero-works-row--2,
+  .bm-hero-works-row--3,
+  .bm-hero-works-row--4,
+  .bm-hero-works-row--5 { animation: none !important; }
+  .bm-hero-logo { animation: none !important; opacity: 1 !important; }
+  .bm-hero-speedlines { animation: none !important; opacity: 0.6 !important; }
+  .bm-hero-glow { animation: none !important; opacity: 1 !important; filter: blur(30px) !important; }
+  .bm-hero-glow::after { animation: none !important; }
+  .bm-hero-scroll-hint { animation: none !important; opacity: 0.7 !important; }
+  .bm-hero-scroll-line { animation: none !important; }
+  .bm-manga-loader::before,
+  .bm-manga-loader::after { animation: none !important; box-shadow: .2em 0 0 0 currentcolor !important; }
+  .bm-cover-spinner::before,
+  .bm-cover-spinner::after { animation: none !important; box-shadow: .2em 0 0 0 currentcolor !important; }
 }

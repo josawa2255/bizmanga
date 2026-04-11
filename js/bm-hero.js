@@ -74,7 +74,6 @@
         div.dataset.workId = item.id;
 
         var img = document.createElement('img');
-        img.src = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
         img.alt = item.title_ja || item.title || '';
         /* 最初の1セットだけeager、複製分はlazyで帯域節約 */
         var isFirstSet = idx < itemCount;
@@ -82,7 +81,22 @@
         img.decoding = 'async';
         if (isFirstSet) img.fetchPriority = 'high';
         img.style.objectPosition = 'top center';
+
+        // リスナーを先に付けてからsrcをセット（キャッシュ済みでも確実にキャッチ）
+        (function(coverDiv, imgEl) {
+          function markLoaded() { coverDiv.classList.add('img-loaded'); }
+          imgEl.addEventListener('load', markLoaded, { once: true });
+          imgEl.addEventListener('error', markLoaded, { once: true });
+        })(div, img);
+
+        img.src = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
+
         div.appendChild(img);
+
+        // スピナー（imgの後 = 上に表示される）
+        var spinner = document.createElement('div');
+        spinner.className = 'bm-cover-spinner';
+        div.appendChild(spinner);
         frag.appendChild(div);
 
         // クリック → 制作事例モーダル
@@ -113,11 +127,16 @@
 
   var wdCurrentPage = 0;
   var wdTotalPages = 0;
+  var wdLoader = document.getElementById('workDetailLoader');
+
+  function showWdLoader() { if (wdLoader) wdLoader.classList.remove('hidden'); }
+  function hideWdLoader() { if (wdLoader) wdLoader.classList.add('hidden'); }
 
   function openWorkDetail(workId) {
     if (!wdOverlay) return;
     var work = worksMap[workId];
     if (!work) return;
+    showWdLoader();
 
     if (wdTitle) wdTitle.textContent = work.title_ja || '';
     if (wdCategory) wdCategory.textContent = work.category || '';
@@ -148,6 +167,11 @@
             img.src = 'https://contentsx.jp/material/manga/' + work.id + '/' + String(i).padStart(2, '0') + '.webp';
           }
           img.alt = (work.title_ja || '') + ' ' + i + 'ページ';
+          // 1枚目のロード完了でローダーを非表示
+          if (i === 1) {
+            img.onload = hideWdLoader;
+            img.onerror = hideWdLoader;
+          }
           frag.appendChild(img);
         }
         wdCarousel.appendChild(frag);
@@ -219,6 +243,7 @@
   function closeModal() {
     if (wdOverlay) wdOverlay.classList.remove('active');
     document.body.style.overflow = '';
+    hideWdLoader();
   }
 
   if (wdPrev) wdPrev.addEventListener('click', function() {

@@ -16,6 +16,20 @@ function getCachedImage(src) {
   });
 }
 
+// ===== Manga Page Loader Helpers =====
+// srcをセットする「前に」呼ぶ。リスナーを先に付けてからsrcを変更する。
+function prepareImgLoad(imgEl, containerEl) {
+  if (!containerEl) return;
+  containerEl.classList.remove('img-loaded');
+  function markLoaded() { containerEl.classList.add('img-loaded'); }
+  imgEl.addEventListener('load', markLoaded, { once: true });
+  imgEl.addEventListener('error', markLoaded, { once: true });
+}
+// 後方互換
+function watchImgLoad(imgEl, containerEl) { prepareImgLoad(imgEl, containerEl); }
+function showMangaLoader() {}
+function hideMangaLoader() {}
+
 // ===== Header scroll effect =====
 const header = document.getElementById('header');
 if (header) {
@@ -711,6 +725,7 @@ function openManga(key) {
     if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
 
     // Show modal immediately with loading indicator
+    showMangaLoader();
     mangaModal.classList.add('open');
     document.body.style.overflow = 'hidden';
 
@@ -729,9 +744,9 @@ function openManga(key) {
       });
     }
 
-    // Preload in background
+    // Preload in background, hide loader when first pages ready
     preloadImages(firstPages, 2000).then(function() {
-      // Modal already visible, preload continues for subsequent pages
+      hideMangaLoader();
     });
   }
 
@@ -887,6 +902,8 @@ function showSpread(index, onReady) {
     pageRight.style.height = pageH + 'px';
     pageLeft.style.display = 'none';
 
+    // リスナーを先に付けてからsrcをセット
+    prepareImgLoad(imgRight, pageRight);
     imgRight.src = spreadPageSrc(currentMangaPath, rightNum);
     imgRight.alt = `${modalTitle.textContent} - ${rightNum}ページ`;
   } else {
@@ -902,6 +919,9 @@ function showSpread(index, onReady) {
     pageLeft.style.width = twoPageW + 'px';
     pageLeft.style.height = adjustedH + 'px';
 
+    // リスナーを先に付けてからsrcをセット
+    prepareImgLoad(imgRight, pageRight);
+    prepareImgLoad(imgLeft, pageLeft);
     imgRight.src = spreadPageSrc(currentMangaPath, rightNum);
     imgRight.alt = `${modalTitle.textContent} - ${rightNum}ページ`;
     // thanks画像の場合は専用パスを使う
@@ -1000,7 +1020,9 @@ function openSpreadViewer(key, data) {
       hintRight.style.opacity = '0';
     }, 3000);
   } else {
-    document.getElementById('mobilePage').src = spreadPageSrc(currentMangaPath, 1);
+    var mp = document.getElementById('mobilePage');
+    mp.src = spreadPageSrc(currentMangaPath, 1);
+    watchImgLoad(mp, mobileContainer);
     updateSpreadUI();
   }
 }
@@ -1143,6 +1165,7 @@ function goPrev() {
 function isPC() { return window.innerWidth >= 769; }
 
 const mobilePage = document.getElementById('mobilePage');
+const mobileContainer = document.getElementById('mobileContainer');
 const mobileFlipOverlay = document.getElementById('mobileFlipOverlay');
 const mobileFlipFrontImg = document.getElementById('mobileFlipFrontImg');
 const mobileFlipBackImg = document.getElementById('mobileFlipBackImg');
@@ -1215,6 +1238,7 @@ function mobileFlipTo(index, direction) {
 
     currentMobilePage = index;
     mobilePage.src = spreadPageSrc(currentMangaPath, currentMobilePage + 1);
+    watchImgLoad(mobilePage, mobileContainer);
     currentSpread = currentMobilePage === 0 ? 0 : Math.ceil(currentMobilePage / 2);
     updateSpreadUI();
     isSpreadAnimating = false;
@@ -1363,6 +1387,7 @@ function closeManga() {
 
   mangaModal.classList.remove('open');
   document.body.style.overflow = '';
+  hideMangaLoader();
 
   // Resume pre-production carousels from same position
   if (typeof resumeAllCarousels === 'function') resumeAllCarousels();

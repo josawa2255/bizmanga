@@ -727,6 +727,8 @@ body {
   object-fit: contain;
   display: block;
   will-change: contents;
+  position: relative;
+  z-index: 1;
 }
 
 /* Right page */
@@ -1469,3 +1471,81 @@ html.direct-mode .works-section,
 html.direct-mode .pre-section,
 html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
+
+/* ===== Manga Page Loader ===== */
+/* 見開き: スピナー要素が背景カバー + スピナー表示を兼ねる */
+.book-page .bm-page-spinner {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f4ef;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.book-page.img-loaded .bm-page-spinner {
+  opacity: 0;
+  pointer-events: none;
+}
+/* スピナー内にインナー要素を使う */
+.bm-page-spinner-inner {
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  font-size: 80px;
+  color: #bbb;
+  position: relative;
+}
+.bm-page-spinner-inner::before,
+.bm-page-spinner-inner::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  width: inherit; height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: bmLoaderSpin 1s linear infinite;
+}
+.bm-page-spinner-inner::after {
+  color: #EB5200;
+  transform: rotateY(70deg);
+  animation-delay: 0.4s;
+}
+
+/* モバイルビューア */
+.mobile-page-container .bm-page-spinner {
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 244, 239, 0.9);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.mobile-page-container.img-loaded .bm-page-spinner {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes bmLoaderSpin {
+  0%, 100% { box-shadow: .2em 0 0 0 currentcolor; }
+  12% { box-shadow: .2em .2em 0 0 currentcolor; }
+  25% { box-shadow: 0 .2em 0 0 currentcolor; }
+  37% { box-shadow: -.2em .2em 0 0 currentcolor; }
+  50% { box-shadow: -.2em 0 0 0 currentcolor; }
+  62% { box-shadow: -.2em -.2em 0 0 currentcolor; }
+  75% { box-shadow: 0 -.2em 0 0 currentcolor; }
+  87% { box-shadow: .2em -.2em 0 0 currentcolor; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-page-spinner-inner::before,
+  .bm-page-spinner-inner::after { animation: none !important; box-shadow: .2em 0 0 0 currentcolor !important; }
+}

@@ -1,10 +1,10 @@
 /**
- * 強みページ — 巻物ナビ（クリックでスムーズスクロール）
+ * 強みページ — Bentoカードナビ（クリックでスムーズスクロール）
  */
 (function () {
-  var items = document.querySelectorAll('.str-scroll-item');
-  items.forEach(function (item) {
-    item.addEventListener('click', function (e) {
+  var cards = document.querySelectorAll('.str-bento-card');
+  cards.forEach(function (card) {
+    card.addEventListener('click', function (e) {
       e.preventDefault();
       var targetId = this.getAttribute('href').substring(1);
       var target = document.getElementById(targetId);

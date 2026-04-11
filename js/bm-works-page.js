@@ -213,11 +213,16 @@
 
   var wdCurrentPage = 0;
   var wdTotalPages = 0;
+  var wdLoader = document.getElementById('workDetailLoader');
+
+  function showWdLoader() { if (wdLoader) wdLoader.classList.remove('hidden'); }
+  function hideWdLoader() { if (wdLoader) wdLoader.classList.add('hidden'); }
 
   function openWorkDetail(workId) {
     if (!wdOverlay) return;
     var work = worksMap[workId];
     if (!work) return;
+    showWdLoader();
 
     var isEn = getLang() === 'en';
     var titleJa = work.title_ja || '';
@@ -280,6 +285,10 @@
             img.src = 'https://contentsx.jp/material/manga/' + work.id + '/' + String(i).padStart(2, '0') + '.webp';
           }
           img.alt = (work.title_ja || '') + ' ' + i + 'ページ';
+          if (i === 1) {
+            img.onload = hideWdLoader;
+            img.onerror = hideWdLoader;
+          }
           frag.appendChild(img);
         }
         wdCarousel.appendChild(frag);
@@ -347,6 +356,7 @@
   function closeModal() {
     if (wdOverlay) wdOverlay.classList.remove('active');
     document.body.style.overflow = '';
+    hideWdLoader();
   }
 
   // モーダル操作

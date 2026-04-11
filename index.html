@@ -59,8 +59,14 @@
       <div class="bm-hero-works-row bm-hero-works-row--5" id="bmHeroRow5"></div>
     </div>
 
-    <!-- オーバーレイ（ロゴ可読性） -->
+    <!-- オーバーレイ（多層シネマティック） -->
     <div class="bm-hero-overlay"></div>
+
+    <!-- 集中線（マンガ的インパクト） -->
+    <div class="bm-hero-speedlines"></div>
+
+    <!-- ロゴ背後のアンビエントグロー -->
+    <div class="bm-hero-glow"></div>
 
     <!-- H1 タイトル（SEO用） -->
     <h1 style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">ビズマンガ | ビジネス漫画制作サービス</h1>
@@ -266,7 +272,10 @@
     <button class="work-detail-close" id="workDetailClose">&times;</button>
     <div class="work-detail-content">
       <div class="work-detail-left">
-        <div class="work-detail-carousel-wrap">
+        <div class="work-detail-carousel-wrap" style="position:relative;">
+          <div class="bm-manga-loader-wrap" id="workDetailLoader">
+            <span class="bm-manga-loader"></span>
+          </div>
           <button class="work-detail-arrow work-detail-prev" id="workDetailPrev">&#8249;</button>
           <div class="work-detail-carousel" id="workDetailCarousel"></div>
           <button class="work-detail-arrow work-detail-next" id="workDetailNext">&#8250;</button>
@@ -324,6 +333,7 @@
   <script src="js/bm-wp-config.js" defer></script>
   <script src="js/bm-wp-api.js" defer></script>
   <script src="js/bm-hero.js" defer></script>
+  <script src="js/bm-hero-fx.js" defer></script>
   <script src="js/bm-viewer.js" defer></script>
   <script src="js/bm-works.js" defer></script>
   <script src="js/bm-testimonials.js" defer></script>

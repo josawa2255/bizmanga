@@ -45,40 +45,54 @@
     </div>
   </header>
 
-  <!-- ===== ヒーロー：巻物UI + 固定背景 ===== -->
+  <!-- ===== ヒーロー: Bentoグリッド ===== -->
   <section class="str-hero" id="strHero">
     <div class="str-hero-bg">
       <img src="material/images/strength/hp-material-1.webp" alt="" loading="eager">
     </div>
     <div class="str-hero-overlay"></div>
 
-    <div class="str-scroll-wrap">
-      <img src="material/images/scroll-h.webp" alt="" class="str-scroll-bg str-scroll-bg-pc">
-      <img src="material/images/scroll.webp" alt="" class="str-scroll-bg str-scroll-bg-sp">
-      <div class="str-scroll-content">
-        <h2 class="str-scroll-title" data-ja="ビズマンガの強み" data-en="BizManga Strengths">ビズマンガの強み</h2>
-        <nav class="str-scroll-nav">
-          <a href="#str-price" class="str-scroll-item">
-            <span class="str-scroll-num">01</span>
-            <span data-ja="圧倒的な低価格" data-en="Unbeatable Pricing">圧倒的な低価格</span>
-          </a>
-          <a href="#str-speed" class="str-scroll-item">
-            <span class="str-scroll-num">02</span>
-            <span data-ja="最短２週間のスピード" data-en="2-Week Delivery">最短２週間のスピード</span>
-          </a>
-          <a href="#str-quality" class="str-scroll-item">
-            <span class="str-scroll-num">03</span>
-            <span data-ja="ハイクオリティ" data-en="High Quality">ハイクオリティ</span>
-          </a>
-          <a href="#str-copyright" class="str-scroll-item">
-            <span class="str-scroll-num">04</span>
-            <span data-ja="著作権リスクゼロ" data-en="Zero Copyright Risk">著作権リスクゼロ</span>
-          </a>
-          <a href="#str-media" class="str-scroll-item">
-            <span class="str-scroll-num">05</span>
-            <span data-ja="様々な媒体に展開" data-en="Multi-Media Deployment">様々な媒体に展開</span>
-          </a>
-        </nav>
+    <div class="str-hero-content">
+      <h1 class="str-hero-title">
+        <span data-ja="ビズマンガの" data-en="BizManga">ビズマンガの</span><span class="str-hero-accent" data-ja="強み" data-en="Strengths">強み</span>
+      </h1>
+      <p class="str-hero-lead" data-ja="選ばれる理由がある。5つの圧倒的な強み。" data-en="There's a reason we're chosen. 5 overwhelming strengths.">選ばれる理由がある。5つの圧倒的な強み。</p>
+
+      <div class="str-bento">
+        <!-- 大カード: 低価格 -->
+        <a href="#str-price" class="str-bento-card str-bento-price">
+          <span class="str-bento-num">1/5</span>
+          <span class="str-bento-unit" data-ja="の価格" data-en="the price">の価格</span>
+          <span class="str-bento-label" data-ja="圧倒的な低価格" data-en="Unbeatable Pricing">圧倒的な低価格</span>
+        </a>
+
+        <!-- 大カード: スピード -->
+        <a href="#str-speed" class="str-bento-card str-bento-speed">
+          <span class="str-bento-num">2</span>
+          <span class="str-bento-unit" data-ja="週間で納品" data-en="weeks delivery">週間で納品</span>
+          <span class="str-bento-label" data-ja="最短2週間のスピード" data-en="2-Week Delivery">最短2週間のスピード</span>
+        </a>
+
+        <!-- 中カード: クオリティ -->
+        <a href="#str-quality" class="str-bento-card str-bento-quality">
+          <span class="str-bento-num">10<small>回+</small></span>
+          <span class="str-bento-unit" data-ja="品質チェック" data-en="quality checks">品質チェック</span>
+          <span class="str-bento-label" data-ja="ハイクオリティ" data-en="High Quality">ハイクオリティ</span>
+        </a>
+
+        <!-- 中カード: 著作権 -->
+        <a href="#str-copyright" class="str-bento-card str-bento-copyright">
+          <span class="str-bento-num">100<small>%</small></span>
+          <span class="str-bento-unit" data-ja="著作権安心" data-en="copyright safe">著作権安心</span>
+          <span class="str-bento-label" data-ja="著作権リスクゼロ" data-en="Zero Copyright Risk">著作権リスクゼロ</span>
+        </a>
+
+        <!-- 横長カード: 媒体展開 -->
+        <a href="#str-media" class="str-bento-card str-bento-media">
+          <span class="str-bento-num">4<small>+</small></span>
+          <span class="str-bento-unit" data-ja="媒体に展開可能" data-en="media channels">媒体に展開可能</span>
+          <span class="str-bento-label" data-ja="様々な媒体に展開" data-en="Multi-Media Deployment">様々な媒体に展開</span>
+        </a>
       </div>
     </div>
   </section>
@@ -86,20 +100,21 @@
   <!-- ===== 強み1: 圧倒的な低価格 ===== -->
   <section class="str-section" id="str-price">
     <div class="bm-container">
-      <h2 class="str-section-title">
-        <span class="str-section-num">①</span>
-        <span data-ja="圧倒的な低価格" data-en="Unbeatable Pricing">圧倒的な低価格</span>
-      </h2>
+      <div class="str-section-header">
+        <span class="str-section-badge">01</span>
+        <h2 class="str-section-title" data-ja="圧倒的な低価格" data-en="Unbeatable Pricing">圧倒的な低価格</h2>
+      </div>
       <p class="str-section-lead" data-ja="大手の1/2〜1/5の価格で、高品質な漫画を提供します。" data-en="We deliver high-quality manga at 1/2 to 1/5 the price of major studios.">大手の1/2〜1/5の価格で、高品質な漫画を提供します。</p>
-      <div class="str-compare">
-        <div class="str-compare-item str-compare-other">
-          <div class="str-compare-label" data-ja="一般的な制作会社" data-en="Typical Studio">一般的な制作会社</div>
-          <div class="str-compare-price"><span>50</span>〜<span>100</span> <small data-ja="万円" data-en="万円">万円</small></div>
+      <div class="str-compare-v2">
+        <div class="str-glass-card str-compare-card str-compare-card--other">
+          <div class="str-compare-card-label" data-ja="一般的な制作会社" data-en="Typical Studio">一般的な制作会社</div>
+          <div class="str-compare-card-price"><span>50</span>〜<span>100</span><small data-ja="万円" data-en="万円">万円</small></div>
         </div>
-        <div class="str-compare-item str-compare-bm">
-          <div class="str-compare-badge" data-ja="圧倒的コストパフォーマンス" data-en="Overwhelming Cost Performance">圧倒的コストパフォーマンス</div>
-          <div class="str-compare-label" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</div>
-          <div class="str-compare-price str-compare-accent"><span>18.5</span><small data-ja="万円〜" data-en="万円〜">万円〜</small></div>
+        <div class="str-compare-vs">VS</div>
+        <div class="str-glass-card str-glass-card--accent str-compare-card str-compare-card--bm">
+          <div class="str-compare-card-badge" data-ja="圧倒的コストパフォーマンス" data-en="Overwhelming Cost Performance">圧倒的コストパフォーマンス</div>
+          <div class="str-compare-card-label" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</div>
+          <div class="str-compare-card-price"><span>18.5</span><small data-ja="万円〜" data-en="万円〜">万円〜</small></div>
         </div>
       </div>
     </div>
@@ -108,34 +123,35 @@
   <!-- ===== 強み2: 最短2週間のスピード ===== -->
   <section class="str-section str-section-alt" id="str-speed">
     <div class="bm-container">
-      <h2 class="str-section-title">
-        <span class="str-section-num">②</span>
-        <span data-ja="最短2週間の圧倒的スピード" data-en="Overwhelming Speed: 2 Weeks Minimum">最短2週間の圧倒的スピード</span>
-      </h2>
+      <div class="str-section-header">
+        <span class="str-section-badge">02</span>
+        <h2 class="str-section-title" data-ja="最短2週間の圧倒的スピード" data-en="Overwhelming Speed: 2 Weeks">最短2週間の圧倒的スピード</h2>
+      </div>
       <p class="str-section-lead" data-ja="企画から納品まで、業界最速クラスのスピードで対応します。" data-en="From planning to delivery, we respond at industry-leading speed.">企画から納品まで、業界最速クラスのスピードで対応します。</p>
-      <div class="str-speed-visual">
-        <div class="str-speed-headline" data-ja="納品まで最短" data-en="Delivery in just">納品まで最短 <strong>2</strong> <span data-ja="週間" data-en="weeks">週間</span></div>
-        <div class="str-speed-layout">
-          <div class="str-speed-left">
-            <div class="str-speed-row">
-              <span class="str-speed-label" data-ja="一般的な制作会社" data-en="Typical Studio">一般的な制作会社</span>
-              <div class="str-speed-bar-outer">
-                <div class="str-speed-bar-fill-other"></div>
-              </div>
-              <span class="str-speed-bar-text" data-ja="2〜3ヶ月" data-en="2-3 months">2〜3ヶ月</span>
-            </div>
-            <div class="str-speed-row">
-              <span class="str-speed-label str-speed-label-bm" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</span>
-              <div class="str-speed-bar-fill-bm"></div>
-              <span class="str-speed-bar-text str-speed-bar-text-bm" data-ja="最短2週間" data-en="2 weeks min">最短2週間</span>
+      <div class="str-speed-v2">
+        <div class="str-glass-card str-speed-main">
+          <div class="str-speed-big" data-ja="納品まで最短" data-en="Delivery in just">納品まで最短</div>
+          <div class="str-speed-num">2<small data-ja="週間" data-en="weeks">週間</small></div>
+        </div>
+        <div class="str-speed-bars">
+          <div class="str-speed-bar-row">
+            <span class="str-speed-bar-label" data-ja="一般的な制作会社" data-en="Typical Studio">一般的な制作会社</span>
+            <div class="str-speed-bar">
+              <div class="str-speed-bar-fill str-speed-bar-fill--other" style="width:100%"></div>
+              <span class="str-speed-bar-val" data-ja="2〜3ヶ月" data-en="2-3 months">2〜3ヶ月</span>
             </div>
           </div>
-          <div class="str-speed-note">
-            <div>
-              <strong data-ja="なぜ短納期が可能なのか？" data-en="Why is fast delivery possible?">なぜ短納期が可能なのか？</strong>
-              <p data-ja="無駄を省いた独自フローにより、短納期で高品質を実現します。" data-en="Our streamlined proprietary workflow enables high quality in short timeframes.">無駄を省いた独自フローにより、短納期で高品質を実現します。</p>
+          <div class="str-speed-bar-row">
+            <span class="str-speed-bar-label str-speed-bar-label--bm" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</span>
+            <div class="str-speed-bar">
+              <div class="str-speed-bar-fill str-speed-bar-fill--bm" style="width:25%"></div>
+              <span class="str-speed-bar-val str-speed-bar-val--bm" data-ja="最短2週間" data-en="2 weeks min">最短2週間</span>
             </div>
           </div>
+        </div>
+        <div class="str-glass-card str-speed-why">
+          <strong data-ja="なぜ短納期が可能なのか？" data-en="Why is fast delivery possible?">なぜ短納期が可能なのか？</strong>
+          <p data-ja="無駄を省いた独自フローにより、短納期で高品質を実現します。" data-en="Our streamlined workflow enables high quality in short timeframes.">無駄を省いた独自フローにより、短納期で高品質を実現します。</p>
         </div>
       </div>
     </div>
@@ -144,22 +160,38 @@
   <!-- ===== 強み3: ハイクオリティ ===== -->
   <section class="str-section" id="str-quality">
     <div class="bm-container">
-      <h2 class="str-section-title">
-        <span class="str-section-num">③</span>
-        <span data-ja="ハイクオリティ" data-en="High Quality">ハイクオリティ</span>
-      </h2>
-      <div class="str-quality-box str-quality-pro">
-        <div class="str-quality-pro-title" data-ja="プロのディレクター・漫画家" data-en="Professional Directors & Manga Artists">プロのディレクター・漫画家</div>
-        <p data-ja="企画・構成・ネーム（絵コンテ）・赤ペン" data-en="Planning, composition, storyboard, and red-pen editing">企画・構成・ネーム（絵コンテ）・赤ペン</p>
+      <div class="str-section-header">
+        <span class="str-section-badge">03</span>
+        <h2 class="str-section-title" data-ja="ハイクオリティ" data-en="High Quality">ハイクオリティ</h2>
       </div>
-      <div class="str-quality-btns">
-        <a href="./#flow" class="str-quality-btn" data-ja="赤ペンネームを見る →" data-en="See Red-Pen Storyboard →">赤ペンネームを見る →</a>
-        <a href="biz-library" class="str-quality-btn" data-ja="ビズ書庫を見る →" data-en="View Biz Library →">ビズ書庫を見る →</a>
-      </div>
-      <div class="str-quality-box str-quality-check">
-        <div class="str-quality-check-label"><span>✒️</span> <span data-ja="クオリティの担保" data-en="Quality Assurance">クオリティの担保</span></div>
-        <p data-ja="10回以上にわたる社内チェック" data-en="Over 10 rounds of internal review">10回以上にわたる社内チェック</p>
-        <p data-ja="5回以上の客先確認" data-en="Over 5 rounds of client review">5回以上の客先確認</p>
+      <div class="str-quality-grid">
+        <div class="str-glass-card str-glass-card--accent str-quality-pro-card">
+          <div class="str-quality-pro-text">
+            <div class="str-glass-card-title" data-ja="プロのディレクター・漫画家" data-en="Professional Directors & Manga Artists">プロのディレクター・漫画家</div>
+            <p class="str-glass-card-desc" data-ja="企画・構成・ネーム（絵コンテ）・赤ペン — すべてプロが担当" data-en="Planning, composition, storyboard, red-pen editing — all handled by professionals">企画・構成・ネーム（絵コンテ）・赤ペン — すべてプロが担当</p>
+            <div class="str-quality-links">
+              <a href="./#flow" class="str-pill-link" data-ja="赤ペンネームを見る" data-en="See Storyboard">赤ペンネームを見る →</a>
+              <a href="biz-library" class="str-pill-link" data-ja="ビズ書庫を見る" data-en="View Library">ビズ書庫を見る →</a>
+            </div>
+          </div>
+          <div class="str-quality-pro-img">
+            <img src="material/images/strength/hp-material-4.webp" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="str-glass-card">
+          <div class="str-glass-card-icon">✒</div>
+          <div class="str-glass-card-title" data-ja="クオリティの担保" data-en="Quality Assurance">クオリティの担保</div>
+          <div class="str-quality-stats">
+            <div class="str-stat">
+              <span class="str-stat-num">10<small data-ja="回+" data-en="+">回+</small></span>
+              <span class="str-stat-label" data-ja="社内チェック" data-en="Internal Reviews">社内チェック</span>
+            </div>
+            <div class="str-stat">
+              <span class="str-stat-num">5<small data-ja="回+" data-en="+">回+</small></span>
+              <span class="str-stat-label" data-ja="客先確認" data-en="Client Reviews">客先確認</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -167,21 +199,20 @@
   <!-- ===== 強み4: 著作権リスクゼロ ===== -->
   <section class="str-section str-section-alt" id="str-copyright">
     <div class="bm-container">
-      <h2 class="str-section-title">
-        <span class="str-section-num">④</span>
-        <span data-ja="著作権リスクゼロ" data-en="Zero Copyright Risk">著作権リスクゼロ</span>
-      </h2>
+      <div class="str-section-header">
+        <span class="str-section-badge">04</span>
+        <h2 class="str-section-title" data-ja="著作権リスクゼロ" data-en="Zero Copyright Risk">著作権リスクゼロ</h2>
+      </div>
       <p class="str-section-lead" data-ja="完全オリジナル制作だから、二次利用も自由自在。" data-en="Fully original production means unlimited secondary use.">完全オリジナル制作だから、二次利用も自由自在。</p>
-      <div class="str-copyright-grid">
-        <div class="str-copyright-card">
-          <div class="str-copyright-icon">🛡️</div>
-          <p data-ja="完全オリジナル制作で安心" data-en="Safe with fully original production">完全オリジナル制作で安心</p>
-          <small data-ja="フリー素材の組み合わせではなく、ゼロから描き起こすため、他社との被りや著作権侵害のリスクがありません。" data-en="Since we draw everything from scratch rather than combining free materials, there is no risk of overlap with other companies or copyright infringement.">フリー素材の組み合わせではなく、ゼロから描き起こすため、他社との被りや著作権侵害のリスクがありません。</small>
+      <div class="str-copyright-layout">
+        <div class="str-glass-card str-glass-card--wide">
+          <div class="str-glass-card-title" data-ja="完全オリジナル制作で安心" data-en="Safe with fully original production">完全オリジナル制作で安心</div>
+          <p class="str-glass-card-desc" data-ja="フリー素材の組み合わせではなく、ゼロから描き起こすため、他社との被りや著作権侵害のリスクがありません。" data-en="Since we draw everything from scratch, there is no risk of overlap or copyright infringement.">フリー素材の組み合わせではなく、ゼロから描き起こすため、他社との被りや著作権侵害のリスクがありません。</p>
         </div>
-        <div class="str-copyright-badges">
-          <div class="str-copyright-badge" data-ja="原画資産方式" data-en="Original Art Asset Method">📄 原画資産方式</div>
-          <div class="str-copyright-badge" data-ja="弁護士リーガルチェック体制" data-en="Attorney Legal Check System">⚖️ 弁護士リーガルチェック体制</div>
-          <div class="str-copyright-badge" data-ja="既存IP不使用" data-en="No Existing IP Used">🚫 既存IP不使用</div>
+        <div class="str-copyright-pills">
+          <div class="str-copyright-pill" data-ja="原画資産方式" data-en="Original Art Assets">原画資産方式</div>
+          <div class="str-copyright-pill" data-ja="弁護士リーガルチェック体制" data-en="Attorney Legal Check">弁護士リーガルチェック体制</div>
+          <div class="str-copyright-pill" data-ja="既存IP不使用" data-en="No Existing IP Used">既存IP不使用</div>
         </div>
       </div>
     </div>
@@ -190,37 +221,31 @@
   <!-- ===== 強み5: 様々な媒体に展開 ===== -->
   <section class="str-section" id="str-media">
     <div class="bm-container">
-      <h2 class="str-section-title">
-        <span class="str-section-num">⑤</span>
-        <span data-ja="様々な媒体に展開" data-en="Multi-Media Deployment">様々な媒体に展開</span>
-      </h2>
+      <div class="str-section-header">
+        <span class="str-section-badge">05</span>
+        <h2 class="str-section-title" data-ja="様々な媒体に展開" data-en="Multi-Media Deployment">様々な媒体に展開</h2>
+      </div>
       <p class="str-section-lead" data-ja="1つの漫画から、あらゆるフォーマットへ展開可能" data-en="From one manga, deploy to every format">1つの漫画から、あらゆるフォーマットへ展開可能</p>
       <div class="str-media-flow">
-        <div class="str-media-source">
-          <span>📋</span>
-          <span data-ja="オリジナル漫画データ" data-en="Original Manga Data">オリジナル漫画データ</span>
+        <div class="str-media-hub">
+          <span class="str-media-hub-label" data-ja="オリジナル漫画データ" data-en="Original Manga Data">オリジナル漫画データ</span>
         </div>
-        <div class="str-media-arrow">↓</div>
-        <div class="str-media-grid">
-          <div class="str-media-card">
-            <span>🎬</span>
-            <strong data-ja="動画展開" data-en="Video">動画展開</strong>
-            <small data-ja="ボイスコミック・YouTube広告・サイネージ映像" data-en="Voice comics, YouTube ads, signage">ボイスコミック<br>YouTube広告<br>サイネージ映像</small>
+        <div class="str-media-branches">
+          <div class="str-glass-card str-media-item">
+            <div class="str-media-item-title" data-ja="動画展開" data-en="Video">動画展開</div>
+            <small data-ja="ボイスコミック・YouTube広告・サイネージ映像" data-en="Voice comics, YouTube ads, signage">ボイスコミック・YouTube広告・サイネージ映像</small>
           </div>
-          <div class="str-media-card">
-            <span>💻</span>
-            <strong data-ja="Web展開" data-en="Web">Web展開</strong>
-            <small data-ja="ランディングページ・バナー広告・オウンドメディア" data-en="Landing pages, banner ads, owned media">ランディングページ<br>バナー広告<br>オウンドメディア</small>
+          <div class="str-glass-card str-media-item">
+            <div class="str-media-item-title" data-ja="Web展開" data-en="Web">Web展開</div>
+            <small data-ja="ランディングページ・バナー広告・オウンドメディア" data-en="Landing pages, banner ads, owned media">ランディングページ・バナー広告・オウンドメディア</small>
           </div>
-          <div class="str-media-card">
-            <span>#</span>
-            <strong data-ja="SNS展開" data-en="SNS">SNS展開</strong>
-            <small data-ja="X（旧Twitter）・Instagram・Facebook" data-en="X (Twitter), Instagram, Facebook">X（旧Twitter）<br>Instagram<br>Facebook</small>
+          <div class="str-glass-card str-media-item">
+            <div class="str-media-item-title" data-ja="SNS展開" data-en="SNS">SNS展開</div>
+            <small data-ja="X（旧Twitter）・Instagram・Facebook" data-en="X, Instagram, Facebook">X（旧Twitter）・Instagram・Facebook</small>
           </div>
-          <div class="str-media-card">
-            <span>🖨️</span>
-            <strong data-ja="印刷物" data-en="Print">印刷物</strong>
-            <small data-ja="パンフレット・チラシ・DM・展示会パネル" data-en="Pamphlets, flyers, DM, panels">パンフレット<br>チラシ・DM<br>展示会パネル</small>
+          <div class="str-glass-card str-media-item">
+            <div class="str-media-item-title" data-ja="印刷物" data-en="Print">印刷物</div>
+            <small data-ja="パンフレット・チラシ・DM・展示会パネル" data-en="Pamphlets, flyers, DM, panels">パンフレット・チラシ・DM・展示会パネル</small>
           </div>
         </div>
       </div>
@@ -231,6 +256,7 @@
   <section class="str-cta">
     <div class="bm-container">
       <h2 data-ja="まずは無料でご相談ください" data-en="Contact us for a free consultation">まずは無料でご相談ください</h2>
+      <p class="str-cta-sub" data-ja="お見積り・ご相談は完全無料です" data-en="Estimates and consultations are completely free">お見積り・ご相談は完全無料です</p>
       <a href="contact" class="str-cta-btn" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
     </div>
   </section>
