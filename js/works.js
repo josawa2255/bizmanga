@@ -57,50 +57,40 @@ function getImageSrc(data, pageIndex) {
 // ===== フォールバック用ローカルデータ =====
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
-const FALLBACK_WORKS = {
-  'life-school': {
-    title: 'スクール紹介', title_en: 'School Introduction', pages: 26,
-    path: 'https://contentsx.jp/material/manga/life-school/',
-    tags: ['集客'], category: '集客',
-    viewType: 'spread'
-  },
-  'seko': {
-    title: '瀬古恭介 始まりのものがたり', title_en: 'Seko Kyosuke - The Beginning', pages: 25,
-    path: 'https://contentsx.jp/material/manga/seko/',
-    tags: ['ブランド'], category: 'ブランド',
-    viewType: 'spread'
-  },
-  'sixtones': {
-    title: 'SixTONES 提案用', title_en: 'SixTONES Proposal', pages: 4,
-    path: 'https://contentsx.jp/material/manga/sixtones/',
-    tags: ['IP'], category: 'IP',
-    viewType: 'spread'
-  },
-  'life-buzfes': {
-    title: 'バズフェス', title_en: 'BuzzFes', pages: 25,
-    path: 'https://contentsx.jp/material/manga/life-buzfes/',
-    tags: ['集客'], category: '集客',
-    viewType: 'spread'
-  },
-  'lady-column': {
-    title: '大人なLADYになるわよコラム', title_en: 'Becoming a Grown LADY Column', pages: 4,
-    path: 'https://contentsx.jp/material/manga/lady-column/',
-    tags: ['紹介'], category: '紹介',
-    viewType: 'vertical', tallCover: true, verticalOnly: true
-  },
-  'ichinohe-home': {
-    title: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22,
-    path: 'https://contentsx.jp/material/manga/ichinohe-home/',
-    tags: ['営業'], category: '営業',
-    viewType: 'spread'
-  },
-  'bms-unso-remake': {
-    title: 'BMS運送', title_en: 'BMS Transport', pages: 10,
-    path: 'https://contentsx.jp/material/manga/bms-unso-remake/',
-    tags: ['採用'], category: '採用',
-    viewType: 'spread'
-  },
-};
+// 全作品の表紙＋最小情報（即座にカード表示用、WP API取得後にgallery等をマージ）
+const FALLBACK_WORKS = (function() {
+  var F = [
+    ['diamond','DIAMOND シャンパンコール','DIAMOND Champagne Call',11,'研修','spread'],
+    ['ichinohe-home','一戸ホーム','Ichinohe Home',22,'営業','spread'],
+    ['omatome-ninja','おまとめ忍者 見つけてみせる！トレンドの兆し','Omatome Ninja: Discovering Trend Signs',15,'紹介','spread'],
+    ['omatome-ninja-2','おまとめ忍者 手間な議事録をこっそり要約','Omatome Ninja: Secretly Summarizing Meeting Notes',15,'紹介','spread'],
+    ['omatome-ninja-3','おまとめ忍者 地獄のまとめ作業 拙者におまかせ！','Omatome Ninja: Leave the Tedious Summarizing to Me!',15,'紹介','spread'],
+    ['omatome-ninja-4','おまとめ忍者 手書き派の悩み 拙者にお任せ！','Omatome Ninja: Helping the Handwriting Fans!',15,'紹介','spread'],
+    ['omatome-ninja-5','おまとめ忍者 長時間会議も怖くない！','Omatome Ninja: No More Fear of Long Meetings!',15,'紹介','spread'],
+    ['omatome-ninja-rohto','おまとめ忍者 忍者参上！！欠席者をお助けいたす！','Omatome Ninja: Here to Help Absentees!',15,'紹介','spread'],
+    ['omatome-ninja-english','おまとめ忍者（海外版）','Omatome Ninja (Global Edition)',15,'紹介','spread'],
+    ['seko','瀬古恭介 始まりのものがたり','Kyosuke Seko: A Story of Beginnings',25,'ブランド','spread'],
+    ['life-buzfes','バズフェス','BuzzFes',25,'集客','spread'],
+    ['life-school','バズスクール','Buzz School',26,'集客','spread'],
+    ['bms-unso-remake','BMS運送','BMS Transport',10,'採用','spread'],
+    ['sixtones','SixTONES風キャラ','SixTONES-style Characters',4,'IP','spread'],
+    ['torutoru-kun','トルトルくん','Torutoru-kun',21,'採用','spread'],
+    ['hamada-masatada','濱田将匡 信頼を、つなぐ。','Masatada Hamada: Connecting Trust',20,'ブランド','spread'],
+    ['asobi-kyary','ASOBI SYSTEM×きゃりーぱみゅぱみゅ','ASOBI SYSTEM x Kyary Pamyu Pamyu',6,'IP','spread'],
+    ['uike-law','正義の価値','The Value of Justice',8,'ブランド','spread'],
+    ['lady-column','レディーコラム','Lady Column',8,'紹介','spread']
+  ];
+  var out = {};
+  F.forEach(function(r) {
+    out[r[0]] = {
+      title: r[1], title_en: r[2], pages: r[3],
+      path: 'https://contentsx.jp/material/manga/' + r[0] + '/',
+      tags: [r[4]], category: r[4],
+      viewType: r[5]
+    };
+  });
+  return out;
+})();
 
 // ===== カテゴリ英訳マップ =====
 const CATEGORY_EN_MAP = {
@@ -255,26 +245,25 @@ if (getBmLang() === 'en') {
     .then(function(works) {
       if (!Array.isArray(works) || works.length === 0) return;
 
-      // mangaData をクリアしてAPIデータで再構築
-      Object.keys(mangaData).forEach(function(k) {
-        // 制作過程エントリは残す
-        if (!mangaData[k]._isPreProduction) delete mangaData[k];
-      });
-
+      // APIデータをフォールバックにマージ（新規作品は追加、既存は詳細を上書き）
+      // まずフォールバックにないAPIデータも含めて全作品を反映
+      var apiIds = {};
       works.forEach(function(w) {
+        apiIds[w.id] = true;
         var galleryLen = (w.gallery && w.gallery.length) || 0;
         var pages = w.pages || 0;
-        // ギャラリーがある場合、実画像数にpagesを補正（存在しないページ読み込み防止）
         if (galleryLen > 0 && pages > galleryLen) {
           pages = galleryLen;
         }
+        var existing = mangaData[w.id] || {};
         mangaData[w.id] = {
-          title: w.title_ja || '',
+          title: w.title_ja || existing.title || '',
+          title_en: w.title_en || existing.title_en || '',
           pages: pages,
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
-          tags: w.tags && w.tags.length > 0 ? w.tags : (w.category ? [w.category] : []),
-          category: w.category || '',
-          viewType: w.view_type || 'spread',
+          tags: w.tags && w.tags.length > 0 ? w.tags : (existing.tags || []),
+          category: w.category || existing.category || '',
+          viewType: w.view_type || existing.viewType || 'spread',
           verticalOnly: w.view_type === 'vertical_only',
           tallCover: w.tall_cover || w.view_type === 'vertical_only',
           thumbnail: w.thumbnail || '',
@@ -282,10 +271,13 @@ if (getBmLang() === 'en') {
           akapen_gallery: w.akapen_gallery || [],
           name_gallery: w.name_gallery || [],
         };
-        // vertical / vertical_only はviewTypeをverticalに正規化
         if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
           mangaData[w.id].viewType = 'vertical';
         }
+      });
+      // APIに存在しないフォールバック作品を削除（WPで非公開にした場合）
+      Object.keys(mangaData).forEach(function(k) {
+        if (!apiIds[k] && !mangaData[k]._isPreProduction) delete mangaData[k];
       });
 
       // UIを再構築
