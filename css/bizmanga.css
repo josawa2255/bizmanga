@@ -384,7 +384,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-hero-overlay {
   position: absolute; inset: 0;
   z-index: 2;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);
+  background: none;
   pointer-events: none;
 }
 
