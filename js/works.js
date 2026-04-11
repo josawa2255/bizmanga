@@ -280,8 +280,23 @@ if (getBmLang() === 'en') {
         if (!apiIds[k] && !mangaData[k]._isPreProduction) delete mangaData[k];
       });
 
-      // UIを再構築
+      // フィルター状態とページを保持してUI再構築
+      var activeFilter = worksFilter.querySelector('.filter-btn.active');
+      var savedCategory = activeFilter ? activeFilter.dataset.cat : 'すべて';
+      var savedPage = gridCurrentPage;
       initLibraryUI();
+      // フィルターを復元
+      if (savedCategory !== 'すべて') {
+        var targetBtn = worksFilter.querySelector('.filter-btn[data-cat="' + savedCategory + '"]');
+        if (targetBtn) {
+          targetBtn.click();
+          gridCurrentPage = savedPage;
+          updateGridPagination();
+        }
+      } else {
+        gridCurrentPage = savedPage;
+        updateGridPagination();
+      }
       probeCoverImages();  // WP APIデータでも表紙の縦長自動検出
 
       // 赤ペン・ネームカルーセルも再構築
