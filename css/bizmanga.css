@@ -491,8 +491,23 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-hero-center {
   position: absolute; inset: 0;
   z-index: 3;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   pointer-events: none;
+  padding-bottom: 40px;
+}
+.bm-hero-tagline {
+  color: #fff;
+  font-size: clamp(16px, 2.5vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  margin-top: 16px;
+  opacity: 0;
+  animation: bmTaglineIn 0.8s cubic-bezier(0.16,1,0.3,1) 1.6s forwards;
+}
+@keyframes bmTaglineIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 .bm-hero-logo {
   width: clamp(280px, 40vw, 650px);
