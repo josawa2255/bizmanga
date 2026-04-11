@@ -37,11 +37,17 @@
 
     function animateParallax() {
       // lerp（線形補間）でなめらかに追従
-      currentX += (targetX - currentX) * 0.06;
-      currentY += (targetY - currentY) * 0.06;
+      currentX += (targetX - currentX) * 0.05;
+      currentY += (targetY - currentY) * 0.05;
 
       if (worksBg) {
-        worksBg.style.transform = 'translate(' + (currentX * -12) + 'px, ' + (currentY * -8) + 'px)';
+        // 3Dパースペクティブ回転 + 平行移動
+        worksBg.style.transform =
+          'perspective(1200px)' +
+          ' rotateY(' + (currentX * 3) + 'deg)' +
+          ' rotateX(' + (currentY * -2) + 'deg)' +
+          ' scale(1.08)' +
+          ' translate(' + (currentX * -8) + 'px, ' + (currentY * -5) + 'px)';
       }
       if (speedlines) {
         speedlines.style.transform = 'translate(' + (currentX * 4) + 'px, ' + (currentY * 3) + 'px)';

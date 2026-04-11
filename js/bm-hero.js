@@ -109,6 +109,60 @@
     });
 
     rebuildMap(works);
+    explodeGatherIntro();
+  }
+
+  // ===== 爆発→集合イントロ =====
+  function explodeGatherIntro() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // reduced-motion: スキップしてすぐマーキー開始
+      heroWorksBg.classList.add('hero-marquee-go');
+      return;
+    }
+
+    var covers = heroWorksBg.querySelectorAll('.bm-hero-works-cover');
+    if (covers.length === 0) return;
+
+    // 1) 全カバーにランダムな初期位置を設定
+    var viewW = window.innerWidth;
+    var viewH = window.innerHeight;
+    covers.forEach(function(cover, i) {
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 500 + Math.random() * 600;
+      var x = Math.cos(angle) * dist;
+      var y = Math.sin(angle) * dist;
+      var rot = (Math.random() * 360 - 180);
+      cover.style.setProperty('--ex-x', x + 'px');
+      cover.style.setProperty('--ex-y', y + 'px');
+      cover.style.setProperty('--ex-r', rot + 'deg');
+      cover.style.setProperty('--ex-dur', (0.8 + Math.random() * 0.6) + 's');
+      cover.style.setProperty('--ex-delay', (i * 0.02) + 's');
+      cover.classList.add('explode-init');
+    });
+
+    // 2) 次フレームで集合クラスを付与（transitionを発火）
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        covers.forEach(function(cover) {
+          cover.classList.remove('explode-init');
+          cover.classList.add('explode-gather');
+        });
+
+        // 3) 集合完了後にマーキー開始 + クラス除去
+        var maxDelay = covers.length * 0.02 + 1.4; // 最大delay + duration
+        setTimeout(function() {
+          heroWorksBg.classList.add('hero-marquee-go');
+          covers.forEach(function(cover) {
+            cover.classList.remove('explode-gather');
+            cover.style.removeProperty('--ex-x');
+            cover.style.removeProperty('--ex-y');
+            cover.style.removeProperty('--ex-r');
+            cover.style.removeProperty('--ex-dur');
+            cover.style.removeProperty('--ex-delay');
+          });
+        }, maxDelay * 1000);
+      });
+    });
   }
 
   // ===== 制作事例モーダル (ContentsX同様) =====

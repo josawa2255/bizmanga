@@ -330,24 +330,33 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 /* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */
 .bm-hero-works-bg {
   position: absolute;
-  inset: 0;
-  padding-top: 70px;
+  inset: -20px;
+  padding-top: 90px;
   z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: clamp(4px, 0.6vw, 10px);
+  transform-style: preserve-3d;
+  transform: perspective(1200px) scale(1.08);
+  transition: transform 0.15s ease-out;
 }
 .bm-hero-works-row {
   display: flex;
   gap: 8px;
   width: max-content;
 }
-.bm-hero-works-row--1 { animation: bmMarqueeLeft 30s linear infinite; }
-.bm-hero-works-row--2 { animation: bmMarqueeRight 35s linear infinite; }
-.bm-hero-works-row--3 { animation: bmMarqueeLeft 28s linear infinite; }
-.bm-hero-works-row--4 { animation: bmMarqueeRight 32s linear infinite; display: none; }
-.bm-hero-works-row--5 { animation: bmMarqueeLeft 26s linear infinite; display: none; }
+/* マーキーは集合完了後にJSで開始 */
+.bm-hero-works-row--1 { animation: none; }
+.bm-hero-works-row--2 { animation: none; }
+.bm-hero-works-row--3 { animation: none; }
+.bm-hero-works-row--4 { animation: none; display: none; }
+.bm-hero-works-row--5 { animation: none; display: none; }
+.hero-marquee-go .bm-hero-works-row--1 { animation: bmMarqueeLeft 30s linear infinite; }
+.hero-marquee-go .bm-hero-works-row--2 { animation: bmMarqueeRight 35s linear infinite; }
+.hero-marquee-go .bm-hero-works-row--3 { animation: bmMarqueeLeft 28s linear infinite; }
+.hero-marquee-go .bm-hero-works-row--4 { animation: bmMarqueeRight 32s linear infinite; }
+.hero-marquee-go .bm-hero-works-row--5 { animation: bmMarqueeLeft 26s linear infinite; }
 
 @keyframes bmMarqueeLeft {
   0% { transform: translateX(0); }
@@ -356,6 +365,17 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 @keyframes bmMarqueeRight {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0); }
+}
+
+/* 爆発→集合イントロ */
+.bm-hero-works-cover.explode-init {
+  opacity: 0;
+  transform: translate(var(--ex-x), var(--ex-y)) rotate(var(--ex-r)) scale(0.4);
+}
+.bm-hero-works-cover.explode-gather {
+  opacity: 1;
+  transform: translate(0, 0) rotate(0deg) scale(1);
+  transition: all var(--ex-dur) cubic-bezier(0.16, 1, 0.3, 1) var(--ex-delay);
 }
 
 .bm-hero-works-cover {
@@ -424,12 +444,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   display: block;
 }
 
-/* --- オーバーレイ --- */
+/* --- オーバーレイ（ビネット） --- */
 .bm-hero-overlay {
   position: absolute; inset: 0;
   z-index: 2;
-  background: none;
   pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.45) 100%);
 }
 
 /* --- 集中線（マンガ的インパクト） --- */
@@ -2793,6 +2813,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-hero-works-row--4,
   .bm-hero-works-row--5 { animation: none !important; }
   .bm-hero-logo { animation: none !important; opacity: 1 !important; }
+  .bm-hero-tagline { animation: none !important; opacity: 1 !important; }
+  .bm-hero-works-cover { transition: none !important; }
   .bm-hero-speedlines { animation: none !important; opacity: 0.6 !important; }
   .bm-hero-glow { animation: none !important; opacity: 1 !important; filter: blur(30px) !important; }
   .bm-hero-glow::after { animation: none !important; }
