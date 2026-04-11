@@ -2510,6 +2510,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     border-bottom: 1px solid var(--bm-border);
   }
   .bm-header-right .bm-nav-cta { display: none; }
+  .bm-header-right .bm-lang-switch { order: -1; }
+  .bm-lang-btn { width: 40px; height: 32px; font-size: 11px; }
   /* モバイルドロップダウン */
   .bm-nav-dropdown-menu {
     position: static;
