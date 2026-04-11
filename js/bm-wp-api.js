@@ -110,7 +110,8 @@
       if (hasLink) {
         titleEl = document.createElement('a');
         titleEl.className = 'bm-news-link';
-        titleEl.href = item.url || ('news-detail?id=' + item.id);
+        var rawUrl = item.url || ('news-detail?id=' + item.id);
+        titleEl.href = (window.bmSanitize && window.bmSanitize.url) ? window.bmSanitize.url(rawUrl) : rawUrl;
       } else {
         titleEl = document.createElement('span');
         titleEl.className = 'bm-news-link bm-news-link--plain';

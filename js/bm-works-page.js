@@ -126,16 +126,17 @@
       var titleEn = w.title_en || w.title_ja || '';
       var pointEn = w.point_en || w.point || '';
 
+      var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
       card.innerHTML =
         '<div class="bm-works-card-thumb">' +
-          '<img src="' + coverSrc + '" alt="' + (w.title_ja || '') + '" loading="lazy">' +
+          '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy">' +
         '</div>' +
         '<div class="bm-works-card-body">' +
-          '<span class="bm-works-card-category" data-ja="' + (w.category || '') + '" data-en="' + catEn + '">' + (w.category || '') + '</span>' +
-          '<h3 class="bm-works-card-title" data-ja="' + (w.title_ja || '') + '" data-en="' + titleEn + '">' + (w.title_ja || '') + '</h3>' +
-          (w.point ? '<p class="bm-works-card-desc" data-ja="' + w.point + '" data-en="' + pointEn + '">' + w.point + '</p>' : '') +
+          '<span class="bm-works-card-category" data-ja="' + esc(w.category) + '" data-en="' + esc(catEn) + '">' + esc(w.category) + '</span>' +
+          '<h3 class="bm-works-card-title" data-ja="' + esc(w.title_ja) + '" data-en="' + esc(titleEn) + '">' + esc(w.title_ja) + '</h3>' +
+          (w.point ? '<p class="bm-works-card-desc" data-ja="' + esc(w.point) + '" data-en="' + esc(pointEn) + '">' + esc(w.point) + '</p>' : '') +
           '<div class="bm-works-card-meta">' +
-            (mediaStrJa ? '<span class="bm-works-card-media" data-ja="' + mediaStrJa + '" data-en="' + mediaStrEn + '">' + mediaStrJa + '</span>' : '') +
+            (mediaStrJa ? '<span class="bm-works-card-media" data-ja="' + esc(mediaStrJa) + '" data-en="' + esc(mediaStrEn) + '">' + esc(mediaStrJa) + '</span>' : '') +
           '</div>' +
         '</div>';
 

@@ -194,10 +194,11 @@
 
     if (wdTitle) wdTitle.textContent = work.title_ja || '';
     if (wdCategory) wdCategory.textContent = work.category || '';
-    if (wdMedia) wdMedia.innerHTML = (work.media || []).map(function(m) { return '<li>' + m + '</li>'; }).join('');
+    var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
+    if (wdMedia) wdMedia.innerHTML = (work.media || []).map(function(m) { return '<li>' + esc(m) + '</li>'; }).join('');
     if (wdSpec) {
       var spec = work.spec || {};
-      wdSpec.innerHTML = '<li>ページ数：' + (spec.pages || '—') + '</li><li>納期：' + (spec.period || '—') + '</li>';
+      wdSpec.innerHTML = '<li>ページ数：' + esc(spec.pages || '—') + '</li><li>納期：' + esc(spec.period || '—') + '</li>';
     }
     if (wdPoint) wdPoint.textContent = work.point || '';
     if (wdComment) wdComment.textContent = work.comment || '';
