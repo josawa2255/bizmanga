@@ -1266,6 +1266,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    ============================================ */
 .bm-cta {
   position: relative;
+  z-index: 2;
   background: linear-gradient(135deg, var(--bm-accent) 0%, var(--bm-accent-hover) 100%);
   overflow: clip;
 }
