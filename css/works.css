@@ -151,11 +151,11 @@ body {
   overflow: hidden;
   box-shadow: 0 2px 16px rgba(0,0,0,0.06);
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
 }
 .work-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.13);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(235,82,0,0.1), 0 8px 24px rgba(0,0,0,0.08);
 }
 .work-card.filter-hidden,
 .work-card.page-hidden {
@@ -163,7 +163,7 @@ body {
 }
 .work-card-img-wrapper {
   position: relative;
-  background: linear-gradient(135deg, #f0ebe4 0%, #e8e2d8 100%);
+  background: linear-gradient(160deg, #f5f0ea 0%, #ece4da 50%, #e8ddd2 100%);
   padding: 24px;
   display: flex;
   align-items: center;
@@ -176,14 +176,15 @@ body {
   max-height: 100%;
   object-fit: contain;
   display: block;
-  border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  transition: transform 0.3s ease;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
   position: relative;
   z-index: 1;
 }
 .work-card:hover .work-card-img {
-  transform: scale(1.03);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.22), 0 4px 12px rgba(0,0,0,0.12);
 }
 /* Tall-page cover: crop to show top portion */
 .work-card-img-wrapper.tall-cover {
@@ -201,38 +202,59 @@ body {
 .work-card-img-wrapper.tall-cover::after {
   display: none;
 }
-/* Decorative paper cards (白紙の紙) */
+/* Card-stack decorative cards */
 .work-card-img-wrapper::before,
 .work-card-img-wrapper::after {
   content: '';
   position: absolute;
   width: 50%;
   height: 74%;
-  border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  border-radius: 4px;
   z-index: 0;
-  background: #fff;
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s ease, opacity 0.45s ease;
+  opacity: 0.7;
 }
 .work-card-img-wrapper::before {
-  transform: rotate(-12deg);
-  top: 10%; left: 15%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transform: rotate(-5deg);
+  top: 10%; left: 18%;
 }
 .work-card-img-wrapper::after {
-  transform: rotate(12deg);
-  top: 10%; right: 15%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transform: rotate(5deg);
+  top: 10%; right: 18%;
+}
+/* Hover: stack fans out with color */
+.work-card:hover .work-card-img-wrapper::before {
+  transform: translateX(-20px) rotate(-14deg);
+  background: linear-gradient(135deg, #ffe8d4, #ffd4b0);
+  box-shadow: 0 8px 24px rgba(235,82,0,0.12);
+  opacity: 1;
+}
+.work-card:hover .work-card-img-wrapper::after {
+  transform: translateX(20px) rotate(14deg);
+  background: linear-gradient(135deg, #ffeede, #ffe2c8);
+  box-shadow: 0 8px 24px rgba(235,82,0,0.12);
+  opacity: 1;
 }
 .work-card-page-count {
   position: absolute;
   top: 12px; right: 12px;
-  background: rgba(0,0,0,0.65);
-  color: #fff;
+  background: rgba(255,255,255,0.9);
+  color: #555;
   font-size: 11px; font-weight: 700;
   padding: 4px 10px;
   border-radius: 20px;
   z-index: 2;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 .work-card-body {
   padding: 18px 20px 20px;
+  border-top: 1px solid rgba(0,0,0,0.04);
 }
 /* カテゴリバッジ：画像左上オーバーレイ */
 .work-card-category {
@@ -241,12 +263,17 @@ body {
   z-index: 3;
   display: inline-block;
   font-size: 11px; font-weight: 800;
-  padding: 4px 12px;
-  border-radius: 5px;
-  background: rgba(30,30,30,0.82);
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(235,82,0,0.88);
   color: #fff;
   letter-spacing: 0.03em;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.3s ease;
+}
+.work-card:hover .work-card-category {
+  background: rgba(235,82,0,0.95);
 }
 .work-card-title {
   font-size: 15px;
@@ -277,15 +304,16 @@ body {
   display: flex; align-items: center; justify-content: center;
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: #333;
-  color: #fff;
+  background: #e8e2d8;
+  color: #666;
   font-size: 16px;
-  transition: background 0.2s, transform 0.2s;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
   margin-left: auto;
 }
 .work-card:hover .work-card-arrow {
   background: #EB5200;
-  transform: scale(1.1);
+  color: #fff;
+  transform: scale(1.1) translateX(2px);
 }
 
 /* ===== Manga Modal (Vertical Scroll & Spread Viewer) ===== */
@@ -1293,9 +1321,11 @@ body {
   .work-card { border-radius: 10px; }
   .work-card-img-wrapper { padding: 10px; aspect-ratio: 4 / 3.5; }
   .work-card-img { width: 65%; }
+  .work-card-img-wrapper::before,
+  .work-card-img-wrapper::after { width: 45%; height: 68%; }
   .work-card-category { font-size: 10px; padding: 3px 8px; top: 7px; left: 7px; }
   .work-card-page-count { font-size: 10px; padding: 3px 7px; top: 7px; right: 7px; }
-  .work-card-body { padding: 8px 10px 10px; }
+  .work-card-body { padding: 8px 10px 10px; border-top: none; }
   .work-card-title { font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
   .work-card-arrow { width: 28px; height: 28px; font-size: 13px; }
   .footer-inner { justify-content: center; text-align: center; }
