@@ -1301,12 +1301,24 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
   margin-bottom: 0;
 }
+/* --- CTA without character (other pages) --- */
+.bm-cta-inner:not(:has(.bm-cta-character)) {
+  justify-content: center;
+  text-align: center;
+}
+.bm-cta-inner:not(:has(.bm-cta-character)) .bm-cta-content {
+  padding-bottom: 0;
+}
+.bm-cta-inner:not(:has(.bm-cta-character)) .bm-cta-buttons,
+.bm-cta-inner:not(:has(.bm-cta-character)) .bm-cta-badges {
+  justify-content: center;
+}
 /* --- CTA Mobile --- */
 @media (max-width: 768px) {
   .bm-cta-inner {
     flex-direction: column;
     text-align: center;
-    padding: 48px 20px 0;
+    padding: 48px 20px;
     gap: 24px;
   }
   .bm-cta-buttons {
