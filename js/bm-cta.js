@@ -23,9 +23,13 @@
         '<p class="bm-cta-sub" data-ja="お見積り・ご相談は完全無料です" data-en="Estimates and consultations are completely free">お見積り・ご相談は完全無料です</p>' +
         '<p class="bm-cta-desc" data-ja="ビジネス漫画のプロが、貴社に最適なプランをご提案します。" data-en="Our business manga experts will propose the best plan for your company.">ビジネス漫画のプロが、貴社に最適なプランをご提案します。</p>' +
         '<div class="bm-cta-buttons">' +
-          '<a href="contact" class="bm-cta-btn bm-cta-btn--contact" data-ja="無料相談する" data-en="Free Consultation">' +
-            '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>' +
-            '<span data-ja="無料相談する" data-en="Free Consultation">無料相談する</span>' +
+          '<a href="contact" class="bm-cta-btn bm-cta-btn--contact" data-tooltip="完全無料！">' +
+            '<span class="bm-btn-wrap">' +
+              '<span class="bm-btn-text" data-ja="無料相談する" data-en="Free Consultation">無料相談する</span>' +
+              '<span class="bm-btn-icon">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>' +
+              '</span>' +
+            '</span>' +
           '</a>' +
           '<a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-cta-btn bm-cta-btn--line" target="_blank" rel="noopener" data-tooltip="最短即日返信！">' +
             '<span class="bm-btn-wrap">' +
