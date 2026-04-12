@@ -28,9 +28,14 @@
 
   // ===== カード生成 =====
   function buildGalleryCards(data) {
-    var sorted = data.slice().sort(function(a, b) {
-      return new Date(b.added) - new Date(a.added);
-    }).slice(0, MAX_NEW_WORKS);
+    var hasAdded = data.some(function(d) { return d && d.added; });
+    var sorted = data.slice();
+    if (hasAdded) {
+      sorted.sort(function(a, b) {
+        return new Date(b.added || 0) - new Date(a.added || 0);
+      });
+    }
+    sorted = sorted.slice(0, MAX_NEW_WORKS);
 
     track.innerHTML = '';
 
@@ -135,12 +140,16 @@
   buildGalleryCards(FALLBACK_NEW_WORKS);
 
   // ===== WP APIデータ到着時に再構築 =====
-  window.addEventListener('bm-data-ready', function() {
-    var wpData = window.BM_NEW_WORKS_DATA;
+  // /works（漫画事例）を優先、無ければ /works-new（新作漫画）にフォールバック
+  function refreshFromWp() {
+    var wpData = window.BM_WORKS_DATA;
+    if (!wpData || !wpData.length) wpData = window.BM_NEW_WORKS_DATA;
     if (wpData && wpData.length > 0) {
       scrollPos = 0;
       if (animId) cancelAnimationFrame(animId);
       buildGalleryCards(wpData);
     }
-  });
+  }
+  window.addEventListener('bm-data-ready', refreshFromWp);
+  window.addEventListener('bm-all-data-ready', refreshFromWp);
 })();
