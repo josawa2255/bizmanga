@@ -1359,15 +1359,91 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   transform: translateY(-3px) scale(1.03);
   box-shadow: 0 12px 32px rgba(0,0,0,0.2);
 }
+/* ===== LINEボタン: スライド切替 + tooltip ===== */
 .bm-cta-btn--line {
-  background: #06C755;
+  --bm-line-color: #06C755;
+  --bm-line-h: 56px;
+  --bm-line-w: 200px;
+  width: var(--bm-line-w);
+  height: var(--bm-line-h);
+  padding: 0;
+  gap: 0;
+  background: var(--bm-line-color);
   color: #fff;
+  position: relative;
+  overflow: visible;
+  border-radius: 50px;
   box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+  transition: background 0.3s, box-shadow 0.3s, transform 0.25s;
 }
 .bm-cta-btn--line:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 12px 32px rgba(6,199,85,0.4);
+  background: #059a44;
+  box-shadow: 0 12px 32px rgba(6,199,85,0.45);
+  transform: translateY(-2px);
 }
+.bm-cta-btn--line .bm-btn-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.bm-cta-btn--line .bm-btn-text,
+.bm-cta-btn--line .bm-btn-icon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  transition: top 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.bm-cta-btn--line .bm-btn-text { top: 0; }
+.bm-cta-btn--line .bm-btn-icon { top: 100%; }
+.bm-cta-btn--line:hover .bm-btn-text { top: -100%; }
+.bm-cta-btn--line:hover .bm-btn-icon { top: 0; }
+.bm-cta-btn--line .bm-btn-icon svg { width: 28px; height: 28px; }
+/* Tooltip */
+.bm-cta-btn--line::before,
+.bm-cta-btn--line::after {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+.bm-cta-btn--line::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 22px);
+  padding: 8px 14px;
+  background: #333;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.bm-cta-btn--line::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 12px);
+  border: 6px solid transparent;
+  border-top-color: #333;
+}
+.bm-cta-btn--line:hover::before,
+.bm-cta-btn--line:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+.bm-cta-btn--line:hover::before { bottom: calc(100% + 14px); }
+.bm-cta-btn--line:hover::after  { bottom: calc(100% + 4px); }
 /* --- Trust Badges --- */
 .bm-cta-badges {
   display: flex;

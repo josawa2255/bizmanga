@@ -27,9 +27,13 @@
             '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>' +
             '<span data-ja="無料相談する" data-en="Free Consultation">無料相談する</span>' +
           '</a>' +
-          '<a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-cta-btn bm-cta-btn--line" target="_blank" rel="noopener">' +
-            '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z"/></svg>' +
-            '<span data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>' +
+          '<a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-cta-btn bm-cta-btn--line" target="_blank" rel="noopener" data-tooltip="最短即日返信！">' +
+            '<span class="bm-btn-wrap">' +
+              '<span class="bm-btn-text" data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>' +
+              '<span class="bm-btn-icon">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z"/></svg>' +
+              '</span>' +
+            '</span>' +
           '</a>' +
         '</div>' +
         '<div class="bm-cta-badges">' +
