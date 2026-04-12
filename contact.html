@@ -78,22 +78,14 @@
             <label class="bm-form-label" data-ja="お問い合わせ内容" data-en="Inquiry">お問い合わせ内容 <span class="bm-required" data-ja="必須" data-en="Required">必須</span></label>
             <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required></textarea>
           </div>
-          <button type="submit" class="delivery-btn bm-form-submit" aria-label="送信する">
-            <span class="db-bg" aria-hidden="true"></span>
-            <span class="db-car" aria-hidden="true">
-              <span class="db-car-body"></span>
-              <span class="db-car-top"></span>
-              <span class="db-car-light"></span>
-              <span class="db-car-wheel db-car-wheel--1"></span>
-              <span class="db-car-wheel db-car-wheel--2"></span>
+          <button type="submit" class="cb-submit bm-form-submit" aria-label="送信する">
+            <span class="cb-label" data-ja="送信する" data-en="Send">送信する</span>
+            <span class="cb-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
             </span>
-            <span class="db-package" aria-hidden="true">
-              <span class="db-package-flap db-package-flap--l"></span>
-              <span class="db-package-flap db-package-flap--r"></span>
-              <span class="db-package-stamp"></span>
-            </span>
-            <span class="db-text db-text--order" data-ja="送信する" data-en="Send">送信する</span>
-            <span class="db-text db-text--done" data-ja="送信完了!" data-en="Sent!">送信完了!</span>
           </button>
         </form>
       </div>
@@ -149,23 +141,7 @@
         }
       }
 
-      // 送信ボタンのクリックで即エフェクト発動（フォーム未入力でもプレビュー可能）
-      var bmSubmitBtn = document.querySelector('.bm-form-submit');
-      if (bmSubmitBtn) {
-        bmSubmitBtn.addEventListener('click', function() {
-          bmSubmitBtn.classList.add('is-sending');
-          // 実送信されない場合はアニメ終了後に元に戻す
-          setTimeout(function() {
-            var form = document.getElementById('bmContactForm');
-            if (form && form.style.display !== 'none') {
-              bmSubmitBtn.classList.remove('is-sending');
-              bmSubmitBtn.disabled = false;
-            }
-          }, 5200);
-        });
-      }
-
-      document.getElementById('bmContactForm').addEventListener('submit', function(e) {
+document.getElementById('bmContactForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         var submitBtn = e.target.querySelector('.bm-form-submit');
