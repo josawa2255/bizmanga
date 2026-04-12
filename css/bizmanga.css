@@ -2539,13 +2539,17 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 /* モバイル: 固定バー内ではサイズ調整 */
 @media (max-width: 768px) {
+  /* 固定CTAバーがフッターを隠さないよう body 下端を確保 */
+  body { padding-bottom: 60px; }
+  .bm-footer { padding-bottom: 24px; }
+
   .bm-sahara-btn {
     --sahara-h: 56px;
     width: auto;
     flex: 1;
     min-width: 0;
     border-radius: 0;
-    -webkit-box-reflect: none;
+    -webkit-box-reflect: unset;
     letter-spacing: 0.02em;
   }
   .bm-sahara-inner { border-radius: 0; }
