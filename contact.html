@@ -79,7 +79,6 @@
             <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required></textarea>
           </div>
           <button type="submit" class="delivery-btn bm-form-submit" aria-label="送信する">
-            <span class="db-stars" aria-hidden="true"></span>
             <span class="db-bg" aria-hidden="true"></span>
             <span class="db-car" aria-hidden="true">
               <span class="db-car-body"></span>
@@ -148,6 +147,22 @@
           var planNames = { light: 'ライトプラン', standard: 'スタンダードプラン', premium: 'プレミアムプラン' };
           msgField.value = '【' + (planNames[plan] || plan) + 'について】\n\n';
         }
+      }
+
+      // 送信ボタンのクリックで即エフェクト発動（フォーム未入力でもプレビュー可能）
+      var bmSubmitBtn = document.querySelector('.bm-form-submit');
+      if (bmSubmitBtn) {
+        bmSubmitBtn.addEventListener('click', function() {
+          bmSubmitBtn.classList.add('is-sending');
+          // 実送信されない場合はアニメ終了後に元に戻す
+          setTimeout(function() {
+            var form = document.getElementById('bmContactForm');
+            if (form && form.style.display !== 'none') {
+              bmSubmitBtn.classList.remove('is-sending');
+              bmSubmitBtn.disabled = false;
+            }
+          }, 5200);
+        });
       }
 
       document.getElementById('bmContactForm').addEventListener('submit', function(e) {
