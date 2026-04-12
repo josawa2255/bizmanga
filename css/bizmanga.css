@@ -2387,6 +2387,117 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-sticky-cta-company { background: #666; }
 .bm-sticky-cta-company:hover { background: #555; }
 
+/* ===== 会社について知る SAHARAスタイルボタン ===== */
+.bm-sahara-btn {
+  --sahara-h: 52px;
+  --sahara-w: 200px;
+  width: var(--sahara-w);
+  height: var(--sahara-h);
+  position: relative;
+  display: inline-block;
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.45), 0 4px 10px rgba(249, 115, 22, 0.3);
+  -webkit-box-reflect: below 0px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.35));
+  transition: filter 0.3s ease, transform 0.3s ease;
+  font-family: 'Noto Serif JP', serif;
+  letter-spacing: 0.15em;
+}
+.bm-sahara-btn:hover {
+  filter: saturate(1.15);
+  transform: translateY(-2px);
+}
+.bm-sahara-btn:active {
+  filter: saturate(1.4);
+}
+/* 内側のピンクピル */
+.bm-sahara-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 95%;
+  height: 85%;
+  transform: translate(-50%, -50%);
+  background: #fecaca;
+  border-radius: 999px;
+  z-index: 1;
+  pointer-events: none;
+}
+/* テキスト（REST + HOVER） */
+.bm-sahara-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  z-index: 40;
+  pointer-events: none;
+  background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bm-sahara-text--rest {
+  transform: translate(-50%, -80%);
+}
+.bm-sahara-text--hover {
+  transform: translate(-50%, 20%);
+  background: linear-gradient(90deg, #b91c1c 0%, #c2410c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+.bm-sahara-btn:hover .bm-sahara-text--rest {
+  transform: translate(-50%, -180%);
+}
+.bm-sahara-btn:hover .bm-sahara-text--hover {
+  transform: translate(-50%, -60%);
+}
+/* 波SVG（下部から登ってくる） */
+.bm-sahara-waves {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%) rotate(180deg) scaleX(1.25);
+  z-index: 30;
+  pointer-events: none;
+  animation: bmSaharaPulse 2.5s ease-in-out infinite;
+  transition: transform 0.4s ease;
+}
+.bm-sahara-btn:hover .bm-sahara-waves {
+  animation: none;
+  transform: translate(-50%, -95%) rotate(180deg) scaleX(1.25);
+}
+@keyframes bmSaharaPulse {
+  0%, 100% { opacity: 0.8; }
+  50%      { opacity: 1; }
+}
+/* モバイル: 固定バー内ではサイズ調整 */
+@media (max-width: 768px) {
+  .bm-sahara-btn {
+    --sahara-h: 56px;
+    width: auto;
+    flex: 1;
+    border-radius: 0;
+    -webkit-box-reflect: none;
+  }
+  .bm-sahara-inner { border-radius: 0; }
+}
+
 /* モバイルでは横並び＋画面下固定バー */
 @media (max-width: 768px) {
   .bm-sticky-cta {
