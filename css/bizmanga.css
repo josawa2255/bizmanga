@@ -2438,14 +2438,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   z-index: 40;
   pointer-events: none;
-  background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #7f1d1d;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .bm-sahara-text--rest {
@@ -2453,11 +2451,10 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-sahara-text--hover {
   transform: translate(-50%, 20%);
-  background: linear-gradient(90deg, #b91c1c 0%, #c2410c 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(127, 29, 29, 0.7);
   font-weight: 900;
+  letter-spacing: 0.2em;
 }
 .bm-sahara-btn:hover .bm-sahara-text--rest {
   transform: translate(-50%, -180%);
