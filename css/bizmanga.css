@@ -2489,10 +2489,19 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     --sahara-h: 56px;
     width: auto;
     flex: 1;
+    min-width: 0;
     border-radius: 0;
     -webkit-box-reflect: none;
+    letter-spacing: 0.02em;
   }
   .bm-sahara-inner { border-radius: 0; }
+  .bm-sahara-text {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    padding: 0 4px;
+  }
+  .bm-sahara-text--hover { letter-spacing: 0.1em; }
 }
 
 /* モバイルでは横並び＋画面下固定バー */
