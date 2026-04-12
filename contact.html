@@ -78,7 +78,24 @@
             <label class="bm-form-label" data-ja="お問い合わせ内容" data-en="Inquiry">お問い合わせ内容 <span class="bm-required" data-ja="必須" data-en="Required">必須</span></label>
             <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required></textarea>
           </div>
-          <button type="submit" class="bm-form-submit" data-ja="送信する" data-en="Send">送信する</button>
+          <button type="submit" class="delivery-btn bm-form-submit" aria-label="送信する">
+            <span class="db-stars" aria-hidden="true"></span>
+            <span class="db-bg" aria-hidden="true"></span>
+            <span class="db-car" aria-hidden="true">
+              <span class="db-car-body"></span>
+              <span class="db-car-top"></span>
+              <span class="db-car-light"></span>
+              <span class="db-car-wheel db-car-wheel--1"></span>
+              <span class="db-car-wheel db-car-wheel--2"></span>
+            </span>
+            <span class="db-package" aria-hidden="true">
+              <span class="db-package-flap db-package-flap--l"></span>
+              <span class="db-package-flap db-package-flap--r"></span>
+              <span class="db-package-stamp"></span>
+            </span>
+            <span class="db-text db-text--order" data-ja="送信する" data-en="Send">送信する</span>
+            <span class="db-text db-text--done" data-ja="送信完了!" data-en="Sent!">送信完了!</span>
+          </button>
         </form>
       </div>
     </div>
@@ -137,9 +154,8 @@
         e.preventDefault();
 
         var submitBtn = e.target.querySelector('.bm-form-submit');
-        var originalText = submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.textContent = '送信中...';
+        submitBtn.classList.add('is-sending');
 
         var company    = document.getElementById('bmCompany').value;
         var department = document.getElementById('bmDepartment').value;
@@ -190,8 +206,6 @@
           return res.text().then(function(t) { throw new Error(t); });
         })
         .then(function() {
-          submitBtn.textContent = '送信完了';
-          submitBtn.style.background = '#2e7d32';
           var form = document.getElementById('bmContactForm');
           var thanks = document.createElement('div');
           thanks.innerHTML = '<div style="text-align:center;padding:40px 0;">'
@@ -204,7 +218,7 @@
         .catch(function(err) {
           console.error('HubSpot submission error:', err);
           submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
+          submitBtn.classList.remove('is-sending');
           alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
         });
       });
