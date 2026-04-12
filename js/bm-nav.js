@@ -156,10 +156,14 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function() {
+    var bmToggleMenu = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       nav.classList.toggle('open');
       hamburger.classList.toggle('active');
-    });
+    };
+    hamburger.addEventListener('click', bmToggleMenu);
+    // iOS Safari 対策
+    hamburger.addEventListener('touchend', function(e) { bmToggleMenu(e); }, { passive: false });
     nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', function() {
         nav.classList.remove('open');

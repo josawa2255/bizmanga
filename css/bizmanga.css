@@ -2494,7 +2494,20 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 
 @media (max-width: 768px) {
   .bm-nav { display: none; }
-  .bm-hamburger { display: flex; }
+  .bm-hamburger {
+    display: flex;
+    position: relative;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    cursor: pointer;
+    order: 10;
+    flex-shrink: 0;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  .bm-header { isolation: isolate; }
+  .bm-header-right { position: relative; z-index: 10; }
   .bm-nav.open {
     display: flex; flex-direction: column;
     position: fixed; top: 72px; left: 0; right: 0;
