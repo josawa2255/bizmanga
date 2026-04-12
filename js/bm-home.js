@@ -50,11 +50,14 @@
 
         var titleJa = item.title_ja || '';
         var titleEn = item.title_en || titleJa;
+        // サブタイトル優先（WP側で設定されていればそちらを表示名に使う）
+        var labelJa = item.subtitle_ja || titleJa;
+        var labelEn = item.subtitle_en || titleEn;
         card.innerHTML =
           '<div class="bm-gallery-card-cover">' +
             '<img src="' + coverSrc + '" alt="' + titleJa + '" loading="lazy">' +
           '</div>' +
-          '<p class="bm-gallery-card-title" data-ja="' + titleJa + '" data-en="' + titleEn + '">' + titleJa + '</p>';
+          '<p class="bm-gallery-card-title" data-ja="' + labelJa + '" data-en="' + labelEn + '">' + labelJa + '</p>';
 
         // クリック → ビズ書庫で漫画を直接開く
         (function(workItem) {
