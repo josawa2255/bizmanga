@@ -434,6 +434,36 @@
     }
   });
 
+  // ===== スマホ用: 横スワイプでページ切替 =====
+  if (wdCarousel) {
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touchMoved = false;
+    var SWIPE_THRESHOLD = 40;
+    wdCarousel.addEventListener('touchstart', function(e) {
+      if (wdCarousel.classList.contains('vertical-scroll')) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchMoved = false;
+    }, { passive: true });
+    wdCarousel.addEventListener('touchmove', function(e) {
+      touchMoved = true;
+    }, { passive: true });
+    wdCarousel.addEventListener('touchend', function(e) {
+      if (wdCarousel.classList.contains('vertical-scroll')) return;
+      if (!touchMoved) return;
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      // 縦スワイプが主体ならページ切替しない
+      if (Math.abs(dy) > Math.abs(dx)) return;
+      if (dx < -SWIPE_THRESHOLD && wdCurrentPage < wdTotalPages - 1) {
+        goToPage(wdCurrentPage + 1);
+      } else if (dx > SWIPE_THRESHOLD && wdCurrentPage > 0) {
+        goToPage(wdCurrentPage - 1);
+      }
+    }, { passive: true });
+  }
+
   // ===== 初期表示（フォールバック） =====
   rebuildMap(FALLBACK_WORKS);
   renderWorks(FALLBACK_WORKS, null);
