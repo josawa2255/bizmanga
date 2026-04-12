@@ -2447,20 +2447,20 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .bm-sahara-text--rest {
-  transform: translate(-50%, -80%);
+  transform: translate(-50%, -50%);
 }
 .bm-sahara-text--hover {
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, 50%);
   color: #fff;
   text-shadow: 0 2px 6px rgba(127, 29, 29, 0.7);
   font-weight: 900;
   letter-spacing: 0.2em;
 }
 .bm-sahara-btn:hover .bm-sahara-text--rest {
-  transform: translate(-50%, -180%);
+  transform: translate(-50%, -150%);
 }
 .bm-sahara-btn:hover .bm-sahara-text--hover {
-  transform: translate(-50%, -60%);
+  transform: translate(-50%, -50%);
 }
 /* 波SVG（下部から登ってくる） */
 .bm-sahara-waves {
