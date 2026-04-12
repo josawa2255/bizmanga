@@ -250,13 +250,38 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-nav-cta {
   display: inline-block;
   padding: 10px 24px;
-  background: var(--bm-accent);
-  color: #fff;
-  font-size: 14px; font-weight: 700;
+  background: transparent;
+  color: var(--bm-accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   border-radius: 50px;
-  transition: background 0.3s, transform 0.2s;
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 0;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
 }
-.bm-nav-cta:hover { background: var(--bm-accent-hover); transform: translateY(-1px); }
+.bm-nav-cta::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--bm-accent);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
+}
+.bm-nav-cta:hover {
+  color: #fff;
+  transform: scale(1.06);
+  outline-color: var(--bm-accent);
+  box-shadow: 4px 5px 17px -4px rgba(var(--bm-accent-rgb), 0.5);
+}
+.bm-nav-cta:hover::before { width: 260%; }
 
 /* 言語切替ボタン */
 .bm-lang-switch {
