@@ -344,12 +344,11 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   position: relative;
   width: 100%;
   max-width: 100%;
-  background: #1a1a1a; /* 画像読み込み前の背景色 */
   height: 100vh;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat fixed;
+  background: #000; /* ContentsXと同じ黒ベース */
 }
 
 /* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */
