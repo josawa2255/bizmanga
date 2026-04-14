@@ -1530,7 +1530,7 @@ const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
   });
 })();
 
-if (isDirectMode && mangaData[autoOpen]) {
+if (isDirectMode) {
   // Hide library entirely
   // biz-library.html uses .bm-header; works.html uses .header — handle both
   const headerEl = document.querySelector('.bm-header') || document.querySelector('.header');
@@ -1544,10 +1544,40 @@ if (isDirectMode && mangaData[autoOpen]) {
   const footerEl = document.querySelector('.footer');
   if (footerEl) footerEl.style.display = 'none';
 
-  // ×ボタンは常に表示（クリックで前のページに戻るかホームへ遷移）
-
-  // Open manga immediately
-  openManga(autoOpen);
+  if (mangaData[autoOpen]) {
+    // FALLBACK or library API で既に取得済み
+    openManga(autoOpen);
+  } else {
+    // /manga/{id} エンドポイントで単一作品取得（表示フラグ無関係）
+    const apiBase = (window.BM_WP_CONFIG && window.BM_WP_CONFIG.apiBase) || 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+    fetch(apiBase + '/manga/' + encodeURIComponent(autoOpen))
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        if (!data || !data.id) throw new Error('invalid data');
+        // mangaDataに登録してopenManga
+        mangaData[data.id] = {
+          id: data.id,
+          title: data.title_ja || data.id,
+          title_en: data.title_en || data.title_ja || data.id,
+          pages: data.pages || (data.gallery && data.gallery.length) || 1,
+          category: data.category || '',
+          tags: [],
+          gallery: data.gallery || [],
+          thumbnail: data.thumbnail || '',
+          viewType: (data.gallery && data.gallery.length > 0 && data.gallery[0].indexOf('webtoon') !== -1) ? 'vertical' : 'spread',
+          point: data.point || '',
+          comment: data.comment || ''
+        };
+        openManga(autoOpen);
+      })
+      .catch(function(err) {
+        console.warn('[direct-mode] manga fetch failed:', err.message);
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;">作品が見つかりませんでした。<br><br><a href="/" style="color:#eb5200;">トップページへ戻る</a></div>';
+      });
+  }
 }
 
 // ===== Pre-production Carousels (赤ペン・ネーム) =====
