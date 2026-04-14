@@ -27,6 +27,29 @@
 
 ## 2. URL パラメータ・特殊モード
 
+### 2.0 制作事例の2系統URL（重要）
+
+BizManga には**目的の異なる2種類の作品URL**が並列で存在する。使い分け必須。
+
+| URL系統 | 例 | 用途 | 即時性 | ターゲット |
+|---|---|---|---|---|
+| **`?manga=id`** | `biz-library?manga=diamond` | 漫画ビューアを全画面で直接開く（QR/直リンク共有） | ✅ WP公開直後から動作 | 人間（顧客・商談先・QR経由） |
+| **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
+
+**動作メカニズム:**
+- `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
+- `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
+
+**運用ルール:**
+- 新作品を顧客・商談で共有する時 → `?manga=id` を使う（即時）
+- SEO流入を狙う時 → `/works/{slug}` が自動生成されるのを待つ or Actions から Run workflow で手動ビルド
+- 両方のURLは恒久的に並列存在。どちらかに統合する予定はない
+
+**よくある誤解:**
+- ❌「新作品追加したら `/works/{slug}` も即使える」→ 日曜ビルドまで404
+- ❌「`?manga=id` は旧仕様で廃止予定」→ 現役、QR運用の中核
+- ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日曜ビルド後）
+
 ### 2.1 QR コード用ダイレクトモード ⭐重要
 ```
 https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
