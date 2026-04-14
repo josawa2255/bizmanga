@@ -330,14 +330,11 @@
   buildMarquee(FALLBACK_WORKS);
 
   // WP APIデータが来たら上書き（show_hero_site でフィルタ）
-  // ブロックリスト: 殻だけ作成された作品（実ページなし）をヒーローから除外
-  var HERO_BLOCKLIST = { 'omatome-ninja-new': true };
   window.addEventListener('bm-data-ready', function() {
     var allWorks = window.BM_WORKS_DATA || [];
     // show_hero_site: 'both' or 'bizmanga' → BizMangaヒーローに表示
     // 後方互換: show_hero_site がない場合は show_hero フラグで判定
     var works = allWorks.filter(function(w) {
-      if (HERO_BLOCKLIST[w.id]) return false;
       if ('show_hero_site' in w) {
         return w.show_hero_site === 'both' || w.show_hero_site === 'bizmanga';
       }

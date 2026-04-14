@@ -49,16 +49,9 @@ def fetch_works():
     return data
 
 
-# 殻だけ作成された作品（実ページなし）を除外
-WORKS_BLOCKLIST = {"omatome-ninja-new"}
-
-
 def filter_for_bm(works):
-    # show_site: "both" のみ（BizManga で表示される作品）、ブロックリスト除外
-    return [
-        w for w in works
-        if w.get("show_site") == "both" and w["id"] not in WORKS_BLOCKLIST
-    ]
+    # show_site: "both" のみ（BizManga で表示される作品）
+    return [w for w in works if w.get("show_site") == "both"]
 
 
 def build_card(w):

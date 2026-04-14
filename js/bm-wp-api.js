@@ -43,36 +43,28 @@
     }
   }
 
-  /* ── グローバルブロックリスト ──
-     WPに登録されているが殻だけの作品（実ページなし）を全表示から除外 */
-  var WORKS_BLOCKLIST = { 'omatome-ninja-new': true };
-  function filterBlocked(arr) {
-    return (arr || []).filter(function(w) { return !WORKS_BLOCKLIST[w.id]; });
-  }
-
   /* ── 漫画事例をロード（Hero + 制作事例ページ） ── */
   async function loadWorks() {
-    var raw = await apiFetch('/works?site=bizmanga');
-    if (!raw || !Array.isArray(raw)) return;
-    var data = filterBlocked(raw);
+    var data = await apiFetch('/works?site=bizmanga');
+    if (!data || !Array.isArray(data)) return;
     window.BM_WORKS_DATA = data;
-    console.log('[BM-WP-API] 漫画事例: ' + data.length + '件 loaded (filtered ' + (raw.length - data.length) + ')');
+    console.log('[BM-WP-API] 漫画事例: ' + data.length + '件 loaded');
   }
 
   /* ── 新作漫画をロード ── */
   async function loadNewWorks() {
-    var raw = await apiFetch('/works-new?site=bizmanga');
-    if (!raw || !Array.isArray(raw)) return;
-    window.BM_NEW_WORKS_DATA = filterBlocked(raw);
-    console.log('[BM-WP-API] 新作漫画: ' + window.BM_NEW_WORKS_DATA.length + '件 loaded');
+    var data = await apiFetch('/works-new?site=bizmanga');
+    if (!data || !Array.isArray(data)) return;
+    window.BM_NEW_WORKS_DATA = data;
+    console.log('[BM-WP-API] 新作漫画: ' + data.length + '件 loaded');
   }
 
   /* ── ビズ書庫データをロード ── */
   async function loadLibrary() {
-    var raw = await apiFetch('/library');
-    if (!raw || !Array.isArray(raw)) return;
-    window.BM_LIBRARY_DATA = filterBlocked(raw);
-    console.log('[BM-WP-API] ビズ書庫: ' + window.BM_LIBRARY_DATA.length + '件 loaded');
+    var data = await apiFetch('/library');
+    if (!data || !Array.isArray(data)) return;
+    window.BM_LIBRARY_DATA = data;
+    console.log('[BM-WP-API] ビズ書庫: ' + data.length + '件 loaded');
   }
 
   /* ── ニュースDOM を動的に生成 ── */
