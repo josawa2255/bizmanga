@@ -1501,6 +1501,8 @@ html.direct-mode .works-section,
 html.direct-mode .pre-section,
 html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
+/* ダイレクトモードでは閉じるボタンを非表示 (ビズ書庫へ戻らせない) */
+html.direct-mode .modal-close { display: none !important; }
 
 /* ===== Manga Page Loader ===== */
 /* 見開き: スピナー要素が背景カバー + スピナー表示を兼ねる */

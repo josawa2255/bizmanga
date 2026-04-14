@@ -1476,20 +1476,16 @@ if (viewToggleBtn) {
 }
 
 document.getElementById('modalClose').addEventListener('click', () => {
-  if (isDirectMode) {
-    closeManga(); // ダイレクトモード: 前のページに戻るかホームへ
-  } else {
-    history.back(); // triggers popstate → closeManga
-  }
+  // ダイレクトモード(QR)では閉じさせない(ビズ書庫へ戻らないように)
+  if (isDirectMode) return;
+  history.back(); // triggers popstate → closeManga
 });
 document.addEventListener('keydown', (e) => {
   if (!mangaModal.classList.contains('open')) return;
   if (e.key === 'Escape') {
-    if (isDirectMode) {
-      closeManga();
-    } else {
-      history.back();
-    }
+    // ダイレクトモードではESCも無効
+    if (isDirectMode) return;
+    history.back();
   }
   // Spread mode keyboard handling
   if (mangaModal.classList.contains('mode-spread')) {
