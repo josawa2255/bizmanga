@@ -43,12 +43,20 @@
     }
   }
 
-  /* ── 漫画事例をロード（Hero + 制作事例ページ） ── */
+  /* ── 漫画事例をロード（制作事例ページ用, show_siteでフィルタ済み） ── */
   async function loadWorks() {
     var data = await apiFetch('/works?site=bizmanga');
     if (!data || !Array.isArray(data)) return;
     window.BM_WORKS_DATA = data;
-    console.log('[BM-WP-API] 漫画事例: ' + data.length + '件 loaded');
+    console.log('[BM-WP-API] 漫画事例(works page): ' + data.length + '件 loaded');
+  }
+
+  /* ── Hero用全作品ロード（?site= 無しで全作品取得、Hero側でshow_hero_siteで判定） ── */
+  async function loadWorksForHero() {
+    var data = await apiFetch('/works');
+    if (!data || !Array.isArray(data)) return;
+    window.BM_HERO_WORKS_DATA = data;
+    console.log('[BM-WP-API] 漫画事例(hero): ' + data.length + '件 loaded');
   }
 
   /* ── 新作漫画をロード ── */
@@ -134,8 +142,8 @@
   /* ── 初期化（Hero優先読み込み） ── */
   document.addEventListener('DOMContentLoaded', async function() {
     try {
-      // Heroデータを最優先で取得 → 即座にイベント発火
-      await loadWorks();
+      // Hero用全作品データと制作事例用フィルタ済みデータを並列取得
+      await Promise.all([loadWorksForHero(), loadWorks()]);
       window.dispatchEvent(new CustomEvent('bm-data-ready'));
 
       // 残りは並列で取得（Heroをブロックしない）

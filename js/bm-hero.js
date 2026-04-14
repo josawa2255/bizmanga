@@ -330,8 +330,9 @@
   buildMarquee(FALLBACK_WORKS);
 
   // WP APIデータが来たら上書き（show_hero_site でフィルタ）
+  // Hero用は BM_HERO_WORKS_DATA を使う（?site= フィルタ無しの全作品）
   window.addEventListener('bm-data-ready', function() {
-    var allWorks = window.BM_WORKS_DATA || [];
+    var allWorks = window.BM_HERO_WORKS_DATA || window.BM_WORKS_DATA || [];
     // show_hero_site: 'both' or 'bizmanga' → BizMangaヒーローに表示
     // 後方互換: show_hero_site がない場合は show_hero フラグで判定
     var works = allWorks.filter(function(w) {
