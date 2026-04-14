@@ -106,11 +106,42 @@
   var currentAllWorks = [];
   var currentFilterCategory = null;
 
+  // ===== 静的ビルドカード検出 =====
+  // build-works.py で事前レンダリングされた静的カードが存在する場合、
+  // 初回レンダリングではそれを温存し、click→モーダル のハンドラだけ付与する。
+  // フィルター操作が起きたら通常の動的レンダリングに切り替わる。
+  function hasStaticCards() {
+    return !!grid.querySelector('[data-build-static]');
+  }
+  function hydrateStaticCards() {
+    var cards = grid.querySelectorAll('[data-build-static]');
+    cards.forEach(function(card) {
+      var workId = card.getAttribute('data-work-id');
+      if (!workId) return;
+      card.addEventListener('click', function(ev) {
+        // Cmd/Ctrl+Click, 中クリックは個別ページへ
+        if (ev.ctrlKey || ev.metaKey || ev.button === 1) return;
+        ev.preventDefault();
+        openWorkDetail(workId);
+      });
+    });
+  }
+  var staticHydrated = false;
+
   // ===== カード生成 =====
   function renderWorks(works, filterCategory, page) {
     currentAllWorks = works;
     currentFilterCategory = filterCategory;
     currentPage = page || 1;
+
+    // 初回かつ静的カード存在 & フィルター未適用 → 静的カードを温存
+    if (!staticHydrated && hasStaticCards() && !filterCategory) {
+      hydrateStaticCards();
+      staticHydrated = true;
+      buildFilter(works, filterCategory);
+      buildPagination(works.length, currentPage);
+      return;
+    }
 
     var filtered = works;
     if (filterCategory && filterCategory !== 'すべて') {

@@ -203,6 +203,21 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - 全ページに `BreadcrumbList` JSON-LD を追加
 - 全ページに `twitter:site: @Bizmanga_` を追加
 - works.html にSEO用静的イントロ（h1 + カテゴリリスト）を追加してJS依存によるクロール損失を緩和
+- **works 静的SSG化**（タスク4）:
+  - [tools/build-works.py](tools/build-works.py) 新設: WP API `/works` から取得し、`works.html` のBUILDマーカー間に静的カードを展開＋ItemList JSON-LD を挿入
+  - [tools/templates/work-detail.html.tpl](tools/templates/work-detail.html.tpl) 新設: 個別作品ページテンプレ（BreadcrumbList + CreativeWork JSON-LD 付）
+  - `works/{slug}.html` を19ページ自動生成（URL例: `https://bizmanga.contentsx.jp/works/diamond`）
+  - `sitemap.xml` の `<!-- BUILD:WORKS -->` ブロックに個別URL 19件を自動追記
+  - [js/bm-works-page.js](js/bm-works-page.js) を修正: 静的カード検出時は `grid.innerHTML=''` を回避し、click→モーダル のハンドラのみ付与（Cmd/Ctrl+Clickは個別ページへ遷移）
+  - [.github/workflows/build-works.yml](.github/workflows/build-works.yml) 新設: 毎週日曜 03:00 JST 自動実行 + 手動トリガー可
+
+### works 再ビルドルール
+
+WordPress で works を追加・更新したら以下いずれか:
+
+- **自動**: 毎週日曜 03:00 JST に GitHub Actions が走る
+- **手動（即時）**: GitHub の Actions タブから "Build works static pages" → "Run workflow"
+- **ローカル**: `python3 tools/build-works.py && git add works.html works/ sitemap.xml && git commit -m "chore(works): update" && git push`
 
 ## 14. 参照ドキュメント
 
