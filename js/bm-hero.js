@@ -75,6 +75,9 @@
 
         var img = document.createElement('img');
         img.alt = item.title_ja || item.title || '';
+        /* CLS対策: width/height 明示（CSS で比率維持、object-fit: cover） */
+        img.width = 200;
+        img.height = 280;
         /* 最初の1セットだけeager、複製分はlazyで帯域節約 */
         var isFirstSet = idx < itemCount;
         img.loading = isFirstSet ? 'eager' : 'lazy';
@@ -327,11 +330,14 @@
   buildMarquee(FALLBACK_WORKS);
 
   // WP APIデータが来たら上書き（show_hero_site でフィルタ）
+  // ブロックリスト: 殻だけ作成された作品（実ページなし）をヒーローから除外
+  var HERO_BLOCKLIST = { 'omatome-ninja-new': true };
   window.addEventListener('bm-data-ready', function() {
     var allWorks = window.BM_WORKS_DATA || [];
     // show_hero_site: 'both' or 'bizmanga' → BizMangaヒーローに表示
     // 後方互換: show_hero_site がない場合は show_hero フラグで判定
     var works = allWorks.filter(function(w) {
+      if (HERO_BLOCKLIST[w.id]) return false;
       if ('show_hero_site' in w) {
         return w.show_hero_site === 'both' || w.show_hero_site === 'bizmanga';
       }

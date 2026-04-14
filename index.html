@@ -24,13 +24,8 @@
   <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
   <link rel="preconnect" href="https://contentsx.jp" crossorigin>
   <link rel="dns-prefetch" href="https://cms.contentsx.jp">
-  <!-- ヒーロー表紙preload（JS実行前にダウンロード開始） -->
-  <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="https://contentsx.jp/material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="https://contentsx.jp/material/manga/omatome-ninja/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="https://contentsx.jp/material/manga/seko/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="https://contentsx.jp/material/manga/life-buzfes/01.webp" as="image" type="image/webp">
-  <link rel="preload" href="https://contentsx.jp/material/manga/bms-unso/01.webp" as="image" type="image/webp">
+  <!-- ヒーロー表紙preload（LCP対象1枚のみ。複数preloadはネットワーク競合を起こしLCPを悪化させる） -->
+  <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +37,7 @@
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
       <a href="./" class="bm-logo">
-        <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
+        <img width="180" height="36" src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
       </a>
       <nav class="bm-nav" id="bmNav"><!-- bm-nav.js が生成 --></nav>
       <div class="bm-header-right">
@@ -53,6 +48,8 @@
       </div>
     </div>
   </header>
+
+  <main id="main">
 
   <!-- ===== Hero (集英社スタイル マーキーカルーセル) ===== -->
   <section class="bm-hero" id="hero">
@@ -76,7 +73,7 @@
 
     <!-- 中央ロゴ -->
     <div class="bm-hero-center">
-      <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" class="bm-hero-logo" alt="ビズマンガ">
+      <img width="180" height="36" src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" class="bm-hero-logo" alt="ビズマンガ">
     </div>
 
     <!-- タグライン（ロゴとは独立・h1として機能） -->
@@ -169,11 +166,11 @@
   <section class="bm-gallery" id="newWorks">
     <!-- 背景漫画ページ画像 -->
     <div class="bm-gallery-bg">
-      <img src="https://contentsx.jp/material/manga/bms-unso/02.webp" alt="" loading="lazy">
-      <img src="https://contentsx.jp/material/manga/sixtones/03.webp" alt="" loading="lazy">
-      <img src="https://contentsx.jp/material/manga/ichinohe-home/04.webp" alt="" loading="lazy">
-      <img src="https://contentsx.jp/material/manga/seko/02.webp" alt="" loading="lazy">
-      <img src="https://contentsx.jp/material/manga/life-school/03.webp" alt="" loading="lazy">
+      <img width="400" height="560" src="https://contentsx.jp/material/manga/bms-unso/02.webp" alt="" loading="lazy">
+      <img width="400" height="560" src="https://contentsx.jp/material/manga/sixtones/03.webp" alt="" loading="lazy">
+      <img width="400" height="560" src="https://contentsx.jp/material/manga/ichinohe-home/04.webp" alt="" loading="lazy">
+      <img width="400" height="560" src="https://contentsx.jp/material/manga/seko/02.webp" alt="" loading="lazy">
+      <img width="400" height="560" src="https://contentsx.jp/material/manga/life-school/03.webp" alt="" loading="lazy">
     </div>
     <div class="bm-gallery-overlay"></div>
     <div class="bm-container bm-gallery-inner">
@@ -264,11 +261,13 @@
   </div>
 
   <!-- ===== フッター ===== -->
+  </main>
+
   <footer class="bm-footer">
     <div class="bm-container">
       <div class="bm-footer-inner">
         <div class="bm-footer-brand">
-          <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
+          <img width="180" height="36" src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
           <p class="bm-footer-company" data-ja="コンテンツエックス株式会社" data-en="Contents X Co., Ltd.">コンテンツエックス株式会社</p>
           <p class="bm-footer-address" data-ja="東京都目黒区目黒2-11-15 8階" data-en="8F, 2-11-15 Meguro, Meguro-ku, Tokyo">東京都目黒区目黒2-11-15 8階</p>
         </div>
