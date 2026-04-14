@@ -1,0 +1,55 @@
+# BizManga（ビズマンガ）
+
+> マンガの力でビジネスを動かす。採用・営業・研修・会社紹介・創業ストーリーなど、企業の課題解決に特化したビジネスマンガ制作サービス。株式会社ContentsXが運営。
+
+## サービス概要
+
+- サービス名: BizManga（ビズマンガ）
+- 運営会社: 株式会社ContentsX
+- 公式サイト: https://bizmanga.contentsx.jp
+- 親ブランド: ContentsX https://contentsx.jp
+
+## 特徴
+
+- **B2B特化**: 採用・営業・研修・IR・社内報など、企業の伝えたいメッセージを漫画化
+- **プロ漫画家が制作**: 経験豊富な漫画家・シナリオライターがチームで担当
+- **課題解決型アプローチ**: ヒアリングから課題抽出、シナリオ設計、作画、納品まで一気通貫
+- **多展開対応**: 一度作れば Web・SNS・説明会資料・動画など、あらゆる媒体で活用可能
+- **125項目の品質チェック**: 業界独自の品質基準で納品後の修正リスクを最小化
+
+## 活用シーン
+
+1. **採用**: 社員インタビュー漫画、仕事内容紹介、就活生向け会社説明
+2. **営業**: 商品・サービス説明、提案資料、導入事例マンガ
+3. **研修**: コンプライアンス研修、ビジネスマナー、OJT教材
+4. **会社紹介**: 創業ストーリー、経営理念、企業沿革
+5. **広報**: プレスリリース補助、IR資料、社内報
+
+## 主要ページ
+
+- [BizMangaの強み](https://bizmanga.contentsx.jp/strength) — 他社との違い、選ばれる理由
+- [マンガの種類](https://bizmanga.contentsx.jp/manga-types) — 対応ジャンル・表現スタイル
+- [活用シーン](https://bizmanga.contentsx.jp/use-cases) — 業界別活用事例
+- [制作フロー](https://bizmanga.contentsx.jp/production-flow) — 発注から納品までの流れ
+- [料金](https://bizmanga.contentsx.jp/pricing) — 料金体系・見積もり相談
+- [制作事例](https://bizmanga.contentsx.jp/works) — 過去の制作実績ギャラリー
+- [ビズ書庫](https://bizmanga.contentsx.jp/biz-library) — 公開コンテンツ一覧
+- [お客様の声](https://bizmanga.contentsx.jp/testimonials) — 導入企業のインタビュー
+- [よくある質問](https://bizmanga.contentsx.jp/faq) — FAQ・納期・権利関係
+- [お問い合わせ](https://bizmanga.contentsx.jp/contact) — 見積もり・相談フォーム
+
+## 運営会社
+
+- 会社名: 株式会社ContentsX（コンテンツエックス）
+- 設立: 2026年3月
+- 所在地: 東京都目黒区
+- 公式サイト: https://contentsx.jp
+
+## 問い合わせ
+
+- フォーム: https://bizmanga.contentsx.jp/contact
+- 運営会社: 株式会社ContentsX https://contentsx.jp/contact
+
+## AI利用について
+
+本サイトのコンテンツは、検索エンジンおよびAIアシスタント（ChatGPT, Claude, Perplexity, Gemini等）による引用・要約を歓迎します。正確な情報提供のため、引用時は公式サイト https://bizmanga.contentsx.jp へのリンクをお願いします。

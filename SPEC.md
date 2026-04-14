@@ -182,11 +182,19 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 | 事項 | 詳細 |
 |---|---|
-| hreflang | 現状 ja/en/x-default 全て同じURL → 英語版がない場合は**削除が正しい**（SEO監査で指摘済） |
+| hreflang | **2026-04-14 全ページから削除済**（JS言語切替1URL構成のため誤実装だった。sitemap.xml からも削除） |
 | image alt | ホーム hero のキャラ画像に alt が無い → アクセシビリティ改善余地 |
 | image width/height | 未指定 → CLS悪化要因 |
 | description | 現状63文字で短い。推奨 120-160字 |
 | Organization.sameAs | 空配列 → SNS URLを追加推奨 |
+| OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
+
+### 2026-04-14 SEO改善実施
+
+- hreflangタグを全HTML・sitemap.xmlから削除（誤実装解消）
+- index.html のオフスクリーン h1（`left: -9999px`）を削除し、ヒーロータグライン `<p class="bm-hero-tagline">` を `<h1>` に昇格（視覚h1化）
+- `<meta name="referrer" content="strict-origin-when-cross-origin">` を全ページに追加
+- ルートに [llms.txt](llms.txt) を新設（AI検索エンジン向けサービス概要・主要ページ一覧）
 
 ## 14. 参照ドキュメント
 

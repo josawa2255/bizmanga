@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ビズマンガ | BizManga — ビジネス漫画制作サービス</title>
   <meta name="description" content="ビズマンガはContentsXが提供するビジネス漫画制作サービス。採用・営業・研修・広告など、あらゆるシーンで漫画の力を活用。">
@@ -19,10 +20,6 @@
   <meta name="twitter:title" content="ビズマンガ | BizManga — ビジネス漫画制作サービス">
   <meta name="twitter:description" content="ビズマンガはContentsXが提供するビジネス漫画制作サービス。採用・営業・研修・広告など、あらゆるシーンで漫画の力を活用。">
   <meta name="twitter:image" content="https://contentsx.jp/material/images/logo/bizmanga-logo.webp">
-  <!-- hreflang -->
-  <link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/">
-  <link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/">
-  <link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/">
   <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
   <link rel="preconnect" href="https://contentsx.jp" crossorigin>
   <link rel="dns-prefetch" href="https://cms.contentsx.jp">
@@ -76,16 +73,13 @@
     <!-- ロゴ背後のアンビエントグロー -->
     <div class="bm-hero-glow"></div>
 
-    <!-- H1 タイトル（SEO用） -->
-    <h1 style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">ビズマンガ | ビジネス漫画制作サービス</h1>
-
     <!-- 中央ロゴ -->
     <div class="bm-hero-center">
       <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" class="bm-hero-logo" alt="ビズマンガ">
     </div>
 
-    <!-- タグライン（ロゴとは独立） -->
-    <p class="bm-hero-tagline" data-ja="マンガの力でビジネスを動かす" data-en="Move business with the power of manga" id="heroTagline">マンガの力でビジネスを動かす</p>
+    <!-- タグライン（ロゴとは独立・h1として機能） -->
+    <h1 class="bm-hero-tagline" data-ja="マンガの力でビジネスを動かす" data-en="Move business with the power of manga" id="heroTagline">マンガの力でビジネスを動かす</h1>
 
     <!-- SCROLL indicator -->
     <div class="bm-hero-scroll-hint">
