@@ -186,7 +186,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | image alt | ホーム hero のキャラ画像に alt が無い → アクセシビリティ改善余地 |
 | image width/height | 未指定 → CLS悪化要因 |
 | description | 現状63文字で短い。推奨 120-160字 |
-| Organization.sameAs | 空配列 → SNS URLを追加推奨 |
+| Organization.sameAs | **2026-04-14 `https://x.com/Bizmanga_` 追加済**。`parentOrganization.foundingDate: 2026-03-03` も追加 |
 | OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 
 ### 2026-04-14 SEO改善実施
