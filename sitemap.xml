@@ -74,4 +74,36 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- 強み -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/strength</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- マンガの種類 -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/manga-types</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 活用シーン -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/use-cases</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 制作フロー -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/production-flow</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

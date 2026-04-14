@@ -17,6 +17,7 @@
   <meta property="og:locale" content="ja_JP">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:title" content="料金 | ビズマンガ">
   <meta name="twitter:description" content="ビズマンガの料金プラン。他社と比較して圧倒的なコストパフォーマンスでビジネス漫画を制作。">
   <meta name="twitter:image" content="https://contentsx.jp/material/images/logo/bizmanga-logo.webp">
@@ -25,6 +26,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "ホーム",
+      "item": "https://bizmanga.contentsx.jp/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "料金",
+      "item": "https://bizmanga.contentsx.jp/pricing"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -277,7 +298,7 @@
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/bm-pricing-quiz.js" defer></script>
-<!-- JSON-LD -->
+<!-- JSON-LD: WebPage -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -293,6 +314,71 @@
       "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"
     }
   }
+}
+</script>
+<!-- JSON-LD: Service + Offers -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "ビズマンガ ビジネス漫画制作サービス",
+  "serviceType": "ビジネス漫画制作",
+  "description": "採用・営業・研修・広告・会社紹介などビジネス課題に特化した漫画制作サービス。プロ漫画家によるシナリオ設計から作画・納品まで一気通貫対応。",
+  "provider": {
+    "@type": "Organization",
+    "name": "ビズマンガ（BizManga）",
+    "url": "https://bizmanga.contentsx.jp/",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "ContentsX（コンテンツエックス株式会社）",
+      "url": "https://contentsx.jp"
+    }
+  },
+  "areaServed": { "@type": "Country", "name": "JP" },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "スタンダードプラン（11〜19P）",
+      "priceCurrency": "JPY",
+      "price": "19800",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "19800",
+        "priceCurrency": "JPY",
+        "unitText": "PAGE"
+      },
+      "availability": "https://schema.org/InStock",
+      "url": "https://bizmanga.contentsx.jp/pricing"
+    },
+    {
+      "@type": "Offer",
+      "name": "おすすめプラン（20〜29P）",
+      "priceCurrency": "JPY",
+      "price": "17900",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "17900",
+        "priceCurrency": "JPY",
+        "unitText": "PAGE"
+      },
+      "availability": "https://schema.org/InStock",
+      "url": "https://bizmanga.contentsx.jp/pricing"
+    },
+    {
+      "@type": "Offer",
+      "name": "ボリュームプラン（30P以上）",
+      "priceCurrency": "JPY",
+      "price": "16600",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "16600",
+        "priceCurrency": "JPY",
+        "unitText": "PAGE"
+      },
+      "availability": "https://schema.org/InStock",
+      "url": "https://bizmanga.contentsx.jp/pricing"
+    }
+  ]
 }
 </script>
 <!-- Start of HubSpot Embed Code -->

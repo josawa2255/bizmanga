@@ -195,6 +195,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - index.html のオフスクリーン h1（`left: -9999px`）を削除し、ヒーロータグライン `<p class="bm-hero-tagline">` を `<h1>` に昇格（視覚h1化）
 - `<meta name="referrer" content="strict-origin-when-cross-origin">` を全ページに追加
 - ルートに [llms.txt](llms.txt) を新設（AI検索エンジン向けサービス概要・主要ページ一覧）
+- Organization スキーマに `sameAs: https://x.com/Bizmanga_` / `parentOrganization.foundingDate: 2026-03-03` を追加
+- sitemap.xml に 4 ページ追加（strength / manga-types / use-cases / production-flow）
+- pricing.html に `Service` + `Offer`（3プラン: 19,800 / 17,900 / 16,600円/P）JSON-LD を追加
+- testimonials.html に `CollectionPage` JSON-LD を追加（レビューはJS動的描画のため AggregateRating は未付与）
+- faq.html に `FAQPage` JSON-LD を追加（8 Q&A）
+- 全ページに `BreadcrumbList` JSON-LD を追加
+- 全ページに `twitter:site: @Bizmanga_` を追加
+- works.html にSEO用静的イントロ（h1 + カテゴリリスト）を追加してJS依存によるクロール損失を緩和
 
 ## 14. 参照ドキュメント
 
