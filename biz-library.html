@@ -207,15 +207,15 @@
     <!-- Side Page Indicator (PC) -->
     <div class="modal-side-indicator" id="modalSideIndicator"></div>
 
-    <!-- Bottom Navigation Bar (Spread Viewer) -->
+    <!-- Bottom Navigation Bar (Spread Viewer) — 漫画は右→左に読むのでNextが左/Prevが右 -->
     <div class="bottom-nav" id="bottomNav">
-      <button class="nav-btn" id="navPrev" title="前のページ" data-ja="前のページ" data-en="Previous page">&#9664;</button>
+      <button class="nav-btn" id="navNext" title="次のページ" aria-label="次のページ" data-i18n-skip>&#9664;</button>
       <div class="nav-scrubber-wrap">
         <input type="range" class="nav-scrubber" id="navScrubber" min="0" max="1" value="0" step="1">
         <div class="nav-thumbnails" id="navThumbs"></div>
       </div>
       <span class="nav-page-info" id="navPageInfo" data-ja="1 / 8" data-en="1 / 8">1 / 8</span>
-      <button class="nav-btn" id="navNext" title="次のページ" data-ja="次のページ" data-en="Next page">&#9654;</button>
+      <button class="nav-btn" id="navPrev" title="前のページ" aria-label="前のページ" data-i18n-skip>&#9654;</button>
     </div>
 
     <!-- Zoom Controls -->
