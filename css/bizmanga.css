@@ -2019,6 +2019,156 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   padding: 16px 0 80px;
   min-height: 80vh;
 }
+
+/* ===== 詳細を見る 折りたたみトリガー ===== */
+.bm-pricing-reveal {
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px 64px;
+}
+.bm-pricing-reveal-btn {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 40px 14px;
+  background: transparent;
+  border: 2px solid var(--bm-accent, #e85500);
+  border-radius: 999px;
+  color: var(--bm-accent, #e85500);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  min-height: 72px;
+  min-width: 240px;
+  -webkit-tap-highlight-color: transparent;
+}
+.bm-pricing-reveal-btn::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 85, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.6s ease;
+}
+.bm-pricing-reveal-btn:hover {
+  background: var(--bm-accent, #e85500);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -8px rgba(232, 85, 0, 0.4);
+}
+.bm-pricing-reveal-btn:hover::before {
+  opacity: 1;
+  transform: scale(1.05);
+}
+.bm-pricing-reveal-btn:active {
+  transform: translateY(0);
+}
+.bm-pricing-reveal-btn:focus-visible {
+  outline: 3px solid rgba(232, 85, 0, 0.4);
+  outline-offset: 4px;
+}
+.bm-pricing-reveal-label {
+  font-size: 16px;
+  line-height: 1;
+}
+.bm-pricing-reveal-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  animation: bmPricingArrowBob 2s ease-in-out infinite;
+}
+@keyframes bmPricingArrowBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+/* 展開後は矢印を180度回転 + アニメ停止 */
+.bm-pricing-reveal-btn[aria-expanded="true"] .bm-pricing-reveal-arrow {
+  animation: none;
+  transform: rotate(180deg);
+  transition: transform 0.35s ease;
+}
+.bm-pricing-reveal-btn[aria-expanded="true"] .bm-pricing-reveal-label::before {
+  content: attr(data-collapse-label);
+}
+/* 詳細セクション: 展開時のフェードイン */
+.bm-pricing-details:not([hidden]) {
+  animation: bmPricingDetailsFadeIn 0.45s ease-out;
+}
+@keyframes bmPricingDetailsFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 強みページ: まとめると! (CONCLUSION) ===== */
+.str-summary {
+  padding: 96px 0 120px;
+  background:
+    linear-gradient(180deg, rgba(232, 85, 0, 0.03) 0%, rgba(255, 255, 255, 0) 100%),
+    #faf8f5;
+  border-top: 1px solid rgba(232, 85, 0, 0.1);
+}
+.str-summary-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.str-summary-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--bm-accent, #e85500);
+  padding: 6px 14px;
+  border: 1px solid var(--bm-accent, #e85500);
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+.str-summary-title {
+  font-size: clamp(32px, 5.5vw, 52px);
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.str-summary-title em {
+  font-style: normal;
+  color: var(--bm-accent, #e85500);
+  display: inline-block;
+  margin-left: 4px;
+}
+.str-summary-lead {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .bm-pricing-reveal {
+    padding: 24px 16px 48px;
+  }
+  .bm-pricing-reveal-btn {
+    min-width: 200px;
+    padding: 16px 32px 12px;
+  }
+  .str-summary {
+    padding: 64px 0 80px;
+  }
+  .str-summary-header {
+    margin-bottom: 36px;
+  }
+  .str-summary-lead {
+    font-size: 15px;
+    padding: 0 16px;
+  }
+}
 .bm-pricing-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 24px; margin-top: 48px;

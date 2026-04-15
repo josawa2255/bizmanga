@@ -98,8 +98,20 @@
     </div>
   </section>
 
-  <!-- ===== ページ単価セクション ===== -->
-  <section class="bm-pricing-page">
+  <!-- ===== 詳細を見るトグル ===== -->
+  <div class="bm-pricing-reveal">
+    <button type="button" class="bm-pricing-reveal-btn" id="bmPricingRevealBtn" aria-expanded="false" aria-controls="bmPricingDetails">
+      <span class="bm-pricing-reveal-label" data-ja="詳細を見る" data-en="See Details">詳細を見る</span>
+      <span class="bm-pricing-reveal-arrow" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11l7 7 7-7"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- ===== ページ単価セクション (折りたたみ) ===== -->
+  <section class="bm-pricing-page bm-pricing-details" id="bmPricingDetails" hidden>
     <div class="bm-container">
 
       <!-- ページ単価・本数割引 -->
@@ -150,52 +162,6 @@
           <p class="bm-option-name" data-ja="LP制作" data-en="Landing Page">LP制作</p>
           <p class="bm-option-price" data-ja="+187,000円" data-en="+¥187,000">+187,000円</p>
         </div>
-      </div>
-
-      <!-- 他社比較テーブル -->
-      <h2 class="bm-section-title" style="margin-top:24px;" data-ja="他社との比較" data-en="Comparison">他社との比較</h2>
-      <div class="bm-pricing-table-wrap">
-        <table class="bm-pricing-table">
-          <thead>
-            <tr>
-              <th class="bm-pricing-th-label"></th>
-              <th class="bm-pricing-th-other" data-ja="他社" data-en="Competitors">他社</th>
-              <th class="bm-pricing-th-bm" data-ja="ビズマンガ" data-en="BizManga">ビズマンガ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="bm-pricing-label" data-ja="ページ単価" data-en="Price per Page">ページ単価</td>
-              <td class="bm-pricing-other" data-ja="50,000円〜80,000円 / P" data-en="¥50,000~¥80,000 / page">50,000円〜80,000円 / P</td>
-              <td class="bm-pricing-bm" data-ja="15,800円〜 / P" data-en="¥15,800~ / page"><strong>15,800円〜 / P</strong></td>
-            </tr>
-            <tr>
-              <td class="bm-pricing-label" data-ja="納期" data-en="Delivery Time">納期</td>
-              <td class="bm-pricing-other" data-ja="1〜3ヵ月" data-en="1~3 months">1〜3ヵ月</td>
-              <td class="bm-pricing-bm" data-ja="最短2週間" data-en="From 2 weeks"><strong>最短2週間</strong></td>
-            </tr>
-            <tr>
-              <td class="bm-pricing-label" data-ja="修正対応" data-en="Revisions">修正対応</td>
-              <td class="bm-pricing-other" data-ja="回数制限あり 追加費用大" data-en="Limited, high extra cost">回数制限あり<br>追加費用 大</td>
-              <td class="bm-pricing-bm" data-ja="絵コンテ1回 セリフ3回" data-en="1 storyboard + 3 dialogue"><strong>絵コンテ1回</strong><br><strong>セリフ3回</strong></td>
-            </tr>
-            <tr>
-              <td class="bm-pricing-label" data-ja="品質管理" data-en="Quality Control">品質管理</td>
-              <td class="bm-pricing-other" data-ja="制作者に依存" data-en="Depends on creator">制作者に依存</td>
-              <td class="bm-pricing-bm" data-ja="プロ漫画家監修 125項目チェック" data-en="Pro manga artist supervision, 125-point check"><strong>プロ漫画家監修</strong><br><strong>125項目チェック</strong></td>
-            </tr>
-            <tr>
-              <td class="bm-pricing-label" data-ja="著作権リスク" data-en="Copyright Risk">著作権リスク</td>
-              <td class="bm-pricing-other" data-ja="確認が必要" data-en="Requires verification">確認が必要</td>
-              <td class="bm-pricing-bm" data-ja="リスクゼロ（原画資産方式）" data-en="Zero risk (Original Art Asset method)"><strong>リスクゼロ</strong><br><span class="bm-pricing-note" data-ja="（原画資産方式）" data-en="(Original Art Asset method)">（原画資産方式）</span></td>
-            </tr>
-            <tr>
-              <td class="bm-pricing-label" data-ja="利用範囲" data-en="Usage Rights">利用範囲</td>
-              <td class="bm-pricing-other" data-ja="二次利用制限あり 別途契約" data-en="Secondary use restricted, separate contract">二次利用制限あり<br>別途契約</td>
-              <td class="bm-pricing-bm" data-ja="制限なし" data-en="Unlimited"><strong>制限なし</strong></td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
       <!-- 含まれるもの -->
@@ -303,6 +269,26 @@
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/bm-pricing-quiz.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('bmPricingRevealBtn');
+      var details = document.getElementById('bmPricingDetails');
+      if (!btn || !details) return;
+      btn.addEventListener('click', function() {
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          details.setAttribute('hidden', '');
+          btn.setAttribute('aria-expanded', 'false');
+        } else {
+          details.removeAttribute('hidden');
+          btn.setAttribute('aria-expanded', 'true');
+          requestAnimationFrame(function() {
+            details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      });
+    });
+  </script>
 <!-- JSON-LD: WebPage -->
 <script type="application/ld+json">
 {
