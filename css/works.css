@@ -1040,10 +1040,10 @@ body {
   position: absolute;
   bottom: 120px;
   color: rgba(237,224,208,0.85);
-  font-size: 18px;
+  font-size: 25px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: rgba(15,10,6,0.55);
   border: 1px solid rgba(237,224,208,0.2);
   border-radius: 999px;
