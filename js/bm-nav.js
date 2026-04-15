@@ -196,11 +196,26 @@
         hamburger.focus();
       }
     });
+    /* PC: サブメニュークリック後、マウスが離れるまでドロップダウンを閉じたままにする */
+    var dismissDesktopDropdown = function(dropdown) {
+      if (!dropdown) return;
+      dropdown.classList.add('bm-nav-dropdown-dismissed');
+      var reset = function() {
+        dropdown.classList.remove('bm-nav-dropdown-dismissed');
+        dropdown.removeEventListener('mouseleave', reset);
+      };
+      dropdown.addEventListener('mouseleave', reset);
+    };
     nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', closeMenu);
     });
     nav.querySelectorAll('.bm-nav-dropdown-item').forEach(function(link) {
-      link.addEventListener('click', closeMenu);
+      link.addEventListener('click', function() {
+        closeMenu();
+        if (window.innerWidth > 768) {
+          dismissDesktopDropdown(link.closest('.bm-nav-dropdown'));
+        }
+      });
     });
     /* ドロップダウン親: 1回目サブ開く、2回目遷移 + aria更新 */
     nav.querySelectorAll('.bm-nav-dropdown-toggle').forEach(function(toggle) {
