@@ -234,6 +234,6 @@
   var currentItems = FALLBACK;
   buildCards(FALLBACK);
   enableDragScroll();
-  // fetchFromAPI(); // WPプラグインに /testimonials エンドポイント追加後に有効化
+  fetchFromAPI(); // WP /testimonials エンドポイント有効化済み
 
 })();
