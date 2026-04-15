@@ -13,7 +13,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | bm-opening, bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
+| トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
 | 料金 | `pricing.html` | bm-pricing-quiz | プラン診断クイズ |

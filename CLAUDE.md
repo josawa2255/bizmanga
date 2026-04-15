@@ -48,7 +48,7 @@ if (window.i18n && window.i18n.translateAll) {
 
 | ページ | ファイル | 主要JS |
 |--------|---------|--------|
-| トップ | index.html | bm-opening.js, bm-i18n.js, bm-nav.js, bm-home.js, bm-hero.js |
+| トップ | index.html | bm-i18n.js, bm-nav.js, bm-home.js, bm-hero.js |
 | 制作事例 | works.html | bm-i18n.js, bm-nav.js, bm-works-page.js |
 | ビズ書庫 | biz-library.html | bm-i18n.js, bm-nav.js, works.js |
 | 料金 | pricing.html | bm-i18n.js, bm-nav.js, bm-pricing-quiz.js |
