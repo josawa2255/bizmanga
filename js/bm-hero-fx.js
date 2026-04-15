@@ -93,7 +93,8 @@
   }
 
   // ===== スクロール連動フェードアウト =====
-  if (!prefersReducedMotion) {
+  // モバイルでは無効化（スクロールジャンク回避）
+  if (!prefersReducedMotion && window.innerWidth > 768) {
     var ticking = false;
 
     function onScroll() {

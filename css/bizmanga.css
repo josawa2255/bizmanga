@@ -348,7 +348,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat fixed;
+  background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat;
 }
 
 /* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */

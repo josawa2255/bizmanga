@@ -24,6 +24,7 @@
   var scrollPos = 0;
   var animId = null;
   var isPaused = false;
+  var isVisible = true;
   var singleSetWidth = 0;
 
   // ===== カード生成 =====
@@ -101,7 +102,7 @@
     if (animId) cancelAnimationFrame(animId);
 
     function step() {
-      if (!isPaused) {
+      if (!isPaused && isVisible) {
         scrollPos += SCROLL_SPEED;
 
         // 1セット分スクロールしたらリセット（無限ループ）
@@ -117,9 +118,21 @@
     animId = requestAnimationFrame(step);
   }
 
+  // タブが非アクティブな時はrAFを実質停止
+  document.addEventListener('visibilitychange', function() {
+    isVisible = !document.hidden;
+  });
+
   // ===== 常時スクロール（ホバーで停止しない） =====
   // 横スクロール（マウスホイール）対応
   var carousel = document.getElementById('bmGalleryCarousel');
+  // ギャラリーが画面外に出たらrAFを実質停止
+  if (carousel && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      isVisible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    io.observe(carousel);
+  }
   if (carousel) {
     carousel.addEventListener('wheel', function(e) {
       // 横スクロール（トラックパッド横スワイプ or Shift+ホイール）のみカルーセルを操作
