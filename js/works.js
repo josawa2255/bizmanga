@@ -245,9 +245,12 @@ if (getBmLang() === 'en') {
     .then(function(works) {
       if (!Array.isArray(works) || works.length === 0) return;
 
-      // APIデータをフォールバックにマージ（新規作品は追加、既存は詳細を上書き）
-      // まずフォールバックにないAPIデータも含めて全作品を反映
+      // APIの並び順を尊重するため、漫画作品は一度全削除してAPI順で再登録
+      // （プリプロ関連データ _isPreProduction は保持）
       var apiIds = {};
+      Object.keys(mangaData).forEach(function(k) {
+        if (!mangaData[k]._isPreProduction) delete mangaData[k];
+      });
       works.forEach(function(w) {
         apiIds[w.id] = true;
         var galleryLen = (w.gallery && w.gallery.length) || 0;
@@ -255,15 +258,14 @@ if (getBmLang() === 'en') {
         if (galleryLen > 0 && pages > galleryLen) {
           pages = galleryLen;
         }
-        var existing = mangaData[w.id] || {};
         mangaData[w.id] = {
-          title: w.title_ja || existing.title || '',
-          title_en: w.title_en || existing.title_en || '',
+          title: w.title_ja || '',
+          title_en: w.title_en || '',
           pages: pages,
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
-          tags: w.tags && w.tags.length > 0 ? w.tags : (existing.tags || []),
-          category: w.category || existing.category || '',
-          viewType: w.view_type || existing.viewType || 'spread',
+          tags: w.tags && w.tags.length > 0 ? w.tags : [],
+          category: w.category || '',
+          viewType: w.view_type || 'spread',
           verticalOnly: w.view_type === 'vertical_only',
           tallCover: w.tall_cover || w.view_type === 'vertical_only',
           thumbnail: w.thumbnail || '',
@@ -274,10 +276,6 @@ if (getBmLang() === 'en') {
         if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
           mangaData[w.id].viewType = 'vertical';
         }
-      });
-      // APIに存在しないフォールバック作品を削除（WPで非公開にした場合）
-      Object.keys(mangaData).forEach(function(k) {
-        if (!apiIds[k] && !mangaData[k]._isPreProduction) delete mangaData[k];
       });
 
       // フィルター状態とページを保持してUI再構築
