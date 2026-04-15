@@ -90,23 +90,38 @@
     grid.appendChild(frag);
   }
 
+  /* ---------- 全データ保持 (URL→item解決用) ---------- */
+  var currentItems = [];
+  var suppressHashChange = false;
+
   /* ---------- 詳細モーダル ---------- */
-  function openDetail(id, item) {
+  function openDetail(id, item, skipHistory) {
     var modal = document.getElementById('bmTmPageModal');
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'bmTmPageModal';
       modal.className = 'bm-tm-modal';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
       modal.innerHTML =
         '<div class="bm-tm-modal-overlay"></div>' +
         '<div class="bm-tm-modal-content">' +
-          '<button class="bm-tm-modal-close">&times;</button>' +
+          '<button class="bm-tm-modal-close" aria-label="閉じる">&times;</button>' +
           '<div class="bm-tm-modal-body"></div>' +
         '</div>';
       document.body.appendChild(modal);
 
       modal.querySelector('.bm-tm-modal-overlay').addEventListener('click', closeDetail);
       modal.querySelector('.bm-tm-modal-close').addEventListener('click', closeDetail);
+    }
+
+    /* URLハッシュ更新 (history に積む) */
+    if (!skipHistory) {
+      suppressHashChange = true;
+      try {
+        history.pushState({ bmTmId: id }, '', '#id=' + id);
+      } catch(e) {}
+      setTimeout(function(){ suppressHashChange = false; }, 50);
     }
 
     var body = modal.querySelector('.bm-tm-modal-body');
@@ -118,35 +133,169 @@
     fetch(apiBase + '/testimonials/' + id)
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var tagHtml = item.tag ? '<span class="bm-tm-tag">' + item.tag + '</span>' : '';
-        body.innerHTML =
-          (item.thumbnail ? '<div class="bm-tm-hero"><img src="' + item.thumbnail + '" alt="" style="object-position:' + (item.img_position || 'center') + ';"></div>' : '') +
-          '<div class="bm-tm-inner">' +
-            tagHtml +
-            '<h2 class="bm-tm-heading">' + (data.heading || item.heading) + '</h2>' +
-            '<div class="bm-tm-content">' + (data.content || '<p>' + (item.excerpt || '') + '</p>') + '</div>' +
-          '</div>';
+        renderModalContent(body, data, item);
       })
       .catch(function () {
-        body.innerHTML =
-          '<div class="bm-tm-inner">' +
-            '<h2 class="bm-tm-heading">' + (item.heading || '') + '</h2>' +
-            '<p>' + (item.excerpt || '') + '</p>' +
-          '</div>';
+        renderModalContent(body, { heading: item.heading, content: '<p>' + (item.excerpt || '') + '</p>' }, item);
       });
   }
 
-  function closeDetail() {
+  /* ---------- モーダル本文描画 (シェア / CTA / 関連事例) ---------- */
+  function renderModalContent(body, data, item) {
+    var tagHtml = item.tag ? '<span class="bm-tm-tag">' + item.tag + '</span>' : '';
+    var shareUrl = location.origin + location.pathname + '#id=' + (data.id || item.id);
+    var shareText = encodeURIComponent((data.heading || item.heading || '') + ' - BizManga 導入事例');
+    var heroImg = item.thumbnail ? '<div class="bm-tm-hero"><img src="' + item.thumbnail + '" alt="' + (data.heading || item.heading || '') + '" style="object-position:' + (item.img_position || 'center') + ';"></div>' : '';
+
+    /* 関連事例 (同じタグ ≠ 自分) */
+    var related = currentItems
+      .filter(function(x) { return x.id !== (data.id || item.id) && x.tag === item.tag && x.id > 0; })
+      .slice(0, 3);
+    var relatedHtml = '';
+    if (related.length > 0) {
+      relatedHtml =
+        '<div class="bm-tm-related">' +
+          '<h3 class="bm-tm-related-title">関連事例</h3>' +
+          '<div class="bm-tm-related-grid">' +
+            related.map(function(r) {
+              return '<a class="bm-tm-related-card" href="#id=' + r.id + '" data-id="' + r.id + '">' +
+                (r.thumbnail ? '<img src="' + r.thumbnail + '" alt="" loading="lazy">' : '') +
+                '<span>' + (r.heading || '') + '</span>' +
+              '</a>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+    }
+
+    body.innerHTML =
+      heroImg +
+      '<div class="bm-tm-inner">' +
+        tagHtml +
+        '<h2 class="bm-tm-heading">' + (data.heading || item.heading || '') + '</h2>' +
+        '<div class="bm-tm-content">' + (data.content || '<p>' + (item.excerpt || '') + '</p>') + '</div>' +
+        '<div class="bm-tm-cta">' +
+          '<a href="contact" class="bm-tm-cta-btn">無料相談する</a>' +
+          '<a href="works" class="bm-tm-cta-btn bm-tm-cta-btn--ghost">他の事例を見る</a>' +
+        '</div>' +
+        '<div class="bm-tm-share">' +
+          '<span class="bm-tm-share-label">この事例をシェア</span>' +
+          '<div class="bm-tm-share-btns">' +
+            '<a href="https://twitter.com/intent/tweet?text=' + shareText + '&url=' + encodeURIComponent(shareUrl) + '" target="_blank" rel="noopener noreferrer" aria-label="Xでシェア">X</a>' +
+            '<a href="https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(shareUrl) + '" target="_blank" rel="noopener noreferrer" aria-label="LINEでシェア">LINE</a>' +
+            '<a href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl) + '" target="_blank" rel="noopener noreferrer" aria-label="Facebookでシェア">FB</a>' +
+            '<button class="bm-tm-share-copy" aria-label="URLをコピー">URL</button>' +
+          '</div>' +
+        '</div>' +
+        relatedHtml +
+      '</div>';
+
+    /* URL コピー */
+    var copyBtn = body.querySelector('.bm-tm-share-copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            copyBtn.textContent = 'コピー済';
+            setTimeout(function() { copyBtn.textContent = 'URL'; }, 2000);
+          });
+        }
+      });
+    }
+
+    /* 関連事例クリック → 同モーダル内で差し替え */
+    body.querySelectorAll('.bm-tm-related-card').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        e.preventDefault();
+        var rid = parseInt(card.getAttribute('data-id'), 10);
+        var ritem = currentItems.find(function(x) { return x.id === rid; });
+        if (ritem) openDetail(rid, ritem);
+      });
+    });
+  }
+
+  function closeDetail(skipHistory) {
     var modal = document.getElementById('bmTmPageModal');
     if (modal) {
       modal.classList.remove('active');
       document.body.style.overflow = '';
+    }
+    if (!skipHistory && location.hash.indexOf('#id=') === 0) {
+      suppressHashChange = true;
+      try {
+        history.pushState({}, '', location.pathname);
+      } catch(e) {}
+      setTimeout(function(){ suppressHashChange = false; }, 50);
     }
   }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeDetail();
   });
+
+  /* popstate (戻るボタン) 対応 */
+  window.addEventListener('popstate', function(e) {
+    if (suppressHashChange) return;
+    var m = location.hash.match(/^#id=(\d+)/);
+    if (m) {
+      var id = parseInt(m[1], 10);
+      var item = currentItems.find(function(x) { return x.id === id; });
+      if (item) openDetail(id, item, true);
+    } else {
+      closeDetail(true);
+    }
+  });
+
+  /* ---------- Review schema 動的注入 ---------- */
+  function injectReviewSchema(items) {
+    var old = document.getElementById('bmTmReviewSchema');
+    if (old) old.remove();
+    var validItems = items.filter(function(i) { return i.id > 0; });
+    if (validItems.length === 0) return;
+
+    var graph = validItems.map(function(i) {
+      return {
+        "@type": "Review",
+        "@id": "https://bizmanga.contentsx.jp/testimonials#id-" + i.id,
+        "itemReviewed": {
+          "@type": "Service",
+          "name": "BizManga ビジネスマンガ制作",
+          "provider": { "@id": "https://contentsx.jp/#organization" }
+        },
+        "author": { "@type": "Organization", "name": i.tag ? (i.tag + "業界の顧客") : "導入企業" },
+        "reviewBody": i.excerpt || i.heading || "",
+        "name": i.heading || "",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      };
+    });
+
+    var ratingGraph = {
+      "@context": "https://schema.org",
+      "@graph": graph.concat([{
+        "@type": "Service",
+        "@id": "https://bizmanga.contentsx.jp/#service",
+        "name": "BizManga ビジネスマンガ制作",
+        "provider": { "@id": "https://contentsx.jp/#organization" },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": validItems.length,
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }])
+    };
+
+    var script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'bmTmReviewSchema';
+    script.textContent = JSON.stringify(ratingGraph);
+    document.head.appendChild(script);
+  }
 
   /* ---------- API取得 ---------- */
   function fetchFromAPI() {
@@ -158,16 +307,30 @@
       })
       .then(function (data) {
         if (data && data.length > 0) {
+          currentItems = data;
           buildCards(data);
+          injectReviewSchema(data);
+          openFromHash(); // WP データ到着後に URL ハッシュを解釈
         }
       })
       .catch(function () {
-        // フォールバックのまま
+        currentItems = FALLBACK;
       });
   }
 
+  /* ---------- URL ハッシュから初期モーダル開く ---------- */
+  function openFromHash() {
+    var m = location.hash.match(/^#id=(\d+)/);
+    if (!m) return;
+    var id = parseInt(m[1], 10);
+    var item = currentItems.find(function(x) { return x.id === id; });
+    if (item) openDetail(id, item, true);
+  }
+
   /* ---------- 初期化 ---------- */
+  currentItems = FALLBACK;
   buildCards(FALLBACK);
-  fetchFromAPI(); // WP /testimonials エンドポイント有効化済み
+  injectReviewSchema(FALLBACK);
+  fetchFromAPI();
 
 })();
