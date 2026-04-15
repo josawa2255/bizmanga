@@ -16,7 +16,7 @@
 | トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
-| 料金 | `pricing.html` | bm-pricing-quiz | プラン診断クイズ + 他社との比較(常時表示) + 詳細トグル内に02〜05 |
+| 料金 | `pricing.html` | bm-pricing-quiz | プラン診断クイズ + 詳細トグル内に01他社比較〜05カラーリング |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | プリプロ | `pre-production.html` | bm-pre-production | 制作過程カルーセル |
