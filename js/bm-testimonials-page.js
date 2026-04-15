@@ -76,11 +76,11 @@
           '<p class="bm-tm-list-text" data-ja="' + (item.excerpt || '') + '" data-en="' + (item.excerpt_en || '') + '">' + (item.excerpt || '') + '</p>' +
         '</div>';
 
-      // クリックで詳細モーダル
+      // クリックで詳細ページへ遷移
       if (item.id > 0) {
         card.style.cursor = 'pointer';
         card.addEventListener('click', function () {
-          openDetail(item.id, item);
+          location.href = 'testimonial-detail?id=' + item.id;
         });
       }
 

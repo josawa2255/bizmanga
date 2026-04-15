@@ -84,11 +84,11 @@
         '<h3 class="bm-testimonial-title" data-ja="' + (item.heading || '') + '" data-en="' + (item.heading_en || '') + '">' + (item.heading || '') + '</h3>' +
         '<p class="bm-testimonial-text" data-ja="' + (item.excerpt || '') + '" data-en="' + (item.excerpt_en || '') + '">' + (item.excerpt || '') + '</p>';
 
-      // クリックで詳細モーダル（API IDがある場合のみ）
+      // クリックで詳細ページへ遷移（API IDがある場合のみ）
       if (item.id > 0) {
         card.style.cursor = 'pointer';
         card.addEventListener('click', function () {
-          openDetail(item.id, item);
+          location.href = 'testimonial-detail?id=' + item.id;
         });
       }
 
