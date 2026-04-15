@@ -2088,22 +2088,31 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(4px); }
 }
-/* 展開後は矢印を180度回転 + アニメ停止 */
+/* 展開後は矢印を180度回転 + ボブアニメ停止 */
 .bm-pricing-reveal-btn[aria-expanded="true"] .bm-pricing-reveal-arrow {
   animation: none;
   transform: rotate(180deg);
-  transition: transform 0.35s ease;
-}
-.bm-pricing-reveal-btn[aria-expanded="true"] .bm-pricing-reveal-label::before {
-  content: attr(data-collapse-label);
+  transition: transform 0.25s ease;
 }
 /* 詳細セクション: 展開時のフェードイン */
 .bm-pricing-details:not([hidden]) {
-  animation: bmPricingDetailsFadeIn 0.45s ease-out;
+  animation: bmPricingDetailsFadeIn 0.28s ease-out;
 }
 @keyframes bmPricingDetailsFadeIn {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+/* A11y: prefers-reduced-motion 尊重 */
+@media (prefers-reduced-motion: reduce) {
+  .bm-pricing-reveal-arrow,
+  .bm-pricing-reveal-btn,
+  .bm-pricing-details:not([hidden]) {
+    animation: none !important;
+    transition: none !important;
+  }
+  .bm-pricing-reveal-btn:hover {
+    transform: none;
+  }
 }
 
 /* ===== 強みページ: まとめると! (CONCLUSION) ===== */

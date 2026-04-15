@@ -101,7 +101,7 @@
   <!-- ===== 詳細を見るトグル ===== -->
   <div class="bm-pricing-reveal">
     <button type="button" class="bm-pricing-reveal-btn" id="bmPricingRevealBtn" aria-expanded="false" aria-controls="bmPricingDetails">
-      <span class="bm-pricing-reveal-label" data-ja="詳細を見る" data-en="See Details">詳細を見る</span>
+      <span class="bm-pricing-reveal-label" data-ja="詳細を見る" data-en="See Details" data-open-ja="詳細を見る" data-open-en="See Details" data-close-ja="閉じる" data-close-en="Close">詳細を見る</span>
       <span class="bm-pricing-reveal-arrow" aria-hidden="true">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M7 11l7 7 7-7"/>
@@ -274,16 +274,30 @@
       var btn = document.getElementById('bmPricingRevealBtn');
       var details = document.getElementById('bmPricingDetails');
       if (!btn || !details) return;
+      var label = btn.querySelector('.bm-pricing-reveal-label');
+      function setLabel(state) {
+        if (!label) return;
+        var prefix = state === 'close' ? 'close' : 'open';
+        var ja = label.getAttribute('data-' + prefix + '-ja') || '';
+        var en = label.getAttribute('data-' + prefix + '-en') || '';
+        label.setAttribute('data-ja', ja);
+        label.setAttribute('data-en', en);
+        var lang = document.documentElement.lang || 'ja';
+        label.textContent = lang === 'en' ? en : ja;
+      }
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       btn.addEventListener('click', function() {
         var isOpen = btn.getAttribute('aria-expanded') === 'true';
         if (isOpen) {
           details.setAttribute('hidden', '');
           btn.setAttribute('aria-expanded', 'false');
+          setLabel('open');
         } else {
           details.removeAttribute('hidden');
           btn.setAttribute('aria-expanded', 'true');
+          setLabel('close');
           requestAnimationFrame(function() {
-            details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            details.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
           });
         }
       });
