@@ -106,23 +106,9 @@
     </div>
   </section>
 
-  <!-- ===== 詳細を見るトグル ===== -->
-  <div class="bm-pricing-reveal">
-    <button type="button" class="bm-pricing-reveal-btn" id="bmPricingRevealBtn" aria-expanded="false" aria-controls="bmPricingDetails">
-      <span class="bm-pricing-reveal-label" data-ja="詳細を見る" data-en="See Details" data-open-ja="詳細を見る" data-open-en="See Details" data-close-ja="閉じる" data-close-en="Close">詳細を見る</span>
-      <span class="bm-pricing-reveal-arrow" aria-hidden="true">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 11l7 7 7-7"/>
-        </svg>
-      </span>
-    </button>
-  </div>
-
-  <!-- ===== ページ単価セクション (折りたたみ) ===== -->
-  <section class="bm-pricing-page bm-pricing-details" id="bmPricingDetails" hidden>
+  <!-- ===== 他社との比較（常時表示） ===== -->
+  <section class="bm-pricing-page bm-pricing-compare-always">
     <div class="bm-container">
-
-      <!-- 他社との比較 -->
       <div class="bm-pricing-section-head">
         <span class="bm-pricing-section-num">01</span>
         <h2 class="bm-pricing-section-title" data-ja="他社との比較" data-en="Comparison with Competitors">他社との比較</h2>
@@ -171,6 +157,24 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== 詳細を見るトグル ===== -->
+  <div class="bm-pricing-reveal">
+    <button type="button" class="bm-pricing-reveal-btn" id="bmPricingRevealBtn" aria-expanded="false" aria-controls="bmPricingDetails">
+      <span class="bm-pricing-reveal-label" data-ja="詳細を見る" data-en="See Details" data-open-ja="詳細を見る" data-open-en="See Details" data-close-ja="閉じる" data-close-en="Close">詳細を見る</span>
+      <span class="bm-pricing-reveal-arrow" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11l7 7 7-7"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- ===== ページ単価セクション (折りたたみ) ===== -->
+  <section class="bm-pricing-page bm-pricing-details" id="bmPricingDetails" hidden>
+    <div class="bm-container">
 
       <!-- ページ単価・本数割引 -->
       <div class="bm-pricing-section-head">
@@ -232,7 +236,7 @@
 
       <!-- 含まれるもの -->
       <div class="bm-pricing-section-head">
-        <span class="bm-pricing-section-num">03</span>
+        <span class="bm-pricing-section-num">04</span>
         <h2 class="bm-pricing-section-title" data-ja="料金に含まれるもの" data-en="What's Included">料金に含まれるもの</h2>
         <p class="bm-pricing-section-sub" data-ja="すべての案件で以下が標準提供されます" data-en="The following are included as standard for every project">すべての案件で以下が標準提供されます</p>
       </div>
@@ -283,7 +287,7 @@
 
       <!-- カラーリング -->
       <div class="bm-pricing-section-head">
-        <span class="bm-pricing-section-num">04</span>
+        <span class="bm-pricing-section-num">05</span>
         <h2 class="bm-pricing-section-title" data-ja="カラーリング" data-en="Coloring Options">カラーリング</h2>
         <p class="bm-pricing-section-sub" data-ja="ご予算・用途に合わせて3つのカラーリングからお選びいただけます" data-en="Choose from 3 coloring options to match your budget and needs">ご予算・用途に合わせて3つのカラーリングからお選びいただけます</p>
       </div>

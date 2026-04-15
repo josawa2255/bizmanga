@@ -2062,6 +2062,52 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 
 /* ============================================
+   Pricing Compare (常時表示・詳細の手前)
+   編集風プレミアム: 強みページの比較表を
+   料金ページでも即座に訴求するための専用ブロック
+   ============================================ */
+.bm-pricing-compare-always {
+  padding: 72px 0 24px;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, #fff8f1 0%, #fff 55%);
+  position: relative;
+}
+.bm-pricing-compare-always::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 28px;
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, transparent, var(--bm-accent, #e85500));
+  transform: translateX(-50%);
+  opacity: 0.5;
+}
+.bm-pricing-compare-always .bm-container {
+  max-width: 1080px;
+}
+.bm-pricing-compare-always .bm-pricing-section-head {
+  margin-bottom: 28px;
+}
+.bm-pricing-compare-always .bm-pricing-table-wrap {
+  animation: bmCompareRise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes bmCompareRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bm-pricing-compare-always .bm-pricing-table-wrap {
+    animation: none;
+  }
+}
+@media (max-width: 768px) {
+  .bm-pricing-compare-always {
+    padding: 48px 0 16px;
+  }
+}
+
+/* ============================================
    Pricing Details (Editorial Japanese Premium)
    frontend-design skill: BOLD aesthetic direction
    ============================================ */
