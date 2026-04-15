@@ -41,9 +41,28 @@
     return '';
   }
 
-  // グローバル公開
+  /**
+   * WP APIから返るHTML本文を安全化
+   * script/iframe/style等の危険タグを除去し、on*/javascript:属性をstripする
+   */
+  function sanitizeRichHTML(raw) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = raw || '';
+    tmp.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
+    tmp.querySelectorAll('*').forEach(function(el) {
+      Array.from(el.attributes).forEach(function(attr) {
+        var v = attr.value.trim().toLowerCase().replace(/[\t\n\r]/g, '');
+        if (attr.name.startsWith('on') || v.startsWith('javascript:') || v.startsWith('data:text/html')) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return tmp.innerHTML;
+  }
+
   window.bmSanitize = {
     html: escapeHtml,
-    url: sanitizeUrl
+    url: sanitizeUrl,
+    rich: sanitizeRichHTML
   };
 })();
