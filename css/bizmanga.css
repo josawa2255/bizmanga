@@ -2115,6 +2115,357 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   }
 }
 
+/* ============================================
+   Pricing Details (Editorial Japanese Premium)
+   frontend-design skill: BOLD aesthetic direction
+   ============================================ */
+.bm-pricing-details {
+  padding: 56px 0 104px !important;
+  background:
+    linear-gradient(180deg, #fff 0%, #faf8f5 100%);
+}
+.bm-pricing-details .bm-container {
+  max-width: 1080px;
+}
+
+/* セクションヘッダー: 装飾番号 + タイトル + リード */
+.bm-pricing-section-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 28px;
+  align-items: start;
+  padding: 80px 0 40px;
+  position: relative;
+}
+.bm-pricing-section-head::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 3px;
+  background: var(--bm-accent, #e85500);
+}
+.bm-pricing-section-head:first-of-type {
+  padding-top: 32px;
+}
+.bm-pricing-section-head:first-of-type::before {
+  top: -16px;
+}
+.bm-pricing-section-num {
+  grid-row: 1 / span 2;
+  font-size: clamp(56px, 9vw, 96px);
+  font-weight: 900;
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--bm-accent, #e85500);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Helvetica Neue', 'Arial', sans-serif;
+  align-self: center;
+}
+.bm-pricing-section-title {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  margin: 0 0 10px;
+}
+.bm-pricing-section-sub {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.7;
+  max-width: 52ch;
+}
+
+/* セクション内グリッドの上マージンをリセット（section-headで十分な余白） */
+.bm-pricing-details .bm-plan-grid,
+.bm-pricing-details .bm-option-grid,
+.bm-pricing-details .bm-included-grid,
+.bm-pricing-details .bm-color-grid {
+  margin-top: 0;
+}
+
+/* --- プランカード: 黒ベタヘッダー廃止、タイポのみで階層 --- */
+.bm-pricing-details .bm-plan-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+.bm-pricing-details .bm-plan-card {
+  background: #fff;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+  border-radius: 4px;
+  padding: 36px 24px 32px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.bm-pricing-details .bm-plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -20px rgba(26, 26, 26, 0.15);
+  border-color: rgba(232, 85, 0, 0.25);
+}
+.bm-pricing-details .bm-plan-card--recommend {
+  border: 2px solid var(--bm-accent, #e85500);
+  box-shadow: 0 20px 40px -20px rgba(232, 85, 0, 0.3);
+  transform: scale(1.03);
+  background:
+    linear-gradient(180deg, rgba(232, 85, 0, 0.04) 0%, #fff 50%);
+}
+.bm-pricing-details .bm-plan-card--recommend:hover {
+  transform: scale(1.03) translateY(-3px);
+}
+.bm-pricing-details .bm-plan-badge {
+  top: -14px;
+  background: var(--bm-accent, #e85500);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 18px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px -4px rgba(232, 85, 0, 0.5);
+}
+.bm-pricing-details .bm-plan-header {
+  background: transparent;
+  color: #999;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 0 0 14px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+.bm-pricing-details .bm-plan-header--accent {
+  background: transparent;
+  color: var(--bm-accent, #e85500);
+}
+.bm-pricing-details .bm-plan-body {
+  padding: 0;
+}
+.bm-pricing-details .bm-plan-price {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+}
+.bm-pricing-details .bm-plan-num {
+  font-size: clamp(40px, 5.5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #1a1a1a;
+}
+.bm-pricing-details .bm-plan-price--accent .bm-plan-num {
+  color: var(--bm-accent, #e85500);
+}
+.bm-pricing-details .bm-plan-unit {
+  font-size: 14px;
+  font-weight: 700;
+  color: #666;
+}
+.bm-pricing-details .bm-plan-note {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+
+/* フットノート */
+.bm-pricing-details .bm-pricing-footnote {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 12px;
+  color: #999;
+  letter-spacing: 0.03em;
+}
+
+/* --- オプションカード: 上辺カラー帯 + ミニマル --- */
+.bm-pricing-details .bm-option-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.bm-pricing-details .bm-option-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 3px solid var(--bm-accent, #e85500);
+  border-radius: 0 0 4px 4px;
+  padding: 28px 16px 24px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.bm-pricing-details .bm-option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -12px rgba(26, 26, 26, 0.15);
+}
+.bm-pricing-details .bm-option-name {
+  font-size: 15px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 0.01em;
+}
+.bm-pricing-details .bm-option-sub {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+.bm-pricing-details .bm-option-price {
+  margin-top: 18px;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--bm-accent, #e85500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* --- 含まれるもの: 装飾ダッシュ + タイポ主導 --- */
+.bm-pricing-details .bm-included-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.bm-pricing-details .bm-included-item {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0;
+  padding: 28px 32px 28px 24px;
+  gap: 22px;
+  align-items: flex-start;
+}
+.bm-pricing-details .bm-included-item:nth-child(odd) {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+.bm-pricing-details .bm-included-icon {
+  width: auto;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--bm-accent, #e85500);
+  font-variant-numeric: tabular-nums;
+  padding-top: 2px;
+}
+.bm-pricing-details .bm-included-icon::before {
+  content: '—';
+  margin-right: 6px;
+  color: rgba(232, 85, 0, 0.35);
+}
+.bm-pricing-details .bm-included-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  letter-spacing: 0;
+}
+.bm-pricing-details .bm-included-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.75;
+}
+
+/* --- カラーリング: ミニカラーサンプル付き --- */
+.bm-pricing-details .bm-color-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.bm-pricing-details .bm-color-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  padding: 32px 24px 28px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.bm-pricing-details .bm-color-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -20px rgba(26, 26, 26, 0.15);
+}
+.bm-color-swatch {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.bm-color-swatch::before,
+.bm-color-swatch::after {
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.bm-color-swatch--full::before { background: #e85500; }
+.bm-color-swatch--full::after { background: #3b82f6; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06); }
+.bm-color-swatch--full {
+  position: relative;
+}
+.bm-color-swatch--full {
+  /* 3色目をboxshadowで追加 */
+}
+.bm-color-swatch--pastel::before { background: #ffcfb5; }
+.bm-color-swatch--pastel::after { background: #cfe0ff; }
+.bm-color-swatch--mono::before { background: #1a1a1a; }
+.bm-color-swatch--mono::after { background: #e8e8e8; }
+.bm-pricing-details .bm-color-label {
+  font-size: 16px;
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  letter-spacing: 0;
+}
+.bm-pricing-details .bm-color-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.75;
+}
+
+/* モバイル調整 */
+@media (max-width: 768px) {
+  .bm-pricing-details {
+    padding: 40px 0 72px !important;
+  }
+  .bm-pricing-section-head {
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    padding: 56px 0 28px;
+  }
+  .bm-pricing-section-head:first-of-type {
+    padding-top: 24px;
+  }
+  .bm-pricing-details .bm-plan-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .bm-pricing-details .bm-plan-card--recommend {
+    transform: none;
+  }
+  .bm-pricing-details .bm-plan-card--recommend:hover {
+    transform: translateY(-3px);
+  }
+  .bm-pricing-details .bm-option-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .bm-pricing-details .bm-included-grid {
+    grid-template-columns: 1fr;
+  }
+  .bm-pricing-details .bm-included-item:nth-child(odd) {
+    border-right: none;
+  }
+  .bm-pricing-details .bm-color-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== 強みページ: まとめると! (CONCLUSION) ===== */
 .str-summary {
   padding: 96px 0 120px;
