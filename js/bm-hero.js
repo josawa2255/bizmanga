@@ -341,9 +341,9 @@
       }
       return w.show_hero !== false;
     }).slice().sort(function(a, b) {
-      /* hero_order 昇順。未設定(9999)は末尾 */
-      var ao = typeof a.hero_order === 'number' ? a.hero_order : 9999;
-      var bo = typeof b.hero_order === 'number' ? b.hero_order : 9999;
+      /* hero_order_bm 昇順。未設定(9999)は末尾 */
+      var ao = typeof a.hero_order_bm === 'number' ? a.hero_order_bm : 9999;
+      var bo = typeof b.hero_order_bm === 'number' ? b.hero_order_bm : 9999;
       return ao - bo;
     });
     if (works.length > 0) {
