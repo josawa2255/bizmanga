@@ -257,38 +257,59 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         var data = await res.json();
 
+        /* 言語判定 */
+        var lang = document.documentElement.lang || 'ja';
+        var title = lang === 'en' ? (data.title_en || data.title_ja) : data.title_ja;
+
         /* ページタイトル更新 */
-        document.title = (data.title_ja || 'ニュース') + ' | ビズマンガ';
+        document.title = (title || 'ニュース') + ' | ビズマンガ';
 
         /* データ反映 */
         document.getElementById('newsDate').textContent = data.date || '';
-        document.getElementById('newsTag').textContent = data.tag_ja || '';
-        document.getElementById('newsTitle').textContent = data.title_ja || '';
+
+        var tagEl = document.getElementById('newsTag');
+        tagEl.textContent = lang === 'en' ? (data.tag_en || data.tag_ja) : (data.tag_ja || '');
+        tagEl.setAttribute('data-ja', data.tag_ja || '');
+        tagEl.setAttribute('data-en', data.tag_en || data.tag_ja || '');
+
+        var titleEl = document.getElementById('newsTitle');
+        titleEl.textContent = title || '';
+        titleEl.setAttribute('data-ja', data.title_ja || '');
+        titleEl.setAttribute('data-en', data.title_en || data.title_ja || '');
 
         /* アイキャッチ画像（あれば表示） */
         if (data.thumbnail) {
           var heroEl = document.getElementById('newsHero');
           var heroImg = document.getElementById('newsHeroImg');
           heroImg.src = data.thumbnail;
-          heroImg.alt = data.title_ja || '';
+          heroImg.alt = title || '';
           heroEl.style.display = 'block';
         }
 
-        /* XSS対策: WordPress APIからのHTMLをサニタイズ */
-        var rawContent = data.content || '<p>詳細情報はありません。</p>';
+        /* XSS対策: WordPress APIからのHTMLをサニタイズ（日英両方） */
         var contentEl = document.getElementById('newsContent');
-        var tempDiv = document.createElement('div');
-        tempDiv.innerHTML = rawContent;
-        /* script, iframe, onXxx属性を除去 */
-        tempDiv.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
-        tempDiv.querySelectorAll('*').forEach(function(el) {
-          Array.from(el.attributes).forEach(function(attr) {
-            if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('javascript:') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('data:text/html')) {
-              el.removeAttribute(attr.name);
-            }
+        function sanitizeHTML(raw) {
+          var tmp = document.createElement('div');
+          tmp.innerHTML = raw || '';
+          tmp.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
+          tmp.querySelectorAll('*').forEach(function(el) {
+            Array.from(el.attributes).forEach(function(attr) {
+              if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('javascript:') || attr.value.trim().toLowerCase().replace(/[\t\n\r]/g,'').startsWith('data:text/html')) {
+                el.removeAttribute(attr.name);
+              }
+            });
           });
+          return tmp.innerHTML;
+        }
+        var contentJaSafe = sanitizeHTML(data.content || '<p>詳細情報はありません。</p>');
+        var contentEnSafe = data.content_en ? sanitizeHTML(data.content_en) : '';
+        function applyContent(l) {
+          contentEl.innerHTML = (l === 'en' && contentEnSafe) ? contentEnSafe : contentJaSafe;
+        }
+        applyContent(lang);
+        document.addEventListener('i18n-lang-changed', function(e) {
+          applyContent((e && e.detail && e.detail.lang) || document.documentElement.lang || 'ja');
         });
-        contentEl.innerHTML = tempDiv.innerHTML;
 
         loadingEl.style.display = 'none';
         articleEl.style.display = 'block';
