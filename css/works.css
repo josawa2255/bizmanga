@@ -1035,15 +1035,18 @@ body {
   flex-shrink: 0;
 }
 
-/* Page turn hint */
+/* Page turn hint (縦書き) */
 .page-hint {
   position: absolute;
-  bottom: 120px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
   color: rgba(237,224,208,0.85);
   font-size: 25px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 12px 24px;
+  letter-spacing: 0.08em;
+  padding: 24px 12px;
   background: rgba(15,10,6,0.55);
   border: 1px solid rgba(237,224,208,0.2);
   border-radius: 999px;
@@ -1052,7 +1055,6 @@ body {
   pointer-events: none;
   transition: opacity 0.3s;
   z-index: 30;
-  white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 .page-hint-left { left: 40px; }
