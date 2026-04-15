@@ -116,6 +116,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
+| Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
