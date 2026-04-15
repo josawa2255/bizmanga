@@ -1038,16 +1038,25 @@ body {
 /* Page turn hint */
 .page-hint {
   position: absolute;
-  bottom: 100px;
-  color: rgba(237,224,208,0.4);
-  font-size: 12px;
-  font-weight: 600;
+  bottom: 120px;
+  color: rgba(237,224,208,0.85);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 10px 20px;
+  background: rgba(15,10,6,0.55);
+  border: 1px solid rgba(237,224,208,0.2);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   pointer-events: none;
   transition: opacity 0.3s;
   z-index: 30;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
-.page-hint-left { left: 30px; }
-.page-hint-right { right: 30px; }
+.page-hint-left { left: 40px; }
+.page-hint-right { right: 40px; }
 
 /* Mobile View (1-page) */
 .mobile-view {
