@@ -10,7 +10,7 @@
     { label: '強み',       labelEn: 'Strengths',  href: 'strength', children: [
       { label: 'マンガの種類', labelEn: 'Manga Types',  href: 'manga-types' },
       { label: '活用場面',     labelEn: 'Use Cases',    href: 'use-cases' },
-      { label: '制作フロー',   labelEn: 'Production Flow', href: 'production-flow' }
+      { label: '制作フロー',   labelEn: 'Production Flow', href: './#flow' }
     ]},
     { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
     { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }

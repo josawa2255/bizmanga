@@ -21,7 +21,7 @@
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | プリプロ | `pre-production.html` | bm-pre-production | 制作過程カルーセル |
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
-| 制作フロー | `production-flow.html` | bm-flow | 強み配下のサブタブ |
+| 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。`production-flow.html` は `/#flow` への自動リダイレクトのみ |
 | プライバシーポリシー | `privacy-policy.html` | — | |
 | ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
 

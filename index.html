@@ -32,6 +32,7 @@
   <!-- ヒーロー表紙preload（LCP対象1枚のみ。複数preloadはネットワーク競合を起こしLCPを悪化させる） -->
   <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="css/production-flow.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -186,6 +187,109 @@
       <div class="bm-gallery-carousel" id="bmGalleryCarousel">
         <div class="bm-gallery-track" id="bmNewWorksTrack">
           <!-- JSが動的に生成 -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 制作フロー ===== -->
+  <section class="pf-flow-section" id="productionFlow">
+    <div class="bm-container">
+      <div class="flow" id="flow">
+        <h2 class="bm-pre-section-title" data-ja="制作フロー" data-en="Production Flow">制作<em data-ja="フロー" data-en="Flow">フロー</em></h2>
+        <p class="bm-pre-section-subtitle" data-ja="PRODUCTION FLOW" data-en="PRODUCTION FLOW">PRODUCTION FLOW</p>
+        <p class="bm-pre-section-lead" data-ja="ヒアリングから納品まで、8つのステップで高品質なビジネス漫画をお届けします。" data-en="From hearing to delivery, we produce high-quality business manga in 8 steps.">ヒアリングから納品まで、8つのステップで高品質なビジネス漫画をお届けします。</p>
+        <div class="flow-layout">
+          <!-- 左: 縦ステップリスト -->
+          <div class="flow-steps-vertical">
+            <div class="flow-step" data-step="1">
+              <div class="flow-step-num">1</div>
+              <p data-ja="ヒアリング" data-en="Hearing">ヒアリング</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="2">
+              <div class="flow-step-num">2</div>
+              <p data-ja="あらすじ" data-en="Synopsis">あらすじ</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="3">
+              <div class="flow-step-num">3</div>
+              <p data-ja="シナリオ" data-en="Script">シナリオ</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="4">
+              <div class="flow-step-num">4</div>
+              <p data-ja="画風決定" data-en="Art Style">画風決定</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="5">
+              <div class="flow-step-num">5</div>
+              <p data-ja="ネーム" data-en="Storyboard">ネーム</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="6">
+              <div class="flow-step-num">6</div>
+              <p data-ja="漫画制作" data-en="Production">漫画制作</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="7">
+              <div class="flow-step-num">7</div>
+              <p data-ja="初稿確認" data-en="Review">初稿確認</p>
+            </div>
+            <div class="flow-arrow-v">↓</div>
+            <div class="flow-step" data-step="8">
+              <div class="flow-step-num">8</div>
+              <p data-ja="最終納品" data-en="Delivery">最終納品</p>
+            </div>
+          </div>
+
+          <!-- 右: 画像ギャラリー -->
+          <div class="flow-gallery-wrap">
+            <div class="flow-gallery" id="flowGallery">
+              <div class="flow-gallery-spacer"></div>
+              <div class="flow-gallery-item" data-step="1">
+                <img src="material/images/flow/step1_hearing.webp" alt="ヒアリング" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP1 ヒアリング" data-en="STEP1 Hearing">STEP1 ヒアリング</span>
+                <span class="flow-gallery-desc" data-ja="目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。" data-en="We discuss your goals, target audience, and budget to propose the best plan.">目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="2">
+                <img src="material/images/flow/step2_arasuji.webp" alt="あらすじ" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP2 あらすじ" data-en="STEP2 Synopsis">STEP2 あらすじ</span>
+                <span class="flow-gallery-desc" data-ja="漫画全体のストーリーラインを作成し、方向性を確認します。" data-en="We create the overall storyline and confirm the direction.">漫画全体のストーリーラインを作成し、方向性を確認します。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="3">
+                <img src="material/images/flow/step3_scenario.webp" alt="シナリオ" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP3 シナリオ" data-en="STEP3 Scenario">STEP3 シナリオ</span>
+                <span class="flow-gallery-desc" data-ja="セリフやナレーション、コマ割りの詳細なシナリオを作成します。" data-en="We create detailed scripts including dialogue, narration, and panel layout.">セリフやナレーション、コマ割りの詳細なシナリオを作成します。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="4">
+                <img src="material/images/flow/step4_gafu.webp" alt="画風決定" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP4 画風決定" data-en="STEP4 Art Style">STEP4 画風決定</span>
+                <span class="flow-gallery-desc" data-ja="ターゲットに合った画風を複数パターンからお選びいただけます。" data-en="Choose from multiple art styles suited to your target audience.">ターゲットに合った画風を複数パターンからお選びいただけます。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="5">
+                <img src="material/images/flow/step5_name.webp" alt="ネーム" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP5 ネーム" data-en="STEP5 Storyboard">STEP5 ネーム</span>
+                <span class="flow-gallery-desc" data-ja="ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。" data-en="Confirm overall composition and flow with rough sketches. Flexible revisions available.">ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="6">
+                <img src="material/images/flow/step6_seisaku.webp" alt="漫画制作" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP6 漫画制作" data-en="STEP6 Production">STEP6 漫画制作</span>
+                <span class="flow-gallery-desc" data-ja="プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。" data-en="Professional manga artists handle production. We guarantee high-quality results.">プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="7">
+                <img src="material/images/flow/step7_kakunin.webp" alt="初稿確認" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP7 初稿確認" data-en="STEP7 Draft Review">STEP7 初稿確認</span>
+                <span class="flow-gallery-desc" data-ja="初稿を確認いただき、修正・調整を行います。10回+の品質チェック。" data-en="Review the first draft and make revisions. 10+ quality checks included.">初稿を確認いただき、修正・調整を行います。10回+の品質チェック。</span>
+              </div>
+              <div class="flow-gallery-item" data-step="8">
+                <img src="material/images/flow/step8_nouhin.webp" alt="最終納品" loading="lazy">
+                <span class="flow-gallery-label" data-ja="STEP8 最終納品" data-en="STEP8 Final Delivery">STEP8 最終納品</span>
+                <span class="flow-gallery-desc" data-ja="最終データを各媒体に合わせた形式で納品。著作権もお渡しします。" data-en="Final data delivered in formats suited to each medium. Copyright included.">最終データを各媒体に合わせた形式で納品。著作権もお渡しします。</span>
+              </div>
+              <div class="flow-gallery-spacer"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -373,6 +477,7 @@
   <script src="js/bm-testimonials.js" defer></script>
   <script src="js/bm-home.js" defer></script>
   <script src="js/bm-pre-production.js" defer></script>
+  <script src="js/bm-flow.js" defer></script>
   <script src="js/bm-scroll-anim.js" defer></script>
 <!-- Service Worker 登録 -->
 <script>
