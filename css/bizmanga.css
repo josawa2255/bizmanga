@@ -2852,40 +2852,156 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   }
   .bm-header { isolation: isolate; }
   .bm-header-right { position: relative; z-index: 10; }
+  /* ===== モバイルナビ（Toyotaスタイル: フルヘイトドロワー） ===== */
   .bm-nav.open {
-    display: flex; flex-direction: column;
-    position: fixed; top: 72px; left: 0; right: 0;
-    background: rgba(255,255,255,0.98);
-    backdrop-filter: blur(12px);
-    padding: 24px; gap: 0;
-    border-bottom: 1px solid var(--bm-border);
-    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff;
+    padding: 8px 0 calc(120px + env(safe-area-inset-bottom, 0px));
+    gap: 0;
+    margin: 0;
+    z-index: 10002;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    animation: bmNavSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .bm-nav.open .bm-nav-link {
-    padding: 14px 0;
-    font-size: 16px;
-    border-bottom: 1px solid var(--bm-border);
+  @keyframes bmNavSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* 各メニュー項目: 大きく、チェブロン付き */
+  .bm-nav.open .bm-nav-link,
+  .bm-nav.open .bm-nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: left;
+    width: 100%;
+    min-height: 64px;
+    letter-spacing: 0.02em;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bm-nav.open .bm-nav-link:active,
+  .bm-nav.open .bm-nav-dropdown-toggle:active {
+    background: rgba(235, 82, 0, 0.08);
+  }
+  .bm-nav.open .bm-nav-link:focus-visible,
+  .bm-nav.open .bm-nav-dropdown-toggle:focus-visible,
+  .bm-nav.open .bm-nav-dropdown-item:focus-visible {
+    outline: 2px solid var(--bm-accent);
+    outline-offset: -2px;
+    background: rgba(235, 82, 0, 0.06);
+  }
+  /* 右端チェブロン (ドロップダウン以外) */
+  .bm-nav.open .bm-nav-link:not(.bm-nav-dropdown-toggle)::after {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid var(--bm-accent);
+    border-right: 2px solid var(--bm-accent);
+    transform: rotate(45deg);
+    margin-left: 12px;
+  }
+  .bm-nav.open .bm-nav-dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  /* ドロップダウン矢印 */
+  .bm-nav.open .bm-nav-dropdown-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bm-accent);
+    margin-left: 8px;
+  }
+  .bm-nav.open .bm-nav-dropdown.is-open .bm-nav-dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  /* サブメニュー（デスクトップ用のmax-height/opacity解除） */
+  .bm-nav.open .bm-nav-dropdown-menu {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    display: none;
+    box-shadow: none;
+    background: #fafafa;
+    padding: 0;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-radius: 0;
+    border-bottom: 1px solid #e8e8e8;
+    transition: none;
+  }
+  .bm-nav.open .bm-nav-dropdown.is-open .bm-nav-dropdown-menu {
+    display: block;
+    max-height: none;
+    padding: 0;
+  }
+  .bm-nav.open .bm-nav-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 18px 24px 18px 44px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    min-height: 56px;
+    position: relative;
+  }
+  .bm-nav.open .bm-nav-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: var(--bm-accent);
+  }
+  .bm-nav.open .bm-nav-dropdown-item:last-child {
+    border-bottom: none;
+  }
+  .bm-nav.open .bm-nav-dropdown-item:active {
+    background: rgba(235, 82, 0, 0.06);
+  }
+  /* ハンバーガー → X 変化 */
+  .bm-hamburger.is-open span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .bm-hamburger.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .bm-hamburger.is-open span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+  /* スクロールロック */
+  body.bm-nav-locked {
+    overflow: hidden;
   }
   .bm-header-right .bm-nav-cta { display: none; }
   .bm-header-right .bm-lang-switch { order: -1; }
-  .bm-lang-btn { width: 40px; height: 32px; font-size: 11px; }
-  /* モバイルドロップダウン */
-  .bm-nav-dropdown-menu {
-    position: static;
-    transform: none;
-    box-shadow: none;
-    opacity: 1;
-    visibility: visible;
-    display: none;
-    padding: 0 0 0 16px;
-    background: transparent;
-  }
-  .bm-nav-dropdown.is-open .bm-nav-dropdown-menu { display: block; }
-  .bm-nav-dropdown-item {
-    padding: 10px 0;
-    font-size: 15px;
-    border-bottom: 1px solid var(--bm-border);
-  }
+  .bm-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; white-space: nowrap; }
 
   /* カテゴリフィルター: スマホ用コンパクト表示 */
   .bm-category-filter {

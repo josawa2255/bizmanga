@@ -156,34 +156,71 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
   if (hamburger) {
+    /* a11y初期属性 */
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-controls', 'bmNav');
+    nav.setAttribute('aria-label', 'メインナビゲーション');
+
+    var closeMenu = function() {
+      nav.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.classList.remove('is-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      hamburger.setAttribute('aria-label', 'メニューを開く');
+      document.body.classList.remove('bm-nav-locked');
+      nav.querySelectorAll('.bm-nav-dropdown.is-open').forEach(function(d) {
+        d.classList.remove('is-open');
+        var t = d.querySelector('.bm-nav-dropdown-toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
+    };
     var bmToggleMenu = function(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
-      nav.classList.toggle('open');
-      hamburger.classList.toggle('active');
+      var willOpen = !nav.classList.contains('open');
+      if (willOpen) {
+        nav.classList.add('open');
+        hamburger.classList.add('active');
+        hamburger.classList.add('is-open');
+        hamburger.setAttribute('aria-expanded', 'true');
+        hamburger.setAttribute('aria-label', 'メニューを閉じる');
+        document.body.classList.add('bm-nav-locked');
+      } else {
+        closeMenu();
+      }
     };
     hamburger.addEventListener('click', bmToggleMenu);
-    // iOS Safari 対策
     hamburger.addEventListener('touchend', function(e) { bmToggleMenu(e); }, { passive: false });
+    /* ESC キーで閉じる */
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        closeMenu();
+        hamburger.focus();
+      }
+    });
     nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
-      link.addEventListener('click', function() {
-        nav.classList.remove('open');
-        hamburger.classList.remove('active');
-      });
+      link.addEventListener('click', closeMenu);
     });
     nav.querySelectorAll('.bm-nav-dropdown-item').forEach(function(link) {
-      link.addEventListener('click', function() {
-        nav.classList.remove('open');
-        hamburger.classList.remove('active');
-      });
+      link.addEventListener('click', closeMenu);
     });
-    // モバイル: ドロップダウン親をタップ → 1回目サブ開く、2回目遷移
+    /* ドロップダウン親: 1回目サブ開く、2回目遷移 + aria更新 */
     nav.querySelectorAll('.bm-nav-dropdown-toggle').forEach(function(toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-haspopup', 'true');
       toggle.addEventListener('click', function(e) {
         if (nav.classList.contains('open')) {
           var dd = this.closest('.bm-nav-dropdown');
           if (!dd.classList.contains('is-open')) {
             e.preventDefault();
+            nav.querySelectorAll('.bm-nav-dropdown.is-open').forEach(function(other) {
+              if (other !== dd) {
+                other.classList.remove('is-open');
+                var ot = other.querySelector('.bm-nav-dropdown-toggle');
+                if (ot) ot.setAttribute('aria-expanded', 'false');
+              }
+            });
             dd.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
           }
         }
       });
