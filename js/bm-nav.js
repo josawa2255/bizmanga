@@ -12,6 +12,7 @@
       { label: '活用場面',     labelEn: 'Use Cases',    href: 'use-cases' }
     ]},
     { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
+    { label: 'コラム',     labelEn: 'Column',     href: 'column' },
     { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }
   ];
 

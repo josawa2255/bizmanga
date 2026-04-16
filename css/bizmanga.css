@@ -824,6 +824,138 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-news-link:hover { color: var(--bm-accent); }
 
 /* ============================================
+   コラムセクション (ホーム横スクロール + 一覧ページ)
+   ============================================ */
+.bm-column-section {
+  padding: 64px 0 56px;
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 100%, #faf8f5 0%, #fff 80%);
+}
+.bm-column-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 28px;
+}
+.bm-column-all {
+  font-size: 13px; font-weight: 600;
+  color: var(--bm-accent); transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.bm-column-all:hover { opacity: 0.7; }
+.bm-column-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin: 0 -20px; padding: 0 20px;
+}
+.bm-column-scroll::-webkit-scrollbar { display: none; }
+.bm-column-grid {
+  display: flex;
+  gap: 20px;
+  min-width: max-content;
+}
+.bm-column-card {
+  display: flex; flex-direction: column;
+  width: 280px; min-width: 280px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none; color: inherit;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.bm-column-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -16px rgba(26,26,26,0.15);
+}
+.bm-column-card-img {
+  position: relative;
+  width: 100%; aspect-ratio: 16 / 9;
+  overflow: hidden; background: #f0ede8;
+}
+.bm-column-card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.4s;
+}
+.bm-column-card:hover .bm-column-card-img img {
+  transform: scale(1.04);
+}
+.bm-column-card-body {
+  padding: 16px 18px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.bm-column-card-cat {
+  display: inline-block; align-self: flex-start;
+  font-size: 10px; font-weight: 700;
+  color: var(--bm-accent); letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(232,85,0,0.3);
+  padding: 2px 8px; border-radius: 3px;
+}
+.bm-column-card-title {
+  font-size: 15px; font-weight: 900;
+  color: #1a1a1a; line-height: 1.55;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.bm-column-card-excerpt {
+  font-size: 12px; color: #888;
+  line-height: 1.7;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.bm-column-card-date {
+  font-size: 12px; font-weight: 700;
+  color: var(--bm-accent);
+  font-variant-numeric: tabular-nums;
+  margin-top: auto;
+}
+
+/* 一覧ページ */
+.bm-column-page {
+  padding-top: 140px; padding-bottom: 80px;
+  min-height: 60vh;
+}
+.bm-column-page-heading {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900; color: #1a1a1a;
+  margin-bottom: 8px;
+}
+.bm-column-page-sub {
+  font-size: 14px; color: #888;
+  margin-bottom: 40px;
+}
+.bm-column-page-loading {
+  text-align: center; padding: 60px 0;
+  color: #888; font-size: 14px;
+}
+.bm-column-grid--page {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  min-width: unset !important;
+}
+.bm-column-grid--page .bm-column-card {
+  width: auto; min-width: unset;
+}
+
+@media (max-width: 1024px) {
+  .bm-column-grid--page {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .bm-column-section { padding: 48px 0 40px; }
+  .bm-column-card { width: 260px; min-width: 260px; }
+  .bm-column-grid--page {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .bm-column-grid--page .bm-column-card { width: auto; }
+}
+
+/* ============================================
    新作漫画 (ContentsX同様 横スクロール)
    ============================================ */
 /* ---------- Gallery / Carousel ---------- */

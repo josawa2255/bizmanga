@@ -139,6 +139,50 @@
     console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
+  /* ── コラムデータをロード・ホームカード描画 ── */
+  var COLUMN_HOME_LIMIT = 4;
+
+  async function loadColumns() {
+    var data = await apiFetch('/columns?site=bizmanga&per_page=50');
+    if (!data || !Array.isArray(data)) return;
+    window.BM_COLUMNS_DATA = data;
+
+    var grid = document.getElementById('bmColumnGrid');
+    if (!grid) return;
+    var isHome = !document.body.hasAttribute('data-page-column');
+    var displayData = isHome ? data.slice(0, COLUMN_HOME_LIMIT) : data;
+
+    grid.innerHTML = '';
+    displayData.forEach(function(item) {
+      var card = document.createElement('a');
+      card.className = 'bm-column-card';
+      card.href = 'column-detail?id=' + item.id;
+
+      var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
+      var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
+
+      card.innerHTML =
+        '<div class="bm-column-card-img"><img src="' + thumb + '" alt="' + (item.title_ja || '') + '" loading="lazy" width="400" height="225"></div>' +
+        '<div class="bm-column-card-body">' +
+          catHtml +
+          '<h3 class="bm-column-card-title" data-ja="' + (item.title_ja || '') + '" data-en="' + (item.title_en || item.title_ja || '') + '">' + (item.title_ja || '') + '</h3>' +
+          '<p class="bm-column-card-excerpt" data-ja="' + (item.excerpt_ja || '') + '" data-en="' + (item.excerpt_en || item.excerpt_ja || '') + '">' + (item.excerpt_ja || '') + '</p>' +
+          '<time class="bm-column-card-date">' + (item.date || '') + '</time>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+
+    if (isHome && data.length > COLUMN_HOME_LIMIT) {
+      var more = document.getElementById('bmColumnMore');
+      if (more) more.style.display = '';
+    }
+
+    if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+      window.i18n.translateAll();
+    }
+    console.log('[BM-WP-API] コラム: ' + displayData.length + '/' + data.length + '件 rendered');
+  }
+
   /* ── 初期化（Hero優先読み込み） ── */
   document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -150,7 +194,8 @@
       await Promise.all([
         loadNewWorks(),
         loadNews(),
-        loadLibrary()
+        loadLibrary(),
+        loadColumns()
       ]);
       // 全データ揃った後の再描画
       window.dispatchEvent(new CustomEvent('bm-all-data-ready'));

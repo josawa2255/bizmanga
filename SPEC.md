@@ -24,6 +24,8 @@
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。`production-flow.html` は `/#flow` への自動リダイレクトのみ |
 | プライバシーポリシー | `privacy-policy.html` | — | |
 | ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
+| コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
+| コラム詳細 | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。日英切替・OGP動的更新対応 |
 
 ## 2. URL パラメータ・特殊モード
 
@@ -119,7 +121,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 |---|---|---|
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
-| WordPress REST API | 漫画事例 / ニュース / テスティモニアル | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
+| WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
 
@@ -128,6 +130,8 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
 - `/library` — ビズ書庫全作品
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
+- `/columns?site=bizmanga&per_page=50` — コラム一覧
+- `/columns/{id}` — コラム個別（本文含む）
 
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
