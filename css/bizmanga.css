@@ -780,10 +780,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 
 /* ============================================
    News (ContentsX同様)
-   ※ 現在非表示。表示するときは display:none を削除すること
    ============================================ */
 .bm-news {
-  display: none; /* TODO: 表示するときはこの行を削除 */
   background: var(--bm-bg);
   padding: 48px 0 40px;
   border-bottom: 1px solid var(--bm-border);
