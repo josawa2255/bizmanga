@@ -60,9 +60,9 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - [biz-library.html:45](biz-library.html#L45) — `<head>` で即座に `<html class="direct-mode">` を付与（フリッカ防止）
   - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
-- **閉じるボタン (✕)**: ダイレクトモードでは非表示（CSS `display:none` + JSで早期return）
-- **ESCキー**: ダイレクトモードでは無効
-- **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のアプリへ
+- **閉じるボタン (✕)**: ダイレクトモードでも表示。クリック時は `biz-library`(パラメータなし)に遷移してライブラリを見せる（2026-04-16修正: ホームギャラリーからも同URLパターンで遷移するため、以前の「閉じるボタン強制非表示」だと閉じられないバグがあった）
+- **ESCキー**: ダイレクトモード時は `biz-library` へ遷移
+- **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
   - mangaData に無い場合、`fetch(api + '/manga/' + id)` で取得
@@ -259,6 +259,6 @@ WordPress で works を追加・更新したら以下いずれか:
 1. **WP側で漫画事例を編集しても反映されない** → `/works` と `/works-new` は別エンドポイント。ホームギャラリーは `/works` 優先（ [bm-home.js:137-149](js/bm-home.js)）
 2. **英語切替が動かない** → `bm-i18n.js` が `bm-nav.js` より先に読み込まれているか確認
 3. **モバイルでハンバーガー押せない** → §6.1 のチェックリスト
-4. **QRダイレクトモードで書庫に迷い込む** → §2.1 の仕組みで閉じる/ESC/履歴追加が全て封じられている
+4. **QRダイレクトモードでの閉じるボタン** → §2.1 参照。閉じる/ESCは `biz-library` 遷移、history.pushState は呼ばない
 5. **表示順の重複** → `cx_sort_order` が同数字だと投稿日順になって不安定 → §5 の運用ルール参照
 6. **CTAセクション変更** → [js/bm-cta.js](js/bm-cta.js) 1箇所を編集すれば全ページ反映
