@@ -22,9 +22,35 @@ import json
 import pathlib
 import re
 import sys
+import unicodedata
 import urllib.request
 
 API_LIST = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns?site=bizmanga&per_page=100"
+
+# 日本語タイトル → 英語風スラッグ自動変換マップ
+# WP側でスラッグ設定が面倒なので、ビルド時にタイトルからスラッグを自動生成する
+SLUG_MAP = {
+    "4コマ漫画をビジネス活用するには": "4koma-business-guide",
+    "4コマ漫画の簡単な作り方とビジネス活用法": "4koma-howto",
+    "ビジネス漫画の効果とは": "business-manga-effect",
+    "漫画の「プロット」とは": "manga-plot-guide",
+    "なぜ今、ビジネスに漫画なのか": "why-business-manga",
+}
+
+
+def make_slug(column):
+    """WPスラッグが日本語ならSLUG_MAPまたはIDベースで英語化"""
+    slug = column.get("slug") or ""
+    # ASCII のみなら既に英語スラッグ
+    if slug and slug.isascii() and not slug.startswith("%"):
+        return slug
+    # タイトルからマップ検索
+    title = column.get("title_ja") or ""
+    for key, val in SLUG_MAP.items():
+        if key in title:
+            return val
+    # フォールバック: post ID ベース
+    return f"column-{column['id']}"
 API_SINGLE = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns/{id}"
 SITE = "https://bizmanga.contentsx.jp"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -54,7 +80,7 @@ def fetch_column_detail(col_id):
 
 
 def build_card(c):
-    slug = c.get("slug") or str(c["id"])
+    slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = c.get("title_ja", "")
     category = c.get("category", "")
@@ -105,7 +131,7 @@ def update_column_html(columns):
             {
                 "@type": "ListItem",
                 "position": i,
-                "url": f"{SITE}/column/{c.get('slug') or c['id']}",
+                "url": f"{SITE}/column/{make_slug(c)}",
                 "name": c.get("title_ja") or str(c["id"]),
             }
             for i, c in enumerate(columns, start=1)
@@ -129,7 +155,7 @@ def update_column_html(columns):
 
 
 def build_detail_page(col, detail_data, template):
-    slug = col.get("slug") or str(col["id"])
+    slug = make_slug(col)
     title_ja = col.get("title_ja") or slug
     thumb = col.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     category = col.get("category") or ""
@@ -181,7 +207,7 @@ def generate_details(columns):
 
     current_slugs = set()
     for c in columns:
-        slug = c.get("slug") or str(c["id"])
+        slug = make_slug(c)
         current_slugs.add(slug)
 
         try:
@@ -217,7 +243,7 @@ def update_sitemap(columns):
 
     entries = []
     for c in columns:
-        slug = c.get("slug") or str(c["id"])
+        slug = make_slug(c)
         entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/column/{slug}</loc>\n"

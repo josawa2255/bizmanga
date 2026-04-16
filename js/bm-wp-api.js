@@ -156,8 +156,10 @@
     displayData.forEach(function(item) {
       var card = document.createElement('a');
       card.className = 'bm-column-card';
-      var slug = item.slug || item.id;
-      card.href = 'column/' + slug;
+      var slug = item.slug || String(item.id);
+      if (!slug.match(/^[a-z0-9-]+$/)) slug = 'column-detail?id=' + item.id;
+      else slug = 'column/' + slug;
+      card.href = slug;
 
       var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
       var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
