@@ -25,9 +25,20 @@
 | プライバシーポリシー | `privacy-policy.html` | — | |
 | ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
-| コラム詳細 | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。日英切替・OGP動的更新対応 |
+| コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日英切替・OGP動的更新。Editorial Magazineデザイン |
+| コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行 |
 
 ## 2. URL パラメータ・特殊モード
+
+### 2.0a コラムの2系統URL（制作事例と同パターン）
+
+| URL系統 | 例 | 用途 | 即時性 | ターゲット |
+|---|---|---|---|---|
+| **`?id=xxx`** | `column-detail?id=483` | 動的取得（JS）。WP公開直後から動作 | ✅ 即時 | フォールバック・プレビュー |
+| **`/column/{slug}`** | `/column/why-business-manga` | SEO向け静的ページ（JSON-LD付き） | ❌ 週1ビルド後（or 手動実行） | Google / AI検索 / SNSシェア |
+
+- ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
+- ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
 
 ### 2.0 制作事例の2系統URL（重要）
 
