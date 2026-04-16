@@ -52,6 +52,19 @@
     .bm-col-detail-content ul, .bm-col-detail-content ol { margin: 16px 0 16px 24px; }
     .bm-col-detail-content li { margin-bottom: 8px; }
     .bm-col-detail-content blockquote { border-left: 4px solid var(--bm-accent, #e85500); padding: 16px 20px; margin: 24px 0; background: #faf8f5; font-style: italic; color: #666; }
+    /* 目次 */
+    .bm-col-toc { background: #faf8f5; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 24px 28px; margin-bottom: 36px; }
+    .bm-col-toc-label { font-size: 14px; font-weight: 900; color: #1a1a1a; margin-bottom: 12px; letter-spacing: 0.04em; }
+    .bm-col-toc-list { margin: 0; padding: 0 0 0 20px; }
+    .bm-col-toc-list li { margin-bottom: 8px; line-height: 1.6; }
+    .bm-col-toc-list a { font-size: 14px; color: #555; text-decoration: none; transition: color 0.2s; }
+    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); }
+    /* 関連記事 */
+    .bm-col-related { padding: 56px 0 64px; background: #faf8f5; }
+    .bm-col-related-heading { font-size: clamp(22px, 3vw, 28px); font-weight: 900; color: #1a1a1a; margin-bottom: 28px; text-align: center; }
+    .bm-col-related-grid { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 20px; min-width: unset !important; }
+    .bm-col-related-grid .bm-column-card { width: auto; min-width: unset; }
+    @media (max-width: 768px) { .bm-col-related-grid { grid-template-columns: 1fr; } }
     .bm-col-detail-loading { text-align: center; padding: 60px 0; color: #888; font-size: 14px; }
     .bm-col-detail-error { text-align: center; padding: 60px 0; }
     .bm-col-detail-error p { color: #888; font-size: 15px; margin-bottom: 20px; }
@@ -100,8 +113,20 @@
         <figure class="bm-col-detail-hero" id="colHero" style="display:none;">
           <img id="colHeroImg" src="" alt="" loading="eager">
         </figure>
+        <nav class="bm-col-toc" id="colToc" style="display:none;">
+          <p class="bm-col-toc-label" data-ja="この記事の目次" data-en="Table of Contents">この記事の目次</p>
+          <ol class="bm-col-toc-list" id="colTocList"></ol>
+        </nav>
         <div class="bm-col-detail-content" id="colContent"></div>
       </article>
+    </div>
+  </section>
+
+  <!-- 関連記事 -->
+  <section class="bm-col-related" id="colRelated" style="display:none;">
+    <div class="bm-container">
+      <h2 class="bm-col-related-heading" data-ja="関連コラム" data-en="Related Columns">関連コラム</h2>
+      <div class="bm-column-grid bm-col-related-grid" id="colRelatedGrid"></div>
     </div>
   </section>
 
@@ -191,6 +216,9 @@
         loadingEl.style.display = 'none';
         articleEl.style.display = '';
 
+        buildToc();
+        loadRelated(apiBase, colId, data.category);
+
         document.addEventListener('i18n-lang-changed', function() {
           var newLang = window.i18n.getLang();
           var t = (newLang === 'en' && data.title_en) ? data.title_en : data.title_ja;
@@ -198,6 +226,7 @@
           document.getElementById('colTitle').textContent = t;
           document.getElementById('colContent').innerHTML = sanitize ? sanitize(c) : c;
           document.title = t + ' | コラム | ビズマンガ';
+          buildToc();
         });
       } catch (e) {
         console.warn('[column-detail] fetch failed:', e.message);
@@ -205,6 +234,58 @@
         errorEl.style.display = '';
       }
     });
+
+    function buildToc() {
+      var content = document.getElementById('colContent');
+      var tocNav = document.getElementById('colToc');
+      var tocList = document.getElementById('colTocList');
+      if (!content || !tocNav || !tocList) return;
+      var headings = content.querySelectorAll('h2');
+      if (headings.length < 2) { tocNav.style.display = 'none'; return; }
+      tocList.innerHTML = '';
+      headings.forEach(function(h, i) {
+        var id = 'sec-' + (i + 1);
+        h.id = id;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent;
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+      tocNav.style.display = '';
+    }
+
+    async function loadRelated(apiBase, currentId, category) {
+      try {
+        var res = await fetch(apiBase + '/columns?site=bizmanga&per_page=50');
+        if (!res.ok) return;
+        var all = await res.json();
+        var sameCat = all.filter(function(c) { return c.id !== parseInt(currentId) && c.category === category; });
+        var others = all.filter(function(c) { return c.id !== parseInt(currentId) && c.category !== category; });
+        var related = sameCat.concat(others).slice(0, 3);
+        if (related.length === 0) return;
+        var grid = document.getElementById('colRelatedGrid');
+        var section = document.getElementById('colRelated');
+        if (!grid || !section) return;
+        grid.innerHTML = '';
+        related.forEach(function(item) {
+          var card = document.createElement('a');
+          card.className = 'bm-column-card';
+          card.href = 'column-detail?id=' + item.id;
+          var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
+          var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
+          card.innerHTML =
+            '<div class="bm-column-card-img"><img src="' + thumb + '" alt="' + (item.title_ja || '') + '" loading="lazy" width="400" height="225"></div>' +
+            '<div class="bm-column-card-body">' + catHtml +
+            '<h3 class="bm-column-card-title">' + (item.title_ja || '') + '</h3>' +
+            '<p class="bm-column-card-excerpt">' + (item.excerpt_ja || '') + '</p>' +
+            '<time class="bm-column-card-date">' + (item.date || '') + '</time></div>';
+          grid.appendChild(card);
+        });
+        section.style.display = '';
+      } catch(e) { /* 関連記事は失敗しても無視 */ }
+    }
   </script>
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 </body>
