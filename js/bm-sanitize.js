@@ -43,7 +43,7 @@
 
   /**
    * WP APIから返るHTML本文を安全化
-   * script/iframe/style等の危険タグを除去し、on*/javascript:属性をstripする
+   * script/iframe/style等の危険タグを除去し、on属性やjavascript:URIをstripする
    */
   function sanitizeRichHTML(raw) {
     var tmp = document.createElement('div');
