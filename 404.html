@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ページが見つかりません | ビズマンガ</title>
+  <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
+  <style>
+    body { font-family: 'Noto Sans JP', sans-serif; background: #fff; color: #1a1a1a; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; padding: 24px; }
+    .c { max-width: 480px; }
+    h1 { font-size: 64px; font-weight: 900; color: #e85500; margin: 0 0 8px; }
+    p { font-size: 15px; color: #666; line-height: 1.7; margin: 0 0 24px; }
+    a { color: #e85500; font-weight: 700; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .r { font-size: 13px; color: #999; margin-top: 16px; }
+  </style>
+  <script>
+    (function() {
+      var path = location.pathname;
+      // /column/{slug} が404の場合、WP APIからIDを探して動的ページにリダイレクト
+      var m = path.match(/^\/column\/([a-z0-9-]+)\/?$/);
+      if (m) {
+        var slug = m[1];
+        var api = 'https://cms.contentsx.jp/wp-json/contentsx/v1/columns?site=bizmanga&per_page=100';
+        fetch(api)
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (!Array.isArray(data)) return;
+            for (var i = 0; i < data.length; i++) {
+              var c = data[i];
+              if (c.slug === slug || String(c.id) === slug) {
+                location.replace('/column-detail?id=' + c.id);
+                return;
+              }
+            }
+          })
+          .catch(function() {});
+      }
+      // /works/{slug} が404の場合、ビズ書庫にリダイレクト
+      var w = path.match(/^\/works\/([a-z0-9-]+)\/?$/);
+      if (w) {
+        location.replace('/biz-library?manga=' + w[1]);
+        return;
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div class="c">
+    <h1>404</h1>
+    <p>お探しのページが見つかりませんでした。<br>移動または削除された可能性があります。</p>
+    <a href="/">トップページへ戻る</a>
+    <p class="r" id="redirectMsg"></p>
+  </div>
+</body>
+</html>
