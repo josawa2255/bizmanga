@@ -42,7 +42,7 @@ def make_slug(column):
     """WPスラッグが日本語ならSLUG_MAPまたはIDベースで英語化"""
     slug = column.get("slug") or ""
     # ASCII のみなら既に英語スラッグ
-    if slug and slug.isascii() and not slug.startswith("%"):
+    if slug and slug.isascii() and "%" not in slug:
         return slug
     # タイトルからマップ検索
     title = column.get("title_ja") or ""
