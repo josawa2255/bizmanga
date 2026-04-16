@@ -1474,7 +1474,9 @@ if (viewToggleBtn) {
 }
 
 document.getElementById('modalClose').addEventListener('click', () => {
-  // ダイレクトモード: パラメータ無しのビズ書庫へ遷移してライブラリを見せる
+  // QR経由はそもそもボタンがCSSで非表示なのでここは通らない想定
+  if (isQrMode) return;
+  // ホーム等からの内部遷移: パラメータ無しのビズ書庫へ
   if (isDirectMode) {
     location.href = 'biz-library';
     return;
@@ -1484,6 +1486,7 @@ document.getElementById('modalClose').addEventListener('click', () => {
 document.addEventListener('keydown', (e) => {
   if (!mangaModal.classList.contains('open')) return;
   if (e.key === 'Escape') {
+    if (isQrMode) return;
     if (isDirectMode) {
       location.href = 'biz-library';
       return;
@@ -1507,7 +1510,18 @@ window.addEventListener('popstate', () => {
 // ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
 const params = new URLSearchParams(window.location.search);
 const autoOpen = params.get('manga');
-const isDirectMode = !!autoOpen; // true = QR/direct link, false = from library
+const isDirectMode = !!autoOpen; // true = ?manga=xxx あり
+// 同一オリジン(ホームギャラリー等)からの内部遷移かどうか
+const isInternalReferrer = (function() {
+  try {
+    if (!document.referrer) return false;
+    return new URL(document.referrer).host === location.host;
+  } catch (e) { return false; }
+})();
+// QRコード経由 = URL パラメータあり かつ 同一オリジンからの遷移ではない
+// ホームギャラリー経由の場合は isQrMode=false になり、閉じるボタンで書庫に降りられる
+const isQrMode = isDirectMode && !isInternalReferrer;
+if (isQrMode) document.documentElement.classList.add('qr-mode');
 
 // 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
 // FALLBACK_PRE_DATA を直接 mangaData に登録

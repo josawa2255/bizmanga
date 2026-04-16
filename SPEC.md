@@ -60,8 +60,10 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - [biz-library.html:45](biz-library.html#L45) — `<head>` で即座に `<html class="direct-mode">` を付与（フリッカ防止）
   - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
-- **閉じるボタン (✕)**: ダイレクトモードでも表示。クリック時は `biz-library`(パラメータなし)に遷移してライブラリを見せる（2026-04-16修正: ホームギャラリーからも同URLパターンで遷移するため、以前の「閉じるボタン強制非表示」だと閉じられないバグがあった）
-- **ESCキー**: ダイレクトモード時は `biz-library` へ遷移
+- **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与
+- **閉じるボタン (✕)**:
+  - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
+  - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
