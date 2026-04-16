@@ -156,7 +156,8 @@
     displayData.forEach(function(item) {
       var card = document.createElement('a');
       card.className = 'bm-column-card';
-      card.href = 'column-detail?id=' + item.id;
+      var slug = item.slug || item.id;
+      card.href = 'column/' + slug;
 
       var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
       var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
