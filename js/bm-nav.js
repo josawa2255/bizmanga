@@ -12,7 +12,8 @@
       { label: '活用場面',     labelEn: 'Use Cases',    href: 'use-cases' }
     ]},
     { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
-    { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }
+    { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' },
+    { label: 'ニュース',   labelEn: 'News',       href: 'news' }
   ];
 
   var path = location.pathname;
