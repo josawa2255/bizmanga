@@ -77,9 +77,10 @@
   "description": "{{description}}",
   "image": "{{thumbnail}}",
   "datePublished": "{{date_ymd}}",
-  "author": { "@type": "Organization", "name": "ビズマンガ", "url": "https://bizmanga.contentsx.jp" },
-  "publisher": { "@type": "Organization", "name": "ビズマンガ", "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" } },
-  "mainEntityOfPage": "{{url}}"
+  "dateModified": "{{modified_ymd}}",
+  "author": { "@type": "Organization", "name": "ビズマンガ編集部", "url": "https://bizmanga.contentsx.jp/", "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" } },
+  "publisher": { "@type": "Organization", "name": "ビズマンガ", "url": "https://bizmanga.contentsx.jp/", "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "{{url}}" }
 }
 </script>
   <script type="application/ld+json">

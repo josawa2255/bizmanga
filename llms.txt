@@ -1,13 +1,15 @@
 # BizManga（ビズマンガ）
 
-> マンガの力でビジネスを動かす。採用・営業・研修・会社紹介・創業ストーリーなど、企業の課題解決に特化したビジネスマンガ制作サービス。株式会社ContentsXが運営。
+> マンガの力でビジネスを動かす。採用・営業・研修・会社紹介・創業ストーリーなど、企業の課題解決に特化したビジネスマンガ制作サービス。Contents X 株式会社が運営。
 
 ## サービス概要
 
 - サービス名: BizManga（ビズマンガ）
-- 運営会社: 株式会社ContentsX
+- 運営会社: Contents X 株式会社（コンテンツエックス）
 - 公式サイト: https://bizmanga.contentsx.jp
 - 親ブランド: ContentsX https://contentsx.jp
+- 所在地: 東京都目黒区中目黒1-8-8 目黒F2ビル1F
+- 設立: 2026年3月3日
 
 ## 特徴
 
@@ -16,6 +18,31 @@
 - **課題解決型アプローチ**: ヒアリングから課題抽出、シナリオ設計、作画、納品まで一気通貫
 - **多展開対応**: 一度作れば Web・SNS・説明会資料・動画など、あらゆる媒体で活用可能
 - **125項目の品質チェック**: 業界独自の品質基準で納品後の修正リスクを最小化
+- **圧倒的コストパフォーマンス**: 大手制作会社の約1/5の価格で高品質な漫画を制作
+
+## 料金体系
+
+- **1本**: 19,800円/ページ（10Pで約21.7万円〜）
+- **3本セット（おすすめ）**: 17,900円/ページ（10Pで約19.8万円〜）
+- **5本セット**: 16,600円/ページ（10Pで約18.5万円〜）
+- 原稿料一本あたり19,800円別途
+- 修正対応: 絵コンテ段階1回・セリフ修正3回を標準対応
+
+### オプション
+
+- SNSリサイズ: +18,500円
+- 印刷（最低100部）: +38,000円〜
+- ボイスコミック: +148,000円
+- LP制作: +187,000円
+
+### 料金に含まれるもの
+
+1. ヒアリング・コンサルティング
+2. シナリオ設計
+3. ネーム（絵コンテ）作成
+4. 作画・仕上げ（人の手7割×AI3割のハイブリッド制作）
+5. 修正対応（絵コンテ1回+セリフ3回）
+6. 各種フォーマット納品（Web用・印刷用・SNS用）
 
 ## 活用シーン
 
@@ -24,31 +51,76 @@
 3. **研修**: コンプライアンス研修、ビジネスマナー、OJT教材
 4. **会社紹介**: 創業ストーリー、経営理念、企業沿革
 5. **広報**: プレスリリース補助、IR資料、社内報
+6. **SNS**: X（Twitter）・Instagram・LINE向けの漫画コンテンツ
+
+## 制作フロー
+
+1. 無料相談・ヒアリング
+2. シナリオ設計・お見積もり
+3. ネーム（絵コンテ）作成・確認
+4. 作画・仕上げ
+5. 修正対応・最終調整
+6. 納品（Web用/印刷用/SNS用）
 
 ## 主要ページ
 
+- [トップページ](https://bizmanga.contentsx.jp/) — サービス概要、ギャラリー、制作フロー
 - [BizMangaの強み](https://bizmanga.contentsx.jp/strength) — 他社との違い、選ばれる理由
 - [マンガの種類](https://bizmanga.contentsx.jp/manga-types) — 対応ジャンル・表現スタイル
 - [活用シーン](https://bizmanga.contentsx.jp/use-cases) — 業界別活用事例
-- [制作フロー](https://bizmanga.contentsx.jp/#flow) — 発注から納品までの流れ（トップページ内セクション）
+- [制作フロー](https://bizmanga.contentsx.jp/#flow) — 発注から納品までの流れ
 - [料金](https://bizmanga.contentsx.jp/pricing) — 料金体系・見積もり相談
 - [制作事例](https://bizmanga.contentsx.jp/works) — 過去の制作実績ギャラリー
-- [ビズ書庫](https://bizmanga.contentsx.jp/biz-library) — 公開コンテンツ一覧
+- [ビズ書庫](https://bizmanga.contentsx.jp/biz-library) — 公開漫画コンテンツ一覧
 - [お客様の声](https://bizmanga.contentsx.jp/testimonials) — 導入企業のインタビュー
+- [コラム](https://bizmanga.contentsx.jp/column) — ビジネス漫画に関する知見・ノウハウ記事
 - [よくある質問](https://bizmanga.contentsx.jp/faq) — FAQ・納期・権利関係
 - [お問い合わせ](https://bizmanga.contentsx.jp/contact) — 見積もり・相談フォーム
+- [プライバシーポリシー](https://bizmanga.contentsx.jp/privacy-policy) — 個人情報の取り扱い
+
+## コラム記事
+
+ビジネス漫画の活用法、制作ノウハウ、業界動向に関する専門記事を定期配信しています。
+
+- [なぜ今、ビジネスに漫画なのか？](https://bizmanga.contentsx.jp/column/why-business-manga) — 脳科学的根拠と市場動向から解説
+- [ビジネス漫画の効果とは？](https://bizmanga.contentsx.jp/column/business-manga-effect) — 記憶定着率・理解速度の科学的データ
+- [4コマ漫画をビジネス活用するには？](https://bizmanga.contentsx.jp/column/4koma-business-guide) — 市場動向から制作プロセスまで
+- [4コマ漫画の簡単な作り方とビジネス活用法](https://bizmanga.contentsx.jp/column/4koma-howto) — AI・スマホ対策まで
+- [漫画の「プロット」とは？](https://bizmanga.contentsx.jp/column/manga-plot-guide) — あらすじとの違い、作り方
+- [BtoB漫画でCVR改善（SaaS編）](https://bizmanga.contentsx.jp/column/btob-manga-cvr-saas) — SaaS企業の漫画活用戦略
+- [BtoB漫画でCVR改善戦略](https://bizmanga.contentsx.jp/column/btob-manga-cvr-strategy) — 業界別CVR改善データ
+- [BtoB漫画LPでリード獲得](https://bizmanga.contentsx.jp/column/btob-manga-lp-lead-generation) — LP×漫画の相乗効果
+- [BtoB 4コマ漫画でリード獲得](https://bizmanga.contentsx.jp/column/btob-4koma-lead-generation) — 4コマ×リードジェネレーション
+- [パラパラ漫画動画のROI](https://bizmanga.contentsx.jp/column/btob-video-parapara-manga-roi) — 動画×漫画のROI分析
+- [1コマ漫画のビジネス活用](https://bizmanga.contentsx.jp/column/1koma-business-manga) — 1コマで伝えるビジネスメッセージ
+- [X（Twitter）×ビジネス漫画](https://bizmanga.contentsx.jp/column/x-twitter-business-manga) — SNS×漫画のマーケティング戦略
+- [漫画で営業力・採用力アップ](https://bizmanga.contentsx.jp/column/business-manga-sales-recruiting) — 営業・採用での漫画活用事例
+- [ビジネスマンガ制作の完全ガイド](https://bizmanga.contentsx.jp/column/business-manga-production-guide) — 7つのステップと費用相場
+
+## よくある質問
+
+- **制作期間**: 通常3〜8週間。お急ぎの場合も相談可能
+- **画風（タッチ）**: 少年漫画風、少女漫画風、ビジネス寄りなど目的に合わせて選択可能
+- **シナリオ作成**: プロのシナリオライターが一から作成
+- **修正回数**: 絵コンテ段階1回・セリフ修正3回が標準
+- **納品形式**: Web用（JPEG/PNG/WebP）、印刷用（PDF/AI）、SNS用
+- **予算**: 30万円から対応可能
+- **著作権**: 納品後はお客様に帰属、二次利用自由
+- **対応エリア**: 全国対応（オンラインで完結）
 
 ## 運営会社
 
-- 会社名: 株式会社ContentsX（コンテンツエックス）
-- 設立: 2026年3月
-- 所在地: 東京都目黒区
+- 会社名: Contents X 株式会社（コンテンツエックス / ContentsX Co., Ltd.）
+- 代表取締役: 黒宮 大貴
+- 設立: 2026年3月3日
+- 所在地: 東京都目黒区中目黒1-8-8 目黒F2ビル1F
+- 事業内容: ビジネス漫画の企画・制作・販売、IPコンテンツの企画・制作、広告宣伝・マーケティング事業
 - 公式サイト: https://contentsx.jp
 
 ## 問い合わせ
 
 - フォーム: https://bizmanga.contentsx.jp/contact
-- 運営会社: 株式会社ContentsX https://contentsx.jp/contact
+- 運営会社: Contents X 株式会社 https://contentsx.jp/contact
 
 ## AI利用について
 

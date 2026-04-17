@@ -1,4 +1,23 @@
 User-agent: *
 Allow: /
 
+# AI crawlers — welcome for citation and training
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: https://bizmanga.contentsx.jp/sitemap.xml

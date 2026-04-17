@@ -161,6 +161,7 @@ def build_detail_page(col, detail_data, template):
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
+    modified_ymd = col.get("modified_ymd") or date_ymd
     excerpt = col.get("excerpt_ja") or ""
     content = detail_data.get("content") or ""
 
@@ -187,6 +188,7 @@ def build_detail_page(col, detail_data, template):
         "{{category_html}}": cat_html,
         "{{date}}": esc(date),
         "{{date_ymd}}": esc(date_ymd),
+        "{{modified_ymd}}": esc(modified_ymd),
         "{{url}}": f"{SITE}/column/{slug}",
         "{{hero_html}}": hero_html,
         "{{content_html}}": content,

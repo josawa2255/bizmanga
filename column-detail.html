@@ -428,11 +428,12 @@
         "description": data.excerpt_ja || "",
         "url": "https://bizmanga.contentsx.jp/column/" + slug,
         "datePublished": data.date_ymd || "",
+        "dateModified": data.modified_ymd || data.date_ymd || "",
         "image": data.thumbnail || "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
-        "author": {"@type": "Organization", "name": "ビズマンガ編集部", "url": "https://bizmanga.contentsx.jp/"},
-        "publisher": {"@type": "Organization", "name": "ビズマンガ", "logo": {"@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"}},
+        "author": {"@type": "Organization", "name": "ビズマンガ編集部", "url": "https://bizmanga.contentsx.jp/", "logo": {"@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"}},
+        "publisher": {"@type": "Organization", "name": "ビズマンガ", "url": "https://bizmanga.contentsx.jp/", "logo": {"@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"}},
         "inLanguage": "ja",
-        "mainEntityOfPage": "https://bizmanga.contentsx.jp/column/" + slug
+        "mainEntityOfPage": {"@type": "WebPage", "@id": "https://bizmanga.contentsx.jp/column/" + slug}
       };
       if (data.category) schema.articleSection = data.category;
       var script = document.createElement('script');
