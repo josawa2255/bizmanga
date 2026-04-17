@@ -912,127 +912,40 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   margin-top: auto;
 }
 
-/* ============================================
-   コラム一覧ページ (Editorial Magazine + Bento Grid)
-   ui-ux-pro-max: Editorial Grid, Bento Grid (Apple-style)
-   frontend-design: 特集カード大きく、スタッガーアニメ
-   design: BizManga tokens 維持
-   ============================================ */
+/* 一覧ページ */
 .bm-column-page {
-  padding-top: 140px; padding-bottom: 100px;
+  padding-top: 140px; padding-bottom: 80px;
   min-height: 60vh;
-  background: linear-gradient(180deg, #fff 0%, #faf8f5 100%);
 }
-.bm-column-page .bm-container { max-width: 1120px; }
 .bm-column-page-heading {
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: clamp(28px, 4vw, 40px);
   font-weight: 900; color: #1a1a1a;
   margin-bottom: 8px;
-  letter-spacing: -0.02em;
-  position: relative;
-  display: inline-block;
-}
-.bm-column-page-heading::after {
-  content: '';
-  position: absolute; bottom: -4px; left: 0;
-  width: 48px; height: 4px;
-  background: var(--bm-accent, #e85500);
-  border-radius: 2px;
 }
 .bm-column-page-sub {
-  font-size: 15px; color: #888;
-  margin-bottom: 48px; margin-top: 16px;
-  letter-spacing: 0.02em;
+  font-size: 14px; color: #888;
+  margin-bottom: 40px;
 }
 .bm-column-page-loading {
   text-align: center; padding: 60px 0;
   color: #888; font-size: 14px;
 }
-
-/* グリッド: 最初のカードを特集（2カラム幅） */
 .bm-column-grid--page {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 24px;
   min-width: unset !important;
 }
 .bm-column-grid--page .bm-column-card {
   width: auto; min-width: unset;
-  border-radius: 16px;
-  overflow: hidden;
-  animation: bmColCardReveal 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-.bm-column-grid--page .bm-column-card:nth-child(1) { animation-delay: 0ms; }
-.bm-column-grid--page .bm-column-card:nth-child(2) { animation-delay: 60ms; }
-.bm-column-grid--page .bm-column-card:nth-child(3) { animation-delay: 120ms; }
-.bm-column-grid--page .bm-column-card:nth-child(4) { animation-delay: 180ms; }
-.bm-column-grid--page .bm-column-card:nth-child(5) { animation-delay: 240ms; }
-.bm-column-grid--page .bm-column-card:nth-child(6) { animation-delay: 300ms; }
-.bm-column-grid--page .bm-column-card:nth-child(n+7) { animation-delay: 360ms; }
-
-@keyframes bmColCardReveal {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* 特集カード: 最初の記事を大きく */
-.bm-column-grid--page .bm-column-card:first-child {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  border-radius: 20px;
-  border: none;
-  background: #fff;
-  box-shadow: 0 8px 40px -12px rgba(0,0,0,0.1);
-}
-.bm-column-grid--page .bm-column-card:first-child .bm-column-card-img {
-  aspect-ratio: 3 / 2;
-  border-radius: 20px 0 0 20px;
-}
-.bm-column-grid--page .bm-column-card:first-child .bm-column-card-body {
-  padding: 32px 36px;
-  justify-content: center;
-}
-.bm-column-grid--page .bm-column-card:first-child .bm-column-card-title {
-  font-size: clamp(18px, 2vw, 24px);
-  -webkit-line-clamp: 3;
-}
-.bm-column-grid--page .bm-column-card:first-child .bm-column-card-excerpt {
-  -webkit-line-clamp: 3;
-  font-size: 14px;
-}
-
-/* 通常カードの強化 */
-.bm-column-grid--page .bm-column-card:not(:first-child) {
-  box-shadow: 0 2px 12px -4px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.04);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
-}
-.bm-column-grid--page .bm-column-card:not(:first-child):hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 20px 48px -16px rgba(0,0,0,0.14);
-}
-.bm-column-grid--page .bm-column-card:not(:first-child) .bm-column-card-img {
-  aspect-ratio: 16 / 10;
-}
-
-/* reduced-motion 尊重 */
-@media (prefers-reduced-motion: reduce) {
-  .bm-column-grid--page .bm-column-card { animation: none; }
-  .bm-column-grid--page .bm-column-card:not(:first-child):hover { transform: none; }
 }
 
 @media (max-width: 1024px) {
   .bm-column-grid--page {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  .bm-column-grid--page .bm-column-card:first-child {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 768px) {
-  .bm-column-page { padding-top: 120px; padding-bottom: 72px; }
   .bm-column-section { padding: 48px 0 40px; }
   .bm-column-card { width: 260px; min-width: 260px; }
   .bm-column-grid--page {
@@ -1040,17 +953,6 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     gap: 16px;
   }
   .bm-column-grid--page .bm-column-card { width: auto; }
-  .bm-column-grid--page .bm-column-card:first-child {
-    grid-template-columns: 1fr;
-  }
-  .bm-column-grid--page .bm-column-card:first-child .bm-column-card-img {
-    aspect-ratio: 16 / 9;
-    border-radius: 16px 16px 0 0;
-  }
-  .bm-column-grid--page .bm-column-card:first-child .bm-column-card-body {
-    padding: 20px 18px 24px;
-  }
-  .bm-column-page-heading::after { width: 36px; height: 3px; }
 }
 
 /* ============================================
