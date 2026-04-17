@@ -4,16 +4,16 @@
  */
 (function() {
   var NAV_ITEMS = [
-    { label: 'ホーム',     labelEn: 'Home',       href: './' },
-    { label: '制作事例',   labelEn: 'Works',      href: 'works' },
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: 'biz-library' },
-    { label: '強み',       labelEn: 'Strengths',  href: 'strength', children: [
-      { label: 'マンガの種類', labelEn: 'Manga Types',  href: 'manga-types' },
-      { label: '活用場面',     labelEn: 'Use Cases',    href: 'use-cases' }
+    { label: 'ホーム',     labelEn: 'Home',       href: '/' },
+    { label: '制作事例',   labelEn: 'Works',      href: '/works' },
+    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    { label: '強み',       labelEn: 'Strengths',  href: '/strength', children: [
+      { label: 'マンガの種類', labelEn: 'Manga Types',  href: '/manga-types' },
+      { label: '活用場面',     labelEn: 'Use Cases',    href: '/use-cases' }
     ]},
-    { label: '料金',       labelEn: 'Pricing',    href: 'pricing' },
-    { label: 'コラム',     labelEn: 'Column',     href: 'column' },
-    { label: 'FAQ',        labelEn: 'FAQ',        href: 'faq' }
+    { label: '料金',       labelEn: 'Pricing',    href: '/pricing' },
+    { label: 'コラム',     labelEn: 'Column',     href: '/column' },
+    { label: 'FAQ',        labelEn: 'FAQ',        href: '/faq' }
   ];
 
   var path = location.pathname;
