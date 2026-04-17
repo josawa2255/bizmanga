@@ -398,11 +398,19 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   width: max-content;
 }
 /* マーキーは集合完了後にJSで開始 */
+/* PC(1025px+): 3行 / タブレット(769-1024): 4行 / スマホ(〜768): 5行 */
 .bm-hero-works-row--1 { animation: none; }
 .bm-hero-works-row--2 { animation: none; }
 .bm-hero-works-row--3 { animation: none; }
 .bm-hero-works-row--4 { animation: none; display: none; }
 .bm-hero-works-row--5 { animation: none; display: none; }
+@media (max-width: 1024px) {
+  .bm-hero-works-row--4 { display: flex; }
+}
+@media (max-width: 768px) {
+  .bm-hero-works-row--4 { display: flex; }
+  .bm-hero-works-row--5 { display: flex; }
+}
 .hero-marquee-go .bm-hero-works-row--1 { animation: bmMarqueeLeft 30s linear infinite; }
 .hero-marquee-go .bm-hero-works-row--2 { animation: bmMarqueeRight 35s linear infinite; }
 .hero-marquee-go .bm-hero-works-row--3 { animation: bmMarqueeLeft 28s linear infinite; }

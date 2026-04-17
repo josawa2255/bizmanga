@@ -58,7 +58,32 @@
     var numRows = rowEls.length;
     var rows = [];
     for (var r = 0; r < numRows; r++) rows.push([]);
-    works.forEach(function(w, i) { rows[i % numRows].push(w); });
+
+    // hero_row_bm / hero_col_bm で手動配置 → 残りを自動振り分け
+    var manual = [];
+    var auto = [];
+    works.forEach(function(w) {
+      var row = typeof w.hero_row_bm === 'number' ? w.hero_row_bm : 0;
+      if (row >= 1 && row <= numRows) {
+        manual.push(w);
+      } else {
+        auto.push(w);
+      }
+    });
+    // 手動配置: 指定行に挿入
+    manual.forEach(function(w) {
+      var ri = w.hero_row_bm - 1;
+      var col = typeof w.hero_col_bm === 'number' && w.hero_col_bm > 0 ? w.hero_col_bm - 1 : rows[ri].length;
+      rows[ri].splice(col, 0, w);
+    });
+    // 自動振り分け: 最も少ない行に順番に追加
+    auto.forEach(function(w) {
+      var minIdx = 0;
+      for (var r = 1; r < numRows; r++) {
+        if (rows[r].length < rows[minIdx].length) minIdx = r;
+      }
+      rows[minIdx].push(w);
+    });
 
     rowEls.forEach(function(rowEl, ri) {
       var items = rows[ri];
