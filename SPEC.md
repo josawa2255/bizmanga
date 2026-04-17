@@ -279,3 +279,4 @@ WordPress で works を追加・更新したら以下いずれか:
 4. **QRダイレクトモードでの閉じるボタン** → §2.1 参照。閉じる/ESCは `biz-library` 遷移、history.pushState は呼ばない
 5. **表示順の重複** → `cx_sort_order` が同数字だと投稿日順になって不安定 → §5 の運用ルール参照
 6. **CTAセクション変更** → [js/bm-cta.js](js/bm-cta.js) 1箇所を編集すれば全ページ反映
+7. **⭐ サブディレクトリからのリンクは必ず絶対パス（/始まり）を使う** → `column/{slug}.html` や `works/{slug}.html` のサブディレクトリ内ページで `href="contact"` のような相対パスを使うと `/column/contact` に解決されて404になる。HTML・JS・テンプレート問わず、全リンクは `href="/contact"` のように `/` 始まりにする。2026-04-17に bm-nav.js / bm-cta.js / bm-pricing-quiz.js / bm-testimonials-page.js / 両テンプレートで発生・修正済み
