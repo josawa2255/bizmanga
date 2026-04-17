@@ -377,6 +377,7 @@
 
         buildToc();
         loadRelated(apiBase, colId, data.category);
+        injectArticleSchema(data);
 
         document.addEventListener('i18n-lang-changed', function() {
           var newLang = window.i18n.getLang();
@@ -413,6 +414,31 @@
         tocList.appendChild(li);
       });
       tocNav.style.display = '';
+    }
+
+    function injectArticleSchema(data) {
+      var existing = document.getElementById('article-ld');
+      if (existing) existing.remove();
+      var slug = data.slug || data.id;
+      var schema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": data.title_ja || "",
+        "description": data.excerpt_ja || "",
+        "url": "https://bizmanga.contentsx.jp/column/" + slug,
+        "datePublished": data.date_ymd || "",
+        "image": data.thumbnail || "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+        "author": {"@type": "Organization", "name": "ビズマンガ編集部", "url": "https://bizmanga.contentsx.jp/"},
+        "publisher": {"@type": "Organization", "name": "ビズマンガ", "logo": {"@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"}},
+        "inLanguage": "ja",
+        "mainEntityOfPage": "https://bizmanga.contentsx.jp/column/" + slug
+      };
+      if (data.category) schema.articleSection = data.category;
+      var script = document.createElement('script');
+      script.id = 'article-ld';
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
     }
 
     async function loadRelated(apiBase, currentId, category) {
