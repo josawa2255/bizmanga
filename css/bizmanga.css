@@ -864,7 +864,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   width: 280px; min-width: 280px;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 16px;
+  border-radius: 8px;
   overflow: hidden;
   text-decoration: none; color: inherit;
   cursor: pointer;
