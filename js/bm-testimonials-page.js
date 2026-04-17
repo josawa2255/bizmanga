@@ -174,8 +174,8 @@
         '<h2 class="bm-tm-heading">' + (data.heading || item.heading || '') + '</h2>' +
         '<div class="bm-tm-content">' + (data.content || '<p>' + (item.excerpt || '') + '</p>') + '</div>' +
         '<div class="bm-tm-cta">' +
-          '<a href="contact" class="bm-tm-cta-btn">無料相談する</a>' +
-          '<a href="works" class="bm-tm-cta-btn bm-tm-cta-btn--ghost">他の事例を見る</a>' +
+          '<a href="/contact" class="bm-tm-cta-btn">無料相談する</a>' +
+          '<a href="/works" class="bm-tm-cta-btn bm-tm-cta-btn--ghost">他の事例を見る</a>' +
         '</div>' +
         '<div class="bm-tm-share">' +
           '<span class="bm-tm-share-label">この事例をシェア</span>' +

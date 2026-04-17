@@ -214,7 +214,7 @@
           '<div class="bm-quiz-result-row bm-quiz-result-row--purpose"><span>' + t('用途', 'Purpose') + '</span><span>' + (purposeLabel[answers.purpose] || t('その他', 'Other')) + '</span></div>' +
         '</div>' +
         '<div class="bm-quiz-result-actions">' +
-          '<a href="contact" class="bm-btn bm-btn--accent">' + t('この内容で無料相談する →', 'Get a Free Consultation →') + '</a>' +
+          '<a href="/contact" class="bm-btn bm-btn--accent">' + t('この内容で無料相談する →', 'Get a Free Consultation →') + '</a>' +
           '<button class="bm-quiz-restart">' + t('やり直す', 'Start Over') + '</button>' +
         '</div>' +
       '</div>';

@@ -23,7 +23,7 @@
         '<p class="bm-cta-sub" data-ja="お見積り・ご相談は完全無料です" data-en="Estimates and consultations are completely free">お見積り・ご相談は完全無料です</p>' +
         '<p class="bm-cta-desc" data-ja="ビジネス漫画のプロが、貴社に最適なプランをご提案します。" data-en="Our business manga experts will propose the best plan for your company.">ビジネス漫画のプロが、貴社に最適なプランをご提案します。</p>' +
         '<div class="bm-cta-buttons">' +
-          '<a href="contact" class="bm-cta-btn bm-cta-btn--contact" data-tooltip="完全無料！">' +
+          '<a href="/contact" class="bm-cta-btn bm-cta-btn--contact" data-tooltip="完全無料！">' +
             '<span class="bm-btn-wrap">' +
               '<span class="bm-btn-text" data-ja="無料相談する" data-en="Free Consultation">無料相談する</span>' +
               '<span class="bm-btn-icon">' +
