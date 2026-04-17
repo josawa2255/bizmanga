@@ -222,6 +222,8 @@ def generate_details(columns):
 
     removed = 0
     for existing in COLUMN_DIR.glob("*.html"):
+        if existing.stem == "index":
+            continue
         if existing.stem not in current_slugs:
             existing.unlink()
             removed += 1
