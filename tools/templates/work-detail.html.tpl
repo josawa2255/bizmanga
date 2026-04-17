@@ -180,6 +180,7 @@
           <a href="/pricing">料金</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
+          <a href="/privacy-policy" data-ja="プライバシーポリシー" data-en="Privacy Policy">プライバシーポリシー</a>
         </div>
       </div>
       <div class="bm-footer-bottom">

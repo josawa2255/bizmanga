@@ -3,7 +3,7 @@
 **ドメイン**: bizmanga.contentsx.jp
 **リポジトリ**: [josawa2255/bizmanga](https://github.com/josawa2255/bizmanga)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-14
+**最終更新**: 2026-04-17
 
 > このファイルは BizManga 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約しておき、将来のメンテ時に参照します。
 
@@ -22,7 +22,7 @@
 | プリプロ | `pre-production.html` | bm-pre-production | 制作過程カルーセル |
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。`production-flow.html` は `/#flow` への自動リダイレクトのみ |
-| プライバシーポリシー | `privacy-policy.html` | — | |
+| プライバシーポリシー | `privacy-policy.html` | — | 個人情報保護法準拠。11条構成（事業者情報・取得情報・利用目的・第三者提供・外部サービス連携・安全管理措置・開示請求・Cookie・未成年・改定・窓口）。i18n対応。全ページフッターからリンク |
 | ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日英切替・OGP動的更新。Editorial Magazineデザイン |
