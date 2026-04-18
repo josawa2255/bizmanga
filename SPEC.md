@@ -280,3 +280,23 @@ WordPress で works を追加・更新したら以下いずれか:
 5. **表示順の重複** → `cx_sort_order` が同数字だと投稿日順になって不安定 → §5 の運用ルール参照
 6. **CTAセクション変更** → [js/bm-cta.js](js/bm-cta.js) 1箇所を編集すれば全ページ反映
 7. **⭐ サブディレクトリからのリンクは必ず絶対パス（/始まり）を使う** → `column/{slug}.html` や `works/{slug}.html` のサブディレクトリ内ページで `href="contact"` のような相対パスを使うと `/column/contact` に解決されて404になる。HTML・JS・テンプレート問わず、全リンクは `href="/contact"` のように `/` 始まりにする。2026-04-17に bm-nav.js / bm-cta.js / bm-pricing-quiz.js / bm-testimonials-page.js / 両テンプレートで発生・修正済み
+
+## 16. 回帰テスト
+
+### 16.1 モバイルヘッダー（ハンバーガー）回帰テスト
+
+[tools/test_mobile_nav.py](tools/test_mobile_nav.py) — Playwright でハンバーガーの表示/クリック可/開閉/ESC/scroll lock を6ページ分検証。
+
+**実行**（cwd は BizManga/ 直下）:
+```bash
+python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
+    --server "python3 serve.py" --port 8000 \
+    -- python3 tools/test_mobile_nav.py
+```
+
+**いつ走らせるか**:
+- ヘッダー・ナビのHTMLやCSSを変更したとき
+- [js/bm-nav.js](js/bm-nav.js) を変更したとき
+- 新ページ追加時（`TARGET_PAGES` に追加してから）
+
+過去に「ハンバーガー押せない」問題が複数回再発したため必須チェック化。
