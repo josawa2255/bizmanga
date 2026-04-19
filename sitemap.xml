@@ -5,7 +5,7 @@
   <!-- ホーム -->
   <url>
     <loc>https://bizmanga.contentsx.jp/</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -13,7 +13,7 @@
   <!-- 制作事例 -->
   <url>
     <loc>https://bizmanga.contentsx.jp/works</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -29,7 +29,7 @@
   <!-- 料金 -->
   <url>
     <loc>https://bizmanga.contentsx.jp/pricing</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -37,7 +37,7 @@
   <!-- FAQ -->
   <url>
     <loc>https://bizmanga.contentsx.jp/faq</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -83,7 +83,7 @@
   <!-- 強み -->
   <url>
     <loc>https://bizmanga.contentsx.jp/strength</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -91,7 +91,7 @@
   <!-- マンガの種類 -->
   <url>
     <loc>https://bizmanga.contentsx.jp/manga-types</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -99,7 +99,7 @@
   <!-- 活用シーン -->
   <url>
     <loc>https://bizmanga.contentsx.jp/use-cases</loc>
-    <lastmod>2026-04-17</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
