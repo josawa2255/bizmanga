@@ -12,12 +12,10 @@
   var track = document.getElementById('bmNewWorksTrack');
   if (!track) return;
 
-  // ===== フォールバック用データ =====
+  // ===== フォールバック用データ（sitemapから除外済みの作品は載せない） =====
   var FALLBACK_NEW_WORKS = [
     { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },
-    { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, added: '2026-03-10' },
     { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, added: '2026-03-05' },
-    { id: 'sixtones', title_ja: 'SixTones', title_en: 'SixTones', pages: 10, added: '2026-03-01' },
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, added: '2026-02-28' }
   ];
 

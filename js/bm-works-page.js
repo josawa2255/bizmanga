@@ -62,18 +62,10 @@
 
   // ===== フォールバック用データ（bm-hero.jsと同じ構造） =====
   var FALLBACK_WORKS = [
-    { id: 'life-school', title_ja: 'ライフスクール', title_en: 'Life School', pages: 10, category: 'プロモーション',
-      media: ['Webサイト', 'SNS'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
-      point: 'スクールの魅力を漫画で発信。', point_en: 'Promoting school appeal through manga.',
-      comment: '問い合わせが増えました。', comment_en: 'Inquiries increased.' },
     { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, category: '営業',
       media: ['営業ツール'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
       point: '施工実績を漫画でビジュアル化。', point_en: 'Construction achievements visualized through manga.',
       comment: '信頼感が増しました。', comment_en: 'Trust and credibility increased.' },
-    { id: 'sixtones', title_ja: 'SixTones', title_en: 'SixTones', pages: 10, category: 'プロモーション',
-      media: ['イベント配布', 'Web'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
-      point: 'プロモーション漫画制作。', point_en: 'Promotional manga production.',
-      comment: 'ファンに好評でした。', comment_en: 'Well received by fans.' },
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, category: 'プロモーション',
       media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
       point: 'イベント告知を漫画で訴求。', point_en: 'Event promotion through manga.',

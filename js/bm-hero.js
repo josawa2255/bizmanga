@@ -13,15 +13,9 @@
 
   // ===== フォールバック用 漫画データ（ContentsX の WORKS_DETAIL_DATA と同等構造） =====
   var FALLBACK_WORKS = [
-    { id: 'life-school', title_ja: 'ライフスクール', pages: 10, category: 'プロモーション',
-      media: ['Webサイト', 'SNS'], spec: { pages: '10P', period: '2週間' },
-      point: 'スクールの魅力を漫画で発信。', comment: '問い合わせが増えました。' },
     { id: 'seko', title_ja: '施工会社紹介', pages: 8, category: '営業',
       media: ['営業ツール'], spec: { pages: '8P', period: '10日間' },
       point: '施工実績を漫画でビジュアル化。', comment: '信頼感が増しました。' },
-    { id: 'sixtones', title_ja: 'SixTones', pages: 10, category: 'プロモーション',
-      media: ['イベント配布', 'Web'], spec: { pages: '10P', period: '2週間' },
-      point: 'プロモーション漫画制作。', comment: 'ファンに好評でした。' },
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, category: 'プロモーション',
       media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間' },
       point: 'イベント告知を漫画で訴求。', comment: '集客効果がありました。' },
