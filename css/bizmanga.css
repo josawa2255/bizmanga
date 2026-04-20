@@ -1020,53 +1020,70 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-column-hero-strip {
   position: relative;
   width: 100%;
-  height: 360px;
+  height: 420px;
   overflow: hidden;
   margin-top: 68px; /* ヘッダー分 */
-  background: #f5f0eb;
+  background: #1a0f05;
 }
 .bm-column-hero-strip img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 40%;
+  object-position: center 42%;
   display: block;
 }
-.bm-column-hero-strip::after {
+/* 方向性scrim: 左下スポットライト型で中央の主役を避け左側だけ暗く */
+.bm-column-hero-strip::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(255,255,255,0.8) 100%);
+  background: linear-gradient(
+    105deg,
+    rgba(17, 10, 5, 0.78) 0%,
+    rgba(17, 10, 5, 0.55) 25%,
+    rgba(17, 10, 5, 0.18) 50%,
+    rgba(17, 10, 5, 0) 68%
+  );
   pointer-events: none;
+  z-index: 1;
+}
+
+.bm-column-hero-overlay {
+  position: absolute;
+  left: max(32px, 5vw);
+  bottom: 56px;
+  max-width: 680px;
+  z-index: 2;
+  color: #fff;
+}
+.bm-column-hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 20px;
+  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
+}
+.bm-column-hero-title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: clamp(36px, 6vw, 76px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+}
+.bm-column-hero-divider {
+  width: 52px;
+  height: 3px;
+  background: var(--bm-accent, #e85500);
+  margin-top: 24px;
 }
 
 .bm-column-masthead {
-  padding: 64px 0 40px;
+  padding: 48px 0 32px;
   background: #fff;
-}
-.bm-column-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  color: #888;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
-}
-.bm-column-title {
-  font-family: 'Noto Serif JP', serif;
-  font-weight: 900;
-  font-size: clamp(40px, 7vw, 88px);
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-  color: #111;
-  margin: 0 0 28px;
-}
-.bm-column-divider {
-  width: 48px;
-  height: 3px;
-  background: var(--bm-accent, #e85500);
-  margin-bottom: 28px;
 }
 .bm-column-lead {
   font-size: 17px;
@@ -1300,14 +1317,40 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 @media (max-width: 768px) {
   .bm-column-hero-strip {
-    height: 200px;
+    height: 340px;
     margin-top: 60px;
   }
-  .bm-column-masthead {
-    padding: 44px 0 28px;
+  /* モバイルは画像全体が小さいのでscrimを縦方向メインに切り替え */
+  .bm-column-hero-strip::before {
+    background: linear-gradient(
+      to top,
+      rgba(17, 10, 5, 0.88) 0%,
+      rgba(17, 10, 5, 0.6) 40%,
+      rgba(17, 10, 5, 0.15) 70%,
+      rgba(17, 10, 5, 0) 100%
+    );
   }
-  .bm-column-title {
-    font-size: clamp(32px, 9vw, 48px);
+  .bm-column-hero-overlay {
+    left: 20px;
+    right: 20px;
+    bottom: 28px;
+    max-width: none;
+  }
+  .bm-column-hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    margin-bottom: 12px;
+  }
+  .bm-column-hero-title {
+    font-size: clamp(28px, 8vw, 44px);
+    line-height: 1.25;
+  }
+  .bm-column-hero-divider {
+    width: 40px;
+    margin-top: 18px;
+  }
+  .bm-column-masthead {
+    padding: 32px 0 24px;
   }
   .bm-column-lead {
     font-size: 15px;

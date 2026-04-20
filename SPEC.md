@@ -232,6 +232,18 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
 
+### 2026-04-20 コラム一覧ページ Hero テキストオーバーレイ化
+
+ui-ux-pro-max + frontend-design の editorial パターンに基づき、H1・eyebrow・divider を hero 画像上にオーバーレイ表示に変更。
+
+- hero-strip 高さ 360px → 420px に拡張（テキスト領域確保）
+- `.bm-column-hero-overlay` を左下に絶対配置、bottom=56px / left=5vw
+- 画像中央の女の子イラストを避けるため、`::before` で **105deg の方向性 scrim**（左下スポットライト型: 暖黒 `rgba(17,10,5,...)` で画像の暖色と馴染ませる）
+- **text-shadow は不採用**（scrim方式が editorial 標準、AI slop 回避）
+- モバイル: scrim を `to top` の縦方向に切替、hero h=340px、テキスト bottom=28px
+- Masthead から H1/eyebrow/divider を撤去し、リード段落のみ残す（縦スペース節約）
+- fetchpriority も `low` → `high` に変更（LCP要素としての役割明確化）
+
 ### 2026-04-20 コラム一覧ページ Editorial Magazine 化
 
 ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パターンに基づきコラム一覧 ([column.html](column.html)) を BtoBマーケティング専門誌の Web 版 風に刷新。

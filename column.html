@@ -212,20 +212,22 @@
     </div>
   </header>
 
-  <!-- ===== Editorial Hero帯（圧縮表示） ===== -->
-  <div class="bm-column-hero-strip">
-    <img src="/material/images/hero-column.webp" alt="ビジネス漫画を読む女性 - BizMangaコラム編集部" width="2400" height="1018" loading="eager" fetchpriority="low">
-  </div>
-
-  <!-- ===== Editorial Pageヘッダー ===== -->
-  <header class="bm-column-masthead">
-    <div class="bm-container">
-      <p class="bm-column-eyebrow"><span data-ja="コラム" data-en="Column">コラム</span> · <span class="bm-column-eyebrow-count" id="bmColumnEyebrowCount">ISSUE 15</span></p>
-      <h1 class="bm-column-title">
+  <!-- ===== Editorial Hero帯（テキストオーバーレイ） ===== -->
+  <section class="bm-column-hero-strip" aria-label="コラムヘッダー">
+    <img src="/material/images/hero-column.webp" alt="ビジネス漫画を読む女性 - BizMangaコラム編集部" width="2400" height="1018" loading="eager" fetchpriority="high">
+    <div class="bm-column-hero-overlay">
+      <p class="bm-column-hero-eyebrow"><span data-ja="コラム" data-en="Column">コラム</span> · <span id="bmColumnEyebrowCount">ISSUE 15</span></p>
+      <h1 class="bm-column-hero-title">
         <span data-ja="ビジネスマンガ" data-en="Business Manga">ビジネスマンガ</span><br>
         <span data-ja="マーケティング研究所" data-en="Marketing Lab">マーケティング研究所</span>
       </h1>
-      <div class="bm-column-divider" aria-hidden="true"></div>
+      <div class="bm-column-hero-divider" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- ===== リード段落のみ ===== -->
+  <header class="bm-column-masthead">
+    <div class="bm-container">
       <p class="bm-column-lead" data-ja="脳科学・市場動向・LP設計・SaaS CVR改善——BtoBビジネス漫画の「効く使い方」を、現場発の一次情報でお届けします。" data-en="Neuroscience, market trends, LP design, SaaS CVR: first-hand insights on how BtoB business manga actually works.">脳科学・市場動向・LP設計・SaaS CVR改善——BtoBビジネス漫画の「効く使い方」を、現場発の一次情報でお届けします。</p>
     </div>
   </header>
