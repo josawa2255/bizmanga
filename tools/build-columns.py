@@ -215,7 +215,17 @@ def build_detail_page(col, detail_data, template):
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
-    modified_ymd = col.get("modified_ymd") or date_ymd
+    # WP 側の post_modified が全記事同日付（今日）になってしまうケースが多く、
+    # dateModified が全記事一律「今日」だと QRG 的に不自然シグナル。
+    # WP modified が「今日の日付」と一致する間は、信頼せず date_ymd にフォールバック。
+    # WP 側で個別記事の modified が正しく反映されるようになったらこのロジックを緩める。
+    from datetime import date as _date
+    today_iso = _date.today().isoformat()
+    wp_modified = col.get("modified_ymd") or ""
+    if wp_modified and wp_modified != today_iso and wp_modified >= date_ymd:
+        modified_ymd = wp_modified
+    else:
+        modified_ymd = date_ymd
     excerpt = col.get("excerpt_ja") or ""
     content = detail_data.get("content") or ""
 
