@@ -1052,7 +1052,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   position: absolute;
   left: max(32px, 5vw);
   bottom: 56px;
-  max-width: 680px;
+  max-width: min(820px, 60vw);
   z-index: 2;
   color: #fff;
 }
@@ -1068,11 +1068,20 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-column-hero-title {
   font-family: 'Noto Serif JP', serif;
   font-weight: 900;
-  font-size: clamp(36px, 6vw, 76px);
-  line-height: 1.18;
-  letter-spacing: -0.02em;
+  font-size: clamp(32px, 5vw, 64px);
+  line-height: 1.22;
+  letter-spacing: -0.015em;
   color: #fff;
   margin: 0;
+}
+/* 各行を独立ブロック化し、途中折り返しを禁止 */
+.bm-column-hero-title span {
+  display: block;
+  white-space: nowrap;
+}
+/* <br> は span の display:block で不要になるため非表示 */
+.bm-column-hero-title br {
+  display: none;
 }
 .bm-column-hero-divider {
   width: 52px;
@@ -1342,8 +1351,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     margin-bottom: 12px;
   }
   .bm-column-hero-title {
-    font-size: clamp(28px, 8vw, 44px);
-    line-height: 1.25;
+    font-size: clamp(26px, 7.2vw, 40px);
+    line-height: 1.28;
+  }
+  /* モバイルは画面幅が狭いので nowrap を解除して自動折り返し許可 */
+  .bm-column-hero-title span {
+    white-space: normal;
   }
   .bm-column-hero-divider {
     width: 40px;
