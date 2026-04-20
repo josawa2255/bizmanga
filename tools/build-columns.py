@@ -241,7 +241,7 @@ def update_sitemap(columns):
     s = p.read_text(encoding="utf-8")
 
     pattern = re.compile(
-        r"\s*<!-- BUILD:COLUMNS -->[\s\S]*?<!-- /BUILD:COLUMNS -->\s*"
+        r"\s*<!-- BUILD:COLUMNS[^>]*?-->[\s\S]*?<!-- /BUILD:COLUMNS -->\s*"
     )
     s = pattern.sub("\n\n", s)
 

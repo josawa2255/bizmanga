@@ -163,7 +163,12 @@ def build_detail_page(w, template):
     raw_desc = re.sub(r"<[^>]+>", "", point).replace("\n", " ").strip()
     description = (raw_desc or f"{title_ja}｜ビジネスマンガ制作事例")[:150]
 
-    og_image = thumb or f"{SITE}/material/images/og/og-index.webp"
+    # 1200x630 専用OG画像 (tools/build-works-og.py で生成)。無ければ WP thumb にフォールバック。
+    og_image_path = ROOT / "material" / "images" / "og" / "works" / f"{slug}.webp"
+    if og_image_path.exists():
+        og_image = f"{SITE}/material/images/og/works/{slug}.webp"
+    else:
+        og_image = thumb or f"{SITE}/material/images/og/og-index.webp"
 
     replacements = {
         "{{slug}}": esc(slug),
@@ -216,9 +221,10 @@ def update_sitemap(works):
     p = ROOT / "sitemap.xml"
     s = p.read_text(encoding="utf-8")
 
-    # Remove existing BUILD:WORKS block
+    # Remove existing BUILD:WORKS block(s). コメント内の「(auto-generated…)」等の
+    # 追加テキストや重複ブロックにも対応するため、開始タグは柔軟にマッチさせる。
     pattern = re.compile(
-        r"\s*<!-- BUILD:WORKS -->[\s\S]*?<!-- /BUILD:WORKS -->\s*"
+        r"\s*<!-- BUILD:WORKS[^>]*?-->[\s\S]*?<!-- /BUILD:WORKS -->\s*"
     )
     s = pattern.sub("\n\n", s)
 

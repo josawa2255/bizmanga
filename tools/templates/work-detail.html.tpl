@@ -15,6 +15,8 @@
   <meta property="og:url" content="{{url}}">
   <meta property="og:site_name" content="ビズマンガ">
   <meta property="og:image" content="{{og_image}}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="{{title_ja}}｜ビズマンガ制作事例">
   <meta property="og:locale" content="ja_JP">
   <!-- Twitter Card -->
