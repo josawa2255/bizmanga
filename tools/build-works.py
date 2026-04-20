@@ -141,14 +141,30 @@ def build_detail_page(w, template):
     slug = w["id"]
     title_ja = w.get("title_ja") or slug
     title_en = w.get("title_en") or title_ja
-    thumb = w.get("thumbnail") or (w.get("gallery") or [""])[0]
+    # ヒーロー表示用は gallery[0] のフル解像度を優先 (WP thumbnail は 188x300 の小さなサムネで、
+    # 1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため)。
+    # fallback として従来の thumbnail → gallery[0] 順で参照。
+    gallery_list = w.get("gallery") or []
+    hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
+    thumb = hero_src  # 後方互換で thumb 変数名も維持
     category = w.get("category") or "制作事例"
     pages_count = (w.get("spec") or {}).get("pages") or (
         f"{w.get('pages')}P" if w.get("pages") else "—"
     )
     period = (w.get("spec") or {}).get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
-    comment = w.get("comment") or "—"
+    # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示
+    # (空セクションはSEO減点・UX劣化。WP側に記入されたらセクション復活)
+    comment_raw = (w.get("comment") or "").strip()
+    if comment_raw and comment_raw not in ("—", "-"):
+        comment_section = (
+            '      <section class="bm-work-detail-section">\n'
+            '        <h2>お客様コメント</h2>\n'
+            f'        <p>{esc(comment_raw)}</p>\n'
+            '      </section>'
+        )
+    else:
+        comment_section = ''
     client = w.get("client") or ""
     client_line = f"クライアント: {client}" if client else "ビジネスマンガ制作事例"
     media = " / ".join(w.get("media") or []) or "—"
@@ -181,7 +197,7 @@ def build_detail_page(w, template):
         "{{pages_count}}": esc(pages_count),
         "{{period}}": esc(period),
         "{{point}}": esc(point),
-        "{{comment}}": esc(comment),
+        "{{comment_section}}": comment_section,
         "{{client}}": esc(client),
         "{{client_line}}": esc(client_line),
         "{{media}}": esc(media),

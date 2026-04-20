@@ -61,7 +61,12 @@
     "alternateName": "{{title_en}}",
     "description": "{{description}}",
     "url": "{{url}}",
-    "image": "{{thumbnail}}",
+    "image": {
+      "@type": "ImageObject",
+      "url": "{{og_image}}",
+      "width": 1200,
+      "height": 630
+    },
     "genre": "{{category}}",
     "creator": {
       "@type": "Organization",
@@ -126,10 +131,7 @@
         <p>{{point}}</p>
       </section>
 
-      <section class="bm-work-detail-section">
-        <h2>お客様コメント</h2>
-        <p>{{comment}}</p>
-      </section>
+{{comment_section}}
 
       <section class="bm-work-detail-section">
         <h2>ページ一覧</h2>
@@ -157,7 +159,7 @@
         <div class="bm-footer-brand">
           <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
           <p class="bm-footer-company">コンテンツエックス株式会社</p>
-          <p class="bm-footer-address">東京都目黒区目黒2-11-15 8階</p>
+          <p class="bm-footer-address" data-ja="東京都目黒区中目黒1-8-8 目黒F2ビル1F" data-en="1F Meguro F2 Building, 1-8-8 Nakameguro, Meguro-ku, Tokyo">東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
         </div>
         <div class="bm-footer-links">
           <a href="/">ホーム</a>

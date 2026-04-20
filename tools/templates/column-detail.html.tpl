@@ -94,7 +94,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://bizmanga.contentsx.jp/"},
     {"@type": "ListItem", "position": 2, "name": "コラム", "item": "https://bizmanga.contentsx.jp/column"},
-    {"@type": "ListItem", "position": 3, "name": "{{title_ja}}"}
+    {"@type": "ListItem", "position": 3, "name": "{{title_ja}}", "item": "{{url}}"}
   ]
 }
 </script>
