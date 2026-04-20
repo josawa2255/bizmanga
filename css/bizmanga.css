@@ -1020,7 +1020,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-column-hero-strip {
   position: relative;
   width: 100%;
-  height: 420px;
+  height: 500px;
   overflow: hidden;
   margin-top: 68px; /* ヘッダー分 */
   background: #1a0f05;
@@ -1029,7 +1029,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 18%;
   display: block;
 }
 /* 方向性scrim: 左下スポットライト型で中央の主役を避け左側だけ暗く */
@@ -1326,8 +1326,11 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 @media (max-width: 768px) {
   .bm-column-hero-strip {
-    height: 340px;
+    height: 420px;
     margin-top: 60px;
+  }
+  .bm-column-hero-strip img {
+    object-position: center 15%;
   }
   /* モバイルは画像全体が小さいのでscrimを縦方向メインに切り替え */
   .bm-column-hero-strip::before {
