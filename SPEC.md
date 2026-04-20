@@ -171,12 +171,13 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ## 7. ホームページ特殊動作
 
 ### 7.1 固定CTAバー
-- [index.html:369-412](index.html) — LINE / お問い合わせ / **X** / 会社について知る の **4ボタン**（2026-04-21 Xボタン追加）
+- [index.html:369-404](index.html) — LINE / **X** / 会社について知る の **3ボタン**（2026-04-21 お問い合わせ→Xに置換）
 - hero を過ぎると出現
 - 全ボタンに **slide + tooltip** ホバーエフェクト
 - **Xボタン**: `#000000`（X公式ブランドカラー）/ SVG は新Xロゴ（2023年リブランディング後） / `target="_blank" rel="noopener"` / 遷移先 `https://x.com/Bizmanga_`
 - 「会社について知る」は **SAHARA風** 波パルス演出（赤→オレンジグラデ + 内側ピンクピル）
-- **モバイル**: 画面下の横並び固定バー（flex:1 で4等分）、tooltip は非表示、box-reflect無効化
+- **お問い合わせ導線**: ヘッダー右上 CTA / Inner CTA section「無料相談する」/ フッターに残存。sticky barからは削除
+- **モバイル**: 画面下の横並び固定バー（flex:1 で3等分）、tooltip は非表示、box-reflect無効化
 - フッターがバーに隠れないよう **モバイルで `body { padding-bottom: 60px }`**
 
 ### 7.2 ヒーロー
