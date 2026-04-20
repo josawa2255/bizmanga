@@ -104,7 +104,12 @@
         if (filter === "all") {
           card.classList.remove("is-filtered-out");
         } else {
-          var cat = card.getAttribute("data-category") || "";
+          // data-category属性を優先、無ければバッジテキストから推定（キャッシュ耐性）
+          var cat = card.getAttribute("data-category");
+          if (!cat) {
+            var badge = card.querySelector(".bm-column-card-cat");
+            cat = badge ? badge.textContent.trim() : "";
+          }
           if (cat === filter) card.classList.remove("is-filtered-out");
           else card.classList.add("is-filtered-out");
         }
