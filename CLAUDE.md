@@ -77,6 +77,14 @@ if (window.i18n && window.i18n.translateAll) {
 - HubSpot: Portal 48367061（ContentsXと共通）
 - WordPress API: `https://cms.contentsx.jp/wp-json/contentsx/v1`（bm-wp-config.js）
 
+## GSC日次ランク追跡（2026-04-20〜稼働）
+- 毎朝 JST 09:00 に `.github/workflows/rank-tracker.yml` が自動発火
+- `tools/rank-tracker.py` が GSC Search Analytics API を叩き、12ターゲットKW（BtoBマンガ/ビジネスマンガ 制作など）の順位を取得
+- 結果は `tools/rank-history.jsonl` に1行追記されて自動commit
+- B + C 両サイト対応（`SITES` に両URL登録）
+- 必要Secrets: `GSC_CLIENT_ID` / `GSC_CLIENT_SECRET` / `GSC_REFRESH_TOKEN`（登録済み）
+- 追跡KW追加は `TARGET_QUERIES` 配列を編集
+
 ## Python自動翻訳ツール
 `tools/i18n-build.py`:
 - HTML/JSから日本語テキストを自動抽出
