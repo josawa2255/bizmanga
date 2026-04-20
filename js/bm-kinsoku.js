@@ -1,13 +1,12 @@
 /**
- * BizManga 日本語禁則処理 (JS fallback)
+ * BizManga 日本語禁則処理 (JS)
  *
- * CSSの text-wrap: balance / pretty で解決できない「末尾1文字孤立」
- * (例: 「効く使い方」→「方」だけ次行) を防ぐため、
- * 指定セレクタ内のテキストの末尾2文字を word joiner (\u2060) で結合する。
+ * 対象セレクタ内のテキストについて以下を適用:
+ *  1. 「...」『...』 の内側を改行禁止 (nowrap spanで包む)
+ *  2. 末尾2文字を word joiner (U+2060) で結合し、1文字孤立を防止
  *
- * word joiner は不可視 & 幅ゼロ、改行禁止の効果のみ。
- *
- * 対象: 主要段落/キャプションクラス。冪等に動作（二重処理なし）。
+ * CSS の text-wrap: balance/pretty だけでは防げない日本語特有の
+ * 改行崩れを確実に抑える。
  */
 (function () {
   "use strict";
@@ -20,48 +19,79 @@
     ".bm-section-desc",
   ];
 
-  var JOINER = "\u2060"; // word joiner (invisible, prevents break)
+  var JOINER = "\u2060"; // word joiner (不可視 + 改行禁止)
   var FLAG = "__bmKinsokuApplied";
+  var QUOTE_RE = /[「『][^「『」』]+[」』]/g;
 
-  function processTextNode(node) {
-    if (!node || node.nodeType !== Node.TEXT_NODE) return;
-    var t = node.nodeValue;
-    if (!t || t.length < 3) return;
-    // trim trailing whitespace to find "last" meaningful char
-    var trimmed = t.replace(/[\s\u3000]+$/, "");
-    if (trimmed.length < 3) return;
-    // Insert joiner between last 2 characters
-    var lastTwo = trimmed.slice(-2);
-    // Skip if already joined
-    if (lastTwo.indexOf(JOINER) !== -1) return;
-    var newLastTwo = lastTwo[0] + JOINER + lastTwo[1];
-    node.nodeValue = t.slice(0, trimmed.length - 2) + newLastTwo + t.slice(trimmed.length);
+  /** 「...」『...』の内側を nowrap span で保護 */
+  function protectQuotes(el) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var targets = [];
+    var node;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement && node.parentElement.classList.contains("bm-kinsoku-nobr")) continue;
+      if (!/[「『][^「『」』]+[」』]/.test(node.nodeValue)) continue;
+      targets.push(node);
+    }
+    targets.forEach(function (textNode) {
+      var text = textNode.nodeValue;
+      var frag = document.createDocumentFragment();
+      var lastIndex = 0;
+      // String.prototype.replace をコールバックで使って書き換え不要
+      text.replace(QUOTE_RE, function (match, offset) {
+        if (offset > lastIndex) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex, offset)));
+        }
+        var span = document.createElement("span");
+        span.className = "bm-kinsoku-nobr";
+        span.style.whiteSpace = "nowrap";
+        span.textContent = match;
+        frag.appendChild(span);
+        lastIndex = offset + match.length;
+        return match;
+      });
+      if (lastIndex < text.length) {
+        frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
   }
 
-  function applyToElement(el) {
-    if (!el || el[FLAG]) return;
-    // Only process direct text children (avoid nested elements)
-    var lastTextNode = null;
+  /** 末尾テキストノードの最後2文字を word joiner で結合（1文字孤立回避） */
+  function joinTailChars(el) {
+    var lastNode = null;
     for (var i = el.childNodes.length - 1; i >= 0; i--) {
       var n = el.childNodes[i];
       if (n.nodeType === Node.TEXT_NODE && n.nodeValue.replace(/[\s\u3000]+$/, "").length > 0) {
-        lastTextNode = n;
+        lastNode = n;
         break;
       }
-      // If last non-empty node is an element with text, recurse
       if (n.nodeType === Node.ELEMENT_NODE) {
-        applyToElement(n);
-        break;
+        joinTailChars(n);
+        return;
       }
     }
-    if (lastTextNode) processTextNode(lastTextNode);
+    if (!lastNode) return;
+    var t = lastNode.nodeValue;
+    var trimmed = t.replace(/[\s\u3000]+$/, "");
+    if (trimmed.length < 3) return;
+    var lastTwo = trimmed.slice(-2);
+    if (lastTwo.indexOf(JOINER) !== -1) return;
+    var newLastTwo = lastTwo[0] + JOINER + lastTwo[1];
+    lastNode.nodeValue = t.slice(0, trimmed.length - 2) + newLastTwo + t.slice(trimmed.length);
+  }
+
+  function apply(el) {
+    if (!el || el[FLAG]) return;
+    protectQuotes(el);
+    joinTailChars(el);
     el[FLAG] = true;
   }
 
   function run() {
     SELECTORS.forEach(function (sel) {
       var els = document.querySelectorAll(sel);
-      Array.prototype.forEach.call(els, applyToElement);
+      Array.prototype.forEach.call(els, apply);
     });
   }
 
@@ -71,7 +101,6 @@
     run();
   }
 
-  // i18n 切替などで DOM が書き換わったら再適用
   window.addEventListener("i18n-lang-changed", function () {
     SELECTORS.forEach(function (sel) {
       var els = document.querySelectorAll(sel);
