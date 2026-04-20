@@ -1164,13 +1164,14 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-column-featured-card {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.1fr 1fr;
   gap: 48px;
   text-decoration: none;
   color: inherit;
   background: #fff;
   border-radius: 4px;
   overflow: hidden;
+  align-items: center;
 }
 .bm-column-featured-img {
   position: relative;
@@ -1224,16 +1225,22 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-column-featured-title {
   font-family: 'Noto Serif JP', serif;
-  font-size: clamp(24px, 3vw, 36px);
+  font-size: clamp(22px, 2.2vw, 28px);
   font-weight: 900;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
   margin: 0 0 20px;
   color: #111;
   transition: color 0.25s;
+  /* balance より pretty の方が日本語長文では自然 */
+  text-wrap: pretty;
 }
 .bm-column-featured-card:hover .bm-column-featured-title {
-  color: var(--bm-accent, #e85500);
+  color: #333;
+}
+.bm-column-featured-card:hover .bm-column-featured-read {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .bm-column-featured-excerpt {
   font-size: 15px;
