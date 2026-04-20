@@ -232,6 +232,17 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
 
+### 2026-04-20 日本語禁則処理をサイト全体に適用
+
+日本語は単語境界が無いため、長い見出し（例: 「マーケティング研究所」）がコンテナに収まらないと末尾1文字だけ次行に落ちる「孤立文字」問題が発生する。両サイトの CSS に禁則処理ルールを一括追加。
+
+- [css/bizmanga.css](css/bizmanga.css) 末尾に追記（`h1-h4`, `.bm-*-title`, `.bm-*-heading` 等）
+- [ContentX/css/style.css](../ContentX/css/style.css) 末尾に追記（`h1-h4`, `.hero-title`, `.section-title`, `.news-heading` 等）
+- 適用ルール:
+  - `text-wrap: pretty` — Chrome 117+/Safari 17.4+/Firefox 121+ が末尾孤立文字を自動回避
+  - `line-break: strict` — Japanese 伝統的禁則（句読点などの行頭禁止）
+  - `word-break: auto-phrase` — Chrome 119+ のフレーズ認識改行（対応ブラウザのみ progressive enhancement）
+
 ### 2026-04-20 コラム一覧ページ Hero テキストオーバーレイ化
 
 ui-ux-pro-max + frontend-design の editorial パターンに基づき、H1・eyebrow・divider を hero 画像上にオーバーレイ表示に変更。

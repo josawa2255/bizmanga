@@ -4619,3 +4619,43 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   .bm-cover-spinner::before,
   .bm-cover-spinner::after { animation: none !important; box-shadow: .2em 0 0 0 currentcolor !important; }
 }
+
+/* ============================================
+   日本語テキストの禁則処理 (2026-04-20 追加)
+   末尾1文字だけ改行落ちする"孤立文字"を防ぐ。
+   text-wrap: pretty (Chrome 117+/Safari 17.4+/Firefox 121+) で
+   行末の孤立文字を自動で回避。未対応ブラウザは通常wrap。
+   ============================================ */
+:lang(ja) h1,
+:lang(ja) h2,
+:lang(ja) h3,
+:lang(ja) h4,
+html[lang="ja"] h1,
+html[lang="ja"] h2,
+html[lang="ja"] h3,
+html[lang="ja"] h4,
+h1, h2, h3, h4,
+.bm-hero-tagline,
+.bm-section-title,
+.bm-works-card-title,
+.bm-column-card-title,
+.bm-column-hero-title,
+.bm-column-featured-title,
+.bm-pricing-hero-title,
+.bm-faq-question,
+.bm-testimonial-title {
+  line-break: strict;
+  text-wrap: pretty;
+  /* Chrome 119+ の日本語フレーズ認識。未対応環境では無視される */
+  word-break: auto-phrase;
+}
+
+/* 段落の読みやすさ向上: 最終行孤立防止 */
+:lang(ja) p,
+html[lang="ja"] p,
+.bm-column-lead,
+.bm-column-card-excerpt,
+.bm-column-featured-excerpt {
+  text-wrap: pretty;
+  line-break: strict;
+}
