@@ -266,8 +266,7 @@
   <!-- ===== コラム一覧 ===== -->
   <section class="bm-column-page" id="columnPage">
     <div class="bm-container">
-      <div id="columnPageLoading" class="bm-column-page-loading" data-ja="読み込み中..." data-en="Loading...">読み込み中...</div>
-      <div class="bm-column-grid bm-column-grid--page" id="bmColumnGrid" style="display:none;">
+      <div class="bm-column-grid bm-column-grid--page" id="bmColumnGrid">
       <!-- BUILD:COLUMN_GRID -->
       <a class="bm-column-card" href="/column/btob-4koma-lead-generation" data-category="BtoB戦略">
         <div class="bm-column-card-img">
@@ -508,24 +507,6 @@
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/bm-wp-config.js" defer></script>
   <script src="js/bm-wp-api.js" defer></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var loading = document.getElementById('columnPageLoading');
-      var grid = document.getElementById('bmColumnGrid');
-
-      window.addEventListener('bm-all-data-ready', function() {
-        if (loading) loading.style.display = 'none';
-        if (grid) grid.style.display = '';
-      });
-
-      setTimeout(function() {
-        if (loading && loading.style.display !== 'none') {
-          loading.style.display = 'none';
-          if (grid) grid.style.display = '';
-        }
-      }, 5000);
-    });
-  </script>
   <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/48367061.js"></script>
 </body>
 </html>
