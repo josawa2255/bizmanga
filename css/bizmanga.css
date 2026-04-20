@@ -1012,6 +1012,329 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 
 /* ============================================
+   Editorial Magazine Layout (2026-04-20)
+   ui-ux-pro-max: Swiss Modernism 2.0 / Newsletter Content-First
+   frontend-design: multi-layer shadow, image zoom
+   design: BizManga orange accent preserved + editorial mono
+   ============================================ */
+.bm-column-hero-strip {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+  margin-top: 68px; /* ヘッダー分 */
+  background: #f5f0eb;
+}
+.bm-column-hero-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+}
+.bm-column-hero-strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(255,255,255,0.8) 100%);
+  pointer-events: none;
+}
+
+.bm-column-masthead {
+  padding: 64px 0 40px;
+  background: #fff;
+}
+.bm-column-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
+}
+.bm-column-title {
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 900;
+  font-size: clamp(40px, 7vw, 88px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: #111;
+  margin: 0 0 28px;
+}
+.bm-column-divider {
+  width: 48px;
+  height: 3px;
+  background: var(--bm-accent, #e85500);
+  margin-bottom: 28px;
+}
+.bm-column-lead {
+  font-size: 17px;
+  line-height: 1.9;
+  color: #444;
+  max-width: 640px;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* フィルターチップ */
+.bm-column-filter {
+  position: sticky;
+  top: 68px;
+  z-index: 30;
+  background: #fff;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 14px 0;
+  margin-bottom: 40px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.bm-column-filter-list {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.bm-column-filter-list::-webkit-scrollbar { display: none; }
+.bm-column-filter-chip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  color: #3f3f46;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bm-column-filter-chip:hover {
+  border-color: var(--bm-accent, #e85500);
+  color: var(--bm-accent, #e85500);
+}
+.bm-column-filter-chip.is-active {
+  background: var(--bm-accent, #e85500);
+  border-color: var(--bm-accent, #e85500);
+  color: #fff;
+}
+.bm-column-filter-chip-count {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+/* Featured記事 */
+.bm-column-featured {
+  padding: 0 0 60px;
+  background: #fff;
+}
+.bm-column-featured-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bm-column-featured-img {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: #f5f0eb;
+}
+.bm-column-featured-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bm-column-featured-card:hover .bm-column-featured-img img {
+  transform: scale(1.04);
+}
+.bm-column-featured-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 0;
+}
+.bm-column-featured-label {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
+}
+.bm-column-featured-date {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+.bm-column-featured-cat {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--bm-accent, #e85500);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 18px;
+}
+.bm-column-featured-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 900;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  margin: 0 0 20px;
+  color: #111;
+  transition: color 0.25s;
+}
+.bm-column-featured-card:hover .bm-column-featured-title {
+  color: var(--bm-accent, #e85500);
+}
+.bm-column-featured-excerpt {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #555;
+  margin: 0 0 24px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bm-column-featured-read {
+  color: var(--bm-accent, #e85500);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* カテゴリバッジのカラーマップ (data-category属性で切替) */
+.bm-column-card-cat,
+.bm-column-featured-cat {
+  background: var(--bm-accent, #e85500);
+}
+.bm-column-card[data-category="LP最適化"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="LP最適化"] .bm-column-featured-cat { background: #e85500; }
+.bm-column-card[data-category="BtoB戦略"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="BtoB戦略"] .bm-column-featured-cat { background: #1f1f1f; }
+.bm-column-card[data-category="プロット・制作"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="プロット・制作"] .bm-column-featured-cat { background: #8b5cf6; }
+.bm-column-card[data-category="SNS・採用"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="SNS・採用"] .bm-column-featured-cat { background: #10b981; }
+.bm-column-card[data-category="効果・科学"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="効果・科学"] .bm-column-featured-cat { background: #0ea5e9; }
+.bm-column-card[data-category="ジャンル"] .bm-column-card-cat,
+.bm-column-featured-card[data-category="ジャンル"] .bm-column-featured-cat { background: #f59e0b; }
+
+/* カード拡張: 読了時間 */
+.bm-column-card-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 4px;
+  border-top: 1px solid rgba(0,0,0,0.04);
+  font-size: 12px;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+.bm-column-card-readtime {
+  color: #666;
+  font-weight: 600;
+}
+.bm-column-card-readtime::before {
+  content: "📖 ";
+  font-size: 11px;
+  opacity: 0.7;
+}
+.bm-column-card-meta .bm-column-card-date {
+  margin-top: 0;
+  padding-top: 0;
+  border: none;
+  color: var(--bm-accent, #e85500);
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* フィルター中のカード非表示（JSでクラス付与） */
+.bm-column-card.is-filtered-out {
+  display: none !important;
+}
+
+/* Editorial 用のページ全体コンテナ調整 */
+.bm-column-page {
+  padding-top: 0;
+  padding-bottom: 80px;
+}
+.bm-column-page .bm-column-page-heading {
+  display: none; /* Editorial masthead が代替 */
+}
+
+/* モバイル */
+@media (max-width: 1024px) {
+  .bm-column-featured-card {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .bm-column-featured-body {
+    padding: 0 0 8px;
+  }
+}
+@media (max-width: 768px) {
+  .bm-column-hero-strip {
+    height: 200px;
+    margin-top: 60px;
+  }
+  .bm-column-masthead {
+    padding: 44px 0 28px;
+  }
+  .bm-column-title {
+    font-size: clamp(32px, 9vw, 48px);
+  }
+  .bm-column-lead {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .bm-column-filter {
+    top: 60px;
+    padding: 10px 0;
+    margin-bottom: 28px;
+  }
+  .bm-column-filter-list {
+    padding: 0 20px;
+    margin: 0 -20px;
+  }
+  .bm-column-filter-chip {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+  .bm-column-featured-img {
+    aspect-ratio: 16 / 9;
+  }
+  .bm-column-featured-title {
+    font-size: 22px;
+  }
+}
+
+/* ============================================
    新作漫画 (ContentsX同様 横スクロール)
    ============================================ */
 /* ---------- Gallery / Carousel ---------- */

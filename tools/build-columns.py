@@ -79,20 +79,31 @@ def fetch_column_detail(col_id):
     return fetch_json(API_SINGLE.format(id=col_id))
 
 
+def estimate_readtime(text):
+    """本文文字数から日本語読了時間を推定 (600字/分、最小3分)"""
+    if not text:
+        return 3
+    plain = re.sub(r"<[^>]+>", "", text)
+    plain = re.sub(r"\s+", "", plain)
+    minutes = max(3, round(len(plain) / 600))
+    return minutes
+
+
 def build_card(c):
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = c.get("title_ja", "")
-    category = c.get("category", "")
+    category = c.get("category") or "その他"
     excerpt = c.get("excerpt_ja", "")
     date = c.get("date", "")
+    readtime = c.get("_readtime", 5)
     detail_url = f"/column/{slug}"
 
     cat_html = (
-        f'<span class="bm-column-card-cat">{esc(category)}</span>' if category else ""
+        f'<span class="bm-column-card-cat">{esc(category)}</span>' if c.get("category") else ""
     )
     return (
-        f'      <a class="bm-column-card" href="{esc(detail_url)}">\n'
+        f'      <a class="bm-column-card" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
         f'        <div class="bm-column-card-img">\n'
         f'          <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225">\n'
         f'        </div>\n'
@@ -100,7 +111,10 @@ def build_card(c):
         f'          {cat_html}\n'
         f'          <h3 class="bm-column-card-title">{esc(title_ja)}</h3>\n'
         f'          <p class="bm-column-card-excerpt">{esc(excerpt)}</p>\n'
-        f'          <time class="bm-column-card-date">{esc(date)}</time>\n'
+        f'          <div class="bm-column-card-meta">\n'
+        f'            <span class="bm-column-card-readtime">{readtime}分</span>\n'
+        f'            <time class="bm-column-card-date">{esc(date)}</time>\n'
+        f'          </div>\n'
         f'        </div>\n'
         f'      </a>\n'
     )
@@ -113,13 +127,53 @@ def update_column_html(columns):
         return
     s = p.read_text(encoding="utf-8")
 
-    cards = "".join(build_card(c) for c in columns)
+    # Featured = 最新1件 (日付降順の先頭)
+    featured = columns[0] if columns else None
+    rest = columns[1:] if featured else columns
+
+    cards = "".join(build_card(c) for c in rest)
     start = "<!-- BUILD:COLUMN_GRID -->"
     end = "<!-- /BUILD:COLUMN_GRID -->"
     block = f"{start}\n{cards}      {end}"
     pattern = re.compile(re.escape(start) + r"[\s\S]*?" + re.escape(end))
     if pattern.search(s):
         s = pattern.sub(block, s)
+
+    # Featured + カテゴリ一覧をJSONで埋め込む (bm-column-filter.jsが読む)
+    cat_counts = {}
+    for c in columns:
+        k = c.get("category") or "その他"
+        cat_counts[k] = cat_counts.get(k, 0) + 1
+    # カテゴリ一覧は件数降順、"その他"は末尾
+    sorted_cats = sorted(
+        [{"name": k, "count": v} for k, v in cat_counts.items()],
+        key=lambda x: (x["name"] == "その他", -x["count"]),
+    )
+    data_payload = {
+        "total": len(columns),
+        "categories": sorted_cats,
+        "featured": {
+            "slug": make_slug(featured),
+            "title": featured.get("title_ja", ""),
+            "excerpt": featured.get("excerpt_ja", ""),
+            "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
+            "category": featured.get("category") or "",
+            "date": featured.get("date", ""),
+            "readtime": featured.get("_readtime", 5),
+        } if featured else None,
+    }
+    data_tag = (
+        '<script type="application/json" id="bm-column-data">\n'
+        + json.dumps(data_payload, ensure_ascii=False, indent=2)
+        + "\n</script>"
+    )
+    data_pattern = re.compile(
+        r'<script type="application/json" id="bm-column-data">[\s\S]*?</script>'
+    )
+    if data_pattern.search(s):
+        s = data_pattern.sub(data_tag, s)
+    else:
+        s = s.replace("</head>", f"  {data_tag}\n</head>", 1)
 
     # ItemList JSON-LD
     ld = {
@@ -218,6 +272,9 @@ def generate_details(columns):
             print(f"  WARN: failed to fetch detail for {slug}: {e}")
             continue
 
+        # 読了時間を算出してc._readtimeへキャッシュ (update_column_htmlで使用)
+        c["_readtime"] = estimate_readtime(detail.get("content", ""))
+
         out = build_detail_page(c, detail, template)
         (COLUMN_DIR / f"{slug}.html").write_text(out, encoding="utf-8")
         print(f"  Generated column/{slug}.html")
@@ -277,8 +334,9 @@ def main():
         print("No columns found. Skipping build.")
         return
 
-    update_column_html(columns)
+    # 順序: detail生成 (readtimeを記録) → column.html 更新 → sitemap
     generate_details(columns)
+    update_column_html(columns)
     update_sitemap(columns)
     print("Done.")
 
