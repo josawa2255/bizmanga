@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, timedelta
@@ -40,9 +41,10 @@ HISTORY_FILE = Path(__file__).resolve().parent / "rank-history.jsonl"
 
 
 def get_access_token():
-    client_id = os.environ["GSC_CLIENT_ID"]
-    client_secret = os.environ["GSC_CLIENT_SECRET"]
-    refresh_token = os.environ["GSC_REFRESH_TOKEN"]
+    # GitHub Secrets のコピペ時に末尾改行/空白が混入することがあるため strip
+    client_id = os.environ["GSC_CLIENT_ID"].strip()
+    client_secret = os.environ["GSC_CLIENT_SECRET"].strip()
+    refresh_token = os.environ["GSC_REFRESH_TOKEN"].strip()
     data = urllib.parse.urlencode({
         "client_id": client_id,
         "client_secret": client_secret,
@@ -54,9 +56,16 @@ def get_access_token():
         data=data,
         method="POST",
     )
-    with urllib.request.urlopen(req) as r:
-        resp = json.loads(r.read())
-    return resp["access_token"]
+    try:
+        with urllib.request.urlopen(req) as r:
+            resp = json.loads(r.read())
+        return resp["access_token"]
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"OAuth token refresh failed: HTTP {e.code}", file=sys.stderr)
+        print(f"Response body: {body}", file=sys.stderr)
+        print(f"client_id length: {len(client_id)}, secret length: {len(client_secret)}, refresh_token length: {len(refresh_token)}", file=sys.stderr)
+        raise
 
 
 def query_sa(site, start, end, access_token, dimensions=("query",), row_limit=5000):
