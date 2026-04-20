@@ -3,7 +3,7 @@
 **ドメイン**: bizmanga.contentsx.jp
 **リポジトリ**: [josawa2255/bizmanga](https://github.com/josawa2255/bizmanga)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-17
+**最終更新**: 2026-04-20
 
 > このファイルは BizManga 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約しておき、将来のメンテ時に参照します。
 
@@ -229,6 +229,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | description | 現状63文字で短い。推奨 120-160字 |
 | Organization.sameAs | **2026-04-14 `https://x.com/Bizmanga_` 追加済**。`parentOrganization.foundingDate: 2026-03-03` も追加 |
 | OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
+| **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
+| works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
+
+### 2026-04-20 SEO採点反映改善（監査スコア 86/100 → 目標 90+）
+
+- `news-detail.html` / `testimonial-detail.html` / `column/index.html` に `<meta name="robots" content="noindex, follow">` を追加（`column-detail.html` は既に付与済）。SPA詳細シェルが重複メタで1URL扱いされる問題を回避
+- `sitemap.xml` から `news-detail` 単数URL・`testimonial-detail?id=451` 単数URLを削除（静的化するまでサイトマップに載せない方針）
+- [tools/templates/work-detail.html.tpl](tools/templates/work-detail.html.tpl) の `og:image` / `twitter:image` を `{{og_image}}` プレースホルダに変更し、[tools/build-works.py](tools/build-works.py) が WP の `thumbnail` を注入するように改修 → 17作品すべて個別 og 画像化
 
 ### 2026-04-14 SEO改善実施
 

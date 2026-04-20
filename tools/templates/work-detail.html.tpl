@@ -14,16 +14,15 @@
   <meta property="og:type" content="article">
   <meta property="og:url" content="{{url}}">
   <meta property="og:site_name" content="ビズマンガ">
-  <meta property="og:image" content="https://bizmanga.contentsx.jp/material/images/og/og-index.webp">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="{{og_image}}">
+  <meta property="og:image:alt" content="{{title_ja}}｜ビズマンガ制作事例">
   <meta property="og:locale" content="ja_JP">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:title" content="{{title_ja}} | 制作事例 | ビズマンガ">
   <meta name="twitter:description" content="{{description}}">
-  <meta name="twitter:image" content="https://bizmanga.contentsx.jp/material/images/og/og-index.webp">
+  <meta name="twitter:image" content="{{og_image}}">
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q1T3033Q3W');</script>

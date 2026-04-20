@@ -163,12 +163,15 @@ def build_detail_page(w, template):
     raw_desc = re.sub(r"<[^>]+>", "", point).replace("\n", " ").strip()
     description = (raw_desc or f"{title_ja}｜ビジネスマンガ制作事例")[:150]
 
+    og_image = thumb or f"{SITE}/material/images/og/og-index.webp"
+
     replacements = {
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
         "{{title_en}}": esc(title_en),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
+        "{{og_image}}": esc(og_image),
         "{{category}}": esc(category),
         "{{pages_count}}": esc(pages_count),
         "{{period}}": esc(period),
