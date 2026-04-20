@@ -4629,6 +4629,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    text-wrap: pretty (Chrome 117+/Safari 17.4+/Firefox 121+) で
    行末の孤立文字を自動で回避。未対応ブラウザは通常wrap。
    ============================================ */
+/* 見出し: balance で行長を均等化、孤立文字を極力回避 */
 :lang(ja) h1,
 :lang(ja) h2,
 :lang(ja) h3,
@@ -4648,12 +4649,13 @@ h1, h2, h3, h4,
 .bm-faq-question,
 .bm-testimonial-title {
   line-break: strict;
-  text-wrap: pretty;
+  text-wrap: balance;
   /* Chrome 119+ の日本語フレーズ認識。未対応環境では無視される */
   word-break: auto-phrase;
+  overflow-wrap: break-word;
 }
 
-/* 段落の読みやすさ向上: 最終行孤立防止 */
+/* 段落・抜粋: pretty で最終行孤立回避。Japanese対応のため overflow-wrap も指定 */
 :lang(ja) p,
 html[lang="ja"] p,
 .bm-column-lead,
@@ -4661,4 +4663,11 @@ html[lang="ja"] p,
 .bm-column-featured-excerpt {
   text-wrap: pretty;
   line-break: strict;
+  word-break: auto-phrase;
+  overflow-wrap: break-word;
+}
+
+/* リード段落は balance を明示的に使用（2-3行で行長均等化が効く） */
+.bm-column-lead {
+  text-wrap: balance;
 }
