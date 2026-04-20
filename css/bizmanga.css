@@ -3681,8 +3681,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-sticky-cta-contact:hover { background: var(--bm-accent-hover, #c94800); }
 .bm-sticky-cta-company { background: #666; }
 .bm-sticky-cta-company:hover { background: #555; }
-.bm-sticky-cta-x { background: #000000; }
-.bm-sticky-cta-x:hover { background: #1a1a1a; }
+.bm-sticky-cta-x { background: #1DA1F2; }
+.bm-sticky-cta-x:hover { background: #0C85D0; }
 
 /* ===== 会社について知る SAHARAスタイルボタン ===== */
 .bm-sahara-btn {
