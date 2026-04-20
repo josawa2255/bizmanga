@@ -155,7 +155,7 @@ def build_detail_page(w, template):
     gallery = w.get("gallery") or []
 
     gallery_html = "\n".join(
-        f'          <img src="{esc(g)}" alt="{esc(title_ja)} ページ{i+1}" loading="lazy">'
+        f'          <img src="{esc(g)}" alt="{esc(title_ja)} ページ{i+1}" loading="lazy" decoding="async">'
         for i, g in enumerate(gallery)
     ) or '          <p style="color:#999;">ギャラリー画像はありません。</p>'
 
