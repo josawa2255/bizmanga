@@ -407,9 +407,30 @@ WordPress で works を追加・更新したら以下いずれか:
 5. **表示順の重複** → `cx_sort_order` が同数字だと投稿日順になって不安定 → §5 の運用ルール参照
 6. **CTAセクション変更** → [js/bm-cta.js](js/bm-cta.js) 1箇所を編集すれば全ページ反映
 7. **⭐ サブディレクトリからのリンクは必ず絶対パス（/始まり）を使う** → `column/{slug}.html` や `works/{slug}.html` のサブディレクトリ内ページで `href="contact"` のような相対パスを使うと `/column/contact` に解決されて404になる。HTML・JS・テンプレート問わず、全リンクは `href="/contact"` のように `/` 始まりにする。2026-04-17に bm-nav.js / bm-cta.js / bm-pricing-quiz.js / bm-testimonials-page.js / 両テンプレートで発生・修正済み
-8. **⭐ 住所は「東京都目黒区中目黒1-8-8 目黒F2ビル1F」に統一** → 旧住所「目黒2-11-15 8階」が works個別テンプレート / testimonial-detail.html に残存していたのを 2026-04-21 に統一。新規ページ追加時は必ず新住所 + i18n data-ja/data-en ペアを記述。NAP一貫性 (Name/Address/Phone) は Trust / Local SEO 直結
+8. **⭐ 住所は「東京都目黒区中目黒1-8-8 目黒F2ビル1F」に統一 / 郵便番号は `153-0061`** → 旧住所「目黒2-11-15 8階」を 2026-04-21 に統一。同日に郵便番号も `153-0042 / 153-0051 / 153-0063` の3系統混在を `153-0061`（中目黒1丁目の正式番号）に統一。新規ページ追加時は必ず新住所 + i18n data-ja/data-en ペア + 正しい郵便番号を記述。NAP一貫性 (Name/Address/Phone) は Trust / Local SEO 直結
 9. **⭐ works ヒーロー画像は `gallery[0]` を使う（`thumbnail` フィールドは使わない）** → WP API の `thumbnail` は 188x300 の自動生成サムネが返ることがあり、1200x630 として引き延ばすと画質劣化 + LCP要素として Lighthouse に認識されない。2026-04-21 に build-works.py を `gallery[0]` 優先に修正
 10. **⭐ 空のお客様コメントは「—」ではなくセクション自体を非表示に** → WP側に `comment` が未入力の場合は `<section>お客様コメント</section>` 全体をレンダリングしない。空欄ダミーは SEO (Helpful Content / E-E-A-T) 減点要因。2026-04-21 build-works.py で条件分岐化
+
+## 15.1 セキュリティ・既知のリスク
+
+WP管理者が信頼前提で運用しているが、将来的に侵害された場合に持続的XSSが成立する経路が以下に存在する。優先度順に対応予定。
+
+| # | 場所 | リスク | 対応方針 |
+|---|------|--------|---------|
+| S1 | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでテンプレ流入 → script注入で全コラムページXSS | `bleach` 等でallowlistサニタイズ（GitHub Actions に `pip install bleach` 追加必要） |
+| S2 | [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl):80-87 / [work-detail.html.tpl](tools/templates/work-detail.html.tpl):60-86 | `{{title_ja}}` 等が `html.escape(quote=True)` 経由でJSON-LD内に挿入。`\` や `\n` が含まれるとJSON構文破壊リスク | JSON-LD自体を build側で `json.dumps` してテンプレに `{{json_ld}}` で1ブロック差し込む設計に変更 |
+| S3 | [js/bm-wp-api.js](js/bm-wp-api.js):167-174 `loadColumns()` | WP由来の `title_ja / category / thumbnail` を未エスケープで `innerHTML` 連結 | 既存 `window.bmSanitize.html()` を使う |
+| S4 | 全HTMLヘッダー | CSP / HSTS / Permissions-Policy ヘッダなし（GitHub Pages制約） | `<meta http-equiv="Content-Security-Policy">` で許容範囲のCSPを meta タグで追加 |
+
+### 既に対応済み（2026-04-21）
+
+- [tools/build-works-og.py](tools/build-works-og.py) `load_thumb`: SSRF対策。`THUMB_ALLOWED_HOSTS = {cms.contentsx.jp, contentsx.jp, bizmanga.contentsx.jp}` + scheme=https のみ許可
+- [tools/rank-tracker.py](tools/rank-tracker.py) `get_access_token`: client_id等のlength出力を `DEBUG_OAUTH` 環境変数指定時のみに制限
+
+### Pythonツール変更ログ（2026-04-21）
+
+- **build-columns.py**: WP API fetch を `ThreadPoolExecutor(max_workers=5)` で並列化。約20秒→6-10秒に短縮。`_fetch_detail_safe` でエラーは個別 stderr 出力に統一
+- 定数定義位置と `from datetime import date` をモジュール先頭に整理
 
 ## 16. 回帰テスト
 

@@ -22,13 +22,19 @@ import json
 import pathlib
 import re
 import sys
-import unicodedata
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from datetime import date as _date
 
 API_LIST = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns?site=bizmanga&per_page=100"
+API_SINGLE = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns/{id}"
+SITE = "https://bizmanga.contentsx.jp"
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+TEMPLATE_PATH = ROOT / "tools" / "templates" / "column-detail.html.tpl"
+COLUMN_DIR = ROOT / "column"
 
-# 日本語タイトル → 英語風スラッグ自動変換マップ
-# WP側でスラッグ設定が面倒なので、ビルド時にタイトルからスラッグを自動生成する
+DETAIL_FETCH_WORKERS = 5
+
 SLUG_MAP = {
     "4コマ漫画をビジネス活用するには": "4koma-business-guide",
     "4コマ漫画の簡単な作り方とビジネス活用法": "4koma-howto",
@@ -39,23 +45,14 @@ SLUG_MAP = {
 
 
 def make_slug(column):
-    """WPスラッグが日本語ならSLUG_MAPまたはIDベースで英語化"""
     slug = column.get("slug") or ""
-    # ASCII のみなら既に英語スラッグ
     if slug and slug.isascii() and "%" not in slug:
         return slug
-    # タイトルからマップ検索
     title = column.get("title_ja") or ""
     for key, val in SLUG_MAP.items():
         if key in title:
             return val
-    # フォールバック: post ID ベース
     return f"column-{column['id']}"
-API_SINGLE = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns/{id}"
-SITE = "https://bizmanga.contentsx.jp"
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-TEMPLATE_PATH = ROOT / "tools" / "templates" / "column-detail.html.tpl"
-COLUMN_DIR = ROOT / "column"
 
 
 def esc(s):
@@ -215,11 +212,7 @@ def build_detail_page(col, detail_data, template):
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
-    # WP 側の post_modified が全記事同日付（今日）になってしまうケースが多く、
-    # dateModified が全記事一律「今日」だと QRG 的に不自然シグナル。
-    # WP modified が「今日の日付」と一致する間は、信頼せず date_ymd にフォールバック。
-    # WP 側で個別記事の modified が正しく反映されるようになったらこのロジックを緩める。
-    from datetime import date as _date
+    # WP の post_modified が全記事「今日」になっているケースは信頼しない（QRG的に不自然）
     today_iso = _date.today().isoformat()
     wp_modified = col.get("modified_ymd") or ""
     if wp_modified and wp_modified != today_iso and wp_modified >= date_ymd:
@@ -264,6 +257,13 @@ def build_detail_page(col, detail_data, template):
     return out
 
 
+def _fetch_detail_safe(column):
+    try:
+        return column, fetch_column_detail(column["id"]), None
+    except Exception as e:
+        return column, None, e
+
+
 def generate_details(columns):
     if not TEMPLATE_PATH.exists():
         print(f"ERROR: template not found: {TEMPLATE_PATH}", file=sys.stderr)
@@ -271,23 +271,22 @@ def generate_details(columns):
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     COLUMN_DIR.mkdir(exist_ok=True)
 
+    with ThreadPoolExecutor(max_workers=DETAIL_FETCH_WORKERS) as executor:
+        results = list(executor.map(_fetch_detail_safe, columns))
+
     current_slugs = set()
-    for c in columns:
+    written = 0
+    for c, detail, err in results:
         slug = make_slug(c)
         current_slugs.add(slug)
-
-        try:
-            detail = fetch_column_detail(c["id"])
-        except Exception as e:
-            print(f"  WARN: failed to fetch detail for {slug}: {e}")
+        if err is not None:
+            print(f"  WARN: failed to fetch detail for {slug}: {err}", file=sys.stderr)
             continue
-
-        # 読了時間を算出してc._readtimeへキャッシュ (update_column_htmlで使用)
         c["_readtime"] = estimate_readtime(detail.get("content", ""))
-
         out = build_detail_page(c, detail, template)
         (COLUMN_DIR / f"{slug}.html").write_text(out, encoding="utf-8")
         print(f"  Generated column/{slug}.html")
+        written += 1
 
     removed = 0
     for existing in COLUMN_DIR.glob("*.html"):
@@ -297,7 +296,7 @@ def generate_details(columns):
             existing.unlink()
             removed += 1
 
-    print(f"Generated {len(columns)} column pages, removed {removed} stale files")
+    print(f"Generated {written}/{len(columns)} column pages, removed {removed} stale files")
 
 
 def update_sitemap(columns):

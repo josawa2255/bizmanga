@@ -25,6 +25,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "material" / "images" / "og" / "works"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# WP管理者が任意URLを thumbnail に入れる経路がある以上、SSRF防止のため取得元を allowlist 化
+THUMB_ALLOWED_HOSTS = {"cms.contentsx.jp", "contentsx.jp", "bizmanga.contentsx.jp"}
+THUMB_ALLOWED_SCHEMES = {"https"}
+
 # Theme
 W, H = 1200, 630
 BG_COLOR = (18, 18, 18)
@@ -48,6 +52,9 @@ def load_thumb(url):
         return None
     try:
         parsed = urllib.parse.urlsplit(url)
+        if parsed.scheme not in THUMB_ALLOWED_SCHEMES or parsed.hostname not in THUMB_ALLOWED_HOSTS:
+            print(f"  thumb skipped (host/scheme not allowed): {url}")
+            return None
         safe_path = urllib.parse.quote(parsed.path, safe="/")
         safe_url = urllib.parse.urlunsplit(
             (parsed.scheme, parsed.netloc, safe_path, parsed.query, parsed.fragment)

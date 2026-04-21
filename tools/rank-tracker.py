@@ -64,7 +64,8 @@ def get_access_token():
         body = e.read().decode("utf-8", errors="replace")
         print(f"OAuth token refresh failed: HTTP {e.code}", file=sys.stderr)
         print(f"Response body: {body}", file=sys.stderr)
-        print(f"client_id length: {len(client_id)}, secret length: {len(client_secret)}, refresh_token length: {len(refresh_token)}", file=sys.stderr)
+        if os.environ.get("DEBUG_OAUTH"):
+            print(f"client_id length: {len(client_id)}, secret length: {len(client_secret)}, refresh_token length: {len(refresh_token)}", file=sys.stderr)
         raise
 
 
