@@ -185,6 +185,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - タグライン「マンガの力でビジネスを動かす」— 1文字ずつ波シャイン
 - 漫画表紙カルーセル5行 + マウスパララックス（PC）
 
+### 7.3 About セクション（`.bm-about`）レイアウト
+- **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
+- **SP（768px以下）**: 従来の縦積み中央寄せに戻す（`display: block; text-align: center`、アクセント線は `margin: auto`）
+- 出典: 株式会社ファインズ e-tenki.co.jp のDX訴求セクション（2026-04-21 採用）
+- CSS: [css/bizmanga.css:717-780](css/bizmanga.css)
+
 ## 8. 制作事例モーダル（works.html）
 
 - **ページング**: 20件/ページ

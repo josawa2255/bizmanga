@@ -716,17 +716,23 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
    ============================================ */
 .bm-about {
   background: var(--bm-bg);
-  padding: 80px 0 72px;
-  text-align: center;
+  padding: 100px 0 88px;
+  text-align: left;
   border-bottom: 1px solid var(--bm-border);
 }
+.bm-about .bm-container {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 72px;
+  align-items: start;
+}
 .bm-about-heading {
-  font-size: clamp(26px, 4.2vw, 44px);
+  font-size: clamp(30px, 4.4vw, 52px);
   font-weight: 900;
   color: #222;
-  line-height: 1.55;
+  line-height: 1.45;
   letter-spacing: 0.03em;
-  margin-bottom: 32px;
+  margin-bottom: 0;
   position: relative;
   display: inline-block;
 }
@@ -737,15 +743,40 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   height: 4px;
   background: var(--bm-accent);
   border-radius: 2px;
-  margin: 20px auto 0;
+  margin: 24px 0 0;
 }
 .bm-about-text {
-  font-size: clamp(15px, 1.8vw, 19px);
+  font-size: clamp(15px, 1.6vw, 18px);
   color: #444;
   line-height: 2.0;
-  max-width: 720px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
+  padding-top: 8px;
   letter-spacing: 0.02em;
+}
+/* モバイル: 従来の中央縦積みレイアウトに戻す */
+@media (max-width: 768px) {
+  .bm-about {
+    padding: 80px 0 72px;
+    text-align: center;
+  }
+  .bm-about .bm-container {
+    display: block;
+  }
+  .bm-about-heading {
+    font-size: clamp(26px, 4.2vw, 44px);
+    line-height: 1.55;
+    margin-bottom: 32px;
+  }
+  .bm-about-heading::after {
+    margin: 20px auto 0;
+  }
+  .bm-about-text {
+    font-size: clamp(15px, 1.8vw, 19px);
+    max-width: 720px;
+    margin: 0 auto;
+    padding-top: 0;
+  }
 }
 
 /* ============================================
