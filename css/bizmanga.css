@@ -730,7 +730,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-about-heading {
   font-size: clamp(24px, 3.2vw, 38px);
   font-weight: 900;
-  color: #222;
+  color: var(--bm-accent);
   line-height: 1.6;
   letter-spacing: 0.03em;
   margin-bottom: 0;
