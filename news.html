@@ -44,6 +44,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
+    /* ページ固有: heading とローディング以外は global bizmanga.css を継承（.bm-news-thumb 含む） */
     .bm-news-page {
       padding-top: 140px;
       padding-bottom: 80px;
@@ -55,53 +56,13 @@
       color: #1a1a1a;
       margin-bottom: 40px;
     }
-    .bm-news-page .bm-news-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .bm-news-page .bm-news-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .bm-news-page .bm-news-date {
-      font-size: 14px;
-      font-weight: 700;
-      color: #e85500;
-      white-space: nowrap;
-      min-width: 100px;
-    }
-    .bm-news-page .bm-news-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: #1a1a1a;
-      background: #f5f5f5;
-      border: 1px solid #e0e0e0;
-      padding: 3px 10px;
-      border-radius: 3px;
-      white-space: nowrap;
-    }
-    .bm-news-page .bm-news-link {
-      font-size: 15px;
-      color: #1a1a1a;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    .bm-news-page a.bm-news-link:hover {
-      color: #e85500;
-    }
-    .bm-news-page .bm-news-link--plain {
-      cursor: default;
-    }
     .bm-news-page-loading {
       text-align: center;
       padding: 60px 0;
       color: #888;
       font-size: 14px;
     }
+    .bm-news-page .bm-news-link--plain { cursor: default; }
   </style>
   <script type="application/ld+json">
 {
