@@ -92,41 +92,66 @@
     var isHome = !document.body.hasAttribute('data-page-news');
     var displayData = isHome ? data.slice(0, NEWS_HOME_LIMIT) : data;
 
-    list.innerHTML = '';
+    while (list.firstChild) list.removeChild(list.firstChild);
+    var FALLBACK_THUMB = 'https://contentsx.jp/material/images/og/og-index.webp';
     displayData.forEach(function(item) {
       var li = document.createElement('li');
       li.className = 'bm-news-item';
 
-      var time = document.createElement('time');
-      time.className = 'bm-news-date';
-      time.textContent = item.date || '';
+      var hasLink = item.url || (item.has_detail && item.id);
+      var rawUrl = hasLink ? (item.url || ('news-detail?id=' + item.id)) : '';
+      var safeUrl = hasLink && window.bmSanitize && window.bmSanitize.url ? window.bmSanitize.url(rawUrl) : rawUrl;
 
-      /* タグが空の場合はタグ要素を生成しない */
+      /* サムネイル（左） */
+      var thumbWrap;
+      if (hasLink) {
+        thumbWrap = document.createElement('a');
+        thumbWrap.href = safeUrl;
+      } else {
+        thumbWrap = document.createElement('div');
+      }
+      thumbWrap.className = 'bm-news-thumb';
+      var img = document.createElement('img');
+      img.src = item.thumbnail || FALLBACK_THUMB;
+      img.alt = item.title_ja || '';
+      img.loading = 'lazy';
+      img.width = 200; img.height = 120;
+      img.onerror = function() { this.src = FALLBACK_THUMB; };
+      thumbWrap.appendChild(img);
+      li.appendChild(thumbWrap);
+
+      /* 右側: メタ + タイトル */
+      var body = document.createElement('div');
+      body.className = 'bm-news-body';
+
+      var meta = document.createElement('div');
+      meta.className = 'bm-news-meta';
       var tagText = item.tag_ja || '';
       if (tagText) {
         var tag = document.createElement('span');
         tag.className = 'bm-news-tag';
         tag.textContent = tagText;
-        li.appendChild(time);
-        li.appendChild(tag);
-      } else {
-        li.appendChild(time);
+        meta.appendChild(tag);
       }
+      var time = document.createElement('time');
+      time.className = 'bm-news-date';
+      time.textContent = item.date || '';
+      meta.appendChild(time);
+      body.appendChild(meta);
 
-      var hasLink = item.url || (item.has_detail && item.id);
       var titleEl;
       if (hasLink) {
         titleEl = document.createElement('a');
         titleEl.className = 'bm-news-link';
-        var rawUrl = item.url || ('news-detail?id=' + item.id);
-        titleEl.href = (window.bmSanitize && window.bmSanitize.url) ? window.bmSanitize.url(rawUrl) : rawUrl;
+        titleEl.href = safeUrl;
       } else {
         titleEl = document.createElement('span');
         titleEl.className = 'bm-news-link bm-news-link--plain';
       }
       titleEl.textContent = item.title_ja || '';
+      body.appendChild(titleEl);
 
-      li.appendChild(titleEl);
+      li.appendChild(body);
       list.appendChild(li);
     });
 
