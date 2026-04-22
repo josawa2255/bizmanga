@@ -149,6 +149,9 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_show_gallery_bizmanga` — BizMangaギャラリー表示フラグ
+- `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先（空欄＝CTA非表示）
+- `cx_cta_label_ja` — ⭐ ビズ書庫最終ページCTAラベル（日本語、空欄＝日本語表示時CTA非表示）
+- `cx_cta_label_en` — ⭐ ビズ書庫最終ページCTAラベル（英語、空欄＝英語表示時CTA非表示）
 - 表示順の運用ルール: N番に新作を挿入するとき、元のN番以降を `+1` ずつずらす（下から順に変更）
 
 ## 6. ヘッダー/ナビ仕様
@@ -204,6 +207,24 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - **PCデフォルト**: spread
 - **SPデフォルト**: vertical
 - **ページ送り**: `waitForImage()` で画像読込完了を待ってからクリック解放
+
+### 9.1 最終ページCTA（クライアント送客） ⭐ 2026-04-22 追加
+- **データソース**: WP CMS 漫画事例カスタムフィールド `cx_client_url` / `cx_cta_label_ja` / `cx_cta_label_en`
+- **API公開キー**: `client_url`, `cta_label_ja`, `cta_label_en`（`/library`, `/manga/{id}` 共通）
+- **表示条件**: 全部満たした時のみ表示
+  1. `client_url` が `http(s)://` で始まる有効URL
+  2. 当該言語のラベル（`cta_label_ja` or `cta_label_en`）が入力済み
+  3. 漫画ビューアで最終ページに到達（spread: 最終見開き / vertical: 末尾90%以上スクロール）
+  4. 制作過程ページ（`_isPreProduction`）でない
+- **言語別の挙動**: 表示中言語のラベルが空ならCTA非表示。言語切替時に再判定（`i18n-lang-changed` イベントを購読）
+- **アニメーション**: 最終ページ到達0.6秒後にフェードイン+下→上スライド
+- **ホバーエフェクト**: ラベルテキストが上にスライドアウト → 「Let's go !!」（共通固定）が下からスライドイン（ホーム`bm-sticky-cta-btn`と同パターン）
+- **カラー**: 背景 `var(--bm-accent)` (#EB5200) → ホバー `var(--bm-accent-hover)` (#C44400)、グロー演出付き
+- **配置**: モーダル内 fixed、画面下部センター（PC見開き=bottom 96px、縦スクロール=bottom 28px、SP=bottom 20px）
+- **リンク属性**: `target="_blank" rel="noopener"` のみ（nofollow/sponsoredは付けない＝編集リンクとしてSEOが両サイトに自然に流れる）
+- **GA4イベント**: クリック時に `manga_cta_click` を送信、params: `{ manga_slug, client_url, language }`
+- **モーダルを閉じる/別作品を開く時**: `hideMangaCta()` で確実にリセット
+- **要素**: [biz-library.html#mangaCtaOverlay](biz-library.html) / JSロジック [js/works.js](js/works.js) / CSS [css/works.css](css/works.css) `.bm-manga-cta`
 - **フラグ**: `isSpreadAnimating` でクリック入力をゲート
 
 ## 10. Service Worker

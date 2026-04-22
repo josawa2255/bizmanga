@@ -1149,6 +1149,116 @@ body {
   .nav-thumbnails { display: none; }
 }
 
+/* ===== 最終ページCTA（クライアント公式サイトへの送客） ===== */
+.bm-manga-cta {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translate(-50%, 30px);
+  z-index: 2200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bm-manga-cta.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+/* 縦スクロール時はbottom-navが無いので位置を下げる */
+.manga-modal.mode-vertical .bm-manga-cta { bottom: 28px; }
+
+.bm-manga-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  min-width: 240px;
+  height: 56px;
+  padding: 0 32px;
+  border-radius: 999px;
+  background: var(--bm-accent, #EB5200);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(235, 82, 0, 0.45),
+              0 4px 10px rgba(0, 0, 0, 0.18);
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.bm-manga-cta-btn:hover {
+  background: var(--bm-accent-hover, #C44400);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(235, 82, 0, 0.55),
+              0 6px 14px rgba(0, 0, 0, 0.22);
+}
+.bm-manga-cta-btn:active { transform: translateY(-1px); }
+
+/* ホバーで「テキスト→Let's go !!」が下からスライドアップ（bm-sticky-cta-btnと同パターン） */
+.bm-manga-cta-btn .bm-btn-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bm-manga-cta-btn .bm-btn-text,
+.bm-manga-cta-btn .bm-btn-icon {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+  color: #fff;
+}
+.bm-manga-cta-btn .bm-btn-text { top: 0; }
+.bm-manga-cta-btn .bm-btn-icon {
+  top: 100%;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.bm-manga-cta-btn:hover .bm-btn-text { top: -100%; }
+.bm-manga-cta-btn:hover .bm-btn-icon { top: 0; }
+
+/* グロー演出（ホバー時に淡く広がる） */
+.bm-manga-cta-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 180, 100, 0.45) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.bm-manga-cta-btn:hover::after { opacity: 1; }
+
+/* スマホ最適化 */
+@media (max-width: 768px) {
+  .bm-manga-cta { bottom: 20px; width: calc(100% - 32px); max-width: 360px; }
+  .bm-manga-cta-btn {
+    width: 100%;
+    height: 52px;
+    font-size: 15px;
+    min-width: 0;
+  }
+  .manga-modal.mode-spread .bm-manga-cta { bottom: 88px; }
+  .manga-modal.mode-vertical .bm-manga-cta { bottom: 20px; }
+}
+
+/* QRモード（外部直アクセス）でも常に表示可能 */
+.qr-mode .bm-manga-cta { z-index: 9999; }
+
 /* ===== Card Grid Pagination Bar ===== */
 .pagination-bar {
   display: flex;

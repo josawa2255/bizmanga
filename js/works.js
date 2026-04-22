@@ -272,6 +272,9 @@ if (getBmLang() === 'en') {
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
           name_gallery: w.name_gallery || [],
+          client_url: w.client_url || '',
+          cta_label_ja: w.cta_label_ja || '',
+          cta_label_en: w.cta_label_en || '',
         };
         if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
           mangaData[w.id].viewType = 'vertical';
@@ -555,6 +558,15 @@ function onModalScroll() {
 
     // Back to top
     modalBackToTop.classList.toggle('visible', scrollY > window.innerHeight);
+
+    // 縦スクロール時の最終ページCTA: 末尾まで近づいたら表示、離れたら隠す
+    if (modalTotalPages > 0) {
+      if (currentPage >= modalTotalPages - 1 || progress >= 92) {
+        scheduleMangaCta();
+      } else {
+        hideMangaCta();
+      }
+    }
   });
 }
 
@@ -589,6 +601,8 @@ function openVerticalViewer(key, data) {
   modalTitle.textContent = getBmLang() === 'en' ? (data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title)) : data.title;
   modalTotalPages = data.pages;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
+  currentMangaKey = key;
+  setupMangaCta(data);
   modalPage.textContent = `1 / ${data.pages}`;
   modalProgress.style.width = '0%';
 
@@ -1011,12 +1025,22 @@ function updateSpreadUI() {
   }
 
   updateScrubberFill();
+
+  // 最終ページ到達時にCTAを表示／離脱時に非表示
+  if (currentViewMode === 'spread' && spreads.length > 0) {
+    if (currentSpread >= spreads.length - 1) {
+      scheduleMangaCta();
+    } else {
+      hideMangaCta();
+    }
+  }
 }
 
 function openSpreadViewer(key, data) {
   currentMangaKey = key;
   currentMangaPath = data.path;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
+  setupMangaCta(data);
   spreadTotalPages = data.pages;
   currentSpread = 0;
   spreads = buildSpreads(spreadTotalPages);
@@ -1405,10 +1429,103 @@ function closeManga() {
   mangaModal.classList.remove('open');
   document.body.style.overflow = '';
   hideMangaLoader();
+  hideMangaCta();
 
   // Resume pre-production carousels from same position
   if (typeof resumeAllCarousels === 'function') resumeAllCarousels();
 }
+
+// ===== 最終ページCTA（クライアント公式サイトへ送客） =====
+var ctaOverlay = document.getElementById('mangaCtaOverlay');
+var ctaBtn = document.getElementById('mangaCtaBtn');
+var ctaTextEl = document.getElementById('mangaCtaText');
+var ctaShowTimer = null;
+var currentCtaData = null;
+var ctaShownForKey = null;
+
+function isValidCtaUrl(u) {
+  if (!u || typeof u !== 'string') return false;
+  return /^https?:\/\//i.test(u.trim());
+}
+
+// 現言語で表示すべきラベルを返す（無ければnull → 非表示）
+function getCtaLabelForLang(data, lang) {
+  if (!data) return null;
+  var label = lang === 'en' ? data.cta_label_en : data.cta_label_ja;
+  if (label && label.trim()) return label.trim();
+  return null;
+}
+
+function hideMangaCta() {
+  if (ctaShowTimer) { clearTimeout(ctaShowTimer); ctaShowTimer = null; }
+  if (!ctaOverlay) return;
+  ctaOverlay.classList.remove('visible');
+  ctaOverlay.hidden = true;
+  ctaShownForKey = null;
+}
+
+// 最終ページ到達時にCTAを0.6秒後にフェードイン
+function scheduleMangaCta() {
+  if (!ctaOverlay || !currentCtaData) return;
+  if (ctaShownForKey === currentMangaKey && ctaOverlay.classList.contains('visible')) return;
+
+  var data = currentCtaData;
+  if (!isValidCtaUrl(data.client_url)) return;
+
+  var lang = getBmLang();
+  var label = getCtaLabelForLang(data, lang);
+  if (!label) return; // 当該言語のラベル未入力なら非表示
+
+  if (ctaShowTimer) clearTimeout(ctaShowTimer);
+  ctaShowTimer = setTimeout(function() {
+    ctaShowTimer = null;
+    ctaBtn.href = data.client_url;
+    ctaTextEl.textContent = label;
+    ctaTextEl.setAttribute('data-ja', data.cta_label_ja || '');
+    ctaTextEl.setAttribute('data-en', data.cta_label_en || '');
+    ctaOverlay.hidden = false;
+    requestAnimationFrame(function() {
+      ctaOverlay.classList.add('visible');
+    });
+    ctaShownForKey = currentMangaKey;
+  }, 600);
+}
+
+// 漫画オープン時にCTA設定を保存（制作過程は除外）
+function setupMangaCta(data) {
+  hideMangaCta();
+  currentCtaData = null;
+  if (!data || data._isPreProduction) return;
+  if (!isValidCtaUrl(data.client_url)) return;
+  // 日英どちらか1つでもラベル入力されていれば候補として保持
+  if (!data.cta_label_ja && !data.cta_label_en) return;
+  currentCtaData = data;
+}
+
+// クリック時GA4送信
+if (ctaBtn) {
+  ctaBtn.addEventListener('click', function() {
+    if (typeof gtag === 'function' && currentCtaData) {
+      gtag('event', 'manga_cta_click', {
+        manga_slug: currentMangaKey || '',
+        client_url: currentCtaData.client_url || '',
+        language: getBmLang()
+      });
+    }
+  });
+}
+
+// 言語切替時: 表示中CTAの当該言語ラベルが空ならCTA非表示、有ればテキスト更新
+document.addEventListener('i18n-lang-changed', function(e) {
+  if (!ctaOverlay || ctaOverlay.hidden || !currentCtaData) return;
+  var lang = (e && e.detail && e.detail.lang) || getBmLang();
+  var label = getCtaLabelForLang(currentCtaData, lang);
+  if (!label) {
+    hideMangaCta();
+    return;
+  }
+  ctaTextEl.textContent = label;
+});
 
 // ===== View Toggle Button (PC: spread ⇔ vertical) =====
 var viewToggleBtn = document.getElementById('viewToggle');
@@ -1586,7 +1703,10 @@ if (isDirectMode) {
           thumbnail: data.thumbnail || '',
           viewType: (data.gallery && data.gallery.length > 0 && data.gallery[0].indexOf('webtoon') !== -1) ? 'vertical' : 'spread',
           point: data.point || '',
-          comment: data.comment || ''
+          comment: data.comment || '',
+          client_url: data.client_url || '',
+          cta_label_ja: data.cta_label_ja || '',
+          cta_label_en: data.cta_label_en || ''
         };
         openManga(autoOpen);
       })
