@@ -38,46 +38,43 @@
   }
   rebuildMap(FALLBACK_WORKS);
 
+  // ===== デバイス別表示行数 =====
+  // PC=3行 / タブレット=4行 / スマホ=5行（順番後ろの作品ほどスマホでだけ追加表示される）
+  function getActiveRowCount() {
+    var w = window.innerWidth;
+    if (w >= 1024) return 3;
+    if (w >= 768) return 4;
+    return 5;
+  }
+
   // ===== マーキーカルーセル構築 =====
+  var allRowEls = [];
   function buildMarquee(works) {
-    var rowEls = [
+    allRowEls = [
       document.getElementById('bmHeroRow1'),
       document.getElementById('bmHeroRow2'),
       document.getElementById('bmHeroRow3'),
       document.getElementById('bmHeroRow4'),
       document.getElementById('bmHeroRow5')
     ].filter(Boolean);
-    if (rowEls.length === 0 || works.length === 0) return;
+    if (allRowEls.length === 0 || works.length === 0) return;
 
-    var numRows = rowEls.length;
+    var numRows = Math.min(getActiveRowCount(), allRowEls.length);
+
+    // 余った行は非表示（CSSメディアクエリで隠してたが、JS側でも明示）
+    allRowEls.forEach(function(el, idx) {
+      el.style.display = idx < numRows ? '' : 'none';
+    });
+
+    // 順番ベース round-robin で各行に均等振り分け
+    // works は呼び出し元で hero_order_bm 昇順ソート済み
     var rows = [];
     for (var r = 0; r < numRows; r++) rows.push([]);
+    works.forEach(function(w, i) {
+      rows[i % numRows].push(w);
+    });
 
-    // hero_row_bm / hero_col_bm で手動配置 → 残りを自動振り分け
-    var manual = [];
-    var auto = [];
-    works.forEach(function(w) {
-      var row = typeof w.hero_row_bm === 'number' ? w.hero_row_bm : 0;
-      if (row >= 1 && row <= numRows) {
-        manual.push(w);
-      } else {
-        auto.push(w);
-      }
-    });
-    // 手動配置: 指定行に挿入
-    manual.forEach(function(w) {
-      var ri = w.hero_row_bm - 1;
-      var col = typeof w.hero_col_bm === 'number' && w.hero_col_bm > 0 ? w.hero_col_bm - 1 : rows[ri].length;
-      rows[ri].splice(col, 0, w);
-    });
-    // 自動振り分け: 最も少ない行に順番に追加
-    auto.forEach(function(w) {
-      var minIdx = 0;
-      for (var r = 1; r < numRows; r++) {
-        if (rows[r].length < rows[minIdx].length) minIdx = r;
-      }
-      rows[minIdx].push(w);
-    });
+    var rowEls = allRowEls.slice(0, numRows);
 
     rowEls.forEach(function(rowEl, ri) {
       var items = rows[ri];
@@ -350,6 +347,11 @@
 
   // WP APIデータが来たら上書き（show_hero_site でフィルタ）
   // Hero用は BM_HERO_WORKS_DATA を使う（?site= フィルタ無しの全作品）
+  var lastWorks = null;
+  function rebuildHero() {
+    if (!lastWorks) return;
+    buildMarquee(lastWorks);
+  }
   window.addEventListener('bm-data-ready', function() {
     var allWorks = window.BM_HERO_WORKS_DATA || window.BM_WORKS_DATA || [];
     // show_hero_site: 'both' or 'bizmanga' → BizMangaヒーローに表示
@@ -366,7 +368,22 @@
       return ao - bo;
     });
     if (works.length > 0) {
+      lastWorks = works;
       buildMarquee(works);
     }
+  });
+
+  // ブレークポイントを跨ぐリサイズで再振り分け（debounce）
+  var lastRowCount = getActiveRowCount();
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var current = getActiveRowCount();
+      if (current !== lastRowCount) {
+        lastRowCount = current;
+        rebuildHero();
+      }
+    }, 200);
   });
 })();
