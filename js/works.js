@@ -275,6 +275,7 @@ if (getBmLang() === 'en') {
           client_url: w.client_url || '',
           cta_label_ja: w.cta_label_ja || '',
           cta_label_en: w.cta_label_en || '',
+          cta_enabled: !!w.cta_enabled,
         };
         if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
           mangaData[w.id].viewType = 'vertical';
@@ -1443,17 +1444,20 @@ var ctaShowTimer = null;
 var currentCtaData = null;
 var ctaShownForKey = null;
 
+var CTA_DEFAULT_LABEL_JA = '公式サイトを見る →';
+var CTA_DEFAULT_LABEL_EN = 'Visit Official Site →';
+
 function isValidCtaUrl(u) {
   if (!u || typeof u !== 'string') return false;
   return /^https?:\/\//i.test(u.trim());
 }
 
-// 現言語で表示すべきラベルを返す（無ければnull → 非表示）
+// 現言語のラベルを返す。空欄ならデフォルト文言にフォールバック
 function getCtaLabelForLang(data, lang) {
   if (!data) return null;
   var label = lang === 'en' ? data.cta_label_en : data.cta_label_ja;
   if (label && label.trim()) return label.trim();
-  return null;
+  return lang === 'en' ? CTA_DEFAULT_LABEL_EN : CTA_DEFAULT_LABEL_JA;
 }
 
 function hideMangaCta() {
@@ -1474,15 +1478,14 @@ function scheduleMangaCta() {
 
   var lang = getBmLang();
   var label = getCtaLabelForLang(data, lang);
-  if (!label) return; // 当該言語のラベル未入力なら非表示
 
   if (ctaShowTimer) clearTimeout(ctaShowTimer);
   ctaShowTimer = setTimeout(function() {
     ctaShowTimer = null;
     ctaBtn.href = data.client_url;
     ctaTextEl.textContent = label;
-    ctaTextEl.setAttribute('data-ja', data.cta_label_ja || '');
-    ctaTextEl.setAttribute('data-en', data.cta_label_en || '');
+    ctaTextEl.setAttribute('data-ja', (data.cta_label_ja && data.cta_label_ja.trim()) || CTA_DEFAULT_LABEL_JA);
+    ctaTextEl.setAttribute('data-en', (data.cta_label_en && data.cta_label_en.trim()) || CTA_DEFAULT_LABEL_EN);
     ctaOverlay.hidden = false;
     requestAnimationFrame(function() {
       ctaOverlay.classList.add('visible');
@@ -1496,9 +1499,8 @@ function setupMangaCta(data) {
   hideMangaCta();
   currentCtaData = null;
   if (!data || data._isPreProduction) return;
-  if (!isValidCtaUrl(data.client_url)) return;
-  // 日英どちらか1つでもラベル入力されていれば候補として保持
-  if (!data.cta_label_ja && !data.cta_label_en) return;
+  if (!data.cta_enabled) return; // CMSチェックボックスがOFFなら無効
+  if (!isValidCtaUrl(data.client_url)) return; // URL未入力 or 無効はリンク不能なので除外
   currentCtaData = data;
 }
 
@@ -1515,16 +1517,11 @@ if (ctaBtn) {
   });
 }
 
-// 言語切替時: 表示中CTAの当該言語ラベルが空ならCTA非表示、有ればテキスト更新
+// 言語切替時: 表示中CTAのラベルを切替
 document.addEventListener('i18n-lang-changed', function(e) {
   if (!ctaOverlay || ctaOverlay.hidden || !currentCtaData) return;
   var lang = (e && e.detail && e.detail.lang) || getBmLang();
-  var label = getCtaLabelForLang(currentCtaData, lang);
-  if (!label) {
-    hideMangaCta();
-    return;
-  }
-  ctaTextEl.textContent = label;
+  ctaTextEl.textContent = getCtaLabelForLang(currentCtaData, lang);
 });
 
 // ===== View Toggle Button (PC: spread ⇔ vertical) =====
@@ -1706,7 +1703,8 @@ if (isDirectMode) {
           comment: data.comment || '',
           client_url: data.client_url || '',
           cta_label_ja: data.cta_label_ja || '',
-          cta_label_en: data.cta_label_en || ''
+          cta_label_en: data.cta_label_en || '',
+          cta_enabled: !!data.cta_enabled
         };
         openManga(autoOpen);
       })
