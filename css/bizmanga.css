@@ -853,7 +853,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   aspect-ratio: 5 / 3;        /* 統一感のため枠固定（200×120） */
   overflow: hidden;
   border-radius: 6px;
-  background: var(--bm-bg-light);
+  background: transparent;    /* 縦長画像の余白を背景と同化させる */
   display: block;
   text-decoration: none;
   align-self: flex-start;
@@ -864,7 +864,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   object-position: center;
   display: block;
   transition: transform 0.4s ease;
-  background: var(--bm-bg-light);
+  background: transparent;
 }
 /* トリミングモード: 親枠を埋め、クロップ中心点を中央に配置 */
 .bm-news-thumb-crop {
