@@ -1689,6 +1689,11 @@ if (isDirectMode) {
       .then(function(data) {
         if (!data || !data.id) throw new Error('invalid data');
         // mangaDataに登録してopenManga
+        // viewType はライブラリAPIと同じくAPIの view_type を最優先
+        // (以前URL内に 'webtoon' を含むか？という代替判定が残っており、
+        //  新作のP1.webp系ファイル名では縦読み判定に失敗して spread になる不具合があった)
+        var apiViewType = data.view_type || 'spread';
+        var viewType = (apiViewType === 'vertical_only' || apiViewType === 'vertical') ? 'vertical' : apiViewType;
         mangaData[data.id] = {
           id: data.id,
           title: data.title_ja || data.id,
@@ -1698,7 +1703,9 @@ if (isDirectMode) {
           tags: [],
           gallery: data.gallery || [],
           thumbnail: data.thumbnail || '',
-          viewType: (data.gallery && data.gallery.length > 0 && data.gallery[0].indexOf('webtoon') !== -1) ? 'vertical' : 'spread',
+          viewType: viewType,
+          verticalOnly: apiViewType === 'vertical_only',
+          tallCover: !!data.tall_cover,
           point: data.point || '',
           comment: data.comment || '',
           client_url: data.client_url || '',
