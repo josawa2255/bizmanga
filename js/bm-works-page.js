@@ -373,48 +373,35 @@
         wdCarousel.appendChild(frag);
       }
 
-      var testImg = new Image();
-      var firstSrc = (work.gallery && work.gallery[0]) ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
-      testImg.src = firstSrc;
-      testImg.onload = function() {
-        var ratio = testImg.naturalWidth / testImg.naturalHeight;
-        if (ratio < 0.2) {
-          wdCarousel.classList.add('vertical-scroll');
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
-          wdCarousel.style.transform = '';
-          buildPages(true);
-          if (wdDots) wdDots.style.display = 'none';
-          if (wdPrev) wdPrev.style.display = 'none';
-          if (wdNext) wdNext.style.display = 'none';
-        } else {
-          wdCarousel.classList.remove('vertical-scroll');
-          if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
-          buildPages(false);
-          if (wdDots) {
-            wdDots.style.display = 'flex';
-            wdDots.innerHTML = '';
-            for (var j = 0; j < previewPages; j++) {
-              var dot = document.createElement('div');
-              dot.className = 'work-detail-dot' + (j === 0 ? ' active' : '');
-              (function(idx) {
-                dot.addEventListener('click', function() { goToPage(idx); });
-              })(j);
-              wdDots.appendChild(dot);
-            }
-          }
-          if (wdPrev) wdPrev.style.display = '';
-          if (wdNext) wdNext.style.display = '';
-        }
-        testImg.onload = null;
-        testImg.onerror = null;
-      };
-      testImg.onerror = function() {
+      // WPのview_typeフィールドで縦読み判定（画像ロード不要）
+      var isVertical = work.view_type === 'vertical_only' || work.view_type === 'vertical' || work.mode === 'vertical';
+      if (isVertical) {
+        wdCarousel.classList.add('vertical-scroll');
+        if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
+        wdCarousel.style.transform = '';
+        buildPages(true);
+        if (wdDots) wdDots.style.display = 'none';
+        if (wdPrev) wdPrev.style.display = 'none';
+        if (wdNext) wdNext.style.display = 'none';
+      } else {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
         buildPages(false);
-        testImg.onload = null;
-        testImg.onerror = null;
-      };
+        if (wdDots) {
+          wdDots.style.display = 'flex';
+          while (wdDots.firstChild) wdDots.removeChild(wdDots.firstChild);
+          for (var j = 0; j < previewPages; j++) {
+            var dot = document.createElement('div');
+            dot.className = 'work-detail-dot' + (j === 0 ? ' active' : '');
+            (function(idx) {
+              dot.addEventListener('click', function() { goToPage(idx); });
+            })(j);
+            wdDots.appendChild(dot);
+          }
+        }
+        if (wdPrev) wdPrev.style.display = '';
+        if (wdNext) wdNext.style.display = '';
+      }
     }
 
     wdOverlay.classList.add('active');
