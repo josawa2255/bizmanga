@@ -97,7 +97,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bm-nav-link {
   position: relative;
-  font-size: 14px; font-weight: 600; color: var(--bm-text-muted);
+  font-size: 15px; font-weight: 600; color: var(--bm-text-muted);
+  font-family: inherit;
   transition: color 0.3s;
   white-space: nowrap;
   padding: 8px 0;
@@ -209,15 +210,16 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-nav-dropdown:focus-within .bm-nav-dropdown-menu::before {
   opacity: 1;
 }
-/* アイテム: 厳格グリッド整列 + タイポ主導 */
+/* アイテム: 厳格グリッド整列 + タイポ主導（親ナビ .bm-nav-link とフォント統一） */
 .bm-nav-dropdown-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(26, 26, 26, 0.75);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bm-text-muted);
+  font-family: inherit;
   white-space: nowrap;
   letter-spacing: 0;
   position: relative;
