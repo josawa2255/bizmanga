@@ -328,6 +328,22 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-nav-cta:hover::before { width: 260%; }
 
+/* LINE相談ボタン（ヘッダー右・お問い合わせの右隣） */
+.bm-nav-cta--line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #06C755;
+  outline-color: #06C755;
+}
+.bm-nav-cta--line::before { background-color: #06C755; }
+.bm-nav-cta--line:hover {
+  color: #fff;
+  outline-color: #06C755;
+  box-shadow: 4px 5px 17px -4px rgba(6, 199, 85, 0.5);
+}
+.bm-nav-cta-line-icon { flex-shrink: 0; }
+
 /* 言語切替ボタン */
 .bm-lang-switch {
   display: flex;
