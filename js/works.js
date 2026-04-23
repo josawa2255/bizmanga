@@ -267,7 +267,7 @@ if (getBmLang() === 'en') {
           category: w.category || '',
           viewType: w.view_type || 'spread',
           verticalOnly: w.view_type === 'vertical_only',
-          tallCover: w.tall_cover || w.view_type === 'vertical_only',
+          tallCover: !!w.tall_cover,
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
           akapen_gallery: w.akapen_gallery || [],
