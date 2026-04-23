@@ -370,48 +370,6 @@
   <section id="bmCtaMount"></section>
   <script src="js/bm-cta.js" defer></script>
 
-  <!-- ===== 固定CTAバー（PC: hero以降ずっと表示） ===== -->
-  <div class="bm-sticky-cta" id="bmStickyCta">
-    <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-sticky-cta-btn bm-sticky-cta-line" target="_blank" rel="noopener" data-tooltip="最短即日返信！">
-      <span class="bm-btn-wrap">
-        <span class="bm-btn-text" data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>
-        <span class="bm-btn-icon">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z"/></svg>
-        </span>
-      </span>
-    </a>
-    <a href="https://x.com/Bizmanga_" class="bm-sticky-cta-btn bm-sticky-cta-x" target="_blank" rel="noopener" aria-label="Xで最新情報" data-tooltip="最新事例・ノウハウ">
-      <span class="bm-btn-wrap">
-        <span class="bm-btn-text" data-ja="Xで見る" data-en="Follow on X">Xで見る</span>
-        <span class="bm-btn-icon">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </span>
-      </span>
-    </a>
-    <a href="https://contentsx.jp/" class="bm-sahara-btn" target="_blank" rel="noopener" aria-label="会社について知る">
-      <span class="bm-sahara-inner"></span>
-      <span class="bm-sahara-text bm-sahara-text--rest" data-ja="会社について知る" data-en="About">会社について知る</span>
-      <span class="bm-sahara-text bm-sahara-text--hover">WELCOME</span>
-      <svg class="bm-sahara-waves" viewBox="0 0 2400 800" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="bmSaharaGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%" stop-color="#ffb36b" stop-opacity="1"></stop>
-            <stop offset="100%" stop-color="#d81b8e" stop-opacity="1"></stop>
-          </linearGradient>
-        </defs>
-        <g transform="translate(0,-91)" fill="url(#bmSaharaGrad)">
-          <path opacity="0.05" transform="translate(0,35)"  d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="0.21" transform="translate(0,70)"  d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="0.37" transform="translate(0,105)" d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="0.53" transform="translate(0,140)" d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="0.68" transform="translate(0,175)" d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="0.84" transform="translate(0,210)" d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-          <path opacity="1"    transform="translate(0,245)" d="M0 306 Q228 450 600 302 Q1011 450 1200 343 Q1379 450 1800 320 Q2154 450 2400 314 L2400 800 L0 800 Z"/>
-        </g>
-      </svg>
-    </a>
-  </div>
-
   <!-- ===== フッター ===== -->
   </main>
 
@@ -488,25 +446,6 @@
     </div>
   </div>
 
-
-  <!-- 固定CTAバー: hero以降で表示 -->
-  <script>
-  (function(){
-    var cta = document.getElementById('bmStickyCta');
-    var hero = document.getElementById('hero');
-    if (!cta || !hero) return;
-    function check() {
-      var heroBottom = hero.getBoundingClientRect().bottom;
-      if (heroBottom < 0) {
-        cta.classList.add('visible');
-      } else {
-        cta.classList.remove('visible');
-      }
-    }
-    window.addEventListener('scroll', check, { passive: true });
-    check();
-  })();
-  </script>
 
   <script src="js/bm-sanitize.js"></script>
   <script src="js/bm-i18n.js" defer></script>
