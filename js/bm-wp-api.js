@@ -111,13 +111,34 @@
         thumbWrap = document.createElement('div');
       }
       thumbWrap.className = 'bm-news-thumb';
-      var img = document.createElement('img');
-      img.src = item.thumbnail || FALLBACK_THUMB;
-      img.alt = item.title_ja || '';
-      img.loading = 'lazy';
-      img.width = 200; img.height = 120;
-      img.onerror = function() { this.src = FALLBACK_THUMB; };
-      thumbWrap.appendChild(img);
+      var src = item.thumbnail || FALLBACK_THUMB;
+      var mode = item.image_mode_top || item.image_mode || 'contain';
+      if (mode === 'crop' && item.thumbnail) {
+        // crop: 親枠 (aspect-ratio:5/3) を cover で埋め、クロップ中心を背景中央に置く
+        var w = parseFloat(item.image_crop_w_top || item.image_crop_w) || 100;
+        var h = parseFloat(item.image_crop_h_top || item.image_crop_h) || 100;
+        var x = parseFloat(item.image_crop_x_top || item.image_crop_x) || 0;
+        var y = parseFloat(item.image_crop_y_top || item.image_crop_y) || 0;
+        var cropCenterX = Math.max(0, Math.min(100, x + w / 2));
+        var cropCenterY = Math.max(0, Math.min(100, y + h / 2));
+        var cropEl = document.createElement('div');
+        cropEl.className = 'bm-news-thumb-crop';
+        cropEl.setAttribute('role', 'img');
+        cropEl.setAttribute('aria-label', item.title_ja || '');
+        cropEl.style.backgroundImage = 'url(' + src + ')';
+        cropEl.style.backgroundPosition = cropCenterX.toFixed(2) + '% ' + cropCenterY.toFixed(2) + '%';
+        thumbWrap.appendChild(cropEl);
+      } else {
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = item.title_ja || '';
+        img.loading = 'lazy';
+        img.width = 200; img.height = 120;
+        if (!item.image_mode_top && !item.image_mode && item.image_fit)      img.style.objectFit      = item.image_fit;
+        if (!item.image_mode_top && !item.image_mode && item.image_position) img.style.objectPosition = item.image_position;
+        img.onerror = function() { this.src = FALLBACK_THUMB; };
+        thumbWrap.appendChild(img);
+      }
       li.appendChild(thumbWrap);
 
       /* 右側: メタ + タイトル */

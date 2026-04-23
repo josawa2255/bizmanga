@@ -849,20 +849,35 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-news-item:last-child { border-bottom: none; }
 .bm-news-thumb {
   flex-shrink: 0;
-  width: 160px; height: 100px;
+  width: 200px;
+  aspect-ratio: 5 / 3;        /* 統一感のため枠固定（200×120） */
   overflow: hidden;
   border-radius: 6px;
   background: var(--bm-bg-light);
   display: block;
   text-decoration: none;
+  align-self: flex-start;
 }
 .bm-news-thumb img {
   width: 100%; height: 100%;
-  object-fit: cover;
+  object-fit: contain;        /* 全体表示モード: 縦長は左右余白で全部見える */
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+  background: var(--bm-bg-light);
+}
+/* トリミングモード: 親枠を埋め、クロップ中心点を中央に配置 */
+.bm-news-thumb-crop {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   display: block;
   transition: transform 0.4s ease;
 }
-a.bm-news-thumb:hover img { transform: scale(1.05); }
+a.bm-news-thumb:hover img,
+a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-news-body {
   display: flex; flex-direction: column; gap: 8px;
   min-width: 0; flex: 1;
@@ -4324,7 +4339,7 @@ a.bm-news-thumb:hover img { transform: scale(1.05); }
 
   /* News: モバイルでラップ */
   .bm-news-item { gap: 12px; padding: 16px 0; }
-  .bm-news-thumb { width: 100px; height: 70px; border-radius: 4px; }
+  .bm-news-thumb { width: 100px; border-radius: 4px; }
   .bm-news-link { font-size: 14px; }
   .bm-news-meta { gap: 8px; }
   .bm-news-date { font-size: 12px; }
