@@ -83,8 +83,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
 .bm-header-inner {
-  max-width: 1100px; margin: 0 auto; padding: 0 16px;
+  max-width: 1200px; margin: 0 auto; padding: 0 16px;
   display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; /* ナビと言語切替/CTAが接触するのを防ぐ最低間隔 */
   height: 100%;
   min-width: 0; /* flex overflow 防止 */
 }
