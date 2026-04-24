@@ -128,9 +128,19 @@
     .s3d-screens.is-settled .s3d-screen iframe {
       pointer-events: auto;
     }
-    /* 画面全体クリック（透明のa要素、同一オリジンiframeならJSで追加） */
+    /* 画面全体クリック（デスクトップは iframe.contentDocument にクリックハンドラ） */
     .s3d-screen-link {
-      display: none; /* iframeのcontentDocumentにクリックハンドラを付けるので不要 */
+      display: none;
+    }
+    /* モバイルは iframe 操作不可のため、透明リンクを被せてタップで遷移できるようにする */
+    @media (max-width: 768px) {
+      .s3d-screen-link {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: 7;
+        background: transparent;
+      }
     }
 
     /* ガラス反射レイヤー（強めの対角グレア） */
@@ -329,22 +339,43 @@
       });
 
       // ===== iframe内クリック → 親ウィンドウで作品ページへ遷移 =====
+      // ===== iframe内ホイール → 親ページに転送（スクロールスタック防止・絶対ルール） =====
       document.querySelectorAll('.s3d-screen').forEach(function(screen) {
         var iframe = screen.querySelector('iframe');
         var link = screen.querySelector('.s3d-screen-link');
         var href = link && link.getAttribute('href');
-        if (!iframe || !href) return;
+        if (!iframe) return;
         iframe.addEventListener('load', function() {
           try {
             var doc = iframe.contentDocument;
             if (!doc) return;
-            doc.body.style.cursor = 'pointer';
-            doc.body.addEventListener('click', function(e) {
-              // wheelイベントは別物、クリックだけ拾う
-              location.href = href;
-            });
+            if (href) {
+              doc.body.style.cursor = 'pointer';
+              doc.body.addEventListener('click', function() { location.href = href; });
+            }
+            // ホイール転送: iframe 内での wheel を常に親ウィンドウのスクロールに流す
+            // → 画面上にカーソルがあっても必ずページスクロール可能（絶対ルール）
+            doc.addEventListener('wheel', function(e) {
+              // 縦ホイールを親にフォワード
+              if (Math.abs(e.deltaY) > 0) {
+                e.preventDefault();
+                window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+              }
+            }, { passive: false, capture: true });
+            // タッチスクロールの伝播（モバイル／タブレット）も親に流す
+            var touchStartY = 0;
+            doc.addEventListener('touchstart', function(e) {
+              if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+            doc.addEventListener('touchmove', function(e) {
+              if (e.touches.length === 1) {
+                var dy = touchStartY - e.touches[0].clientY;
+                touchStartY = e.touches[0].clientY;
+                window.scrollBy({ top: dy, behavior: 'auto' });
+              }
+            }, { passive: true });
           } catch (err) {
-            // cross-origin の場合は落ちる（同一オリジンなので通常OK）
+            // cross-origin fallback
           }
         });
       });
