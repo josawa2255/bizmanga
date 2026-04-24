@@ -47,24 +47,25 @@
       background: #fff;
     }
 
-    /* 3画面(横1列) — 各タイルを漫画ページ比(0.667 portrait)に合わせる */
+    /* 3画面(横1列) — PC 4:3 landscape タイル、中身は横スクロールで満遍なく埋める */
     .s3d-screens {
       position: relative;
       display: grid;
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       grid-template-rows: var(--s3d-tile-h);
       gap: 0;
-      /* 漫画1ページ(aspect 0.667)が完全フィットする portrait タイル */
-      --s3d-tile-w: 280px;
-      --s3d-tile-h: 420px;
+      /* タイル高さ=漫画ページ高さ。ページ幅は約0.667倍で2ページ同時表示 */
+      --s3d-tile-w: 440px;
+      --s3d-tile-h: 330px;
       will-change: transform;
       transform-origin: 50% 50%;
       filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
     }
     @media (max-width: 768px) {
       .s3d-screens {
-        --s3d-tile-w: 104px;
-        --s3d-tile-h: 156px;
+        /* モバイル = スマホ画面型 (9:19.5 portrait) */
+        --s3d-tile-w: 110px;
+        --s3d-tile-h: 238px;
       }
     }
 
