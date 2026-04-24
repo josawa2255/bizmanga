@@ -47,25 +47,24 @@
       background: #fff;
     }
 
-    /* 3画面(横1列)グリッド — 角ばって繋がった見た目（動画準拠） */
+    /* 3画面(横1列) — 各タイルを漫画ページ比(0.667 portrait)に合わせる */
     .s3d-screens {
       position: relative;
       display: grid;
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       grid-template-rows: var(--s3d-tile-h);
-      gap: 0; /* 隙間なし・直接接続 */
-      /* 既定=PC 4:3 に変更: 2ページ並び(半幅スロット 0.667) が画像アスペクト(0.667)と一致 → 完全フィット */
-      --s3d-tile-w: 440px;
-      --s3d-tile-h: 330px;
+      gap: 0;
+      /* 漫画1ページ(aspect 0.667)が完全フィットする portrait タイル */
+      --s3d-tile-w: 280px;
+      --s3d-tile-h: 420px;
       will-change: transform;
       transform-origin: 50% 50%;
       filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
     }
     @media (max-width: 768px) {
       .s3d-screens {
-        /* モバイル: 縦長スマホ形は漫画2ページ並びと相性悪いので 4:3 相当に寄せる */
-        --s3d-tile-w: 108px;
-        --s3d-tile-h: 162px; /* 4:3 × 1.5 = 1列あたり 54x162 → 1ページ0.667 */
+        --s3d-tile-w: 104px;
+        --s3d-tile-h: 156px;
       }
     }
 
@@ -339,7 +338,8 @@
         //   他2枚は opacity:0 で完全に隠す
         //   絶対ルール: 初期は必ず1画面のみ表示
         // ==========================================
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 3.0 : 2.6;
+        // タイルを portrait(280x420) にしたので初期スケールを控えめに(ビューポート高さに収まる範囲)
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.4 : 1.8;
         gsap.set(group, {
           scale: initScale,
           transformOrigin: '50% 50%'
