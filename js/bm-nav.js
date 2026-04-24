@@ -264,8 +264,8 @@
     }, { passive: true });
   }
 
-  // ===== 追従CTA（LINE + お問い合わせ）— contact.html以外 =====
-  if (currentFile !== 'contact') {
+  // ===== 追従CTA（LINE + お問い合わせ）— contact.html / biz-library.html 以外 =====
+  if (currentFile !== 'contact' && currentFile !== 'biz-library') {
     var svgNS = 'http://www.w3.org/2000/svg';
     function buildFabBtn(opts) {
       var a = document.createElement('a');
