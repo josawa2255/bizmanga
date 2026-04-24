@@ -54,20 +54,18 @@
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       grid-template-rows: var(--s3d-tile-h);
       gap: 0; /* 隙間なし・直接接続 */
-      /* 既定=PC（PC型 16:10） */
+      /* 既定=PC 4:3 に変更: 2ページ並び(半幅スロット 0.667) が画像アスペクト(0.667)と一致 → 完全フィット */
       --s3d-tile-w: 440px;
-      --s3d-tile-h: 275px;
+      --s3d-tile-h: 330px;
       will-change: transform;
-      /* hero(中央) の中心に zoom pivot = グループ中心と一致 */
       transform-origin: 50% 50%;
-      /* 繋がったパネル全体の落影 */
       filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
     }
     @media (max-width: 768px) {
       .s3d-screens {
-        /* スマホ型 9:19.5 */
+        /* モバイル: 縦長スマホ形は漫画2ページ並びと相性悪いので 4:3 相当に寄せる */
         --s3d-tile-w: 108px;
-        --s3d-tile-h: 234px;
+        --s3d-tile-h: 162px; /* 4:3 × 1.5 = 1列あたり 54x162 → 1ページ0.667 */
       }
     }
 

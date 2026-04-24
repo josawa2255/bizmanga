@@ -57,7 +57,7 @@
     }
     .book-page img {
       width: 100%; height: 100%;
-      object-fit: cover; /* タイルをいっぱいに埋める(上下トリミング) */
+      object-fit: contain; /* タイル比(4:3)と画像比(0.667)が一致するため contain でぴったり埋まる */
       object-position: center center;
       display: block;
     }
@@ -107,7 +107,7 @@
     }
     .flip-face img {
       width: 100%; height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center center;
       display: block;
     }
