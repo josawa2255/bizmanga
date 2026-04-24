@@ -37,100 +37,27 @@
       -webkit-user-drag: none;
     }
 
-    /* ============ 見開きモード: 2ページ並び + cover で満遍なく埋める ============ */
+    /* ============ 横スクロールモード: ページを横に流して満遍なく埋める ============ */
     #viewer.is-spread {
       overflow: hidden;
-      display: block;
-    }
-    .spread-book {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      perspective: 1500px;
+      display: flex;
+      align-items: stretch;
       background: #f8f4ef;
     }
-    .book-page {
-      position: relative;
-      overflow: hidden;
-      background: #f8f4ef;
-    }
-    .book-page img {
-      width: 100%; height: 100%;
-      object-fit: contain; /* タイル比(4:3)と画像比(0.667)が一致するため contain でぴったり埋まる */
-      object-position: center center;
-      display: block;
-    }
-    /* 日本漫画: 奇数=右、偶数=左 */
-    #pageRight { grid-column: 2; }
-    #pageLeft  { grid-column: 1; }
-    /* 奇数ページ最終時(left 無し)はセンタリング */
-    .spread-book.single-page { grid-template-columns: 1fr; }
-    .spread-book.single-page #pageRight { grid-column: 1; }
-    .spread-book.single-page #pageLeft  { display: none; }
-    /* 中央のスパイン(薄く) */
-    .book-spine {
-      position: absolute;
-      top: 0; bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 8px;
-      z-index: 20;
-      background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
-      pointer-events: none;
-    }
-    .spread-book.single-page .book-spine { display: none; }
-
-    /* ============ フリップオーバーレイ(左半分) ============ */
-    .flip-overlay {
-      position: absolute;
-      top: 0;
-      width: 50%;
+    .h-strip {
+      display: flex;
+      flex-direction: row;
       height: 100%;
-      transform-style: preserve-3d;
-      pointer-events: none;
-      z-index: 25;
-      display: none;
+      flex-shrink: 0;
       will-change: transform;
     }
-    .flip-overlay.active { display: block; }
-    .flip-overlay.flip-prev {
-      left: 0; right: auto;
-      transform-origin: right center;
-    }
-    .flip-face {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      overflow: hidden;
-      background: #f8f4ef;
-    }
-    .flip-face img {
-      width: 100%; height: 100%;
-      object-fit: contain;
-      object-position: center center;
+    .h-strip img {
+      height: 100%;
+      width: auto;
       display: block;
-    }
-    .flip-front { z-index: 2; }
-    .flip-back  { transform: rotateY(180deg); z-index: 1; }
-
-    /* フリップ中の影 */
-    .page-shadow {
-      position: absolute;
-      top: 0; width: 80px; height: 100%;
-      pointer-events: none;
-      z-index: 22;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-    .page-shadow.active { opacity: 1; }
-    .page-shadow-right {
-      left: 50%;
-      background: linear-gradient(to right, rgba(0,0,0,0.25), transparent);
-    }
-    .page-shadow-left {
-      right: 50%;
-      background: linear-gradient(to left, rgba(0,0,0,0.25), transparent);
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     /* ローディング */
@@ -159,18 +86,8 @@
   <div id="viewer">
     <!-- 縦読み用 -->
     <div class="page-stack" id="pageStack"></div>
-    <!-- 見開き用（ビズ書庫と同構造） -->
-    <div class="spread-book" id="spreadBook" style="display:none">
-      <div class="book-page" id="pageRight"><img id="imgRight" alt=""></div>
-      <div class="book-page" id="pageLeft"><img id="imgLeft" alt=""></div>
-      <div class="book-spine"></div>
-      <div class="flip-overlay" id="flipOverlay">
-        <div class="flip-face flip-front"><img id="flipFrontImg" alt=""></div>
-        <div class="flip-face flip-back"><img id="flipBackImg" alt=""></div>
-      </div>
-      <div class="page-shadow page-shadow-right" id="pageShadowRight"></div>
-      <div class="page-shadow page-shadow-left" id="pageShadowLeft"></div>
-    </div>
+    <!-- 横スクロール用（ページを横に並べて自動スクロール） -->
+    <div class="h-strip" id="hStrip" style="display:none"></div>
   </div>
 
   <script>
@@ -191,16 +108,7 @@
     var viewer   = document.getElementById('viewer');
     var stack    = document.getElementById('pageStack');
     var loading  = document.getElementById('loading');
-    var spreadBook   = document.getElementById('spreadBook');
-    var pageRight    = document.getElementById('pageRight');
-    var pageLeft     = document.getElementById('pageLeft');
-    var imgRight     = document.getElementById('imgRight');
-    var imgLeft      = document.getElementById('imgLeft');
-    var flipOverlay  = document.getElementById('flipOverlay');
-    var flipFrontImg = document.getElementById('flipFrontImg');
-    var flipBackImg  = document.getElementById('flipBackImg');
-    var pageShadowRight = document.getElementById('pageShadowRight');
-    var pageShadowLeft  = document.getElementById('pageShadowLeft');
+    var hStrip   = document.getElementById('hStrip');
 
     var WP_API = 'https://cms.contentsx.jp/wp-json/contentsx/v1';
 
@@ -217,7 +125,7 @@
 
     // ============ 縦読み: 無限自動スクロール ============
     function renderVertical(data) {
-      spreadBook.style.display = 'none';
+      hStrip.style.display = 'none';
       stack.style.display = '';
       for (var rep = 0; rep < 2; rep++) {
         data.gallery.forEach(function(src, i) {
@@ -264,139 +172,80 @@
       requestAnimationFrame(tick);
     }
 
-    // ============ 見開き: ビズ書庫準拠のフリップアニメ ============
+    // ============ 横スクロール: 日本漫画を右→左へ自動スクロール ============
     function renderSpreadFlip(data) {
       viewer.classList.add('is-spread');
       stack.style.display = 'none';
-      spreadBook.style.display = '';
+      hStrip.style.display = '';
 
-      // 日本式右→左読みに沿って 2ページずつペアリング
-      // pair[0] = 奇数ページ(右)、pair[1] = 偶数ページ(左)
-      var pages = data.gallery;
-      var pairs = [];
-      for (var i = 0; i < pages.length; i += 2) {
-        pairs.push([pages[i], pages[i+1] || null]);
-      }
-      if (pairs.length === 0) { loading.textContent = 'NO PAGES'; return; }
-
-      // 表紙ページ(pair[0])は空や白背景が多くタイルを埋めないため、3ペア以上ある時はスキップ
-      // 最後の thanks ページを含むペアも同様に内容が少ないためスキップ
-      if (pairs.length >= 3) {
-        pairs = pairs.slice(1, -1); // 先頭と末尾の1ペアずつ除外
-        if (pairs.length === 0) pairs = pages ? [[pages[0], pages[1] || null]] : [];
-      }
-
-      // プリロード
-      pages.forEach(function(src) { var pre = new Image(); pre.src = src; });
-
-      var currentIdx = 0;
-      var isFlipping = false;
-      var FLIP_DURATION = 500;
-
-      function setPage(idx) {
-        var p = pairs[idx];
-        imgRight.src = p[0];
-        imgRight.alt = (data.title_ja || mangaId) + ' p' + (idx * 2 + 1);
-        if (p[1]) {
-          spreadBook.classList.remove('single-page');
-          imgLeft.src = p[1];
-          imgLeft.alt = (data.title_ja || mangaId) + ' p' + (idx * 2 + 2);
-        } else {
-          spreadBook.classList.add('single-page');
-        }
-      }
-      setPage(0);
-
-      // 次ページへのフリップ（日本漫画: 左ページを右にめくる）
-      function goNext() {
-        if (isFlipping) return;
-        var nextIdx = (currentIdx + 1) % pairs.length;
-        var curPair = pairs[currentIdx];
-        var nextPair = pairs[nextIdx];
-
-        isFlipping = true;
-
-        // 左ページを右側軸で回転（flip-prev）
-        flipOverlay.classList.remove('flip-next', 'flip-prev');
-        flipOverlay.classList.add('flip-prev');
-
-        flipFrontImg.src = curPair[1] || curPair[0];
-        flipBackImg.src  = nextPair[0];
-
-        flipOverlay.style.transition = 'none';
-        flipOverlay.style.transform = 'rotateY(0deg)';
-        flipOverlay.classList.add('active');
-
-        pageShadowRight.classList.add('active');
-
-        // アニメ中盤で背後の静止ページを次ペアに差替
-        var halfDuration = FLIP_DURATION * 0.45;
-        setTimeout(function() {
-          imgRight.src = nextPair[0];
-          if (nextPair[1]) {
-            spreadBook.classList.remove('single-page');
-            imgLeft.src = nextPair[1];
-          } else {
-            spreadBook.classList.add('single-page');
-          }
-        }, halfDuration);
-
-        // 影を徐々に濃く→薄く
-        pageShadowRight.style.transition = 'none';
-        pageShadowRight.style.opacity = '0';
-        setTimeout(function() {
-          pageShadowRight.style.transition = 'opacity ' + (FLIP_DURATION * 0.3) + 'ms ease';
-          pageShadowRight.style.opacity = '0.6';
-        }, FLIP_DURATION * 0.15);
-        setTimeout(function() {
-          pageShadowRight.style.opacity = '0';
-        }, FLIP_DURATION * 0.65);
-
-        // フリップ本体
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            flipOverlay.style.transition = 'transform ' + FLIP_DURATION + 'ms cubic-bezier(0.3, 0.0, 0.2, 1)';
-            flipOverlay.style.transform = 'rotateY(180deg)';
-          });
+      // ページを順番に並べる（無限ループ用に2セット分）
+      // direction: rtl 側で DOM 順が右→左で並ぶ
+      for (var rep = 0; rep < 2; rep++) {
+        data.gallery.forEach(function(src, i) {
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = (data.title_ja || mangaId) + ' p' + (i + 1);
+          img.loading = rep === 0 ? 'eager' : 'lazy';
+          img.decoding = 'async';
+          hStrip.appendChild(img);
         });
-
-        setTimeout(function() {
-          flipOverlay.classList.remove('active', 'flip-prev');
-          flipOverlay.style.transition = 'none';
-          flipOverlay.style.transform = '';
-          pageShadowRight.classList.remove('active');
-          pageShadowRight.style.transition = 'none';
-          pageShadowRight.style.opacity = '';
-          currentIdx = nextIdx;
-          isFlipping = false;
-        }, FLIP_DURATION + 30);
       }
 
-      // ホバー検出（iframe 内 document 基準）
-      var isHovered = false;
-      document.addEventListener('mouseover', function() { isHovered = true; });
+      // 画像ロード完了待ちで自動スクロール開始
+      var imgs = hStrip.querySelectorAll('img');
+      var loaded = 0;
+      function onReady() { startHorizontalScroll(); }
+      imgs.forEach(function(img) {
+        if (img.complete) { if (++loaded === imgs.length) onReady(); }
+        else {
+          img.addEventListener('load',  function() { if (++loaded === imgs.length) onReady(); }, { once: true });
+          img.addEventListener('error', function() { if (++loaded === imgs.length) onReady(); }, { once: true });
+        }
+      });
+      setTimeout(onReady, 1500);
+    }
+
+    var hStarted = false;
+    function startHorizontalScroll() {
+      if (hStarted) return;
+      hStarted = true;
+
+      // 半分の幅(1セット分) — ここに達したらリセットして無限ループ
+      var halfWidth = hStrip.scrollWidth / 2;
+      var paused = false;
+      var hoverPause = false;
+
+      // ホバー/タッチで一時停止
+      viewer.addEventListener('mouseenter', function() { hoverPause = true; });
+      viewer.addEventListener('mouseleave', function() { hoverPause = false; });
+      document.addEventListener('mouseover', function() { hoverPause = true; });
       document.addEventListener('mouseout', function(e) {
-        if (!e.relatedTarget) isHovered = false;
+        if (!e.relatedTarget) hoverPause = false;
       });
-      viewer.addEventListener('mouseenter', function() { isHovered = true; });
-      viewer.addEventListener('mouseleave', function() { isHovered = false; });
-
-      // モバイル: タップで次ページ&一時停止
-      var touchPauseUntil = 0;
       viewer.addEventListener('touchstart', function() {
-        touchPauseUntil = Date.now() + 3000;
+        paused = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() { paused = false; }, 2500);
       }, { passive: true });
-      viewer.addEventListener('click', function() {
-        if ('ontouchstart' in window) goNext();
-      });
+      var resumeTimer = null;
+      viewer.addEventListener('wheel', function() {
+        paused = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() { paused = false; }, 2000);
+      }, { passive: true });
 
-      // 自動ページ捲り
-      setInterval(function() {
-        if (isHovered) return;
-        if (Date.now() < touchPauseUntil) return;
-        if (isFlipping) return;
-        goNext();
-      }, flipMs);
+      // 初期位置: direction:rtl の viewer では scrollLeft は負側(またはゼロ基準逆転)なので、
+      // hStrip 自体を translateX で動かす方式に統一
+      var pos = 0;
+      function tick() {
+        if (!paused && !hoverPause) {
+          pos += speed;
+          if (pos >= halfWidth) pos -= halfWidth;
+          hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     }
 
     // ============ データ取得 ============
