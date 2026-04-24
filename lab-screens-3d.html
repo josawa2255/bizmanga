@@ -48,6 +48,9 @@
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
       background: #fff;
+      /* 見出し + ラベルと衝突しないよう上に余白 */
+      padding-top: 110px;
+      box-sizing: border-box;
     }
 
     /* 3画面(横1列) — スマホ portrait タイル、端末間は gap、各端末は独立ベゼル */
@@ -205,7 +208,7 @@
     /* 見出し(コンパクトに上部へ配置、タイルラベルと重ならないよう) */
     .s3d-heading {
       position: absolute;
-      top: 20px; left: 50%;
+      top: 16px; left: 50%;
       transform: translateX(-50%);
       color: #222;
       text-align: center;
@@ -236,7 +239,8 @@
     .s3d-screens-wrap {
       position: relative;
       will-change: transform;
-      transform-origin: 50% 50%;
+      /* 上端を軸にスケール: スマホ下端だけが伸縮、上端は見出しと衝突しない */
+      transform-origin: 50% 0%;
       /* タイルサイズは wrap で定義（labels/screens 両方で参照するため） */
       /* PC: iPhone比(9:19.5 ≈ 1:2.17) 300×640 */
       --s3d-tile-w: 300px;
@@ -481,7 +485,7 @@
         var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.25;
         gsap.set(wrap, {
           scale: initScale,
-          transformOrigin: '50% 50%'
+          transformOrigin: '50% 0%'
         });
         gsap.set(others, { opacity: 0, scale: 0.6 });
         // ラベルは初期非表示(分裂完了後に現れる)
