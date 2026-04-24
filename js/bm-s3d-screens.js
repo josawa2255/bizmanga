@@ -24,7 +24,8 @@
     var heading = document.getElementById('s3dHeading');
     var scrollHint = document.getElementById('s3dScrollHint');
 
-    var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.4 : 1.2;
+    // 初期は中央スマホを大きく見せる(viewport 高さに迫る迫力)
+    var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.55;
     gsap.set(wrap, { scale: initScale, transformOrigin: '50% 0%' });
     gsap.set(others, { opacity: 0, scale: 0.6 });
     gsap.set(labels, { opacity: 0, y: -8 });
