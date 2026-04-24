@@ -3,10 +3,12 @@
    ============================================================= */
 
 .s3d-section {
-  /* 高さは GSAP pin spacer に任せる（section 自身に height を付けると二重確保で
-     後続セクションが重なる/隠れる不具合が出るため指定しない） */
+  /* 高さは GSAP pin spacer に任せる */
   position: relative;
   background: #fff;
+  /* pin 中の fixed stage が前後セクションを巻き込まないよう stacking context を分離 */
+  isolation: isolate;
+  z-index: 1;
 }
 .s3d-stage {
   position: relative;
@@ -18,7 +20,13 @@
   padding-top: 90px;
   padding-bottom: 80px;
   box-sizing: border-box;
+  z-index: 1;
 }
+
+/* news セクションを確実に前面に(s3d の pin fixed より上) */
+.bm-news { position: relative; z-index: 2; background: #fff; }
+/* gallery も同様 */
+.bm-gallery { position: relative; z-index: 2; }
 
 /* 3画面 — スマホ portrait タイル */
 .s3d-screens {

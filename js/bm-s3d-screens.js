@@ -39,8 +39,8 @@
     ScrollTrigger.create({
       trigger: '#s3dSection',
       start: 'top 20%',
-      // pin 期間を短縮: アニメ完了後の静止時間を削減
-      end: '+=100%',
+      // pin 期間: アニメ完走までのスクロール量。長すぎ=静止時間/短すぎ=感度高すぎのバランス
+      end: '+=150%',
       pin: '#s3dStage',
       anticipatePin: 1,
       onUpdate: function(self) {
