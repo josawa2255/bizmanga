@@ -193,7 +193,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - 位置: ホームギャラリー（`#newWorks`）の直前
 - 役割: 「さまざまな媒体・形式で制作しています」— カラー漫画 / Webtoon / ボイスコミック の3媒体を3つのiPhone型端末で showcase
 - タイル構成（左→右）:
-  - カラー: `/embed-viewer?manga=ichinohe-home&speed=0.45`
+  - カラー: `/embed-viewer?manga=ichinohe-home&slides=1&interval=2000`（2秒ごとに1ページずつフェード遷移）
   - Webtoon(中央・hero): `/embed-viewer?manga=omatome-ninja-new&speed=0.5`
   - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls）
 - iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + ダークベゼル
