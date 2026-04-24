@@ -102,22 +102,27 @@
     .s3d-screens.is-settled .s3d-screen iframe {
       pointer-events: auto;
     }
-    /* YouTube 16:9 を 4:3 タイルにフィット(高さ基準で幅オーバーを中央クロップ) */
+    /* YouTube 16:9 を 4:3 タイルに完全フィット
+       iframe を横長(16:9=587x330)にして中央配置 → タイル幅(440)に対して
+       左右73px ずつ overflow → タイルの overflow:hidden でクロップ。
+       これで黒帯ゼロでタイルを埋める。 */
     .s3d-screen--video iframe {
-      width: calc(var(--s3d-tile-h) * 16 / 9);
-      height: 100%;
-      left: 50%;
-      inset: auto;
+      position: absolute;
       top: 0;
+      right: auto;
+      bottom: auto;
+      left: 50%;
+      width: calc(var(--s3d-tile-h) * 16 / 9);
+      height: var(--s3d-tile-h);
       transform: translateX(-50%);
     }
     @media (max-width: 768px) {
-      /* モバイルは portrait タイルなので幅基準で高さオーバー */
+      /* モバイル(portrait 110x238): 横が短いので幅基準で縦はみ出し中央クロップ */
       .s3d-screen--video iframe {
-        width: 100%;
-        height: calc(var(--s3d-tile-w) * 9 / 16);
-        left: 0;
         top: 50%;
+        left: 0;
+        width: var(--s3d-tile-w);
+        height: calc(var(--s3d-tile-w) * 9 / 16);
         transform: translateY(-50%);
       }
     }
@@ -373,7 +378,7 @@
               <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
             </div>
             <div class="s3d-screen s3d-screen--video" data-idx="2">
-              <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&disablekb=1" loading="lazy" title="ボイスコミックサンプル" allow="autoplay; encrypted-media" frameborder="0"></iframe>
+              <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&disablekb=1&showinfo=0" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture" frameborder="0"></iframe>
               <a class="s3d-screen-link" href="https://youtu.be/yLwkUfi6KfQ" target="_blank" rel="noopener" aria-label="ボイスコミックをYouTubeで開く"></a>
             </div>
           </div>
