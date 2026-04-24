@@ -8,9 +8,8 @@
   <link rel="stylesheet" href="css/bizmanga.css">
   <style>
     /* ============================================
-       🧪 Prototype: 3D PC Screens Section
-       - Relats風: ヒーロー中央1台がscaleして3台並びへ遷移
-       - 各画面 = ホームHeroの横スクロール1行（マンガ表紙カルーセル）
+       🧪 Prototype: 3D MacBook-like Screens
+       各画面 = /embed-viewer?manga=xxx を iframe 埋め込み
        ============================================ */
     .lab-note {
       position: fixed; top: 72px; right: 16px; z-index: 2000;
@@ -31,13 +30,11 @@
       font-weight: 900;
       color: #222;
     }
-    .s3d-intro p {
-      margin-top: 12px; color: #666; font-size: 15px;
-    }
+    .s3d-intro p { margin-top: 12px; color: #666; font-size: 15px; }
 
     .s3d-section {
       position: relative;
-      height: 300vh;
+      height: 320vh;
       background: #0b0d10;
     }
     .s3d-stage {
@@ -46,145 +43,217 @@
       height: 100vh;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 50%, #1a1d23 0%, #0b0d10 70%);
+      background: radial-gradient(ellipse at 50% 40%, #1c2028 0%, #0b0d10 70%);
+    }
+
+    /* 背景のノイズ＋ビネット */
+    .s3d-stage::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%);
+      pointer-events: none;
     }
 
     .s3d-screens {
       position: relative;
       display: flex;
-      align-items: center;
+      align-items: flex-end; /* ヒンジで揃える */
       justify-content: center;
-      gap: 48px;
-      perspective: 1800px;
+      gap: 40px;
+      perspective: 2200px;
       transform-style: preserve-3d;
       will-change: transform;
+      padding-bottom: 40px;
     }
 
-    /* 1台のノートPC */
+    /* ==========================================
+       MacBook 風デザイン（CSSのみ）
+       ========================================== */
     .s3d-laptop {
-      --lw: 420px;
+      --lw: 440px;
       width: var(--lw);
       position: relative;
       transform-style: preserve-3d;
-      cursor: pointer;
       opacity: 0;
       transition: opacity 0.5s ease;
-      text-decoration: none;
     }
     .s3d-laptop.is-ready { opacity: 1; }
+    .s3d-laptop--left  { transform: rotateY(16deg); transform-origin: right bottom; }
+    .s3d-laptop--right { transform: rotateY(-16deg); transform-origin: left bottom; }
 
-    .s3d-laptop--left  { transform: rotateY(14deg); transform-origin: right center; }
-    .s3d-laptop--right { transform: rotateY(-14deg); transform-origin: left center; }
-
-    .s3d-laptop-screen {
+    /* === 天板（画面全体のユニボディ部分） === */
+    .s3d-lid {
       position: relative;
-      aspect-ratio: 16 / 10;
-      background: #000;
-      border: 12px solid #1a1c1f;
-      border-bottom-width: 16px;
-      border-radius: 14px 14px 4px 4px;
-      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 10.3; /* ノッチ分ちょい縦長 */
+      background: linear-gradient(180deg, #2b2d31 0%, #202328 50%, #1b1e22 100%);
+      border-radius: 14px 14px 3px 3px;
+      padding: 12px 12px 14px;
+      box-sizing: border-box;
       box-shadow:
-        0 30px 60px rgba(0, 0, 0, 0.55),
-        0 10px 20px rgba(0, 0, 0, 0.35),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 40px 80px rgba(0, 0, 0, 0.65),
+        0 12px 24px rgba(0, 0, 0, 0.4);
     }
-    .s3d-laptop-screen::before {
+
+    /* ノッチ（MBPのカメラアイランド） */
+    .s3d-lid::before {
       content: '';
       position: absolute;
-      top: 0; left: 50%;
+      top: 0;
+      left: 50%;
       transform: translateX(-50%);
-      width: 22%;
-      height: 4px;
-      background: #0a0a0a;
-      border-radius: 0 0 6px 6px;
-      z-index: 3;
+      width: 26%;
+      height: 12px;
+      background: #000;
+      border-radius: 0 0 10px 10px;
+      z-index: 4;
     }
-    .s3d-laptop-viewport {
+    /* カメラレンズ */
+    .s3d-lid::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: calc(50% + 6%);
+      width: 4px; height: 4px;
+      background: radial-gradient(circle at 30% 30%, #444, #000);
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    /* === 実際の画面領域（iframeが入る） === */
+    .s3d-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .s3d-screen iframe {
       position: absolute;
       inset: 0;
-      overflow: hidden;
-      background: #0a0a0a;
-      display: flex;
-      align-items: center;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fafafa;
+      pointer-events: auto;
     }
-    .s3d-laptop-base {
-      width: 118%;
-      height: 14px;
-      margin-left: -9%;
-      background: linear-gradient(180deg, #c8cbd0 0%, #9aa0a7 55%, #6e737a 100%);
-      border-radius: 0 0 16px 16px;
-      position: relative;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    }
-    .s3d-laptop-base::before {
+    /* 画面のガラス反射（薄い対角光） */
+    .s3d-screen::after {
       content: '';
       position: absolute;
-      top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 88px; height: 4px;
-      background: #3a3d42;
-      border-radius: 0 0 6px 6px;
-    }
-
-    /* === 横マーキー(表紙カバーの行) === */
-    .s3d-cover-row {
-      display: flex;
-      gap: 10px;
-      padding: 10px;
-      will-change: transform;
-      align-items: center;
-      height: 100%;
-    }
-    .s3d-cover {
-      flex-shrink: 0;
-      width: 86px;  /* 画面幅に対して小さめ */
-      aspect-ratio: 5/7;
-      background: #222;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .s3d-cover:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
-      z-index: 2;
-    }
-    .s3d-cover img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-    }
-
-    /* ラベル */
-    .s3d-laptop-label {
-      position: absolute;
-      top: -30px; left: 50%;
-      transform: translateX(-50%);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 4px 12px;
-      border-radius: 50px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      white-space: nowrap;
+      inset: 0;
+      background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.02) 30%,
+        transparent 55%);
       pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      z-index: 2;
+      mix-blend-mode: screen;
     }
-    .s3d-laptop:hover .s3d-laptop-label { opacity: 1; }
 
-    /* 見出し */
+    /* === ヒンジ === */
+    .s3d-hinge {
+      position: relative;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(180deg, #121316 0%, #1f2125 50%, #0e1012 100%);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    }
+
+    /* === ベース（キーボード側の底板） === */
+    .s3d-base {
+      position: relative;
+      width: 110%;
+      margin-left: -5%;
+      height: 16px;
+      background:
+        linear-gradient(180deg,
+          #282b30 0%,
+          #3a3e43 4%,
+          #6e737a 12%,
+          #9aa0a7 24%,
+          #b8bcc2 48%,
+          #8c9098 80%,
+          #5a5e64 100%);
+      border-radius: 0 0 18px 18px;
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.45),
+        0 30px 60px rgba(0, 0, 0, 0.25);
+    }
+    /* 底板の前面ロゴ下の縁 */
+    .s3d-base::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 30%;
+      height: 3px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(0,0,0,0));
+      border-radius: 0 0 8px 8px;
+    }
+    /* 手前の影（地面への落影） */
+    .s3d-laptop::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 5%;
+      right: 5%;
+      height: 30px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.5) 0%, transparent 70%);
+      filter: blur(6px);
+      z-index: -1;
+    }
+
+    /* クリック領域（ラベル） */
+    .s3d-laptop-link {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: block;
+      cursor: pointer;
+      /* iframe上は pointer-events を通すためデフォルトはnone、タイトル部分だけauto */
+      pointer-events: none;
+    }
+    /* 下のタイトルバー（クリック可） */
+    .s3d-laptop-title {
+      position: absolute;
+      bottom: -58px;
+      left: 0; right: 0;
+      text-align: center;
+      color: #fff;
+      pointer-events: auto;
+      z-index: 11;
+    }
+    .s3d-laptop-title-text {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 16px;
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.25s, transform 0.25s;
+      cursor: pointer;
+    }
+    .s3d-laptop-title-text:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* === 見出し === */
     .s3d-heading {
       position: absolute;
-      top: 48px; left: 50%;
+      top: 60px; left: 50%;
       transform: translateX(-50%);
       color: #fff;
       text-align: center;
@@ -195,58 +264,59 @@
     }
     .s3d-heading.is-shown { opacity: 1; }
     .s3d-heading h2 {
-      font-size: clamp(22px, 3vw, 36px);
+      font-size: clamp(24px, 3.2vw, 40px);
       font-weight: 900;
       letter-spacing: 0.02em;
     }
     .s3d-heading p {
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
     }
 
-    /* スクロールヒント */
+    /* === スクロールヒント === */
     .s3d-scroll-hint {
       position: absolute;
       bottom: 32px; left: 50%;
       transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.1em;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      letter-spacing: 0.15em;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
       opacity: 1;
       transition: opacity 0.3s ease;
+      pointer-events: none;
     }
     .s3d-scroll-hint.is-hidden { opacity: 0; }
     .s3d-scroll-hint::after {
       content: '';
-      width: 2px; height: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0));
+      width: 1px; height: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7), transparent);
       animation: s3dArrow 1.6s ease-in-out infinite;
     }
     @keyframes s3dArrow {
-      0%, 100% { transform: translateY(0); opacity: 0.8; }
-      50% { transform: translateY(8px); opacity: 0.3; }
+      0%, 100% { transform: translateY(0); opacity: 0.9; }
+      50% { transform: translateY(10px); opacity: 0.3; }
     }
 
-    /* モバイル: 縦積み・演出なし */
+    /* モバイル */
     @media (max-width: 768px) {
       .s3d-section { height: auto; padding: 60px 0; }
       .s3d-stage {
         position: static;
         height: auto;
         flex-direction: column;
-        gap: 40px;
-        padding: 40px 24px;
+        gap: 80px;
+        padding: 40px 24px 80px;
       }
-      .s3d-screens { flex-direction: column; gap: 36px; }
+      .s3d-screens { flex-direction: column; gap: 80px; }
       .s3d-laptop {
-        --lw: min(92vw, 440px);
+        --lw: min(92vw, 460px);
         opacity: 1 !important;
         transform: none !important;
       }
-      .s3d-heading { position: relative; top: 0; opacity: 1; }
+      .s3d-heading { position: relative; top: 0; opacity: 1; margin-bottom: 20px; }
       .s3d-scroll-hint { display: none; }
     }
 
@@ -286,7 +356,7 @@
     <section class="s3d-intro">
       <div>
         <h1>3D画面ギャラリー プロトタイプ</h1>
-        <p>下にスクロール → 中央1台が後退して3台並びへ。各画面内はホームHeroの横スクロール1行（表紙カバー）。</p>
+        <p>下にスクロール → 中央1台が後退、3台並びへ。各画面は実際のビズ書庫ビューア(iframe)</p>
       </div>
     </section>
 
@@ -294,38 +364,50 @@
       <div class="s3d-stage" id="s3dStage">
         <div class="s3d-heading" id="s3dHeading">
           <h2>3つの画面、無限の物語</h2>
-          <p>社内・採用・営業、多様な場面で動く漫画</p>
+          <p>全ての作品は実際にあなたのブラウザで読める</p>
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
+          <!-- 左: 一戸ホーム -->
           <div class="s3d-laptop s3d-laptop--left">
-            <span class="s3d-laptop-label">Row 1</span>
-            <div class="s3d-laptop-screen">
-              <div class="s3d-laptop-viewport">
-                <div class="s3d-cover-row" data-row="0"></div>
+            <div class="s3d-lid">
+              <div class="s3d-screen">
+                <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.5" loading="lazy" title="一戸ホーム"></iframe>
               </div>
             </div>
-            <div class="s3d-laptop-base"></div>
+            <div class="s3d-hinge"></div>
+            <div class="s3d-base"></div>
+            <div class="s3d-laptop-title">
+              <a class="s3d-laptop-title-text" href="/biz-library?manga=ichinohe-home">一戸ホーム →</a>
+            </div>
           </div>
 
+          <!-- 中央: おまとめ忍者（縦読み） -->
           <div class="s3d-laptop s3d-laptop--center">
-            <span class="s3d-laptop-label">Row 2</span>
-            <div class="s3d-laptop-screen">
-              <div class="s3d-laptop-viewport">
-                <div class="s3d-cover-row" data-row="1"></div>
+            <div class="s3d-lid">
+              <div class="s3d-screen">
+                <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
               </div>
             </div>
-            <div class="s3d-laptop-base"></div>
+            <div class="s3d-hinge"></div>
+            <div class="s3d-base"></div>
+            <div class="s3d-laptop-title">
+              <a class="s3d-laptop-title-text" href="/biz-library?manga=omatome-ninja-new">黄色いおまとめ忍者 →</a>
+            </div>
           </div>
 
+          <!-- 右: BMS運送 -->
           <div class="s3d-laptop s3d-laptop--right">
-            <span class="s3d-laptop-label">Row 3</span>
-            <div class="s3d-laptop-screen">
-              <div class="s3d-laptop-viewport">
-                <div class="s3d-cover-row" data-row="2"></div>
+            <div class="s3d-lid">
+              <div class="s3d-screen">
+                <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
               </div>
             </div>
-            <div class="s3d-laptop-base"></div>
+            <div class="s3d-hinge"></div>
+            <div class="s3d-base"></div>
+            <div class="s3d-laptop-title">
+              <a class="s3d-laptop-title-text" href="/biz-library?manga=bms-unso">BMS運送 →</a>
+            </div>
           </div>
         </div>
 
@@ -339,164 +421,19 @@
     </section>
   </main>
 
-  <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-  <!-- BizManga共通 + WP API -->
   <script src="js/bm-sanitize.js"></script>
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
-  <script src="js/bm-wp-config.js" defer></script>
-  <script src="js/bm-wp-api.js" defer></script>
 
   <script defer>
     document.addEventListener('DOMContentLoaded', function() {
-      // ===== フォールバック用作品データ（WP取得失敗時） =====
-      var FALLBACK_WORKS = [
-        { id: 'bms-unso',          title: 'BMS運送' },
-        { id: 'ichinohe-home',     title: '一戸ホーム' },
-        { id: 'seko',              title: '瀬古恭介' },
-        { id: 'life-buzfes',       title: 'バズフェス' },
-        { id: 'birdman',           title: 'バードマン' },
-        { id: 'omatome-ninja',     title: 'おまとめ忍者' },
-        { id: 'omatome-ninja-new', title: 'おまとめ忍者 NEW' },
-        { id: 'uike-law',          title: '正義の価値' },
-        { id: 'sixtones',          title: 'SIXTONES' },
-        { id: 'lady-column',       title: 'レディーコラム' },
-        { id: 'life-school',       title: 'ライフスクール' }
-      ];
-
-      // ===== ホームhero と同じロジックで3行に振り分け =====
-      function distributeToRows(works, numRows) {
-        var rows = [];
-        for (var r = 0; r < numRows; r++) rows.push([]);
-        works.forEach(function(w, i) { rows[i % numRows].push(w); });
-        return rows;
-      }
-
-      function renderRow(rowEl, items) {
-        if (items.length === 0) return;
-        while (rowEl.firstChild) rowEl.removeChild(rowEl.firstChild);
-        // ループのため4セット分入れる
-        var renderItems = items.concat(items, items, items);
-        renderItems.forEach(function(item) {
-          var cover = document.createElement('a');
-          cover.className = 's3d-cover';
-          cover.href = '/biz-library?manga=' + item.id;
-          cover.setAttribute('data-work-id', item.id);
-          cover.setAttribute('aria-label', item.title_ja || item.title || item.id);
-          var img = document.createElement('img');
-          img.src = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
-          img.alt = item.title_ja || item.title || item.id;
-          img.loading = 'lazy';
-          img.decoding = 'async';
-          cover.appendChild(img);
-          rowEl.appendChild(cover);
-        });
-      }
-
-      // ===== 自動横スクロール =====
-      var scrollers = [];
-      function initScrollers() {
-        scrollers = [];
-        document.querySelectorAll('.s3d-cover-row').forEach(function(row, idx) {
-          var laptop = row.closest('.s3d-laptop');
-          var viewport = row.closest('.s3d-laptop-viewport');
-          var state = {
-            el: row,
-            viewport: viewport,
-            pos: 0,
-            // 行ごとに速度・向きを変える（Row 1: 左→右, Row 2: 右→左, Row 3: 左→右）
-            speed: [0.45, -0.5, 0.55][idx] || 0.5,
-            paused: false,
-            quarterWidth: 0
-          };
-
-          function recalc() {
-            // 4セット構成なので 1セット分 = scrollWidth / 4
-            state.quarterWidth = row.scrollWidth / 4;
-            // 初期位置を1セット分進めておくと左右どちらの流れでも切れ目が見えない
-            state.pos = state.quarterWidth;
-          }
-
-          var imgs = row.querySelectorAll('img');
-          var loaded = 0;
-          imgs.forEach(function(img) {
-            if (img.complete) { if (++loaded === imgs.length) recalc(); }
-            else {
-              img.addEventListener('load', function() { if (++loaded === imgs.length) recalc(); });
-              img.addEventListener('error', function() { if (++loaded === imgs.length) recalc(); });
-            }
-          });
-          setTimeout(recalc, 800);
-
-          // ホバーで停止
-          laptop.addEventListener('mouseenter', function() { state.paused = true; });
-          laptop.addEventListener('mouseleave', function() { state.paused = false; });
-
-          // ホイールで手動横送り
-          viewport.addEventListener('wheel', function(e) {
-            if (!state.quarterWidth) return;
-            var d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-            e.preventDefault();
-            state.paused = true;
-            state.pos += d * 0.6;
-            normalizePos(state);
-            row.style.transform = 'translateX(' + (-state.pos) + 'px)';
-            clearTimeout(state.resumeTimer);
-            state.resumeTimer = setTimeout(function() { state.paused = false; }, 1500);
-          }, { passive: false });
-
-          setTimeout(function() { laptop.classList.add('is-ready'); }, 100 + idx * 100);
-          scrollers.push(state);
-        });
-      }
-
-      function normalizePos(s) {
-        if (!s.quarterWidth) return;
-        // [0, 3*quarterWidth) の範囲に収める（ループのため）
-        var max = s.quarterWidth * 3;
-        while (s.pos < 0) s.pos += s.quarterWidth;
-        while (s.pos >= max) s.pos -= s.quarterWidth;
-      }
-
-      function tick() {
-        scrollers.forEach(function(s) {
-          if (s.paused || !s.quarterWidth) return;
-          s.pos += s.speed;
-          normalizePos(s);
-          s.el.style.transform = 'translateX(' + (-s.pos) + 'px)';
-        });
-        requestAnimationFrame(tick);
-      }
-
-      // ===== WPデータ到着時に再ビルド =====
-      function buildAll(works) {
-        if (!works || works.length < 3) works = FALLBACK_WORKS;
-        var rows = distributeToRows(works, 3);
-        document.querySelectorAll('.s3d-cover-row').forEach(function(rowEl, idx) {
-          renderRow(rowEl, rows[idx]);
-        });
-        initScrollers();
-      }
-
-      // 初期: フォールバックで即ビルド（WP遅延中でも演出が動く）
-      buildAll(FALLBACK_WORKS);
-      requestAnimationFrame(tick);
-
-      window.addEventListener('bm-data-ready', function() {
-        if (window.BM_WORKS_DATA && window.BM_WORKS_DATA.length >= 3) {
-          buildAll(window.BM_WORKS_DATA);
-        }
-      });
-      window.addEventListener('bm-all-data-ready', function() {
-        if (window.BM_WORKS_DATA && window.BM_WORKS_DATA.length >= 3) {
-          buildAll(window.BM_WORKS_DATA);
-        }
+      var laptops = document.querySelectorAll('.s3d-laptop');
+      laptops.forEach(function(l, i) {
+        setTimeout(function() { l.classList.add('is-ready'); }, 150 + i * 120);
       });
 
-      // ===== GSAP ScrollTrigger: 視点後退 =====
       if (window.gsap && window.ScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
         var isPC = window.matchMedia('(min-width: 769px)').matches;
@@ -508,37 +445,38 @@
           var heading = document.getElementById('s3dHeading');
           var scrollHint = document.getElementById('s3dScrollHint');
 
-          gsap.set(screens, { scale: 2.2 });
-          gsap.set([left, right], { opacity: 0 });
+          // 初期状態: 中央が拡大、左右は隠す
+          gsap.set(screens, { scale: 2.0 });
+          gsap.set([left, right], { opacity: 0, xPercent: 0 });
 
           ScrollTrigger.create({
             trigger: '#s3dSection',
             start: 'top top',
-            end: '+=200%',
+            end: '+=220%',
             pin: '#s3dStage',
             scrub: 0.5,
             anticipatePin: 1,
             onUpdate: function(self) {
               if (self.progress > 0.15) scrollHint && scrollHint.classList.add('is-hidden');
               else scrollHint && scrollHint.classList.remove('is-hidden');
-              if (self.progress > 0.7) heading && heading.classList.add('is-shown');
+              if (self.progress > 0.75) heading && heading.classList.add('is-shown');
               else heading && heading.classList.remove('is-shown');
             }
           });
           gsap.to(screens, {
             scale: 1,
             ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top top', end: '+=200%', scrub: 0.5 }
+            scrollTrigger: { trigger: '#s3dSection', start: 'top top', end: '+=220%', scrub: 0.5 }
           });
           gsap.to(left, {
-            opacity: 1, xPercent: -4,
+            opacity: 1, xPercent: -2,
             ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top+=30% top', end: '+=100%', scrub: 0.5 }
+            scrollTrigger: { trigger: '#s3dSection', start: 'top+=20% top', end: '+=120%', scrub: 0.5 }
           });
           gsap.to(right, {
-            opacity: 1, xPercent: 4,
+            opacity: 1, xPercent: 2,
             ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top+=30% top', end: '+=100%', scrub: 0.5 }
+            scrollTrigger: { trigger: '#s3dSection', start: 'top+=20% top', end: '+=120%', scrub: 0.5 }
           });
         }
       }

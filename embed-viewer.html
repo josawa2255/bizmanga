@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Embed Viewer — BizManga</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', sans-serif;
+    }
+    #viewer {
+      position: absolute; inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: auto;
+      background: #fafafa;
+    }
+    /* 縦スクロールバー非表示 */
+    #viewer::-webkit-scrollbar { display: none; }
+    #viewer { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .page-stack {
+      display: flex;
+      flex-direction: column;
+    }
+    .page-stack img {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 見開き用2枚並び */
+    .page-stack.spread-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .page-stack.spread-mode img { width: 100%; }
+
+    /* ローディング */
+    .loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+    .loading::after {
+      content: '';
+      width: 18px; height: 18px;
+      margin-left: 10px;
+      border: 2px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">LOADING</div>
+  <div id="viewer">
+    <div class="page-stack" id="pageStack"></div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ===== パラメータ =====
+    var params = new URLSearchParams(location.search);
+    var mangaId = params.get('manga') || '';
+    var autoScroll = params.get('autoscroll') !== '0';  // デフォルトON
+    var speed = parseFloat(params.get('speed') || '0.5');
+
+    if (!mangaId) {
+      document.getElementById('loading').textContent = 'NO MANGA ID';
+      return;
+    }
+
+    var viewer = document.getElementById('viewer');
+    var stack  = document.getElementById('pageStack');
+    var loading = document.getElementById('loading');
+
+    // ===== WPから取得（まずはWP API） =====
+    var WP_API = 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+
+    function render(data) {
+      if (!data || !data.gallery || data.gallery.length === 0) {
+        loading.textContent = 'NO PAGES';
+        return;
+      }
+      loading.style.display = 'none';
+
+      // 見開き/縦読み判定（狭い viewport では常に縦スクロール）
+      var isNarrow = window.innerWidth < 768;
+      var isVertical = data.view_type === 'vertical_only' || data.view_type === 'vertical' || isNarrow;
+
+      if (!isVertical) stack.classList.add('spread-mode');
+
+      // 画像を順番に追加（無限ループ用に2セット分）
+      for (var rep = 0; rep < 2; rep++) {
+        data.gallery.forEach(function(src, i) {
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = (data.title_ja || mangaId) + ' p' + (i + 1);
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          stack.appendChild(img);
+        });
+      }
+
+      // 画像ロード完了待ちで自動スクロール開始
+      var totalImgs = stack.querySelectorAll('img').length;
+      var loaded = 0;
+      function onReady() { startAutoScroll(); }
+      stack.querySelectorAll('img').forEach(function(img) {
+        if (img.complete) { if (++loaded === totalImgs) onReady(); }
+        else {
+          img.addEventListener('load', function() { if (++loaded === totalImgs) onReady(); }, { once: true });
+          img.addEventListener('error', function() { if (++loaded === totalImgs) onReady(); }, { once: true });
+        }
+      });
+      // 念のため1秒後にも開始
+      setTimeout(onReady, 1000);
+    }
+
+    // ===== 自動スクロール =====
+    var started = false;
+    function startAutoScroll() {
+      if (started || !autoScroll) return;
+      started = true;
+
+      var halfHeight = viewer.scrollHeight / 2;
+      var paused = false;
+      var resumeTimer = null;
+
+      // ホバーで停止（iframe内で直接制御）
+      viewer.addEventListener('mouseenter', function() { paused = true; });
+      viewer.addEventListener('mouseleave', function() { paused = false; });
+
+      // ユーザーが手動スクロールしたらしばらく停止
+      viewer.addEventListener('wheel', function() {
+        paused = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() { paused = false; }, 2000);
+      }, { passive: true });
+
+      function tick() {
+        if (!paused) {
+          viewer.scrollTop += speed;
+          // 半分を超えたら先頭（正確には half 位置）にリセット → シームレスループ
+          if (viewer.scrollTop >= halfHeight) {
+            viewer.scrollTop -= halfHeight;
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ===== データ取得 =====
+    fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (data && data.gallery && data.gallery.length > 0) {
+          render(data);
+        } else {
+          // フォールバック: material/manga/{id}/01〜NN.webp を直接読む
+          var fallback = { view_type: 'spread', gallery: [] };
+          for (var i = 1; i <= 30; i++) {
+            fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
+          }
+          render(fallback);
+        }
+      })
+      .catch(function() {
+        // CORS/ネット障害でも最低限表示
+        var fallback = { view_type: 'spread', gallery: [] };
+        for (var i = 1; i <= 10; i++) {
+          fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
+        }
+        render(fallback);
+      });
+  })();
+  </script>
+</body>
+</html>
