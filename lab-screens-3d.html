@@ -491,34 +491,11 @@
         // ラベルは初期非表示(分裂完了後に現れる)
         gsap.set(labels, { opacity: 0, y: 8 });
 
-        var tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: '#s3dSection',
-            // セクション頂点が vp 頂点へ付く前(まだ vp の下20%あたりに居る時)に発動
-            start: 'top 20%',
-            end: '+=180%',
-            pin: '#s3dStage',
-            // scrub を長めにしてゆったり追従
-            scrub: 0.6,
-            anticipatePin: 1,
-            onUpdate: function(self) {
-              if (self.progress >= 0.75) group.classList.add('is-settled');
-              else group.classList.remove('is-settled');
-              if (self.progress > 0.15) scrollHint && scrollHint.classList.add('is-hidden');
-              else scrollHint && scrollHint.classList.remove('is-hidden');
-              if (self.progress > 0.75) heading && heading.classList.add('is-shown');
-              else heading && heading.classList.remove('is-shown');
-            },
-            onLeave: function() { group.classList.add('is-settled'); },
-            onEnterBack: function() { /* PC内スクロール可能なまま */ }
-          }
-        });
-
-        // フェーズ1: 初期1画面ホールド (0〜0.35)
+        // timeline は paused 状態で作成し、ScrollTrigger から手動で進める
+        // (scrub 直結だと下→上で逆再生してしまうので、最大到達 progress を保持して単調増加のみ許可)
+        var tl = gsap.timeline({ paused: true });
         tl.to({}, { duration: 0.35 });
-        // フェーズ2: wrap フルスクリーン → グリッドへ引き (0.35〜0.75)
         tl.to(wrap, { scale: 1, ease: 'power3.out', duration: 0.4 }, 0.35);
-        // フェーズ3: 他2枚が左右にパッと出現 (0.5〜0.75)
         tl.to(others, {
           opacity: 1,
           scale: 1,
@@ -526,7 +503,6 @@
           duration: 0.25,
           stagger: 0.05
         }, 0.5);
-        // フェーズ4: ラベルが上からフワッと降りてくる (0.7〜0.95)
         tl.to(labels, {
           opacity: 1,
           y: 0,
@@ -534,8 +510,32 @@
           duration: 0.25,
           stagger: 0.06
         }, 0.7);
-        // フェーズ5: 読む時間のホールド
         tl.to({}, { duration: 0.25 });
+
+        var maxP = 0;
+        ScrollTrigger.create({
+          trigger: '#s3dSection',
+          start: 'top 20%',
+          end: '+=180%',
+          pin: '#s3dStage',
+          anticipatePin: 1,
+          onUpdate: function(self) {
+            // 下方向(progress増)のみ tl に反映 — 上方向は無視で逆再生禁止
+            if (self.progress > maxP) {
+              maxP = self.progress;
+              tl.progress(maxP);
+            }
+            if (maxP >= 0.75) group.classList.add('is-settled');
+            if (maxP > 0.15) scrollHint && scrollHint.classList.add('is-hidden');
+            if (maxP > 0.75) heading && heading.classList.add('is-shown');
+          },
+          onLeave: function() {
+            maxP = 1;
+            tl.progress(1);
+            group.classList.add('is-settled');
+            heading && heading.classList.add('is-shown');
+          }
+        });
       }
     });
   </script>
