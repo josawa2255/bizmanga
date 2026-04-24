@@ -24,39 +24,28 @@
     var heading = document.getElementById('s3dHeading');
     var scrollHint = document.getElementById('s3dScrollHint');
 
-    var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.25;
+    var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.4 : 1.2;
     gsap.set(wrap, { scale: initScale, transformOrigin: '50% 0%' });
     gsap.set(others, { opacity: 0, scale: 0.6 });
     gsap.set(labels, { opacity: 0, y: -8 });
+    if (heading) gsap.set(heading, { autoAlpha: 0 });
 
-    // 冒頭/末尾の hold は削除 — 「スマホ静止状態でスクロール消化」を減らす
+    // セクションが viewport に入った時に一度だけ自動再生(scroll 奪取なし)
     var tl = gsap.timeline({ paused: true });
-    tl.to(wrap,   { scale: 1, ease: 'power3.out', duration: 0.45 }, 0);
-    tl.to(others, { opacity: 1, scale: 1, ease: 'power3.out', duration: 0.3, stagger: 0.05 }, 0.2);
-    tl.to(labels, { opacity: 1, y: 0, ease: 'power2.out', duration: 0.3, stagger: 0.06 }, 0.55);
+    tl.to(wrap,   { scale: 1, ease: 'power3.out', duration: 0.85 }, 0);
+    tl.to(others, { opacity: 1, scale: 1, ease: 'power3.out', duration: 0.55, stagger: 0.1 }, 0.3);
+    tl.to(labels, { opacity: 1, y: 0, ease: 'power2.out', duration: 0.45, stagger: 0.1 }, 0.95);
+    if (heading) tl.to(heading, { autoAlpha: 1, duration: 0.5 }, 0.8);
+    tl.call(function() { group.classList.add('is-settled'); }, null, 1.1);
 
-    var maxP = 0;
     ScrollTrigger.create({
       trigger: '#s3dSection',
-      start: 'top 20%',
-      // pin 期間: アニメ完走までのスクロール量。長すぎ=静止時間/短すぎ=感度高すぎのバランス
-      end: '+=150%',
-      pin: '#s3dStage',
-      anticipatePin: 1,
-      onUpdate: function(self) {
-        if (self.progress > maxP) {
-          maxP = self.progress;
-          tl.progress(maxP);
-        }
-        if (maxP >= 0.7) group.classList.add('is-settled');
-        if (maxP > 0.1 && scrollHint) scrollHint.classList.add('is-hidden');
-        if (maxP > 0.6 && heading) heading.classList.add('is-shown');
-      },
-      onLeave: function() {
-        maxP = 1;
-        tl.progress(1);
-        group.classList.add('is-settled');
-        if (heading) heading.classList.add('is-shown');
+      // セクション上部が viewport の 65% に到達(≒半分ほど見えた瞬間)でアニメ開始
+      start: 'top 65%',
+      once: true,
+      onEnter: function() {
+        if (scrollHint) scrollHint.classList.add('is-hidden');
+        tl.play();
       }
     });
   }
