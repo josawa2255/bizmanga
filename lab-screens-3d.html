@@ -339,8 +339,9 @@
         //   他2枚は opacity:0 で完全に隠す
         //   絶対ルール: 初期は必ず1画面のみ表示
         // ==========================================
-        // タイルを portrait(280x420) にしたので初期スケールを控えめに(ビューポート高さに収まる範囲)
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.4 : 1.8;
+        // 初期 hero をビューポートに大きく表示(動画の「1画面フルスクリーン」感)
+        // PC: 440x330 を 2.6倍 = 1144x858、モバイル: 110x238 を 2.8倍 = 308x666
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 2.6;
         gsap.set(group, {
           scale: initScale,
           transformOrigin: '50% 50%'
