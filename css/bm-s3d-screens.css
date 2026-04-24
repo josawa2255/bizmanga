@@ -3,8 +3,9 @@
    ============================================================= */
 
 .s3d-section {
+  /* 高さは GSAP pin spacer に任せる（section 自身に height を付けると二重確保で
+     後続セクションが重なる/隠れる不具合が出るため指定しない） */
   position: relative;
-  height: 200vh;
   background: #fff;
 }
 .s3d-stage {
