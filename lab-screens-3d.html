@@ -47,32 +47,39 @@
       background: #fff;
     }
 
-    /* 3枚のスクリーンを並べる外枠 */
+    /* 6画面(3列×2行)グリッド — デバイス別に PC型/スマホ型 を切替 */
     .s3d-screens {
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px; /* 暗いガター */
+      display: grid;
+      grid-template-columns: repeat(3, var(--s3d-tile-w));
+      grid-template-rows: repeat(2, var(--s3d-tile-h));
+      gap: 14px;
+      /* 既定=PC */
+      --s3d-tile-w: 360px;
+      --s3d-tile-h: 225px; /* 16:10 */
       will-change: transform;
-      transform-origin: center center;
+      /* 中央スロット(row1 col2)の中心に zoom pivot */
+      transform-origin: 50% 25%;
+    }
+    @media (max-width: 768px) {
+      .s3d-screens {
+        /* スマホ型 9:19.5 */
+        --s3d-tile-w: 96px;
+        --s3d-tile-h: 208px;
+        gap: 10px;
+      }
     }
 
-    /* 1枚のスクリーン — 光沢のあるディスプレイ（左右=PC） */
+    /* 1枚のスクリーン */
     .s3d-screen {
       position: relative;
+      width: var(--s3d-tile-w);
+      height: var(--s3d-tile-h);
       background: #000;
       overflow: hidden;
+      border-radius: 6px;
       opacity: 0;
       transition: opacity 0.5s ease;
-    }
-    .s3d-screen.is-ready { opacity: 1; }
-
-    /* 左右=PC（16:10、高さを中央スマホと揃える） */
-    .s3d-screen--left, .s3d-screen--right {
-      width: 500px;
-      aspect-ratio: 16 / 10; /* height = 312.5px — 中央スマホと同一 */
-      border-radius: 6px;
       box-shadow:
         inset 0 0 0 1px rgba(0,0,0,0.8),
         inset 0 1px 0 rgba(255,255,255,0.18),
@@ -82,34 +89,19 @@
         0 20px 50px rgba(0,0,0,0.6),
         0 40px 80px rgba(0,0,0,0.35);
     }
+    .s3d-screen.is-ready { opacity: 1; }
 
-    /* 中央=iPhone（9:19.5、縦の長さをPCに揃える） */
-    .s3d-screen--center {
-      width: 144px; /* 144 × 19.5/9 ≈ 312 — PC高さと一致 */
-      aspect-ratio: 9 / 19.5;
-      border-radius: 26px;
-      box-shadow:
-        inset 0 0 0 2px rgba(0,0,0,0.9),
-        inset 0 1.5px 0 rgba(255,255,255,0.25),
-        inset 0 -1.5px 0 rgba(255,255,255,0.08),
-        0 0 0 3px rgba(190,190,200,0.3),
-        0 0 0 5px #0a0a0c,
-        0 24px 60px rgba(0,0,0,0.65),
-        0 48px 100px rgba(0,0,0,0.4);
-    }
-    .s3d-screen--center iframe {
-      border-radius: 22px;
-    }
-    /* ダイナミックアイランド */
-    .s3d-screen--center .s3d-notch {
-      position: absolute;
-      top: 8px; left: 50%;
-      transform: translateX(-50%);
-      width: 44px; height: 11px;
-      background: #000;
-      border-radius: 6px;
-      z-index: 5;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    /* スマホ時は全タイルをスマホ筐体風に（角丸大・チタン縁） */
+    @media (max-width: 768px) {
+      .s3d-screen {
+        border-radius: 16px;
+        box-shadow:
+          inset 0 0 0 1.5px rgba(0,0,0,0.9),
+          inset 0 1px 0 rgba(255,255,255,0.22),
+          0 0 0 2px rgba(190,190,200,0.28),
+          0 0 0 3px #0a0a0c,
+          0 12px 30px rgba(0,0,0,0.55);
+      }
     }
 
     .s3d-screen iframe {
@@ -229,23 +221,8 @@
       50% { transform: translateY(10px); opacity: 0.3; }
     }
 
-    /* モバイル: 3枚縦積み */
-    @media (max-width: 768px) {
-      .s3d-section { height: auto; padding: 60px 0; }
-      .s3d-stage {
-        position: static;
-        height: auto;
-        flex-direction: column;
-        gap: 60px;
-        padding: 40px 24px 80px;
-      }
-      .s3d-screens { flex-direction: column; gap: 40px; transform: none !important; }
-      .s3d-screen { opacity: 1 !important; }
-      .s3d-screen--left, .s3d-screen--right { width: min(92vw, 460px); }
-      .s3d-screen--center { width: min(56vw, 240px); }
-      .s3d-heading { position: relative; top: 0; opacity: 1; margin-bottom: 20px; }
-      .s3d-scroll-hint { display: none; }
-    }
+    /* モバイル: pin+GSAP のまま 6画面グリッドをコンパクトに収める（セクション=200vh 維持） */
+    /* タイルサイズは上で 9:19.5 に切替済み */
 
     .s3d-after {
       padding: 80px 24px 120px;
@@ -262,7 +239,7 @@
 </head>
 
 <body>
-  <div class="lab-note">🧪 プロトタイプ v4</div>
+  <div class="lab-note">🧪 プロトタイプ v5 (6画面)</div>
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
@@ -282,8 +259,8 @@
   <main>
     <section class="s3d-intro">
       <div>
-        <h1>3D画面ギャラリー v4</h1>
-        <p>画面のみ。初期は中央1枚がフルスクリーン → スクロールで引くと左右の画面が現れる。</p>
+        <h1>3D画面ギャラリー v5 — 6画面 (3×2)</h1>
+        <p>動画準拠: 初期は中央1枚 → スクロールで引くと 3列×2行 の 6 画面に分裂。PCは PC型 / スマホは スマホ型 に自動切替。</p>
       </div>
     </section>
 
@@ -295,23 +272,31 @@
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
-          <!-- 左 -->
-          <div class="s3d-screen s3d-screen--left">
-            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.5" loading="lazy" title="一戸ホーム"></iframe>
+          <!-- row1: 左 / 中央(hero) / 右 -->
+          <div class="s3d-screen" data-idx="0">
+            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
           </div>
-
-          <!-- 中央（スマホ） -->
-          <div class="s3d-screen s3d-screen--center">
-            <div class="s3d-notch"></div>
-            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
+          <div class="s3d-screen s3d-screen--hero" data-idx="1">
+            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
           </div>
-
-          <!-- 右 -->
-          <div class="s3d-screen s3d-screen--right">
+          <div class="s3d-screen" data-idx="2">
             <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
+          </div>
+          <!-- row2: seko / life-buzfes / birdman -->
+          <div class="s3d-screen" data-idx="3">
+            <iframe src="/embed-viewer?manga=seko&speed=0.5" loading="lazy" title="施工会社紹介"></iframe>
+            <a class="s3d-screen-link" href="/biz-library?manga=seko" aria-label="施工会社紹介を開く"></a>
+          </div>
+          <div class="s3d-screen" data-idx="4">
+            <iframe src="/embed-viewer?manga=life-buzfes&speed=0.5" loading="lazy" title="ライフバズフェス"></iframe>
+            <a class="s3d-screen-link" href="/biz-library?manga=life-buzfes" aria-label="ライフバズフェスを開く"></a>
+          </div>
+          <div class="s3d-screen" data-idx="5">
+            <iframe src="/embed-viewer?manga=birdman&speed=0.5" loading="lazy" title="BIRDMAN"></iframe>
+            <a class="s3d-screen-link" href="/biz-library?manga=birdman" aria-label="BIRDMANを開く"></a>
           </div>
         </div>
 
@@ -363,57 +348,69 @@
 
       if (window.gsap && window.ScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
-        var isPC = window.matchMedia('(min-width: 769px)').matches;
-        if (isPC) {
-          var center = document.querySelector('.s3d-screen--center');
-          var left   = document.querySelector('.s3d-screen--left');
-          var right  = document.querySelector('.s3d-screen--right');
-          var group  = document.getElementById('s3dScreens');
-          var heading = document.getElementById('s3dHeading');
-          var scrollHint = document.getElementById('s3dScrollHint');
+        var group  = document.getElementById('s3dScreens');
+        var hero   = group.querySelector('.s3d-screen--hero');
+        var others = Array.prototype.slice.call(
+          group.querySelectorAll('.s3d-screen:not(.s3d-screen--hero)')
+        );
+        var heading = document.getElementById('s3dHeading');
+        var scrollHint = document.getElementById('s3dScrollHint');
 
-          // ==========================================
-          // 初期: 中央 iPhone のみを大きく表示（動画の hero フルスクリーン相当）
-          //   左右PCは中央の裏に完全に隠す（opacity 0 + xPercent ±140）
-          //   絶対ルール: 初期は必ず1画面のみ表示
-          // ==========================================
-          gsap.set(group, { scale: 2.8 });
-          gsap.set(left,  { opacity: 0, xPercent: 140 });
-          gsap.set(right, { opacity: 0, xPercent: -140 });
+        // タイルサイズ取得（CSS変数経由、PC/モバイルで自動切替）
+        var cs = getComputedStyle(group);
+        var tileH = parseFloat(cs.getPropertyValue('--s3d-tile-h')) || 225;
+        var gap   = parseFloat(cs.getPropertyValue('gap')) || 14;
+        // グリッド全体の高さ: 2row + 1gap。hero中心は row1の中心 = tileH/2。
+        // グループ中心はグループ高さ/2。差分 = (tileH+gap)/2 → この分だけグループを下にずらすと
+        // heroの中心がステージ中央と一致する。
+        var heroOffsetY = (tileH + gap) / 2;
 
-          var tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: '#s3dSection',
-              start: 'top top',
-              end: '+=100%',
-              pin: '#s3dStage',
-              scrub: 0.6,
-              anticipatePin: 1,
-              onUpdate: function(self) {
-                // 演出70%超えで iframe 操作有効化（読みやすさ優先）
-                if (self.progress >= 0.7) group.classList.add('is-settled');
-                else group.classList.remove('is-settled');
+        // ==========================================
+        // 初期: hero(row1 col2) のみをビューポート中央で大きく表示
+        //   他5枚は opacity:0 で完全に隠す（中央から現れる演出）
+        //   絶対ルール: 初期は必ず1画面のみ表示
+        // ==========================================
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 3.2 : 2.8;
+        gsap.set(group, {
+          y: heroOffsetY,
+          scale: initScale,
+          transformOrigin: '50% 25%'
+        });
+        gsap.set(others, { opacity: 0, scale: 0.6 });
 
-                if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
-                else scrollHint && scrollHint.classList.remove('is-hidden');
-                if (self.progress > 0.6) heading && heading.classList.add('is-shown');
-                else heading && heading.classList.remove('is-shown');
-              },
-              onLeave: function() { group.classList.add('is-settled'); },
-              onEnterBack: function() { /* 戻り時もPC内スクロール可能なまま */ }
-            }
-          });
+        var tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: '#s3dSection',
+            start: 'top top',
+            end: '+=120%',
+            pin: '#s3dStage',
+            scrub: 0.6,
+            anticipatePin: 1,
+            onUpdate: function(self) {
+              if (self.progress >= 0.7) group.classList.add('is-settled');
+              else group.classList.remove('is-settled');
+              if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
+              else scrollHint && scrollHint.classList.remove('is-hidden');
+              if (self.progress > 0.7) heading && heading.classList.add('is-shown');
+              else heading && heading.classList.remove('is-shown');
+            },
+            onLeave: function() { group.classList.add('is-settled'); },
+            onEnterBack: function() { /* PC内スクロール可能なまま */ }
+          }
+        });
 
-          // フェーズ1: 視点引き（scale 2.8 → 1）
-          tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.6 }, 0);
-
-          // フェーズ2: 左右スライドアウト + フェードイン
-          tl.to(left,  { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.25);
-          tl.to(right, { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.25);
-
-          // フェーズ3: 「読んでもらう」ホールド時間（is-settled 状態を維持）
-          tl.to({}, { duration: 0.4 });
-        }
+        // フェーズ1: hero フルスクリーン → グリッドへ引き
+        tl.to(group, { scale: 1, y: 0, ease: 'power2.out', duration: 0.6 }, 0);
+        // フェーズ2: 他5枚が中央から現れてグリッド位置へ（scale:0.6→1 + フェードイン）
+        tl.to(others, {
+          opacity: 1,
+          scale: 1,
+          ease: 'power2.out',
+          duration: 0.5,
+          stagger: 0.04
+        }, 0.3);
+        // フェーズ3: 読む時間のホールド
+        tl.to({}, { duration: 0.4 });
       }
     });
   </script>
