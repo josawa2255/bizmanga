@@ -52,14 +52,11 @@
         if (maxP > 0.1 && scrollHint) scrollHint.classList.add('is-hidden');
         if (maxP > 0.6 && heading) heading.classList.add('is-shown');
       },
-      onLeave: function(self) {
-        // pin 終点まで到達したら trigger を kill → pin 解除、以降再発動なし
-        // 上スクロール時も phones は静止 pin されず自然に流れる
+      onLeave: function() {
         maxP = 1;
         tl.progress(1);
         group.classList.add('is-settled');
         if (heading) heading.classList.add('is-shown');
-        self.kill(false);
       }
     });
   }
