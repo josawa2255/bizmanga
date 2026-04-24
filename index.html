@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://js.hs-scripts.com https://js.hs-analytics.net https://js.hs-banner.com https://forms.hsforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://js.hs-scripts.com https://js.hs-analytics.net https://js.hs-banner.com https://forms.hsforms.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
@@ -48,6 +48,7 @@
   <!-- ヒーロー表紙preload（LCP対象1枚のみ。複数preloadはネットワーク競合を起こしLCPを悪化させる） -->
   <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="css/bm-s3d-screens.css">
   <link rel="stylesheet" href="css/production-flow.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,6 +171,53 @@
           <a href="#" class="bm-news-link" data-ja="ビズマンガの新プランを開始しました" data-en="BizManga new plan has been launched">ビズマンガの新プランを開始しました</a>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- ===== 3Dスマホ端末 showcase (カラー / Webtoon / ボイスコミック) ===== -->
+  <section class="s3d-section" id="s3dSection">
+    <div class="s3d-stage" id="s3dStage">
+      <div class="s3d-heading" id="s3dHeading">
+        <p class="s3d-eyebrow">WHAT WE MAKE</p>
+        <h2 data-ja="さまざまな媒体・形式で制作しています" data-en="We create in every format for every medium">さまざまな媒体・形式で制作しています</h2>
+      </div>
+
+      <div class="s3d-screens-wrap" id="s3dScreensWrap">
+        <div class="s3d-labels" id="s3dLabels">
+          <div class="s3d-label" data-tile="0">
+            <span class="s3d-label-title" data-ja="カラー" data-en="Color">カラー</span>
+            <span class="s3d-label-sub" data-ja="ブランド訴求・感情を動かす" data-en="Brand storytelling that moves hearts">ブランド訴求・感情を動かす</span>
+          </div>
+          <div class="s3d-label s3d-label--hero" data-tile="1">
+            <span class="s3d-label-title" data-ja="Webtoon" data-en="Webtoon">Webtoon</span>
+            <span class="s3d-label-sub" data-ja="縦読み・SNS/スマホ世代に刺さる" data-en="Vertical scroll for SNS & mobile generation">縦読み・SNS/スマホ世代に刺さる</span>
+          </div>
+          <div class="s3d-label" data-tile="2">
+            <span class="s3d-label-title" data-ja="ボイスコミック" data-en="Voice Comic">ボイスコミック</span>
+            <span class="s3d-label-sub" data-ja="動画化で耳からも伝える" data-en="Animated storytelling with voice">動画化で耳からも伝える</span>
+          </div>
+        </div>
+
+        <div class="s3d-screens" id="s3dScreens">
+          <div class="s3d-screen" data-idx="0">
+            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="カラー漫画サンプル"></iframe>
+            <span class="s3d-notch" aria-hidden="true"></span>
+            <span class="s3d-home-indicator" aria-hidden="true"></span>
+          </div>
+          <div class="s3d-screen s3d-screen--hero" data-idx="1">
+            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="Webtoonサンプル"></iframe>
+            <span class="s3d-notch" aria-hidden="true"></span>
+            <span class="s3d-home-indicator" aria-hidden="true"></span>
+          </div>
+          <div class="s3d-screen s3d-screen--video" data-idx="2">
+            <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+            <span class="s3d-notch" aria-hidden="true"></span>
+            <span class="s3d-home-indicator" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s3d-scroll-hint" id="s3dScrollHint">SCROLL</div>
     </div>
   </section>
 
@@ -461,6 +509,9 @@
   </div>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="js/bm-s3d-screens.js" defer></script>
   <script src="js/bm-sanitize.js"></script>
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>

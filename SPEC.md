@@ -189,6 +189,24 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - フッターが隠れないよう **モバイルで `body { padding-bottom: 60px + safe-area-inset-bottom }`**
 - i18n: `data-ja` / `data-en` 属性付きテキスト、注入後に `translateAll()` を呼ぶ
 
+### 7.1.4 3Dスマホ端末 showcase（`#s3dSection`）⭐新規
+- 位置: ホームギャラリー（`#newWorks`）の直前
+- 役割: 「さまざまな媒体・形式で制作しています」— カラー漫画 / Webtoon / ボイスコミック の3媒体を3つのiPhone型端末で showcase
+- タイル構成（左→右）:
+  - カラー: `/embed-viewer?manga=ichinohe-home&speed=0.45`
+  - Webtoon(中央・hero): `/embed-viewer?manga=omatome-ninja-new&speed=0.5`
+  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls）
+- iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + ダークベゼル
+- スクロール演出（GSAP ScrollTrigger + pin）:
+  - 初期: 中央1枚 scale 1.25（PC）/ 2.8（SP）で viewport 充填
+  - scroll 進行で3分裂 → ラベル fade-in → 見出し表示
+  - **単調増加のみ**: 最大到達 progress を保持、下→上スクロールで逆再生しない
+  - `transform-origin: 50% 0%`（上端軸）でスマホ下端だけ伸縮、見出し衝突回避
+- 依存: `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/{gsap,ScrollTrigger}.min.js`
+- 実装: [css/bm-s3d-screens.css](BizManga/css/bm-s3d-screens.css) / [js/bm-s3d-screens.js](BizManga/js/bm-s3d-screens.js)
+- CSP: `script-src` に `https://cdnjs.cloudflare.com` 必須
+- **クリック遷移なし**: 3D showcase は「こういう媒体がある」と見せるだけ。個別作品へは下のギャラリーで
+
 ### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
 - `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
 - **3タブ**: 全て / Webtoon（縦読み） / 横読み
