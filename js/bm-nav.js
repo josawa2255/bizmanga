@@ -264,6 +264,72 @@
     }, { passive: true });
   }
 
+  // ===== 追従CTA（LINE + お問い合わせ）— contact.html以外 =====
+  if (currentFile !== 'contact') {
+    var svgNS = 'http://www.w3.org/2000/svg';
+    function buildFabBtn(opts) {
+      var a = document.createElement('a');
+      a.className = 'bm-fab__btn ' + opts.cls;
+      a.href = opts.href;
+      a.setAttribute('aria-label', opts.labelJa);
+      if (opts.external) { a.target = '_blank'; a.rel = 'noopener'; }
+
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'bm-fab__icon');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('aria-hidden', 'true');
+      if (opts.iconFill) {
+        svg.setAttribute('fill', 'currentColor');
+      } else {
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+      }
+      opts.paths.forEach(function(p) {
+        var el = document.createElementNS(svgNS, p.tag);
+        Object.keys(p.attrs).forEach(function(k) { el.setAttribute(k, p.attrs[k]); });
+        svg.appendChild(el);
+      });
+      a.appendChild(svg);
+
+      var span = document.createElement('span');
+      span.setAttribute('data-ja', opts.labelJa);
+      span.setAttribute('data-en', opts.labelEn);
+      span.textContent = opts.labelJa;
+      a.appendChild(span);
+      return a;
+    }
+
+    var fab = document.createElement('div');
+    fab.className = 'bm-fab';
+    fab.appendChild(buildFabBtn({
+      cls: 'bm-fab__btn--line',
+      href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831',
+      external: true,
+      labelJa: 'LINEで相談',
+      labelEn: 'Chat on LINE',
+      iconFill: true,
+      paths: [{ tag: 'path', attrs: { d: 'M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z' } }]
+    }));
+    fab.appendChild(buildFabBtn({
+      cls: 'bm-fab__btn--contact',
+      href: '/contact',
+      labelJa: 'お問い合わせ',
+      labelEn: 'Contact',
+      iconFill: false,
+      paths: [
+        { tag: 'path', attrs: { d: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' } },
+        { tag: 'polyline', attrs: { points: '22,6 12,13 2,6' } }
+      ]
+    }));
+    document.body.appendChild(fab);
+    if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en' && window.i18n.translateAll) {
+      window.i18n.translateAll();
+    }
+  }
+
   // グローバルに公開
   window.bmSwitchLang = switchLang;
 })();

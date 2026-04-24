@@ -174,15 +174,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 ## 7. ホームページ特殊動作
 
-### 7.1 固定CTAバー
-- [index.html:369-404](index.html) — LINE / **X** / 会社について知る の **3ボタン**（2026-04-21 お問い合わせ→Xに置換）
-- hero を過ぎると出現
-- 全ボタンに **slide + tooltip** ホバーエフェクト
-- **Xボタン**: `#1DA1F2`（旧Twitter水色、視認性優先で選択）/ SVG は新Xロゴ（2023年リブランディング後） / `target="_blank" rel="noopener"` / 遷移先 `https://x.com/Bizmanga_`
-- 「会社について知る」は **SAHARA風** 波パルス演出（赤→オレンジグラデ + 内側ピンクピル）
-- **お問い合わせ導線**: ヘッダー右上 CTA / Inner CTA section「無料相談する」/ フッターに残存。sticky barからは削除
-- **モバイル**: 画面下の横並び固定バー（flex:1 で3等分）、tooltip は非表示、box-reflect無効化
-- フッターがバーに隠れないよう **モバイルで `body { padding-bottom: 60px }`**
+### 7.1 追従CTA（`.bm-fab`）— 全ページ共通
+- `js/bm-nav.js` が `contact.html` 以外の全ページで自動注入（2026-04-24〜）
+- **2ボタン構成**: LINEで相談（`#06C755`）/ お問い合わせ（`var(--bm-accent)`）
+- スクロール中も常時表示（hero通過などの条件付き表示なし）
+- **デスクトップ**: 左下に横並びのピルボタン 2つ（`position: fixed; left: 20px; bottom: 20px`）
+- **モバイル (~768px)**: 画面下部に固定バー（flex:1 で左右2等分、白背景 + `backdrop-filter`）
+- back-to-top ボタン（`.bm-back-to-top`）はモバイル時 `bottom: calc(72px + safe-area-inset-bottom)` に退避
+- フッターがバーに隠れないよう **モバイルで `body { padding-bottom: 60px + safe-area-inset-bottom }`**
+- i18n: `data-ja` / `data-en` 属性付き、注入後に `translateAll()` を呼ぶ
 
 ### 7.2 ヒーロー
 - `.bm-hero` 背景: `#000 url(hp-material-1.webp) center/cover fixed`（ContentsXと共有）
