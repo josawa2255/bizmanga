@@ -102,6 +102,25 @@
     .s3d-screens.is-settled .s3d-screen iframe {
       pointer-events: auto;
     }
+    /* YouTube 16:9 を 4:3 タイルにフィット(高さ基準で幅オーバーを中央クロップ) */
+    .s3d-screen--video iframe {
+      width: calc(var(--s3d-tile-h) * 16 / 9);
+      height: 100%;
+      left: 50%;
+      inset: auto;
+      top: 0;
+      transform: translateX(-50%);
+    }
+    @media (max-width: 768px) {
+      /* モバイルは portrait タイルなので幅基準で高さオーバー */
+      .s3d-screen--video iframe {
+        width: 100%;
+        height: calc(var(--s3d-tile-w) * 9 / 16);
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
     /* 画面全体クリック（デスクトップは iframe.contentDocument にクリックハンドラ） */
     .s3d-screen-link {
       display: none;
@@ -339,8 +358,8 @@
               <span class="s3d-label-sub">縦読み・SNS/スマホ世代に刺さる</span>
             </div>
             <div class="s3d-label" data-tile="2">
-              <span class="s3d-label-title">採用</span>
-              <span class="s3d-label-sub">採用サイトに埋め込めるストーリー</span>
+              <span class="s3d-label-title">ボイスコミック</span>
+              <span class="s3d-label-sub">動画化で耳からも伝える</span>
             </div>
           </div>
 
@@ -353,9 +372,9 @@
               <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
               <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
             </div>
-            <div class="s3d-screen" data-idx="2">
-              <iframe src="/embed-viewer?manga=bms-unso&speed=0.55&ltr=1" loading="lazy" title="BMS運送"></iframe>
-              <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
+            <div class="s3d-screen s3d-screen--video" data-idx="2">
+              <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&disablekb=1" loading="lazy" title="ボイスコミックサンプル" allow="autoplay; encrypted-media" frameborder="0"></iframe>
+              <a class="s3d-screen-link" href="https://youtu.be/yLwkUfi6KfQ" target="_blank" rel="noopener" aria-label="ボイスコミックをYouTubeで開く"></a>
             </div>
           </div>
         </div>
