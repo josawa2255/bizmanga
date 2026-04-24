@@ -48,8 +48,9 @@
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
       background: #fff;
-      /* 見出し + ラベルと衝突しないよう上に余白 */
-      padding-top: 110px;
+      /* 見出しの上余白(ラベルはタイル直下なので上のクリアランスは少なめで可) */
+      padding-top: 90px;
+      padding-bottom: 80px;
       box-sizing: border-box;
     }
 
@@ -252,20 +253,20 @@
         --s3d-tile-h: 208px;
       }
     }
-    /* 3タイル分のラベル行。タイルの直上に浮かべる(layout に影響しない) */
+    /* 3タイル分のラベル行。タイルの直下に配置 — 見出しとの衝突を回避 */
     .s3d-labels {
       position: absolute;
       left: 50%;
-      bottom: calc(100% + 14px);
+      top: calc(100% + 18px);
       transform: translateX(-50%);
       display: grid;
       grid-template-columns: repeat(3, var(--s3d-tile-w));
-      gap: 0;
-      width: calc(var(--s3d-tile-w) * 3);
+      gap: 28px; /* タイルと同じ gap で列センター一致 */
+      width: calc(var(--s3d-tile-w) * 3 + 56px);
       z-index: 5;
     }
     @media (max-width: 768px) {
-      .s3d-labels { bottom: calc(100% + 6px); }
+      .s3d-labels { top: calc(100% + 10px); gap: 10px; width: calc(var(--s3d-tile-w) * 3 + 20px); }
     }
     .s3d-label {
       text-align: center;
@@ -489,7 +490,7 @@
         });
         gsap.set(others, { opacity: 0, scale: 0.6 });
         // ラベルは初期非表示(分裂完了後に現れる)
-        gsap.set(labels, { opacity: 0, y: 8 });
+        gsap.set(labels, { opacity: 0, y: -8 });
 
         // timeline は paused 状態で作成し、ScrollTrigger から手動で進める
         // (scrub 直結だと下→上で逆再生してしまうので、最大到達 progress を保持して単調増加のみ許可)
