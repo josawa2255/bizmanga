@@ -352,16 +352,19 @@
           scrollTrigger: {
             trigger: '#s3dSection',
             start: 'top top',
-            end: '+=120%',
+            // 動画準拠: 1→3 分裂トランジションが短距離で完了するよう end を半分に
+            end: '+=60%',
             pin: '#s3dStage',
-            scrub: 0.6,
+            // scrub を短めにしてトラックパッドの指離れに機敏に反応
+            scrub: 0.25,
             anticipatePin: 1,
             onUpdate: function(self) {
-              if (self.progress >= 0.7) group.classList.add('is-settled');
+              // トランジション自体が短いので is-settled も早めに
+              if (self.progress >= 0.55) group.classList.add('is-settled');
               else group.classList.remove('is-settled');
               if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
               else scrollHint && scrollHint.classList.remove('is-hidden');
-              if (self.progress > 0.7) heading && heading.classList.add('is-shown');
+              if (self.progress > 0.55) heading && heading.classList.add('is-shown');
               else heading && heading.classList.remove('is-shown');
             },
             onLeave: function() { group.classList.add('is-settled'); },
@@ -369,18 +372,19 @@
           }
         });
 
-        // フェーズ1: hero フルスクリーン → グリッドへ引き
-        tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.6 }, 0);
-        // フェーズ2: 他2枚が中央から現れて左右に並ぶ（scale:0.6→1 + フェードイン）
+        // 動画の分裂感に合わせてタイムラインをタイトに圧縮
+        // フェーズ1: hero フルスクリーン → グリッドへ引き (0〜0.5)
+        tl.to(group, { scale: 1, ease: 'power3.out', duration: 0.5 }, 0);
+        // フェーズ2: 他2枚が左右にパッと出現 (0.2〜0.5、重なって素早く)
         tl.to(others, {
           opacity: 1,
           scale: 1,
-          ease: 'power2.out',
-          duration: 0.5,
-          stagger: 0.08
-        }, 0.3);
-        // フェーズ3: 読む時間のホールド
-        tl.to({}, { duration: 0.4 });
+          ease: 'power3.out',
+          duration: 0.3,
+          stagger: 0.05
+        }, 0.2);
+        // フェーズ3: 落ち着いて読む時間 (0.5〜1.0)
+        tl.to({}, { duration: 0.5 });
       }
     });
   </script>
