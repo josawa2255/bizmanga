@@ -50,42 +50,37 @@
       background: #fff;
     }
 
-    /* 3画面(横1列) — PC 4:3 landscape タイル、中身は横スクロールで満遍なく埋める */
+    /* 3画面(横1列) — スマホ portrait タイル、端末間は gap、各端末は独立ベゼル */
     .s3d-screens {
       position: relative;
       display: grid;
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       grid-template-rows: var(--s3d-tile-h);
-      gap: 0;
+      gap: 28px;
       will-change: transform;
       transform-origin: 50% 50%;
-      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
     }
 
-    /* 1枚のスクリーン — 角丸なし・境界線で区切り */
+    /* 1台のスマホ端末 — 角丸 + ベゼル */
     .s3d-screen {
       position: relative;
       width: var(--s3d-tile-w);
       height: var(--s3d-tile-h);
       background: #000;
       overflow: hidden;
-      border-radius: 0; /* 角ばった */
+      border-radius: 28px;
       opacity: 0;
       transition: opacity 0.5s ease;
-      /* タイル間の暗い境界線（右側に1px、最後のタイルは除外） */
-      border-right: 2px solid #000;
+      /* 端末ベゼル(黒枠) + ドロップシャドウで浮遊感 */
+      border: 4px solid #111;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45), 0 40px 80px rgba(0,0,0,0.25);
     }
-    .s3d-screen:last-child { border-right: 0; }
     .s3d-screen.is-ready { opacity: 1; }
-
-    /* タイル群全体の外枠（角ばったベゼル） */
-    .s3d-screens::before {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border: 3px solid #000;
-      pointer-events: none;
-      z-index: 10;
+    @media (max-width: 768px) {
+      .s3d-screen {
+        border-radius: 14px;
+        border-width: 2px;
+      }
     }
 
     .s3d-screen iframe {
@@ -205,14 +200,14 @@
       will-change: transform;
       transform-origin: 50% 50%;
       /* タイルサイズは wrap で定義（labels/screens 両方で参照するため） */
-      --s3d-tile-w: 440px;
-      --s3d-tile-h: 330px;
+      /* PC: iPhone比(9:19.5 ≈ 1:2.17) 240×520 */
+      --s3d-tile-w: 240px;
+      --s3d-tile-h: 520px;
     }
     @media (max-width: 768px) {
       .s3d-screens-wrap {
-        /* モバイル = スマホ画面型 (9:19.5 portrait) */
-        --s3d-tile-w: 110px;
-        --s3d-tile-h: 238px;
+        --s3d-tile-w: 96px;
+        --s3d-tile-h: 208px;
       }
     }
     /* 3タイル分のラベル行。タイルの直上に浮かべる(layout に影響しない) */
@@ -304,7 +299,7 @@
 </head>
 
 <body>
-  <div class="lab-note">🧪 プロトタイプ v7 (3画面・角ばった繋がり)</div>
+  <div class="lab-note">🧪 プロトタイプ v8 (3スマホ端末)</div>
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
@@ -324,8 +319,8 @@
   <main>
     <section class="s3d-intro">
       <div>
-        <h1>3D画面ギャラリー v6 — 4画面 (2×2)</h1>
-        <p>初期は左上heroの1枚 → スクロールで引くと 2列×2行 の 4画面に分裂。PCは PC型 / スマホは スマホ型 に自動切替。</p>
+        <h1>3Dスマホ端末 v8</h1>
+        <p>初期は中央スマホ1枚 → スクロールで引くと 3台のスマホに分裂。各端末でカラー / Webtoon / ボイスコミックを表示。</p>
       </div>
     </section>
 
@@ -437,7 +432,8 @@
         // ==========================================
         // 初期 hero をビューポートに大きく表示(動画の「1画面フルスクリーン」感)
         // wrap(ラベル + タイル)を一体的に scale することでラベルも一緒に拡大
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 2.6;
+        // portrait スマホ用に scale を調整: 高さ 520 → ビューポート約85%
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.5;
         gsap.set(wrap, {
           scale: initScale,
           transformOrigin: '50% 50%'
