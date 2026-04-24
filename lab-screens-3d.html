@@ -61,13 +61,18 @@
     /* 1枚のスクリーン — 光沢のあるディスプレイ（左右=PC） */
     .s3d-screen {
       position: relative;
-      width: 440px;
-      aspect-ratio: 16 / 10;
       background: #000;
       overflow: hidden;
-      border-radius: 6px;
       opacity: 0;
       transition: opacity 0.5s ease;
+    }
+    .s3d-screen.is-ready { opacity: 1; }
+
+    /* 左右=PC（16:10、高さを中央スマホと揃える） */
+    .s3d-screen--left, .s3d-screen--right {
+      width: 500px;
+      aspect-ratio: 16 / 10; /* height = 312.5px — 中央スマホと同一 */
+      border-radius: 6px;
       box-shadow:
         inset 0 0 0 1px rgba(0,0,0,0.8),
         inset 0 1px 0 rgba(255,255,255,0.18),
@@ -77,38 +82,34 @@
         0 20px 50px rgba(0,0,0,0.6),
         0 40px 80px rgba(0,0,0,0.35);
     }
-    .s3d-screen.is-ready { opacity: 1; }
 
-    /* 中央=スマートフォン（縦長・角丸強め・チタン縁） */
+    /* 中央=iPhone（9:19.5、縦の長さをPCに揃える） */
     .s3d-screen--center {
-      width: 260px;
+      width: 144px; /* 144 × 19.5/9 ≈ 312 — PC高さと一致 */
       aspect-ratio: 9 / 19.5;
-      border-radius: 34px;
+      border-radius: 26px;
       box-shadow:
         inset 0 0 0 2px rgba(0,0,0,0.9),
         inset 0 1.5px 0 rgba(255,255,255,0.25),
         inset 0 -1.5px 0 rgba(255,255,255,0.08),
-        0 0 0 3px rgba(190,190,200,0.25),
+        0 0 0 3px rgba(190,190,200,0.3),
         0 0 0 5px #0a0a0c,
         0 24px 60px rgba(0,0,0,0.65),
         0 48px 100px rgba(0,0,0,0.4);
     }
     .s3d-screen--center iframe {
-      border-radius: 28px;
+      border-radius: 22px;
     }
-    /* ダイナミックアイランド風ノッチ */
-    .s3d-screen--center::before {
-      /* 既存のガラス反射を拡張しつつ上部にノッチを追加 */
-    }
+    /* ダイナミックアイランド */
     .s3d-screen--center .s3d-notch {
       position: absolute;
-      top: 10px; left: 50%;
+      top: 8px; left: 50%;
       transform: translateX(-50%);
-      width: 72px; height: 18px;
+      width: 44px; height: 11px;
       background: #000;
-      border-radius: 12px;
+      border-radius: 6px;
       z-index: 5;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
     }
 
     .s3d-screen iframe {
@@ -229,10 +230,9 @@
         padding: 40px 24px 80px;
       }
       .s3d-screens { flex-direction: column; gap: 40px; transform: none !important; }
-      .s3d-screen {
-        width: min(92vw, 460px);
-        opacity: 1 !important;
-      }
+      .s3d-screen { opacity: 1 !important; }
+      .s3d-screen--left, .s3d-screen--right { width: min(92vw, 460px); }
+      .s3d-screen--center { width: min(56vw, 240px); }
       .s3d-heading { position: relative; top: 0; opacity: 1; margin-bottom: 20px; }
       .s3d-scroll-hint { display: none; }
     }
