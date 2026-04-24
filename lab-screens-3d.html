@@ -58,7 +58,7 @@
       transform-origin: center center;
     }
 
-    /* 1枚のスクリーン — 光沢のあるディスプレイ */
+    /* 1枚のスクリーン — 光沢のあるディスプレイ（左右=PC） */
     .s3d-screen {
       position: relative;
       width: 440px;
@@ -68,26 +68,52 @@
       border-radius: 6px;
       opacity: 0;
       transition: opacity 0.5s ease;
-      /* 金属エッジ＋強い奥行き影 */
       box-shadow:
-        /* 内側：黒い縁でガラス面っぽく */
         inset 0 0 0 1px rgba(0,0,0,0.8),
-        /* 内側：上からの淡いハイライト（ガラスの縁光） */
         inset 0 1px 0 rgba(255,255,255,0.18),
         inset 0 -1px 0 rgba(255,255,255,0.05),
-        /* 外：金属風チャムファー */
         0 0 0 2px rgba(255,255,255,0.06),
-        /* 外：深い落影（グリッドギャップを強調） */
         0 0 0 3px #000,
         0 20px 50px rgba(0,0,0,0.6),
         0 40px 80px rgba(0,0,0,0.35);
     }
     .s3d-screen.is-ready { opacity: 1; }
 
+    /* 中央=スマートフォン（縦長・角丸強め・チタン縁） */
+    .s3d-screen--center {
+      width: 260px;
+      aspect-ratio: 9 / 19.5;
+      border-radius: 34px;
+      box-shadow:
+        inset 0 0 0 2px rgba(0,0,0,0.9),
+        inset 0 1.5px 0 rgba(255,255,255,0.25),
+        inset 0 -1.5px 0 rgba(255,255,255,0.08),
+        0 0 0 3px rgba(190,190,200,0.25),
+        0 0 0 5px #0a0a0c,
+        0 24px 60px rgba(0,0,0,0.65),
+        0 48px 100px rgba(0,0,0,0.4);
+    }
+    .s3d-screen--center iframe {
+      border-radius: 28px;
+    }
+    /* ダイナミックアイランド風ノッチ */
+    .s3d-screen--center::before {
+      /* 既存のガラス反射を拡張しつつ上部にノッチを追加 */
+    }
+    .s3d-screen--center .s3d-notch {
+      position: absolute;
+      top: 10px; left: 50%;
+      transform: translateX(-50%);
+      width: 72px; height: 18px;
+      background: #000;
+      border-radius: 12px;
+      z-index: 5;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
     .s3d-screen iframe {
       position: absolute;
       inset: 0;
-      /* 逆スケールで鮮明にレンダ（拡大時のボケ対策） */
       width: 250%;
       height: 250%;
       transform: scale(0.4);
@@ -95,11 +121,9 @@
       border: 0;
       display: block;
       background: #fafafa;
-      /* 初期はiframe操作不可 → ページスクロールでズーム演出が進む。
-         演出完了後にJSで pointer-events:auto に切替える */
+      /* 演出中はページスクロール優先（iframe無効）、演出ほぼ完了で有効化 */
       pointer-events: none;
     }
-    /* 演出完了後、PC内ホイールでの手動スクロール可 */
     .s3d-screens.is-settled .s3d-screen iframe {
       pointer-events: auto;
     }
@@ -267,8 +291,9 @@
             <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
           </div>
 
-          <!-- 中央 -->
+          <!-- 中央（スマホ） -->
           <div class="s3d-screen s3d-screen--center">
+            <div class="s3d-notch"></div>
             <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
           </div>
@@ -336,43 +361,45 @@
           var scrollHint = document.getElementById('s3dScrollHint');
 
           // ==========================================
-          // 初期: 中央のみフルスクリーン風 (scale 3.2)
-          //   左右は中央の下に隠れる (xPercent で重ねる)
+          // 初期: 中央（スマホ）のみ大きく表示
+          //   左右PCは中央の下に隠れる (xPercent で重ねる)
           // ==========================================
-          gsap.set(group, { scale: 3.2 });
-          gsap.set(left,  { opacity: 0, xPercent: 105 });
-          gsap.set(right, { opacity: 0, xPercent: -105 });
+          gsap.set(group, { scale: 1.6 });
+          gsap.set(left,  { opacity: 0, xPercent: 140 });
+          gsap.set(right, { opacity: 0, xPercent: -140 });
 
           var tl = gsap.timeline({
             scrollTrigger: {
               trigger: '#s3dSection',
               start: 'top top',
-              end: '+=120%', // 1.2画面分で演出完了
+              end: '+=100%',
               pin: '#s3dStage',
               scrub: 0.6,
               anticipatePin: 1,
               onUpdate: function(self) {
-                // 演出中(progress<1): iframe操作無効→ホイールはページスクロール（ズーム進行）
-                // 演出完了(progress===1): iframe操作有効→ホイールはPC内スクロール
-                if (self.progress >= 0.99) group.classList.add('is-settled');
+                // 演出70%超えで iframe 操作有効化（読みやすさ優先）
+                if (self.progress >= 0.7) group.classList.add('is-settled');
                 else group.classList.remove('is-settled');
 
                 if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
                 else scrollHint && scrollHint.classList.remove('is-hidden');
-                if (self.progress > 0.7) heading && heading.classList.add('is-shown');
+                if (self.progress > 0.6) heading && heading.classList.add('is-shown');
                 else heading && heading.classList.remove('is-shown');
               },
               onLeave: function() { group.classList.add('is-settled'); },
-              onEnterBack: function() { group.classList.remove('is-settled'); }
+              onEnterBack: function() { /* 戻り時もPC内スクロール可能なまま */ }
             }
           });
 
-          // フェーズ1: 視点引き（scale 3.2 → 1）
-          tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.65 }, 0);
+          // フェーズ1: 視点引き（scale 1.6 → 1）
+          tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.6 }, 0);
 
           // フェーズ2: 左右スライドアウト + フェードイン
-          tl.to(left,  { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.3);
-          tl.to(right, { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.3);
+          tl.to(left,  { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.25);
+          tl.to(right, { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.25);
+
+          // フェーズ3: 「読んでもらう」ホールド時間（is-settled 状態を維持）
+          tl.to({}, { duration: 0.4 });
         }
       }
     });

@@ -19,6 +19,8 @@
       overflow-x: hidden;
       scroll-behavior: auto;
       background: #fafafa;
+      /* 親ページへスクロール連鎖させない（3D画面プロトなど iframe 埋め込み時に重要） */
+      overscroll-behavior: contain;
     }
     /* 縦スクロールバー非表示 */
     #viewer::-webkit-scrollbar { display: none; }
