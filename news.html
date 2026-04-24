@@ -8,12 +8,11 @@
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
+  <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-Q1T3033Q3W');
+    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); });
   </script>
   <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
@@ -45,7 +44,24 @@
   <meta name="twitter:description" content="ビズマンガの最新ニュースを常時発信。新規制作事例の公開、メディア掲載、セミナー・イベント情報、キャンペーン告知まで、ビジネス漫画業界の最新トレンドもまとめてチェックいただけます。">
   <meta name="twitter:image" content="https://bizmanga.contentsx.jp/material/images/og/og-news.webp">
   <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
-  <link rel="stylesheet" href="css/bizmanga.css">
+  <style>
+/* Critical CSS - above-the-fold render optimization */
+:root{--bm-accent:#e85500;--bm-accent-hover:#cc4600;--bm-bg:#fff;--bm-text:#1a1a1a;--bm-text-sub:#4a4640;--bm-border:#eee;}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}body{font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif;background:var(--bm-bg);color:var(--bm-text);line-height:1.6;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;height:auto;display:block;}a{color:inherit;text-decoration:none;}
+.bm-header{position:sticky;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--bm-border);height:60px;}
+.bm-header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:100%;gap:16px;}
+.bm-logo-img{height:36px;width:auto;}.bm-nav{flex:1;}
+.bm-header-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;}
+.bm-nav-cta{padding:8px 14px;border-radius:100px;font-size:13px;font-weight:700;background:var(--bm-accent);color:#fff;white-space:nowrap;}
+.bm-nav-cta--line{background:#06C755;}.bm-hamburger{display:none;order:10;width:40px;height:40px;background:transparent;border:none;cursor:pointer;}
+.bm-container{max-width:1200px;margin:0 auto;padding:0 20px;}
+h1,h2,h3,h4,h5,h6{margin:0 0 16px;font-weight:900;line-height:1.4;}h1{font-size:clamp(28px,5vw,48px);}h2{font-size:clamp(22px,3.5vw,36px);}h3{font-size:18px;}
+p{margin:0 0 16px;}
+@media (max-width:768px){.bm-hamburger{display:block;}.bm-nav,.bm-nav-cta{display:none;}}
+</style>
+  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
