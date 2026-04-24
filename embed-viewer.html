@@ -39,26 +39,90 @@
       -webkit-user-drag: none;
     }
 
-    /* ============ 見開き(spread): 横自動カルーセル ============ */
-    #viewer.is-horizontal {
-      display: flex;
-      align-items: stretch;
+    /* ============ 見開き(spread): biz-library 準拠のフリップ ============ */
+    #viewer.is-spread {
+      perspective: 1500px;
     }
-    .h-strip {
+    .spread-book {
+      position: absolute; inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #f8f4ef;
+    }
+    .book-page {
+      position: relative;
+      overflow: hidden;
+      background: #f8f4ef;
       display: flex;
-      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+    .book-page img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    /* 日本漫画: 奇数=右、偶数=左 */
+    #pageRight { grid-column: 2; }
+    #pageLeft  { grid-column: 1; }
+    /* 奇数ページ末尾はセンタリング */
+    .spread-book.single-page { grid-template-columns: 1fr; }
+    .spread-book.single-page #pageRight { grid-column: 1; }
+    .spread-book.single-page #pageLeft  { display: none; }
+    /* スパイン(中央) */
+    .book-spine {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      z-index: 20;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .spread-book.single-page .book-spine { display: none; }
+
+    /* フリップオーバーレイ(左半分) — biz-library の flip-prev 相当 */
+    .flip-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 50%;
       height: 100%;
-      flex-shrink: 0;
+      transform-style: preserve-3d;
+      transform-origin: right center; /* 左ページ上で右軸(スパイン)回転 */
+      pointer-events: none;
+      z-index: 25;
+      display: none;
       will-change: transform;
     }
-    .h-strip img {
-      height: 100%;
-      width: auto;
-      display: block;
-      flex-shrink: 0;
-      user-select: none;
-      -webkit-user-drag: none;
+    .flip-overlay.active { display: block; }
+    .flip-face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+      background: #f8f4ef;
+      display: flex; align-items: center; justify-content: center;
     }
+    .flip-face img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .flip-front { z-index: 2; }
+    .flip-back  { transform: rotateY(180deg); z-index: 1; }
+
+    /* フリップ中の右ページ側の影 */
+    .page-shadow {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 80px; height: 100%;
+      pointer-events: none;
+      z-index: 22;
+      opacity: 0;
+      transition: opacity 0.15s;
+      background: linear-gradient(to right, rgba(0,0,0,0.25), transparent);
+    }
+    .page-shadow.active { opacity: 1; }
 
     /* ローディング */
     .loading {
@@ -84,8 +148,19 @@
 <body>
   <div class="loading" id="loading">LOADING</div>
   <div id="viewer">
+    <!-- 縦読み用 -->
     <div class="v-stack" id="vStack" style="display:none"></div>
-    <div class="h-strip" id="hStrip" style="display:none"></div>
+    <!-- 見開き用(ビズ書庫構造) -->
+    <div class="spread-book" id="spreadBook" style="display:none">
+      <div class="book-page" id="pageRight"><img id="imgRight" alt=""></div>
+      <div class="book-page" id="pageLeft"><img id="imgLeft" alt=""></div>
+      <div class="book-spine"></div>
+      <div class="flip-overlay" id="flipOverlay">
+        <div class="flip-face flip-front"><img id="flipFrontImg" alt=""></div>
+        <div class="flip-face flip-back"><img id="flipBackImg" alt=""></div>
+      </div>
+      <div class="page-shadow" id="pageShadowRight"></div>
+    </div>
   </div>
 
   <script>
@@ -94,9 +169,8 @@
 
     var params = new URLSearchParams(location.search);
     var mangaId = params.get('manga') || '';
-    var speed = parseFloat(params.get('speed') || '0.5'); // px/frame
-    // ltr=1: 横カルーセルをLTR方向(左→右)に流す（右タイル用）
-    var ltr = params.get('ltr') === '1' || params.get('reverse') === '1';
+    var speed = parseFloat(params.get('speed') || '0.5'); // 縦スクロール用
+    var flipMs = parseInt(params.get('flipms') || '2200', 10); // 自動捲り間隔
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -106,7 +180,13 @@
     var loading = document.getElementById('loading');
     var viewer  = document.getElementById('viewer');
     var vStack  = document.getElementById('vStack');
-    var hStrip  = document.getElementById('hStrip');
+    var spreadBook = document.getElementById('spreadBook');
+    var imgRight = document.getElementById('imgRight');
+    var imgLeft  = document.getElementById('imgLeft');
+    var flipOverlay = document.getElementById('flipOverlay');
+    var flipFrontImg = document.getElementById('flipFrontImg');
+    var flipBackImg = document.getElementById('flipBackImg');
+    var pageShadowRight = document.getElementById('pageShadowRight');
 
     var WP_API = 'https://cms.contentsx.jp/wp-json/contentsx/v1';
 
@@ -119,14 +199,13 @@
 
       var isVertical = data.view_type === 'vertical_only' || data.view_type === 'vertical';
       if (isVertical) renderVertical(data);
-      else renderHorizontal(data);
+      else renderSpreadFlip(data);
     }
 
-    // ============ 縦スクロール: 縦に自動スクロール ============
+    // ============ 縦読み: 縦自動スクロール ============
     function renderVertical(data) {
       viewer.classList.add('is-vertical');
       vStack.style.display = '';
-      hStrip.style.display = 'none';
 
       for (var rep = 0; rep < 2; rep++) {
         data.gallery.forEach(function(src, i) {
@@ -146,10 +225,7 @@
       if (vStarted) return;
       vStarted = true;
       var halfHeight = viewer.scrollHeight / 2;
-      var paused = false;
-      var hoverPause = false;
-      var resumeTimer = null;
-
+      var paused = false, hoverPause = false, resumeTimer = null;
       viewer.addEventListener('mouseenter', function() { hoverPause = true; });
       viewer.addEventListener('mouseleave', function() { hoverPause = false; });
       document.addEventListener('mouseover', function() { hoverPause = true; });
@@ -161,7 +237,6 @@
         clearTimeout(resumeTimer);
         resumeTimer = setTimeout(function() { paused = false; }, 2000);
       }, { passive: true });
-
       function tick() {
         if (!paused && !hoverPause) {
           viewer.scrollTop += speed;
@@ -172,89 +247,131 @@
       requestAnimationFrame(tick);
     }
 
-    // ============ 横カルーセル ============
-    // 通常モード: 右→左へ流れる(左タイル用)。初期表示は p1 が左端。
-    // ltr モード: 左→右へ流れる(右タイル用)。初期表示は p1 が右端。
-    //   DOM を gallery.reverse() にすることで、各セットの右端が p1 になる。
-    //   strip 全体を [pN, pN-1, ..., p1, pN, pN-1, ..., p1] の2セット複製。
-    //   scroll は pos 減算(strip 右シフト)で LTR 方向。
-    function renderHorizontal(data) {
-      viewer.classList.add('is-horizontal');
-      hStrip.style.display = '';
-      vStack.style.display = 'none';
+    // ============ 見開き: ビズ書庫準拠のフリップ ============
+    function renderSpreadFlip(data) {
+      viewer.classList.add('is-spread');
+      spreadBook.style.display = '';
 
-      var pages = ltr ? data.gallery.slice().reverse() : data.gallery;
-
-      for (var rep = 0; rep < 2; rep++) {
-        pages.forEach(function(src, i) {
-          var img = document.createElement('img');
-          img.src = src;
-          // ltr時は reverse 後のインデックス i からオリジナルページ番号を逆算
-          var origIdx = ltr ? (pages.length - i) : (i + 1);
-          img.alt = (data.title_ja || mangaId) + ' p' + origIdx;
-          img.loading = rep === 0 ? 'eager' : 'lazy';
-          img.decoding = 'async';
-          hStrip.appendChild(img);
-        });
+      // ページを2枚ずつペアリング(biz-library の buildSpreads と同等)
+      var gallery = data.gallery;
+      var spreads = [];
+      for (var i = 0; i < gallery.length; i += 2) {
+        spreads.push([gallery[i], gallery[i+1] || null]);
       }
-      waitImages(hStrip, startHorizontalScroll);
-    }
+      if (spreads.length === 0) { loading.textContent = 'NO PAGES'; return; }
 
-    var hStarted = false;
-    function startHorizontalScroll() {
-      if (hStarted) return;
-      hStarted = true;
+      // プリロード
+      gallery.forEach(function(src) { var pre = new Image(); pre.src = src; });
 
-      var halfWidth = hStrip.scrollWidth / 2;
-      var firstImg = hStrip.querySelector('img');
-      var pageW = firstImg ? firstImg.offsetWidth : 0;
-      var viewW = viewer.clientWidth;
+      var currentIdx = 0;
+      var isFlipping = false;
+      var FLIP_DURATION = 500; // biz-library 準拠
 
-      var paused = false;
-      var hoverPause = false;
-      var resumeTimer = null;
-
-      // 初期位置:
-      //   通常(右→左): pos=0 → p1 が viewport 左端
-      //   LTR(左→右): pos=halfWidth-viewW → 各セット右端の p1 が viewport 右端
-      var pos = ltr ? Math.max(0, halfWidth - viewW) : 0;
-      hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
-
-      viewer.addEventListener('mouseenter', function() { hoverPause = true; });
-      viewer.addEventListener('mouseleave', function() { hoverPause = false; });
-      document.addEventListener('mouseover', function() { hoverPause = true; });
-      document.addEventListener('mouseout', function(e) {
-        if (!e.relatedTarget) hoverPause = false;
-      });
-      viewer.addEventListener('wheel', function() {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() { paused = false; }, 2000);
-      }, { passive: true });
-      viewer.addEventListener('touchstart', function() {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() { paused = false; }, 2500);
-      }, { passive: true });
-
-      function tick() {
-        if (!paused && !hoverPause) {
-          if (ltr) {
-            // LTR: strip 右シフト = pos 減算 = translateX 増加
-            pos -= speed;
-            if (pos < 0) pos += halfWidth;
-          } else {
-            pos += speed;
-            if (pos >= halfWidth) pos -= halfWidth;
-          }
-          hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
+      function setSpread(idx) {
+        var sp = spreads[idx];
+        imgRight.src = sp[0];
+        imgRight.alt = (data.title_ja || mangaId) + ' p' + (idx * 2 + 1);
+        if (sp[1]) {
+          spreadBook.classList.remove('single-page');
+          imgLeft.src = sp[1];
+          imgLeft.alt = (data.title_ja || mangaId) + ' p' + (idx * 2 + 2);
+        } else {
+          spreadBook.classList.add('single-page');
         }
-        requestAnimationFrame(tick);
       }
-      requestAnimationFrame(tick);
+      setSpread(0);
+
+      // biz-library goNext と同等のフリップ
+      function goNext() {
+        if (isFlipping || spreads.length < 2) return;
+        var nextIdx = (currentIdx + 1) % spreads.length;
+        var curSpr = spreads[currentIdx];
+        var nextSpr = spreads[nextIdx];
+
+        isFlipping = true;
+
+        flipOverlay.classList.remove('flip-next', 'flip-prev');
+        flipOverlay.classList.add('flip-prev');
+
+        flipFrontImg.src = curSpr[1] || curSpr[0];
+        flipBackImg.src  = nextSpr[0];
+
+        flipOverlay.style.transition = 'none';
+        flipOverlay.style.transform = 'rotateY(0deg)';
+        flipOverlay.classList.add('active');
+
+        pageShadowRight.classList.add('active');
+
+        // 45%時点で背後の静止ページを次ペアに差替
+        var halfDuration = FLIP_DURATION * 0.45;
+        setTimeout(function() {
+          imgRight.src = nextSpr[0];
+          if (nextSpr[1]) {
+            spreadBook.classList.remove('single-page');
+            imgLeft.src = nextSpr[1];
+          } else {
+            spreadBook.classList.add('single-page');
+          }
+        }, halfDuration);
+
+        // 影アニメ
+        pageShadowRight.style.transition = 'none';
+        pageShadowRight.style.opacity = '0';
+        setTimeout(function() {
+          pageShadowRight.style.transition = 'opacity ' + (FLIP_DURATION * 0.3) + 'ms ease';
+          pageShadowRight.style.opacity = '0.6';
+        }, FLIP_DURATION * 0.15);
+        setTimeout(function() {
+          pageShadowRight.style.opacity = '0';
+        }, FLIP_DURATION * 0.65);
+
+        // フリップ本体
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            flipOverlay.style.transition = 'transform ' + FLIP_DURATION + 'ms cubic-bezier(0.3, 0.0, 0.2, 1)';
+            flipOverlay.style.transform = 'rotateY(180deg)';
+          });
+        });
+
+        setTimeout(function() {
+          flipOverlay.classList.remove('active', 'flip-prev');
+          flipOverlay.style.transition = 'none';
+          flipOverlay.style.transform = '';
+          pageShadowRight.classList.remove('active');
+          pageShadowRight.style.transition = 'none';
+          pageShadowRight.style.opacity = '';
+          currentIdx = nextIdx;
+          isFlipping = false;
+        }, FLIP_DURATION + 30);
+      }
+
+      // ホバー検出
+      var isHovered = false;
+      document.addEventListener('mouseover', function() { isHovered = true; });
+      document.addEventListener('mouseout', function(e) {
+        if (!e.relatedTarget) isHovered = false;
+      });
+      viewer.addEventListener('mouseenter', function() { isHovered = true; });
+      viewer.addEventListener('mouseleave', function() { isHovered = false; });
+
+      // タッチ一時停止 + タップで次
+      var touchPauseUntil = 0;
+      viewer.addEventListener('touchstart', function() {
+        touchPauseUntil = Date.now() + 3000;
+      }, { passive: true });
+      viewer.addEventListener('click', function() {
+        if ('ontouchstart' in window) goNext();
+      });
+
+      // 自動捲り
+      setInterval(function() {
+        if (isHovered) return;
+        if (Date.now() < touchPauseUntil) return;
+        if (isFlipping) return;
+        goNext();
+      }, flipMs);
     }
 
-    // ============ 画像ロード完了待ち ============
     function waitImages(container, callback) {
       var imgs = container.querySelectorAll('img');
       if (imgs.length === 0) { callback(); return; }
@@ -267,10 +384,9 @@
           img.addEventListener('error', check, { once: true });
         }
       });
-      setTimeout(callback, 1500); // 保険
+      setTimeout(callback, 1500);
     }
 
-    // ============ データ取得 ============
     fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
