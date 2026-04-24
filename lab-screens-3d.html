@@ -47,61 +47,54 @@
       background: #fff;
     }
 
-    /* 4画面(2列×2行)グリッド — デバイス別に PC型/スマホ型 を切替 */
+    /* 3画面(横1列)グリッド — 角ばって繋がった見た目（動画準拠） */
     .s3d-screens {
       position: relative;
       display: grid;
-      grid-template-columns: repeat(2, var(--s3d-tile-w));
-      grid-template-rows: repeat(2, var(--s3d-tile-h));
-      gap: 14px;
+      grid-template-columns: repeat(3, var(--s3d-tile-w));
+      grid-template-rows: var(--s3d-tile-h);
+      gap: 0; /* 隙間なし・直接接続 */
       /* 既定=PC（PC型 16:10） */
       --s3d-tile-w: 440px;
       --s3d-tile-h: 275px;
       will-change: transform;
-      /* hero(row1 col1)の中心に zoom pivot */
-      transform-origin: 25% 25%;
+      /* hero(中央) の中心に zoom pivot = グループ中心と一致 */
+      transform-origin: 50% 50%;
+      /* 繋がったパネル全体の落影 */
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
     }
     @media (max-width: 768px) {
       .s3d-screens {
         /* スマホ型 9:19.5 */
-        --s3d-tile-w: 132px;
-        --s3d-tile-h: 286px;
-        gap: 10px;
+        --s3d-tile-w: 108px;
+        --s3d-tile-h: 234px;
       }
     }
 
-    /* 1枚のスクリーン */
+    /* 1枚のスクリーン — 角丸なし・境界線で区切り */
     .s3d-screen {
       position: relative;
       width: var(--s3d-tile-w);
       height: var(--s3d-tile-h);
       background: #000;
       overflow: hidden;
-      border-radius: 6px;
+      border-radius: 0; /* 角ばった */
       opacity: 0;
       transition: opacity 0.5s ease;
-      box-shadow:
-        inset 0 0 0 1px rgba(0,0,0,0.8),
-        inset 0 1px 0 rgba(255,255,255,0.18),
-        inset 0 -1px 0 rgba(255,255,255,0.05),
-        0 0 0 2px rgba(255,255,255,0.06),
-        0 0 0 3px #000,
-        0 20px 50px rgba(0,0,0,0.6),
-        0 40px 80px rgba(0,0,0,0.35);
+      /* タイル間の暗い境界線（右側に1px、最後のタイルは除外） */
+      border-right: 2px solid #000;
     }
+    .s3d-screen:last-child { border-right: 0; }
     .s3d-screen.is-ready { opacity: 1; }
 
-    /* スマホ時は全タイルをスマホ筐体風に（角丸大・チタン縁） */
-    @media (max-width: 768px) {
-      .s3d-screen {
-        border-radius: 16px;
-        box-shadow:
-          inset 0 0 0 1.5px rgba(0,0,0,0.9),
-          inset 0 1px 0 rgba(255,255,255,0.22),
-          0 0 0 2px rgba(190,190,200,0.28),
-          0 0 0 3px #0a0a0c,
-          0 12px 30px rgba(0,0,0,0.55);
-      }
+    /* タイル群全体の外枠（角ばったベゼル） */
+    .s3d-screens::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border: 3px solid #000;
+      pointer-events: none;
+      z-index: 10;
     }
 
     .s3d-screen iframe {
@@ -239,7 +232,7 @@
 </head>
 
 <body>
-  <div class="lab-note">🧪 プロトタイプ v6 (4画面)</div>
+  <div class="lab-note">🧪 プロトタイプ v7 (3画面・角ばった繋がり)</div>
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
@@ -272,23 +265,18 @@
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
-          <!-- row1: hero / 右上 -->
-          <div class="s3d-screen s3d-screen--hero" data-idx="0">
-            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
-          </div>
-          <div class="s3d-screen" data-idx="1">
+          <!-- 左 / 中央(hero) / 右 — 横1列 -->
+          <div class="s3d-screen" data-idx="0">
             <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
           </div>
-          <!-- row2: 左下 / 右下 -->
+          <div class="s3d-screen s3d-screen--hero" data-idx="1">
+            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
+            <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
+          </div>
           <div class="s3d-screen" data-idx="2">
             <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
-          </div>
-          <div class="s3d-screen" data-idx="3">
-            <iframe src="/embed-viewer?manga=birdman&speed=0.5" loading="lazy" title="BIRDMAN"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=birdman" aria-label="BIRDMANを開く"></a>
           </div>
         </div>
 
@@ -348,28 +336,17 @@
         var heading = document.getElementById('s3dHeading');
         var scrollHint = document.getElementById('s3dScrollHint');
 
-        // タイルサイズ取得（CSS変数経由、PC/モバイルで自動切替）
-        var cs = getComputedStyle(group);
-        var tileW = parseFloat(cs.getPropertyValue('--s3d-tile-w')) || 440;
-        var tileH = parseFloat(cs.getPropertyValue('--s3d-tile-h')) || 275;
-        var gap   = parseFloat(cs.getPropertyValue('gap')) || 14;
-        // 2x2 グリッド、hero は row1 col1（左上）。
-        // グループ中心からhero中心への差分は (tileW+gap)/2 左、(tileH+gap)/2 上。
-        // よってグループを右+下に同量ずらすと hero中心がステージ中央に来る。
-        var heroOffsetX = (tileW + gap) / 2;
-        var heroOffsetY = (tileH + gap) / 2;
-
+        // 3画面 横1列、hero=中央 → transform-origin は group中心で OK。
+        // グループ中心 = ステージ中央 なので x/y オフセット不要。
         // ==========================================
-        // 初期: hero(row1 col1) のみをビューポート中央で大きく表示
-        //   他3枚は opacity:0 で完全に隠す
+        // 初期: hero(中央) のみをビューポート中央で大きく表示
+        //   他2枚は opacity:0 で完全に隠す
         //   絶対ルール: 初期は必ず1画面のみ表示
         // ==========================================
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 2.4;
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 3.0 : 2.6;
         gsap.set(group, {
-          x: heroOffsetX,
-          y: heroOffsetY,
           scale: initScale,
-          transformOrigin: '25% 25%'
+          transformOrigin: '50% 50%'
         });
         gsap.set(others, { opacity: 0, scale: 0.6 });
 
@@ -395,14 +372,14 @@
         });
 
         // フェーズ1: hero フルスクリーン → グリッドへ引き
-        tl.to(group, { scale: 1, x: 0, y: 0, ease: 'power2.out', duration: 0.6 }, 0);
-        // フェーズ2: 他3枚が中央から現れてグリッド位置へ（scale:0.6→1 + フェードイン）
+        tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.6 }, 0);
+        // フェーズ2: 他2枚が中央から現れて左右に並ぶ（scale:0.6→1 + フェードイン）
         tl.to(others, {
           opacity: 1,
           scale: 1,
           ease: 'power2.out',
           duration: 0.5,
-          stagger: 0.06
+          stagger: 0.08
         }, 0.3);
         // フェーズ3: 読む時間のホールド
         tl.to({}, { duration: 0.4 });

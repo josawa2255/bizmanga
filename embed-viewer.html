@@ -37,12 +37,13 @@
       -webkit-user-drag: none;
     }
 
-    /* 見開きモード: ビューアを固定 + スクロール無効 + 2ページ並び + crossfade */
+    /* 見開きモード: ビューアを固定 + スクロール無効 + 2ページ並び + ページ捲りアニメ */
     #viewer.is-spread {
       overflow: hidden;
       display: flex;
       align-items: stretch;
       justify-content: center;
+      perspective: 1400px;
     }
     .page-stack.spread-mode {
       width: 100%;
@@ -50,7 +51,13 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0;
-      transition: opacity 0.3s ease;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transition:
+        transform 0.42s cubic-bezier(0.65, 0.05, 0.36, 1),
+        opacity 0.42s ease,
+        filter 0.42s ease;
+      transform-origin: right center;
     }
     .page-stack.spread-mode.single-page {
       grid-template-columns: 1fr;
@@ -61,6 +68,24 @@
       object-fit: contain;
       display: block;
       background: #fafafa;
+    }
+    /* 捲り始め: 右端を軸にページが奥へ傾く */
+    .page-stack.spread-mode.flipping-out {
+      transform: perspective(1400px) rotateY(-78deg);
+      opacity: 0;
+      filter: brightness(0.55);
+    }
+    /* 次ページが左軸から現れてフラットに戻る */
+    .page-stack.spread-mode.flipping-in {
+      transform: perspective(1400px) rotateY(78deg);
+      transform-origin: left center;
+      opacity: 0;
+      filter: brightness(0.55);
+      transition: none;
+    }
+    /* 右ページだけ紙めくり影 */
+    .page-stack.spread-mode.flipping-out img:nth-child(2) {
+      box-shadow: -8px 0 14px rgba(0,0,0,0.22);
     }
 
     /* ローディング */
@@ -185,10 +210,9 @@
       var currentIdx = 0;
       var isHovered = false;
 
-      function showPair(idx) {
+      function showPair(idx, skipAnim) {
         var pair = pairs[idx];
-        stack.style.opacity = '0';
-        setTimeout(function() {
+        function swapContent() {
           while (stack.firstChild) stack.removeChild(stack.firstChild);
           stack.classList.toggle('single-page', !pair[1]);
           pair.forEach(function(src, ii) {
@@ -199,11 +223,23 @@
             img.decoding = 'async';
             stack.appendChild(img);
           });
-          stack.style.opacity = '1';
-        }, 200);
+        }
+        if (skipAnim) { swapContent(); return; }
+
+        // 右端軸で奥へ倒れるフェーズ
+        stack.classList.add('flipping-out');
+        setTimeout(function() {
+          swapContent();
+          // 中身を差し替えて、左端軸で手前に戻るフェーズを一瞬セット
+          stack.classList.remove('flipping-out');
+          stack.classList.add('flipping-in');
+          // リフロー強制後に flipping-in を外してトランジションを発火
+          void stack.offsetWidth;
+          stack.classList.remove('flipping-in');
+        }, 420);
       }
 
-      showPair(0);
+      showPair(0, true); // 初回はアニメなし
       // 次ページをプリロード
       pairs.forEach(function(pair) {
         pair.forEach(function(src) { if (src) { var pre = new Image(); pre.src = src; } });
