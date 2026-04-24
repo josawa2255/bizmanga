@@ -47,25 +47,25 @@
       background: #fff;
     }
 
-    /* 6画面(3列×2行)グリッド — デバイス別に PC型/スマホ型 を切替 */
+    /* 4画面(2列×2行)グリッド — デバイス別に PC型/スマホ型 を切替 */
     .s3d-screens {
       position: relative;
       display: grid;
-      grid-template-columns: repeat(3, var(--s3d-tile-w));
+      grid-template-columns: repeat(2, var(--s3d-tile-w));
       grid-template-rows: repeat(2, var(--s3d-tile-h));
       gap: 14px;
-      /* 既定=PC */
-      --s3d-tile-w: 360px;
-      --s3d-tile-h: 225px; /* 16:10 */
+      /* 既定=PC（PC型 16:10） */
+      --s3d-tile-w: 440px;
+      --s3d-tile-h: 275px;
       will-change: transform;
-      /* 中央スロット(row1 col2)の中心に zoom pivot */
-      transform-origin: 50% 25%;
+      /* hero(row1 col1)の中心に zoom pivot */
+      transform-origin: 25% 25%;
     }
     @media (max-width: 768px) {
       .s3d-screens {
         /* スマホ型 9:19.5 */
-        --s3d-tile-w: 96px;
-        --s3d-tile-h: 208px;
+        --s3d-tile-w: 132px;
+        --s3d-tile-h: 286px;
         gap: 10px;
       }
     }
@@ -239,7 +239,7 @@
 </head>
 
 <body>
-  <div class="lab-note">🧪 プロトタイプ v5 (6画面)</div>
+  <div class="lab-note">🧪 プロトタイプ v6 (4画面)</div>
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
@@ -259,8 +259,8 @@
   <main>
     <section class="s3d-intro">
       <div>
-        <h1>3D画面ギャラリー v5 — 6画面 (3×2)</h1>
-        <p>動画準拠: 初期は中央1枚 → スクロールで引くと 3列×2行 の 6 画面に分裂。PCは PC型 / スマホは スマホ型 に自動切替。</p>
+        <h1>3D画面ギャラリー v6 — 4画面 (2×2)</h1>
+        <p>初期は左上heroの1枚 → スクロールで引くと 2列×2行 の 4画面に分裂。PCは PC型 / スマホは スマホ型 に自動切替。</p>
       </div>
     </section>
 
@@ -272,29 +272,21 @@
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
-          <!-- row1: 左 / 中央(hero) / 右 -->
-          <div class="s3d-screen" data-idx="0">
-            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
-          </div>
-          <div class="s3d-screen s3d-screen--hero" data-idx="1">
+          <!-- row1: hero / 右上 -->
+          <div class="s3d-screen s3d-screen--hero" data-idx="0">
             <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
           </div>
+          <div class="s3d-screen" data-idx="1">
+            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
+            <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
+          </div>
+          <!-- row2: 左下 / 右下 -->
           <div class="s3d-screen" data-idx="2">
             <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
           </div>
-          <!-- row2: seko / life-buzfes / birdman -->
           <div class="s3d-screen" data-idx="3">
-            <iframe src="/embed-viewer?manga=seko&speed=0.5" loading="lazy" title="施工会社紹介"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=seko" aria-label="施工会社紹介を開く"></a>
-          </div>
-          <div class="s3d-screen" data-idx="4">
-            <iframe src="/embed-viewer?manga=life-buzfes&speed=0.5" loading="lazy" title="ライフバズフェス"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=life-buzfes" aria-label="ライフバズフェスを開く"></a>
-          </div>
-          <div class="s3d-screen" data-idx="5">
             <iframe src="/embed-viewer?manga=birdman&speed=0.5" loading="lazy" title="BIRDMAN"></iframe>
             <a class="s3d-screen-link" href="/biz-library?manga=birdman" aria-label="BIRDMANを開く"></a>
           </div>
@@ -358,23 +350,26 @@
 
         // タイルサイズ取得（CSS変数経由、PC/モバイルで自動切替）
         var cs = getComputedStyle(group);
-        var tileH = parseFloat(cs.getPropertyValue('--s3d-tile-h')) || 225;
+        var tileW = parseFloat(cs.getPropertyValue('--s3d-tile-w')) || 440;
+        var tileH = parseFloat(cs.getPropertyValue('--s3d-tile-h')) || 275;
         var gap   = parseFloat(cs.getPropertyValue('gap')) || 14;
-        // グリッド全体の高さ: 2row + 1gap。hero中心は row1の中心 = tileH/2。
-        // グループ中心はグループ高さ/2。差分 = (tileH+gap)/2 → この分だけグループを下にずらすと
-        // heroの中心がステージ中央と一致する。
+        // 2x2 グリッド、hero は row1 col1（左上）。
+        // グループ中心からhero中心への差分は (tileW+gap)/2 左、(tileH+gap)/2 上。
+        // よってグループを右+下に同量ずらすと hero中心がステージ中央に来る。
+        var heroOffsetX = (tileW + gap) / 2;
         var heroOffsetY = (tileH + gap) / 2;
 
         // ==========================================
-        // 初期: hero(row1 col2) のみをビューポート中央で大きく表示
-        //   他5枚は opacity:0 で完全に隠す（中央から現れる演出）
+        // 初期: hero(row1 col1) のみをビューポート中央で大きく表示
+        //   他3枚は opacity:0 で完全に隠す
         //   絶対ルール: 初期は必ず1画面のみ表示
         // ==========================================
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 3.2 : 2.8;
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 2.4;
         gsap.set(group, {
+          x: heroOffsetX,
           y: heroOffsetY,
           scale: initScale,
-          transformOrigin: '50% 25%'
+          transformOrigin: '25% 25%'
         });
         gsap.set(others, { opacity: 0, scale: 0.6 });
 
@@ -400,14 +395,14 @@
         });
 
         // フェーズ1: hero フルスクリーン → グリッドへ引き
-        tl.to(group, { scale: 1, y: 0, ease: 'power2.out', duration: 0.6 }, 0);
-        // フェーズ2: 他5枚が中央から現れてグリッド位置へ（scale:0.6→1 + フェードイン）
+        tl.to(group, { scale: 1, x: 0, y: 0, ease: 'power2.out', duration: 0.6 }, 0);
+        // フェーズ2: 他3枚が中央から現れてグリッド位置へ（scale:0.6→1 + フェードイン）
         tl.to(others, {
           opacity: 1,
           scale: 1,
           ease: 'power2.out',
           duration: 0.5,
-          stagger: 0.04
+          stagger: 0.06
         }, 0.3);
         // フェーズ3: 読む時間のホールド
         tl.to({}, { duration: 0.4 });
