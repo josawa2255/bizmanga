@@ -57,9 +57,12 @@
     }
     .book-page img {
       width: 100%; height: 100%;
-      object-fit: contain; /* タイル比(4:3)と画像比(0.667)が一致するため contain でぴったり埋まる */
+      object-fit: cover; /* タイル比と画像比が一致しているため cover でも同じだが transform 拡大時に安定 */
       object-position: center center;
       display: block;
+      /* 漫画ページ内部の周囲余白(ページ端のマージン)をクロップして満遍なく埋める */
+      transform: scale(1.12);
+      transform-origin: center center;
     }
     /* 日本漫画: 奇数=右、偶数=左 */
     #pageRight { grid-column: 2; }
@@ -107,9 +110,11 @@
     }
     .flip-face img {
       width: 100%; height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center center;
       display: block;
+      transform: scale(1.12);
+      transform-origin: center center;
     }
     .flip-front { z-index: 2; }
     .flip-back  { transform: rotateY(180deg); z-index: 1; }
