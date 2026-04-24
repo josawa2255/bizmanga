@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>🧪 3D Screens Prototype — BizManga</title>
+  <title>🧪 3D Screens Prototype v4 — BizManga</title>
   <link rel="stylesheet" href="css/bizmanga.css">
   <style>
     /* ============================================
-       🧪 Prototype: 3D MacBook-like Screens
-       各画面 = /embed-viewer?manga=xxx を iframe 埋め込み
+       🧪 Prototype v4: Relats流 画面3枚グリッド
+       MacBook再現は廃止、矩形スクリーン + 暗いガター のみ
        ============================================ */
     .lab-note {
       position: fixed; top: 72px; right: 16px; z-index: 2000;
@@ -41,195 +41,80 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      width: 100%;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      background: radial-gradient(ellipse at 50% 40%, #1c2028 0%, #0b0d10 70%);
+      background: #0a0b0c;
     }
 
-    /* 背景のノイズ＋ビネット */
-    .s3d-stage::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%);
-      pointer-events: none;
-    }
-
+    /* 3枚のスクリーンを並べる外枠 */
     .s3d-screens {
       position: relative;
       display: flex;
-      align-items: flex-end; /* ヒンジで揃える */
+      align-items: center;
       justify-content: center;
-      gap: 40px;
-      perspective: 2200px;
-      transform-style: preserve-3d;
+      gap: 14px; /* 暗いガター */
       will-change: transform;
-      padding-bottom: 40px;
+      transform-origin: center center;
     }
 
-    /* ==========================================
-       MacBook 風デザイン（CSSのみ）
-       ========================================== */
-    .s3d-laptop {
-      --lw: 440px;
-      width: var(--lw);
-      position: relative;
-      transform-style: preserve-3d;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .s3d-laptop.is-ready { opacity: 1; }
-    .s3d-laptop--left  { transform: rotateY(16deg); transform-origin: right bottom; }
-    .s3d-laptop--right { transform: rotateY(-16deg); transform-origin: left bottom; }
-
-    /* === 天板（画面全体のユニボディ部分） === */
-    .s3d-lid {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 10.3; /* ノッチ分ちょい縦長 */
-      background: linear-gradient(180deg, #2b2d31 0%, #202328 50%, #1b1e22 100%);
-      border-radius: 14px 14px 3px 3px;
-      padding: 12px 12px 14px;
-      box-sizing: border-box;
-      box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-        0 1px 0 rgba(255, 255, 255, 0.08) inset,
-        0 40px 80px rgba(0, 0, 0, 0.65),
-        0 12px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    /* ノッチ（MBPのカメラアイランド） */
-    .s3d-lid::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 26%;
-      height: 12px;
-      background: #000;
-      border-radius: 0 0 10px 10px;
-      z-index: 4;
-    }
-    /* カメラレンズ */
-    .s3d-lid::after {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: calc(50% + 6%);
-      width: 4px; height: 4px;
-      background: radial-gradient(circle at 30% 30%, #444, #000);
-      border-radius: 50%;
-      z-index: 5;
-    }
-
-    /* === 実際の画面領域（iframeが入る） === */
+    /* 1枚のスクリーン */
     .s3d-screen {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 440px;
+      aspect-ratio: 16 / 10;
       background: #000;
-      border-radius: 2px;
       overflow: hidden;
+      border-radius: 4px;
+      box-shadow:
+        /* 内側の暗枠で画面っぽさ */
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        /* 外の強い影（グリッドギャップを深く見せる） */
+        0 0 0 1px #000,
+        0 20px 40px rgba(0,0,0,0.5);
     }
     .s3d-screen iframe {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      /* 逆スケールで鮮明にレンダ（拡大時のボケ対策） */
+      width: 250%;
+      height: 250%;
+      transform: scale(0.4);
+      transform-origin: top left;
       border: 0;
       display: block;
       background: #fafafa;
-      pointer-events: auto;
     }
-    /* 画面のガラス反射（薄い対角光） */
+    /* 画面の微かなガラス反射 */
     .s3d-screen::after {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg,
-        rgba(255, 255, 255, 0.06) 0%,
-        rgba(255, 255, 255, 0.02) 30%,
-        transparent 55%);
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(135deg,
+          rgba(255,255,255,0.05) 0%,
+          rgba(255,255,255,0.015) 25%,
+          transparent 50%);
       pointer-events: none;
       z-index: 2;
       mix-blend-mode: screen;
     }
 
-    /* === ヒンジ === */
-    .s3d-hinge {
-      position: relative;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(180deg, #121316 0%, #1f2125 50%, #0e1012 100%);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    /* 初期フェードイン */
+    .s3d-screen {
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
+    .s3d-screen.is-ready { opacity: 1; }
 
-    /* === ベース（キーボード側の底板） === */
-    .s3d-base {
-      position: relative;
-      width: 110%;
-      margin-left: -5%;
-      height: 16px;
-      background:
-        linear-gradient(180deg,
-          #282b30 0%,
-          #3a3e43 4%,
-          #6e737a 12%,
-          #9aa0a7 24%,
-          #b8bcc2 48%,
-          #8c9098 80%,
-          #5a5e64 100%);
-      border-radius: 0 0 18px 18px;
-      box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.45),
-        0 30px 60px rgba(0, 0, 0, 0.25);
-    }
-    /* 底板の前面ロゴ下の縁 */
-    .s3d-base::before {
-      content: '';
+    /* タイトルは画面の下に */
+    .s3d-screen-title {
       position: absolute;
-      bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 30%;
-      height: 3px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(0,0,0,0));
-      border-radius: 0 0 8px 8px;
-    }
-    /* 手前の影（地面への落影） */
-    .s3d-laptop::after {
-      content: '';
-      position: absolute;
-      bottom: -30px;
-      left: 5%;
-      right: 5%;
-      height: 30px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.5) 0%, transparent 70%);
-      filter: blur(6px);
-      z-index: -1;
-    }
-
-    /* クリック領域（ラベル） */
-    .s3d-laptop-link {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: block;
-      cursor: pointer;
-      /* iframe上は pointer-events を通すためデフォルトはnone、タイトル部分だけauto */
-      pointer-events: none;
-    }
-    /* 下のタイトルバー（クリック可） */
-    .s3d-laptop-title {
-      position: absolute;
-      bottom: -58px;
+      bottom: -44px;
       left: 0; right: 0;
       text-align: center;
-      color: #fff;
-      pointer-events: auto;
       z-index: 11;
     }
-    .s3d-laptop-title-text {
+    .s3d-screen-title a {
       display: inline-block;
       font-size: 13px;
       font-weight: 700;
@@ -241,23 +126,23 @@
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       text-decoration: none;
-      color: inherit;
+      color: #fff;
       transition: background 0.25s, transform 0.25s;
       cursor: pointer;
     }
-    .s3d-laptop-title-text:hover {
-      background: rgba(255, 255, 255, 0.15);
+    .s3d-screen-title a:hover {
+      background: rgba(255, 255, 255, 0.18);
       transform: translateY(-2px);
     }
 
-    /* === 見出し === */
+    /* 見出し */
     .s3d-heading {
       position: absolute;
       top: 60px; left: 50%;
       transform: translateX(-50%);
       color: #fff;
       text-align: center;
-      z-index: 2;
+      z-index: 3;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.4s ease;
@@ -266,15 +151,13 @@
     .s3d-heading h2 {
       font-size: clamp(24px, 3.2vw, 40px);
       font-weight: 900;
-      letter-spacing: 0.02em;
     }
     .s3d-heading p {
-      margin-top: 10px;
-      font-size: 14px;
+      margin-top: 10px; font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
     }
 
-    /* === スクロールヒント === */
+    /* スクロールヒント */
     .s3d-scroll-hint {
       position: absolute;
       bottom: 32px; left: 50%;
@@ -287,6 +170,7 @@
       opacity: 1;
       transition: opacity 0.3s ease;
       pointer-events: none;
+      z-index: 3;
     }
     .s3d-scroll-hint.is-hidden { opacity: 0; }
     .s3d-scroll-hint::after {
@@ -300,21 +184,20 @@
       50% { transform: translateY(10px); opacity: 0.3; }
     }
 
-    /* モバイル */
+    /* モバイル: 3枚縦積み */
     @media (max-width: 768px) {
       .s3d-section { height: auto; padding: 60px 0; }
       .s3d-stage {
         position: static;
         height: auto;
         flex-direction: column;
-        gap: 80px;
+        gap: 60px;
         padding: 40px 24px 80px;
       }
-      .s3d-screens { flex-direction: column; gap: 80px; }
-      .s3d-laptop {
-        --lw: min(92vw, 460px);
+      .s3d-screens { flex-direction: column; gap: 40px; transform: none !important; }
+      .s3d-screen {
+        width: min(92vw, 460px);
         opacity: 1 !important;
-        transform: none !important;
       }
       .s3d-heading { position: relative; top: 0; opacity: 1; margin-bottom: 20px; }
       .s3d-scroll-hint { display: none; }
@@ -335,7 +218,7 @@
 </head>
 
 <body>
-  <div class="lab-note">🧪 プロトタイプ（noindex）</div>
+  <div class="lab-note">🧪 プロトタイプ v4</div>
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
@@ -355,8 +238,8 @@
   <main>
     <section class="s3d-intro">
       <div>
-        <h1>3D画面ギャラリー プロトタイプ</h1>
-        <p>下にスクロール → 中央1台が後退、3台並びへ。各画面は実際のビズ書庫ビューア(iframe)</p>
+        <h1>3D画面ギャラリー v4</h1>
+        <p>画面のみ。初期は中央1枚がフルスクリーン → スクロールで引くと左右の画面が現れる。</p>
       </div>
     </section>
 
@@ -368,45 +251,27 @@
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
-          <!-- 左: 一戸ホーム -->
-          <div class="s3d-laptop s3d-laptop--left">
-            <div class="s3d-lid">
-              <div class="s3d-screen">
-                <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.5" loading="lazy" title="一戸ホーム"></iframe>
-              </div>
-            </div>
-            <div class="s3d-hinge"></div>
-            <div class="s3d-base"></div>
-            <div class="s3d-laptop-title">
-              <a class="s3d-laptop-title-text" href="/biz-library?manga=ichinohe-home">一戸ホーム →</a>
+          <!-- 左 -->
+          <div class="s3d-screen s3d-screen--left">
+            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.5" loading="lazy" title="一戸ホーム"></iframe>
+            <div class="s3d-screen-title">
+              <a href="/biz-library?manga=ichinohe-home">一戸ホーム →</a>
             </div>
           </div>
 
-          <!-- 中央: おまとめ忍者（縦読み） -->
-          <div class="s3d-laptop s3d-laptop--center">
-            <div class="s3d-lid">
-              <div class="s3d-screen">
-                <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
-              </div>
-            </div>
-            <div class="s3d-hinge"></div>
-            <div class="s3d-base"></div>
-            <div class="s3d-laptop-title">
-              <a class="s3d-laptop-title-text" href="/biz-library?manga=omatome-ninja-new">黄色いおまとめ忍者 →</a>
+          <!-- 中央 -->
+          <div class="s3d-screen s3d-screen--center">
+            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
+            <div class="s3d-screen-title">
+              <a href="/biz-library?manga=omatome-ninja-new">黄色いおまとめ忍者 →</a>
             </div>
           </div>
 
-          <!-- 右: BMS運送 -->
-          <div class="s3d-laptop s3d-laptop--right">
-            <div class="s3d-lid">
-              <div class="s3d-screen">
-                <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
-              </div>
-            </div>
-            <div class="s3d-hinge"></div>
-            <div class="s3d-base"></div>
-            <div class="s3d-laptop-title">
-              <a class="s3d-laptop-title-text" href="/biz-library?manga=bms-unso">BMS運送 →</a>
+          <!-- 右 -->
+          <div class="s3d-screen s3d-screen--right">
+            <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
+            <div class="s3d-screen-title">
+              <a href="/biz-library?manga=bms-unso">BMS運送 →</a>
             </div>
           </div>
         </div>
@@ -429,55 +294,53 @@
 
   <script defer>
     document.addEventListener('DOMContentLoaded', function() {
-      var laptops = document.querySelectorAll('.s3d-laptop');
-      laptops.forEach(function(l, i) {
-        setTimeout(function() { l.classList.add('is-ready'); }, 150 + i * 120);
+      var screens = document.querySelectorAll('.s3d-screen');
+      screens.forEach(function(s, i) {
+        setTimeout(function() { s.classList.add('is-ready'); }, 150 + i * 120);
       });
 
       if (window.gsap && window.ScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
         var isPC = window.matchMedia('(min-width: 769px)').matches;
         if (isPC) {
-          var center = document.querySelector('.s3d-laptop--center');
-          var left   = document.querySelector('.s3d-laptop--left');
-          var right  = document.querySelector('.s3d-laptop--right');
-          var screens = document.getElementById('s3dScreens');
+          var center = document.querySelector('.s3d-screen--center');
+          var left   = document.querySelector('.s3d-screen--left');
+          var right  = document.querySelector('.s3d-screen--right');
+          var group  = document.getElementById('s3dScreens');
           var heading = document.getElementById('s3dHeading');
           var scrollHint = document.getElementById('s3dScrollHint');
 
-          // 初期状態: 中央が拡大、左右は隠す
-          gsap.set(screens, { scale: 2.0 });
-          gsap.set([left, right], { opacity: 0, xPercent: 0 });
+          // ==========================================
+          // 初期: 中央のみフルスクリーン風 (scale 3.2)
+          //   左右は中央の下に隠れる (xPercent で重ねる)
+          // ==========================================
+          gsap.set(group, { scale: 3.2 });
+          gsap.set(left,  { opacity: 0, xPercent: 105 });
+          gsap.set(right, { opacity: 0, xPercent: -105 });
 
-          ScrollTrigger.create({
-            trigger: '#s3dSection',
-            start: 'top top',
-            end: '+=220%',
-            pin: '#s3dStage',
-            scrub: 0.5,
-            anticipatePin: 1,
-            onUpdate: function(self) {
-              if (self.progress > 0.15) scrollHint && scrollHint.classList.add('is-hidden');
-              else scrollHint && scrollHint.classList.remove('is-hidden');
-              if (self.progress > 0.75) heading && heading.classList.add('is-shown');
-              else heading && heading.classList.remove('is-shown');
+          var tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: '#s3dSection',
+              start: 'top top',
+              end: '+=240%',
+              pin: '#s3dStage',
+              scrub: 0.6,
+              anticipatePin: 1,
+              onUpdate: function(self) {
+                if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
+                else scrollHint && scrollHint.classList.remove('is-hidden');
+                if (self.progress > 0.72) heading && heading.classList.add('is-shown');
+                else heading && heading.classList.remove('is-shown');
+              }
             }
           });
-          gsap.to(screens, {
-            scale: 1,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top top', end: '+=220%', scrub: 0.5 }
-          });
-          gsap.to(left, {
-            opacity: 1, xPercent: -2,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top+=20% top', end: '+=120%', scrub: 0.5 }
-          });
-          gsap.to(right, {
-            opacity: 1, xPercent: 2,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: '#s3dSection', start: 'top+=20% top', end: '+=120%', scrub: 0.5 }
-          });
+
+          // フェーズ1: 視点引き（scale 3.2 → 1）
+          tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.65 }, 0);
+
+          // フェーズ2: 左右スライドアウト + フェードイン
+          tl.to(left,  { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.3);
+          tl.to(right, { opacity: 1, xPercent: 0, ease: 'power2.out', duration: 0.5 }, 0.3);
         }
       }
     });
