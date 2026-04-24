@@ -339,7 +339,9 @@
       });
 
       // ===== iframe内クリック → 親ウィンドウで作品ページへ遷移 =====
-      // ===== iframe内ホイール → 親ページに転送（スクロールスタック防止・絶対ルール） =====
+      // iframe内 wheel は iframe 内部スクロールに任せる（手動スクロール可能）
+      // 端末内スクロールを殺さないために転送はしない。
+      // ページスクロールはガター（画面と画面の隙間・画面外）でカーソルを動かして行う。
       document.querySelectorAll('.s3d-screen').forEach(function(screen) {
         var iframe = screen.querySelector('iframe');
         var link = screen.querySelector('.s3d-screen-link');
@@ -353,27 +355,6 @@
               doc.body.style.cursor = 'pointer';
               doc.body.addEventListener('click', function() { location.href = href; });
             }
-            // ホイール転送: iframe 内での wheel を常に親ウィンドウのスクロールに流す
-            // → 画面上にカーソルがあっても必ずページスクロール可能（絶対ルール）
-            doc.addEventListener('wheel', function(e) {
-              // 縦ホイールを親にフォワード
-              if (Math.abs(e.deltaY) > 0) {
-                e.preventDefault();
-                window.scrollBy({ top: e.deltaY, behavior: 'auto' });
-              }
-            }, { passive: false, capture: true });
-            // タッチスクロールの伝播（モバイル／タブレット）も親に流す
-            var touchStartY = 0;
-            doc.addEventListener('touchstart', function(e) {
-              if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
-            }, { passive: true });
-            doc.addEventListener('touchmove', function(e) {
-              if (e.touches.length === 1) {
-                var dy = touchStartY - e.touches[0].clientY;
-                touchStartY = e.touches[0].clientY;
-                window.scrollBy({ top: dy, behavior: 'auto' });
-              }
-            }, { passive: true });
           } catch (err) {
             // cross-origin fallback
           }
