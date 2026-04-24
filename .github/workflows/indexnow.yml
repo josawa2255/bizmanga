@@ -1,0 +1,26 @@
+name: IndexNow Ping
+
+# main への push 時に変更URLを IndexNow へ送信し、Bing/Yandex/Seznam のクロールを即トリガー。
+# 外部イベント入力は使用していないため、コマンドインジェクションリスクなし。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'sitemap.xml'
+      - 'llms.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Submit changed URLs to IndexNow
+        run: python3 tools/indexnow-ping.py
