@@ -95,7 +95,8 @@
     var params = new URLSearchParams(location.search);
     var mangaId = params.get('manga') || '';
     var speed = parseFloat(params.get('speed') || '0.5'); // px/frame
-    var reverse = params.get('reverse') === '1'; // 横スクロール方向反転(右→左 → 左→右)
+    // startright=1: 初期表示で表紙(p1)を右端に寄せる（スクロール方向は通常: 右→左）
+    var startRight = params.get('startright') === '1';
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -171,27 +172,15 @@
       requestAnimationFrame(tick);
     }
 
-    // ============ 横カルーセル: 横に自動スクロール ============
-    // reverse=1: pos が halfWidth→0 に減るので、アクセス順(インデックス)も逆順になる。
-    //   表示を p1→p2→...→pN→p1 の正順にするには、
-    //   strip を [p1, pN, pN-1, ..., p2] の特殊並びにして 2 回複製し、
-    //   初期 pos=halfWidth で左端=p1、seamless wrap で自然にループする。
+    // ============ 横カルーセル: 横に自動スクロール(右→左、Japanese reading 方向) ============
+    // startright=1 の場合、初期表示で表紙 p1 が右端に寄る(右タイル用)
     function renderHorizontal(data) {
       viewer.classList.add('is-horizontal');
       hStrip.style.display = '';
       vStack.style.display = 'none';
 
-      var gallery = data.gallery;
-      var ordered;
-      if (reverse && gallery.length > 1) {
-        // [p1, pN, pN-1, ..., p2] の配列
-        ordered = [gallery[0]].concat(gallery.slice(1).reverse());
-      } else {
-        ordered = gallery;
-      }
-
       for (var rep = 0; rep < 2; rep++) {
-        ordered.forEach(function(src, i) {
+        data.gallery.forEach(function(src, i) {
           var img = document.createElement('img');
           img.src = src;
           img.alt = (data.title_ja || mangaId) + ' p' + (i + 1);
@@ -209,11 +198,25 @@
       hStarted = true;
 
       var halfWidth = hStrip.scrollWidth / 2;
+      var firstImg = hStrip.querySelector('img');
+      var pageW = firstImg ? firstImg.offsetWidth : 0;
+      var viewW = viewer.clientWidth;
+
       var paused = false;
       var hoverPause = false;
       var resumeTimer = null;
-      // reverse=1 の場合、初期位置を halfWidth にして左→右へ流す
-      var pos = reverse ? halfWidth : 0;
+
+      // startright=1: p1(strip index 0)を右端に寄せる初期位置
+      //   viewport shows strip[pos..pos+viewW], rightmost image at strip[pos+viewW-pageW]
+      //   これが strip index 0 (または duplicate の N) になるよう pos を調整
+      //   index N (halfWidth/pageW) を使って: pos + viewW - pageW = halfWidth
+      //   → pos = halfWidth + pageW - viewW
+      var pos = 0;
+      if (startRight && pageW > 0) {
+        pos = halfWidth + pageW - viewW;
+        if (pos < 0) pos = 0;
+        hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
+      }
 
       viewer.addEventListener('mouseenter', function() { hoverPause = true; });
       viewer.addEventListener('mouseleave', function() { hoverPause = false; });
@@ -234,13 +237,8 @@
 
       function tick() {
         if (!paused && !hoverPause) {
-          if (reverse) {
-            pos -= speed;
-            if (pos <= 0) pos += halfWidth;
-          } else {
-            pos += speed;
-            if (pos >= halfWidth) pos -= halfWidth;
-          }
+          pos += speed;
+          if (pos >= halfWidth) pos -= halfWidth;
           hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
         }
         requestAnimationFrame(tick);
