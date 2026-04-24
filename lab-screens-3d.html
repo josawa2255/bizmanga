@@ -34,7 +34,7 @@
 
     .s3d-section {
       position: relative;
-      height: 320vh;
+      height: 200vh;
       background: #fff;
     }
     .s3d-stage {
@@ -95,7 +95,13 @@
       border: 0;
       display: block;
       background: #fafafa;
-      /* pointer-events: auto （既定） → ホバー時のホイールスクロールが効く */
+      /* 初期はiframe操作不可 → ページスクロールでズーム演出が進む。
+         演出完了後にJSで pointer-events:auto に切替える */
+      pointer-events: none;
+    }
+    /* 演出完了後、PC内ホイールでの手動スクロール可 */
+    .s3d-screens.is-settled .s3d-screen iframe {
+      pointer-events: auto;
     }
     /* 画面全体クリック（透明のa要素、同一オリジンiframeならJSで追加） */
     .s3d-screen-link {
@@ -341,16 +347,23 @@
             scrollTrigger: {
               trigger: '#s3dSection',
               start: 'top top',
-              end: '+=240%',
+              end: '+=120%', // 1.2画面分で演出完了
               pin: '#s3dStage',
               scrub: 0.6,
               anticipatePin: 1,
               onUpdate: function(self) {
+                // 演出中(progress<1): iframe操作無効→ホイールはページスクロール（ズーム進行）
+                // 演出完了(progress===1): iframe操作有効→ホイールはPC内スクロール
+                if (self.progress >= 0.99) group.classList.add('is-settled');
+                else group.classList.remove('is-settled');
+
                 if (self.progress > 0.1) scrollHint && scrollHint.classList.add('is-hidden');
                 else scrollHint && scrollHint.classList.remove('is-hidden');
-                if (self.progress > 0.72) heading && heading.classList.add('is-shown');
+                if (self.progress > 0.7) heading && heading.classList.add('is-shown');
                 else heading && heading.classList.remove('is-shown');
-              }
+              },
+              onLeave: function() { group.classList.add('is-settled'); },
+              onEnterBack: function() { group.classList.remove('is-settled'); }
             }
           });
 
