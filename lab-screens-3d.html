@@ -35,7 +35,7 @@
     .s3d-section {
       position: relative;
       height: 320vh;
-      background: #0b0d10;
+      background: #fff;
     }
     .s3d-stage {
       position: sticky;
@@ -44,7 +44,7 @@
       width: 100%;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      background: #0a0b0c;
+      background: #fff;
     }
 
     /* 3枚のスクリーンを並べる外枠 */
@@ -95,16 +95,11 @@
       border: 0;
       display: block;
       background: #fafafa;
-      pointer-events: none; /* iframeへの操作無効 → クリックは下のリンクへ通る */
+      /* pointer-events: auto （既定） → ホバー時のホイールスクロールが効く */
     }
-    /* 画面全体をクリックして作品に遷移 */
+    /* 画面全体クリック（透明のa要素、同一オリジンiframeならJSで追加） */
     .s3d-screen-link {
-      position: absolute;
-      inset: 0;
-      z-index: 5;
-      display: block;
-      cursor: pointer;
-      text-decoration: none;
+      display: none; /* iframeのcontentDocumentにクリックハンドラを付けるので不要 */
     }
 
     /* ガラス反射レイヤー（強めの対角グレア） */
@@ -300,6 +295,27 @@
       var screens = document.querySelectorAll('.s3d-screen');
       screens.forEach(function(s, i) {
         setTimeout(function() { s.classList.add('is-ready'); }, 150 + i * 120);
+      });
+
+      // ===== iframe内クリック → 親ウィンドウで作品ページへ遷移 =====
+      document.querySelectorAll('.s3d-screen').forEach(function(screen) {
+        var iframe = screen.querySelector('iframe');
+        var link = screen.querySelector('.s3d-screen-link');
+        var href = link && link.getAttribute('href');
+        if (!iframe || !href) return;
+        iframe.addEventListener('load', function() {
+          try {
+            var doc = iframe.contentDocument;
+            if (!doc) return;
+            doc.body.style.cursor = 'pointer';
+            doc.body.addEventListener('click', function(e) {
+              // wheelイベントは別物、クリックだけ拾う
+              location.href = href;
+            });
+          } catch (err) {
+            // cross-origin の場合は落ちる（同一オリジンなので通常OK）
+          }
+        });
       });
 
       if (window.gsap && window.ScrollTrigger) {
