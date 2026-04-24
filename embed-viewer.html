@@ -95,8 +95,8 @@
     var params = new URLSearchParams(location.search);
     var mangaId = params.get('manga') || '';
     var speed = parseFloat(params.get('speed') || '0.5'); // px/frame
-    // startright=1: 初期表示で表紙(p1)を右端に寄せる（スクロール方向は通常: 右→左）
-    var startRight = params.get('startright') === '1';
+    // ltr=1: 横カルーセルをLTR方向(左→右)に流す（右タイル用）
+    var ltr = params.get('ltr') === '1' || params.get('reverse') === '1';
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -172,18 +172,26 @@
       requestAnimationFrame(tick);
     }
 
-    // ============ 横カルーセル: 横に自動スクロール(右→左、Japanese reading 方向) ============
-    // startright=1 の場合、初期表示で表紙 p1 が右端に寄る(右タイル用)
+    // ============ 横カルーセル ============
+    // 通常モード: 右→左へ流れる(左タイル用)。初期表示は p1 が左端。
+    // ltr モード: 左→右へ流れる(右タイル用)。初期表示は p1 が右端。
+    //   DOM を gallery.reverse() にすることで、各セットの右端が p1 になる。
+    //   strip 全体を [pN, pN-1, ..., p1, pN, pN-1, ..., p1] の2セット複製。
+    //   scroll は pos 減算(strip 右シフト)で LTR 方向。
     function renderHorizontal(data) {
       viewer.classList.add('is-horizontal');
       hStrip.style.display = '';
       vStack.style.display = 'none';
 
+      var pages = ltr ? data.gallery.slice().reverse() : data.gallery;
+
       for (var rep = 0; rep < 2; rep++) {
-        data.gallery.forEach(function(src, i) {
+        pages.forEach(function(src, i) {
           var img = document.createElement('img');
           img.src = src;
-          img.alt = (data.title_ja || mangaId) + ' p' + (i + 1);
+          // ltr時は reverse 後のインデックス i からオリジナルページ番号を逆算
+          var origIdx = ltr ? (pages.length - i) : (i + 1);
+          img.alt = (data.title_ja || mangaId) + ' p' + origIdx;
           img.loading = rep === 0 ? 'eager' : 'lazy';
           img.decoding = 'async';
           hStrip.appendChild(img);
@@ -206,17 +214,11 @@
       var hoverPause = false;
       var resumeTimer = null;
 
-      // startright=1: p1(strip index 0)を右端に寄せる初期位置
-      //   viewport shows strip[pos..pos+viewW], rightmost image at strip[pos+viewW-pageW]
-      //   これが strip index 0 (または duplicate の N) になるよう pos を調整
-      //   index N (halfWidth/pageW) を使って: pos + viewW - pageW = halfWidth
-      //   → pos = halfWidth + pageW - viewW
-      var pos = 0;
-      if (startRight && pageW > 0) {
-        pos = halfWidth + pageW - viewW;
-        if (pos < 0) pos = 0;
-        hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
-      }
+      // 初期位置:
+      //   通常(右→左): pos=0 → p1 が viewport 左端
+      //   LTR(左→右): pos=halfWidth-viewW → 各セット右端の p1 が viewport 右端
+      var pos = ltr ? Math.max(0, halfWidth - viewW) : 0;
+      hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
 
       viewer.addEventListener('mouseenter', function() { hoverPause = true; });
       viewer.addEventListener('mouseleave', function() { hoverPause = false; });
@@ -237,8 +239,14 @@
 
       function tick() {
         if (!paused && !hoverPause) {
-          pos += speed;
-          if (pos >= halfWidth) pos -= halfWidth;
+          if (ltr) {
+            // LTR: strip 右シフト = pos 減算 = translateX 増加
+            pos -= speed;
+            if (pos < 0) pos += halfWidth;
+          } else {
+            pos += speed;
+            if (pos >= halfWidth) pos -= halfWidth;
+          }
           hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
         }
         requestAnimationFrame(tick);
