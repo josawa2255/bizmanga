@@ -183,10 +183,16 @@
         <h2 class="bm-gallery-heading" data-ja="ギャラリー" data-en="Gallery">ギャラリー</h2>
         <a href="biz-library" class="bm-gallery-more" data-ja="ビズ書庫 →" data-en="BizArchive →">ビズ書庫 →</a>
       </div>
+      <div class="bm-gallery-tabs" role="tablist" id="bmGalleryTabs">
+        <button type="button" class="bm-gallery-tab is-active" role="tab" aria-selected="true" data-filter="all" data-ja="全て" data-en="All">全て</button>
+        <button type="button" class="bm-gallery-tab" role="tab" aria-selected="false" data-filter="webtoon" data-ja="Webtoon（縦読み）" data-en="Webtoon">Webtoon（縦読み）</button>
+        <button type="button" class="bm-gallery-tab" role="tab" aria-selected="false" data-filter="manga" data-ja="マンガ型" data-en="Manga">マンガ型</button>
+      </div>
       <div class="bm-gallery-carousel" id="bmGalleryCarousel">
         <div class="bm-gallery-track" id="bmNewWorksTrack">
           <!-- JSが動的に生成 -->
         </div>
+        <p class="bm-gallery-empty" id="bmGalleryEmpty" hidden data-ja="該当する作品がまだありません。" data-en="No works yet in this category.">該当する作品がまだありません。</p>
       </div>
     </div>
   </section>

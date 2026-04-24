@@ -187,6 +187,16 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - フッターが隠れないよう **モバイルで `body { padding-bottom: 60px + safe-area-inset-bottom }`**
 - i18n: `data-ja` / `data-en` 属性付きテキスト、注入後に `translateAll()` を呼ぶ
 
+### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
+- `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
+- **3タブ**: 全て / Webtoon（縦読み） / マンガ型
+- 判定は `window.bmViewType.isForcedVertical(work)` に委譲（BUGS #013 の一元化ヘルパー）
+  - Webtoon = `view_type in ['vertical_only','vertical']`
+  - マンガ型 = それ以外
+- タブ切替時は `bm-home.js` が `filterData()` → `buildGalleryCards()` で再描画、オートスクロールも再起動
+- 該当作品0件時は `#bmGalleryEmpty` の「該当する作品がまだありません。」を表示
+- i18n: `data-ja` / `data-en` 属性で英語切替対応
+
 ### 7.2 ヒーロー
 - `.bm-hero` 背景: `#000 url(hp-material-1.webp) center/cover fixed`（ContentsXと共有）
 - タグライン「マンガの力でビジネスを動かす」— 1文字ずつ波シャイン

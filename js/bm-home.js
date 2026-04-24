@@ -24,6 +24,18 @@
   var isPaused = false;
   var isVisible = true;
   var singleSetWidth = 0;
+  var allWorksData = [];       // 全作品（フィルタ前）
+  var currentFilter = 'all';   // 'all' | 'webtoon' | 'manga'
+
+  // ===== フィルタ判定（bm-view-type.js に委譲） =====
+  function isWebtoon(item) {
+    return window.bmViewType ? window.bmViewType.isForcedVertical(item) : false;
+  }
+  function filterData(data, mode) {
+    if (mode === 'webtoon') return data.filter(isWebtoon);
+    if (mode === 'manga')   return data.filter(function(d) { return !isWebtoon(d); });
+    return data.slice();
+  }
 
   // ===== カード生成 =====
   function buildGalleryCards(data) {
@@ -36,7 +48,27 @@
     }
     sorted = sorted.slice(0, MAX_NEW_WORKS);
 
-    track.innerHTML = '';
+    // 空表示の切替
+    var emptyEl = document.getElementById('bmGalleryEmpty');
+    var carouselEl = document.getElementById('bmGalleryCarousel');
+    if (sorted.length === 0) {
+      if (emptyEl) emptyEl.hidden = false;
+      if (carouselEl) {
+        var trackForHide = carouselEl.querySelector('.bm-gallery-track');
+        if (trackForHide) trackForHide.style.display = 'none';
+      }
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      while (track.firstChild) track.removeChild(track.firstChild);
+      return;
+    } else {
+      if (emptyEl) emptyEl.hidden = true;
+      if (carouselEl) {
+        var trackForShow = carouselEl.querySelector('.bm-gallery-track');
+        if (trackForShow) trackForShow.style.display = '';
+      }
+    }
+
+    while (track.firstChild) track.removeChild(track.firstChild);
 
     // 無限ループ用に2セット分のカードを作る
     var sets = [sorted, sorted];
@@ -150,8 +182,31 @@
     }, { passive: false });
   }
 
+  // ===== タブ切替 =====
+  function applyFilter(mode) {
+    currentFilter = mode;
+    var tabs = document.querySelectorAll('.bm-gallery-tab');
+    tabs.forEach(function(t) {
+      var active = t.getAttribute('data-filter') === mode;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    scrollPos = 0;
+    if (animId) cancelAnimationFrame(animId);
+    buildGalleryCards(filterData(allWorksData, mode));
+  }
+  var tabBar = document.getElementById('bmGalleryTabs');
+  if (tabBar) {
+    tabBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.bm-gallery-tab');
+      if (!btn) return;
+      applyFilter(btn.getAttribute('data-filter'));
+    });
+  }
+
   // ===== 初期表示（フォールバック） =====
-  buildGalleryCards(FALLBACK_NEW_WORKS);
+  allWorksData = FALLBACK_NEW_WORKS;
+  buildGalleryCards(filterData(allWorksData, currentFilter));
 
   // ===== WP APIデータ到着時に再構築 =====
   // /works（漫画事例）を優先、無ければ /works-new（新作漫画）にフォールバック
@@ -159,9 +214,10 @@
     var wpData = window.BM_WORKS_DATA;
     if (!wpData || !wpData.length) wpData = window.BM_NEW_WORKS_DATA;
     if (wpData && wpData.length > 0) {
+      allWorksData = wpData;
       scrollPos = 0;
       if (animId) cancelAnimationFrame(animId);
-      buildGalleryCards(wpData);
+      buildGalleryCards(filterData(allWorksData, currentFilter));
     }
   }
   window.addEventListener('bm-data-ready', refreshFromWp);

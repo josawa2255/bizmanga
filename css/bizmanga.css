@@ -1710,6 +1710,53 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   border-color: var(--bm-accent);
 }
 
+/* タブ（全て / Webtoon / マンガ型） */
+.bm-gallery-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.bm-gallery-tab {
+  appearance: none;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #333;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.bm-gallery-tab:hover {
+  border-color: var(--bm-accent);
+  color: var(--bm-accent);
+}
+.bm-gallery-tab.is-active {
+  background: var(--bm-accent);
+  border-color: var(--bm-accent);
+  color: #fff;
+}
+.bm-gallery-tab.is-active:hover {
+  color: #fff;
+  transform: none;
+}
+@media (max-width: 640px) {
+  .bm-gallery-tab { font-size: 13px; padding: 9px 16px; }
+}
+
+/* 空表示 */
+.bm-gallery-empty {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 48px 16px;
+}
+
 /* カルーセル外枠 */
 .bm-gallery-carousel {
   overflow: hidden;
