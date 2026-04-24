@@ -54,19 +54,9 @@
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       grid-template-rows: var(--s3d-tile-h);
       gap: 0;
-      /* タイル高さ=漫画ページ高さ。ページ幅は約0.667倍で2ページ同時表示 */
-      --s3d-tile-w: 440px;
-      --s3d-tile-h: 330px;
       will-change: transform;
       transform-origin: 50% 50%;
       filter: drop-shadow(0 30px 60px rgba(0,0,0,0.55)) drop-shadow(0 60px 100px rgba(0,0,0,0.3));
-    }
-    @media (max-width: 768px) {
-      .s3d-screens {
-        /* モバイル = スマホ画面型 (9:19.5 portrait) */
-        --s3d-tile-w: 110px;
-        --s3d-tile-h: 238px;
-      }
     }
 
     /* 1枚のスクリーン — 角丸なし・境界線で区切り */
@@ -202,9 +192,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 10px;
       will-change: transform;
       transform-origin: 50% 50%;
+      /* タイルサイズは wrap で定義（labels/screens 両方で参照するため） */
+      --s3d-tile-w: 440px;
+      --s3d-tile-h: 330px;
+    }
+    @media (max-width: 768px) {
+      .s3d-screens-wrap {
+        /* モバイル = スマホ画面型 (9:19.5 portrait) */
+        --s3d-tile-w: 110px;
+        --s3d-tile-h: 238px;
+        gap: 6px;
+      }
     }
     /* 3タイル分のラベル行。タイルと完全に同じ幅 */
     .s3d-labels {
