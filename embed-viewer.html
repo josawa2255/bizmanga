@@ -19,13 +19,12 @@
       overflow-x: hidden;
       scroll-behavior: auto;
       background: #fafafa;
-      /* 親ページへスクロール連鎖させない（3D画面プロトなど iframe 埋め込み時に重要） */
       overscroll-behavior: contain;
     }
-    /* 縦スクロールバー非表示 */
     #viewer::-webkit-scrollbar { display: none; }
     #viewer { -ms-overflow-style: none; scrollbar-width: none; }
 
+    /* 縦読みモード */
     .page-stack {
       display: flex;
       flex-direction: column;
@@ -38,13 +37,31 @@
       -webkit-user-drag: none;
     }
 
-    /* 見開き用2枚並び */
+    /* 見開きモード: ビューアを固定 + スクロール無効 + 2ページ並び + crossfade */
+    #viewer.is-spread {
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
     .page-stack.spread-mode {
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0;
+      transition: opacity 0.3s ease;
     }
-    .page-stack.spread-mode img { width: 100%; }
+    .page-stack.spread-mode.single-page {
+      grid-template-columns: 1fr;
+    }
+    .page-stack.spread-mode img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fafafa;
+    }
 
     /* ローディング */
     .loading {
@@ -79,8 +96,9 @@
     // ===== パラメータ =====
     var params = new URLSearchParams(location.search);
     var mangaId = params.get('manga') || '';
-    var autoScroll = params.get('autoscroll') !== '0';  // デフォルトON
+    var autoScroll = params.get('autoscroll') !== '0';  // 縦読み: デフォルトON
     var speed = parseFloat(params.get('speed') || '0.5');
+    var flipMs = parseInt(params.get('flipms') || '2000', 10);  // 見開き: ページ捲り間隔
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -91,23 +109,22 @@
     var stack  = document.getElementById('pageStack');
     var loading = document.getElementById('loading');
 
-    // ===== WPから取得（まずはWP API） =====
     var WP_API = 'https://cms.contentsx.jp/wp-json/contentsx/v1';
 
+    // ===== ルーター =====
     function render(data) {
       if (!data || !data.gallery || data.gallery.length === 0) {
         loading.textContent = 'NO PAGES';
         return;
       }
       loading.style.display = 'none';
+      var isVertical = data.view_type === 'vertical_only' || data.view_type === 'vertical';
+      if (isVertical) renderVertical(data);
+      else renderSpreadFlip(data);
+    }
 
-      // 見開き/縦読み判定（狭い viewport では常に縦スクロール）
-      var isNarrow = window.innerWidth < 768;
-      var isVertical = data.view_type === 'vertical_only' || data.view_type === 'vertical' || isNarrow;
-
-      if (!isVertical) stack.classList.add('spread-mode');
-
-      // 画像を順番に追加（無限ループ用に2セット分）
+    // ===== 縦読み: 既存の無限自動スクロール =====
+    function renderVertical(data) {
       for (var rep = 0; rep < 2; rep++) {
         data.gallery.forEach(function(src, i) {
           var img = document.createElement('img');
@@ -118,50 +135,109 @@
           stack.appendChild(img);
         });
       }
-
-      // 画像ロード完了待ちで自動スクロール開始
       var totalImgs = stack.querySelectorAll('img').length;
       var loaded = 0;
       function onReady() { startAutoScroll(); }
       stack.querySelectorAll('img').forEach(function(img) {
         if (img.complete) { if (++loaded === totalImgs) onReady(); }
         else {
-          img.addEventListener('load', function() { if (++loaded === totalImgs) onReady(); }, { once: true });
+          img.addEventListener('load',  function() { if (++loaded === totalImgs) onReady(); }, { once: true });
           img.addEventListener('error', function() { if (++loaded === totalImgs) onReady(); }, { once: true });
         }
       });
-      // 念のため1秒後にも開始
       setTimeout(onReady, 1000);
     }
 
-    // ===== 自動スクロール =====
     var started = false;
     function startAutoScroll() {
       if (started || !autoScroll) return;
       started = true;
-
       var halfHeight = viewer.scrollHeight / 2;
       var paused = false;
       var resumeTimer = null;
-
-      // ユーザーが手動ホイールした時だけしばらく停止（ホバーでは停止しない）
       viewer.addEventListener('wheel', function() {
         paused = true;
         clearTimeout(resumeTimer);
         resumeTimer = setTimeout(function() { paused = false; }, 2000);
       }, { passive: true });
-
       function tick() {
         if (!paused) {
           viewer.scrollTop += speed;
-          // 半分を超えたら先頭（正確には half 位置）にリセット → シームレスループ
-          if (viewer.scrollTop >= halfHeight) {
-            viewer.scrollTop -= halfHeight;
-          }
+          if (viewer.scrollTop >= halfHeight) viewer.scrollTop -= halfHeight;
         }
         requestAnimationFrame(tick);
       }
       requestAnimationFrame(tick);
+    }
+
+    // ===== 見開き: 2ページ並び + 2秒ごとに自動ページ捲り（ホバー中は停止） =====
+    function renderSpreadFlip(data) {
+      viewer.classList.add('is-spread');
+      stack.classList.add('spread-mode');
+
+      var pages = data.gallery;
+      var pairs = [];
+      for (var i = 0; i < pages.length; i += 2) {
+        pairs.push([pages[i], pages[i+1] || null]);
+      }
+      if (pairs.length === 0) { loading.textContent = 'NO PAGES'; return; }
+
+      var currentIdx = 0;
+      var isHovered = false;
+
+      function showPair(idx) {
+        var pair = pairs[idx];
+        stack.style.opacity = '0';
+        setTimeout(function() {
+          while (stack.firstChild) stack.removeChild(stack.firstChild);
+          stack.classList.toggle('single-page', !pair[1]);
+          pair.forEach(function(src, ii) {
+            if (!src) return;
+            var img = document.createElement('img');
+            img.src = src;
+            img.alt = (data.title_ja || mangaId) + ' p' + (idx * 2 + ii + 1);
+            img.decoding = 'async';
+            stack.appendChild(img);
+          });
+          stack.style.opacity = '1';
+        }, 200);
+      }
+
+      showPair(0);
+      // 次ページをプリロード
+      pairs.forEach(function(pair) {
+        pair.forEach(function(src) { if (src) { var pre = new Image(); pre.src = src; } });
+      });
+
+      // ホバー検出（iframe 内部の document 基準）
+      document.addEventListener('mouseover', function() { isHovered = true; });
+      document.addEventListener('mouseout', function(e) {
+        // iframe 外に出た場合のみ hover 解除
+        if (!e.relatedTarget || e.relatedTarget === null) isHovered = false;
+      });
+      // 念のためビューアレベルでも
+      viewer.addEventListener('mouseenter', function() { isHovered = true; });
+      viewer.addEventListener('mouseleave', function() { isHovered = false; });
+
+      // モバイル: タップで一時停止（3秒）
+      var touchPauseUntil = 0;
+      viewer.addEventListener('touchstart', function() {
+        touchPauseUntil = Date.now() + 3000;
+      }, { passive: true });
+      // モバイルはタップで次ページへ送る（閲覧性向上）
+      viewer.addEventListener('click', function() {
+        if ('ontouchstart' in window) {
+          currentIdx = (currentIdx + 1) % pairs.length;
+          showPair(currentIdx);
+        }
+      });
+
+      setInterval(function() {
+        if (isHovered) return;
+        if (Date.now() < touchPauseUntil) return;
+        currentIdx = (currentIdx + 1) % pairs.length;
+        showPair(currentIdx);
+      }, flipMs);
     }
 
     // ===== データ取得 =====
@@ -171,7 +247,6 @@
         if (data && data.gallery && data.gallery.length > 0) {
           render(data);
         } else {
-          // フォールバック: material/manga/{id}/01〜NN.webp を直接読む
           var fallback = { view_type: 'spread', gallery: [] };
           for (var i = 1; i <= 30; i++) {
             fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
@@ -180,7 +255,6 @@
         }
       })
       .catch(function() {
-        // CORS/ネット障害でも最低限表示
         var fallback = { view_type: 'spread', gallery: [] };
         for (var i = 1; i <= 10; i++) {
           fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
