@@ -282,6 +282,38 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
 
+### 2026-04-24 全ページ メタタグにパワーワード注入（第2弾）
+
+SERP CTR最大化のため、SEO×マーケ観点でパワーワードを各ページに戦略配分。
+
+**パワーワード配分戦略**:
+| ページ | 注入ワード | 狙い |
+|---|---|---|
+| index | 【業界最安値級】+ 大手の約1/5 | 価格訴求 × CTR最大化 |
+| pricing | 【業界最安値級】+ 大手の約1/5 | 購買直前の背中押し |
+| strength | 業界最安値級を実現する5つの理由 | 差別化根拠の権威化 |
+| works | 実績多数 + 業界屈指 | 社会的証明 |
+| biz-library | 【全作品無料公開】+ 業界屈指 | 参入障壁の除去 |
+| contact | 【初回30分無料】 | 心理的負担ゼロ化 |
+| column | プロ直伝の攻略法 | 情報価値の権威化 |
+| testimonials | 採用応募増・研修効果UPの実証事例 | 社会的証明の強化 |
+| manga-types | 完全ガイド + 7ジャンル徹底解説 | 網羅性アピール |
+| use-cases | 10シーン実例付き徹底解説 | 具体性で刺す |
+| faq | 発注前の不安を全解消 | 不安解消 |
+| news | 最新トレンド・常時発信 | フレッシュネス |
+
+**景品表示法対策**:
+- 「業界最安値級」「大手の約1/5」は **pricing.html 他社比較表** を実根拠として成立
+- 「級」表現により相対表現化（断定回避）→ 優良誤認リスク低減
+- 「最安値」（断定）は使用禁止
+
+**変更箇所**: 12ページの `<title>` / `meta description` / `og:title/description` / `twitter:title/description` / WebPage schema の `name` / `description`（1ページあたり8箇所 × 12ページ = 96箇所）
+
+**期待効果（Google再クロール後）**:
+- SERP CTR 1.5〜2倍見込み（【】付き + 強訴求ワード）
+- On-Page SEO +2点 / Search Visibility 時間差で +5点可能性
+- ブランドメッセージ一貫性UP（すべて「業界最安値級」のビズマンガ）
+
 ### 2026-04-24 全ページ メタタグ最適化（SEO×マーケ視点）
 
 Google検索結果のタイトル/サイト名/ディスクリプションがmetaと食い違う現象（`ビズマンガ | BizManga — ビジネス漫画制作サービス` / サイト名 `contentsx.jp` / body文を勝手に抽出したdescription）を解消するため、12ページ全ての meta + schema を一括再設計。
