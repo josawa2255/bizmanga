@@ -202,10 +202,10 @@
       filter: blur(0.5px);
     }
 
-    /* 見出し(黒背景に白文字ではなく、明るいステージなので濃い文字に) */
+    /* 見出し(コンパクトに上部へ配置、タイルラベルと重ならないよう) */
     .s3d-heading {
       position: absolute;
-      top: 40px; left: 50%;
+      top: 20px; left: 50%;
       transform: translateX(-50%);
       color: #222;
       text-align: center;
@@ -218,23 +218,18 @@
     .s3d-heading.is-shown { opacity: 1; }
     .s3d-eyebrow {
       display: inline-block;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.25em;
       color: #e85a1a;
-      margin: 0 0 8px;
+      margin: 0 0 6px;
     }
     .s3d-heading h2 {
-      font-size: clamp(22px, 3.2vw, 38px);
+      font-size: clamp(18px, 2.4vw, 28px);
       font-weight: 900;
       margin: 0;
       letter-spacing: 0.02em;
-    }
-    .s3d-heading .s3d-sub {
-      margin: 10px 0 0;
-      font-size: clamp(12px, 1.3vw, 14px);
-      color: rgba(34, 34, 34, 0.7);
-      font-weight: 500;
+      line-height: 1.2;
     }
 
     /* タイル群ラッパー（= タイル行そのもの。ラベルは absolute で層外に置く） */
@@ -243,9 +238,9 @@
       will-change: transform;
       transform-origin: 50% 50%;
       /* タイルサイズは wrap で定義（labels/screens 両方で参照するため） */
-      /* PC: iPhone比(9:19.5 ≈ 1:2.17) 240×520 */
-      --s3d-tile-w: 240px;
-      --s3d-tile-h: 520px;
+      /* PC: iPhone比(9:19.5 ≈ 1:2.17) 300×640 */
+      --s3d-tile-w: 300px;
+      --s3d-tile-h: 640px;
     }
     @media (max-width: 768px) {
       .s3d-screens-wrap {
@@ -374,7 +369,6 @@
         <div class="s3d-heading" id="s3dHeading">
           <p class="s3d-eyebrow">WHAT WE MAKE</p>
           <h2>さまざまな媒体・形式で制作しています</h2>
-          <p class="s3d-sub">カラー、Webtoon、採用…目的に合わせて最適な形式で。</p>
         </div>
 
         <div class="s3d-screens-wrap" id="s3dScreensWrap">
@@ -483,8 +477,8 @@
         // ==========================================
         // 初期 hero をビューポートに大きく表示(動画の「1画面フルスクリーン」感)
         // wrap(ラベル + タイル)を一体的に scale することでラベルも一緒に拡大
-        // portrait スマホ用に scale を調整: 高さ 520 → ビューポート約85%
-        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.5;
+        // portrait スマホ用に scale を調整: 高さ 640 → ビューポート約85-90%
+        var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.25;
         gsap.set(wrap, {
           scale: initScale,
           transformOrigin: '50% 50%'
