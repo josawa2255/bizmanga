@@ -260,12 +260,6 @@
       }
       if (spreads.length === 0) { loading.textContent = 'NO PAGES'; return; }
 
-      // 表紙ペア(gallery[0]は表紙で sky/title が多く余白目立つ)と末尾ペア(thanks)を除外して
-      // 本編ペアだけ循環 → タイルが密に埋まる
-      if (spreads.length >= 3) {
-        spreads = spreads.slice(1, -1);
-      }
-
       // プリロード
       gallery.forEach(function(src) { var pre = new Image(); pre.src = src; });
 
