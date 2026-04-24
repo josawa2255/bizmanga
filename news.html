@@ -15,9 +15,11 @@
     gtag('js', new Date());
     gtag('config', 'G-Q1T3033Q3W');
   </script>
-  <!-- Microsoft Clarity -->
+  <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
-  (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
+  window.addEventListener('load', function() {
+    (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
+  });
   </script>
   <title>お知らせ・最新情報｜新事例・メディア掲載｜ビズマンガ</title>
   <meta name="description" content="ビズマンガの最新ニュースを常時発信。新規制作事例の公開、メディア掲載、セミナー・イベント情報、キャンペーン告知まで、ビジネス漫画業界の最新トレンドもまとめてチェックいただけます。">
