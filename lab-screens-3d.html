@@ -189,13 +189,9 @@
       font-weight: 500;
     }
 
-    /* タイル群ラッパー（ラベル + タイル一体化） */
+    /* タイル群ラッパー（= タイル行そのもの。ラベルは absolute で層外に置く） */
     .s3d-screens-wrap {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
       will-change: transform;
       transform-origin: 50% 50%;
       /* タイルサイズは wrap で定義（labels/screens 両方で参照するため） */
@@ -207,15 +203,22 @@
         /* モバイル = スマホ画面型 (9:19.5 portrait) */
         --s3d-tile-w: 110px;
         --s3d-tile-h: 238px;
-        gap: 6px;
       }
     }
-    /* 3タイル分のラベル行。タイルと完全に同じ幅 */
+    /* 3タイル分のラベル行。タイルの直上に浮かべる(layout に影響しない) */
     .s3d-labels {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 14px);
+      transform: translateX(-50%);
       display: grid;
       grid-template-columns: repeat(3, var(--s3d-tile-w));
       gap: 0;
       width: calc(var(--s3d-tile-w) * 3);
+      z-index: 5;
+    }
+    @media (max-width: 768px) {
+      .s3d-labels { bottom: calc(100% + 6px); }
     }
     .s3d-label {
       text-align: center;
