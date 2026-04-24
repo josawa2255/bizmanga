@@ -171,17 +171,19 @@
       requestAnimationFrame(tick);
     }
 
-    // ============ 横カルーセル: 横に自動スクロール(ページが右→左へ流れる) ============
+    // ============ 横カルーセル: 横に自動スクロール ============
+    // reverse=1 時は DOM順も逆にして、左→右流れでもページが正順(1,2,3,...)で現れるようにする
     function renderHorizontal(data) {
       viewer.classList.add('is-horizontal');
       hStrip.style.display = '';
       vStack.style.display = 'none';
 
+      var pageList = reverse ? data.gallery.slice().reverse() : data.gallery;
       for (var rep = 0; rep < 2; rep++) {
-        data.gallery.forEach(function(src, i) {
+        pageList.forEach(function(src, i) {
           var img = document.createElement('img');
           img.src = src;
-          img.alt = (data.title_ja || mangaId) + ' p' + (i + 1);
+          img.alt = (data.title_ja || mangaId) + ' p' + (reverse ? pageList.length - i : i + 1);
           img.loading = rep === 0 ? 'eager' : 'lazy';
           img.decoding = 'async';
           hStrip.appendChild(img);
