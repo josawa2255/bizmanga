@@ -272,8 +272,21 @@
       a.className = 'bm-fab__btn ' + opts.cls;
       a.href = opts.href;
       a.setAttribute('aria-label', opts.labelJa);
+      a.setAttribute('data-tooltip', opts.labelJa);
       if (opts.external) { a.target = '_blank'; a.rel = 'noopener'; }
 
+      var wrap = document.createElement('span');
+      wrap.className = 'bm-fab__wrap';
+
+      var textBox = document.createElement('span');
+      textBox.className = 'bm-fab__text';
+      textBox.setAttribute('data-ja', opts.labelJa);
+      textBox.setAttribute('data-en', opts.labelEn);
+      textBox.textContent = opts.labelJa;
+      wrap.appendChild(textBox);
+
+      var iconBox = document.createElement('span');
+      iconBox.className = 'bm-fab__icon-box';
       var svg = document.createElementNS(svgNS, 'svg');
       svg.setAttribute('class', 'bm-fab__icon');
       svg.setAttribute('viewBox', '0 0 24 24');
@@ -292,13 +305,10 @@
         Object.keys(p.attrs).forEach(function(k) { el.setAttribute(k, p.attrs[k]); });
         svg.appendChild(el);
       });
-      a.appendChild(svg);
+      iconBox.appendChild(svg);
+      wrap.appendChild(iconBox);
 
-      var span = document.createElement('span');
-      span.setAttribute('data-ja', opts.labelJa);
-      span.setAttribute('data-en', opts.labelEn);
-      span.textContent = opts.labelJa;
-      a.appendChild(span);
+      a.appendChild(wrap);
       return a;
     }
 

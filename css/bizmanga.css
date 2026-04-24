@@ -294,54 +294,105 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   background: var(--bm-accent-hover);
 }
 
-/* ===== 追従CTA（LINE + お問い合わせ） ===== */
+/* ===== 追従CTA（LINE + お問い合わせ）— slide+tooltip演出 ===== */
 .bm-fab {
   position: fixed;
   left: 20px;
   bottom: 20px;
   z-index: 9500;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   pointer-events: none;
 }
 .bm-fab__btn {
+  --bm-fab-w: 200px;
+  --bm-fab-h: 52px;
   pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 22px;
+  position: relative;
+  display: inline-block;
+  width: var(--bm-fab-w);
+  height: var(--bm-fab-h);
   border-radius: 50px;
-  font-size: 14px;
-  font-weight: 700;
   color: #fff;
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+  overflow: visible;
 }
 .bm-fab__btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
 }
-.bm-fab__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+.bm-fab__wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
 }
-.bm-fab__btn--line {
-  background: #06C755;
+.bm-fab__text,
+.bm-fab__icon-box {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.bm-fab__btn--line:hover {
-  background: #05a847;
+.bm-fab__text { top: 0; }
+.bm-fab__icon-box { top: 100%; }
+.bm-fab__btn:hover .bm-fab__text { top: -100%; }
+.bm-fab__btn:hover .bm-fab__icon-box { top: 0; }
+.bm-fab__icon { width: 26px; height: 26px; }
+
+.bm-fab__btn--line { background: #06C755; }
+.bm-fab__btn--line:hover { background: #05a847; }
+.bm-fab__btn--contact { background: var(--bm-accent); }
+.bm-fab__btn--contact:hover { background: var(--bm-accent-hover); }
+
+/* Tooltip (PCホバー時に左側へ表示) */
+.bm-fab__btn::before,
+.bm-fab__btn::after {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
 }
-.bm-fab__btn--contact {
-  background: var(--bm-accent);
+.bm-fab__btn::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  background: #333;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  white-space: nowrap;
 }
-.bm-fab__btn--contact:hover {
-  background: var(--bm-accent-hover);
+.bm-fab__btn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #333;
+}
+.bm-fab__btn:hover::before,
+.bm-fab__btn:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 
-/* モバイル: 画面下部の固定バー */
+/* モバイル: 画面下部の固定バー（スライド演出は無効化） */
 @media (max-width: 768px) {
   .bm-fab {
     left: 0;
@@ -357,11 +408,31 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   }
   .bm-fab__btn {
     flex: 1;
-    justify-content: center;
-    padding: 12px 10px;
+    width: auto;
+    height: 48px;
     font-size: 13px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   }
+  .bm-fab__btn:hover {
+    transform: none;
+  }
+  /* スライドを無効化して テキストのみ表示 */
+  .bm-fab__wrap {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .bm-fab__text {
+    position: static;
+    height: auto;
+  }
+  .bm-fab__icon-box { display: none; }
+  /* tooltipはモバイルで非表示 */
+  .bm-fab__btn::before,
+  .bm-fab__btn::after { display: none; }
+
   /* バーに重ならないよう back-to-top を上へ退避 */
   .bm-back-to-top {
     bottom: calc(72px + env(safe-area-inset-bottom));

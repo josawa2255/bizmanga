@@ -177,12 +177,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ### 7.1 追従CTA（`.bm-fab`）— 全ページ共通
 - `js/bm-nav.js` が `contact.html` 以外の全ページで自動注入（2026-04-24〜）
 - **2ボタン構成**: LINEで相談（`#06C755`）/ お問い合わせ（`var(--bm-accent)`）
-- スクロール中も常時表示（hero通過などの条件付き表示なし）
-- **デスクトップ**: 左下に横並びのピルボタン 2つ（`position: fixed; left: 20px; bottom: 20px`）
-- **モバイル (~768px)**: 画面下部に固定バー（flex:1 で左右2等分、白背景 + `backdrop-filter`）
-- back-to-top ボタン（`.bm-back-to-top`）はモバイル時 `bottom: calc(72px + safe-area-inset-bottom)` に退避
-- フッターがバーに隠れないよう **モバイルで `body { padding-bottom: 60px + safe-area-inset-bottom }`**
-- i18n: `data-ja` / `data-en` 属性付き、注入後に `translateAll()` を呼ぶ
+- スクロール中も常時表示
+- **デスクトップ**: 左下に固定幅ピルボタン（`--bm-fab-w: 200px; --bm-fab-h: 52px`）を横並び
+  - **ホバー演出（旧sticky-cta流用）**: テキストが上にスライドアウト → 下から大きめアイコン（26px）がスライドイン（`cubic-bezier(0.16,1,0.3,1) / 0.5s`）
+  - 同時に **ボタン上部にtooltip** が出現（`::before` + `::after` で三角付き、`data-tooltip` 属性参照）
+- **モバイル (~768px)**: 画面下部に固定バー（flex:1 で左右2等分、白 + `backdrop-filter`）。スライド演出とtooltipは無効化、テキストのみ表示
+- back-to-top ボタンはモバイル時 `bottom: calc(72px + safe-area-inset-bottom)` に退避
+- フッターが隠れないよう **モバイルで `body { padding-bottom: 60px + safe-area-inset-bottom }`**
+- i18n: `data-ja` / `data-en` 属性付きテキスト、注入後に `translateAll()` を呼ぶ
 
 ### 7.2 ヒーロー
 - `.bm-hero` 背景: `#000 url(hp-material-1.webp) center/cover fixed`（ContentsXと共有）
