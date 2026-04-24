@@ -196,7 +196,9 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   - カラー: `/embed-viewer?manga=ichinohe-home&slides=1&interval=4000`（4秒ごとに1ページずつフェード遷移）
   - Webtoon(中央・hero): `/embed-viewer?manga=omatome-ninja-new&speed=0.5`
   - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls）
-- iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + ダークベゼル
+- iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + オレンジ光沢ベゼル
+- ラベル位置: タイル直上(`bottom: 100% + 14px`)
+- CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)
 - スクロール演出（GSAP ScrollTrigger + pin）:
   - 初期: 中央1枚 scale 1.25（PC）/ 2.8（SP）で viewport 充填
   - scroll 進行で3分裂 → ラベル fade-in → 見出し表示

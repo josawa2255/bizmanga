@@ -23,6 +23,7 @@
     var labels = Array.prototype.slice.call(document.querySelectorAll('.s3d-label'));
     var heading = document.getElementById('s3dHeading');
     var scrollHint = document.getElementById('s3dScrollHint');
+    var cta = document.getElementById('s3dCta');
 
     // 初期は中央スマホを大きく見せる(viewport 高さに迫る迫力)
     var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.55;
@@ -38,6 +39,7 @@
     tl.to(labels, { opacity: 1, y: 0, ease: 'power2.out', duration: 0.45, stagger: 0.1 }, 0.95);
     if (heading) tl.to(heading, { autoAlpha: 1, duration: 0.5 }, 0.8);
     tl.call(function() { group.classList.add('is-settled'); }, null, 1.1);
+    if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, 1.2);
 
     ScrollTrigger.create({
       trigger: '#s3dSection',

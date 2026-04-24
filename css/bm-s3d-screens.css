@@ -17,8 +17,9 @@
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
   background: #fff;
-  padding-top: 90px;
-  padding-bottom: 80px;
+  /* 上: 見出し + タイル上ラベル分のクリアランス / 下: 余白 */
+  padding-top: 150px;
+  padding-bottom: 60px;
   box-sizing: border-box;
   z-index: 1;
 }
@@ -222,11 +223,11 @@
   }
 }
 
-/* ラベル行 (タイル直下) */
+/* ラベル行 (タイル直上) */
 .s3d-labels {
   position: absolute;
   left: 50%;
-  top: calc(100% + 18px);
+  bottom: calc(100% + 14px);
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: repeat(3, var(--s3d-tile-w));
@@ -235,7 +236,45 @@
   z-index: 5;
 }
 @media (max-width: 768px) {
-  .s3d-labels { top: calc(100% + 10px); gap: 10px; width: calc(var(--s3d-tile-w) * 3 + 20px); }
+  .s3d-labels { bottom: calc(100% + 8px); gap: 10px; width: calc(var(--s3d-tile-w) * 3 + 20px); }
+}
+
+/* タイルの下に配置する案内CTA(「詳しくはギャラリーで!」) */
+.s3d-cta {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 22px);
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  background: #fff;
+  color: #e85a1a;
+  border: 2px solid #e85a1a;
+  border-radius: 999px;
+  font-size: clamp(13px, 1.2vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(232, 90, 26, 0.22);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  opacity: 0;
+}
+.s3d-cta.is-shown { opacity: 1; }
+.s3d-cta:hover {
+  background: #e85a1a;
+  color: #fff;
+  transform: translateX(-50%) translateY(-2px);
+}
+.s3d-cta::after {
+  content: '↓';
+  font-size: 0.9em;
+}
+@media (max-width: 768px) {
+  .s3d-cta { top: calc(100% + 14px); padding: 8px 16px; font-size: 12px; }
 }
 .s3d-label {
   text-align: center;
