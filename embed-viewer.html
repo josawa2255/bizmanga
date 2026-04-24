@@ -279,6 +279,13 @@
       }
       if (pairs.length === 0) { loading.textContent = 'NO PAGES'; return; }
 
+      // 表紙ページ(pair[0])は空や白背景が多くタイルを埋めないため、3ペア以上ある時はスキップ
+      // 最後の thanks ページを含むペアも同様に内容が少ないためスキップ
+      if (pairs.length >= 3) {
+        pairs = pairs.slice(1, -1); // 先頭と末尾の1ペアずつ除外
+        if (pairs.length === 0) pairs = pages ? [[pages[0], pages[1] || null]] : [];
+      }
+
       // プリロード
       pages.forEach(function(src) { var pre = new Image(); pre.src = src; });
 
