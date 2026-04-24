@@ -280,22 +280,30 @@
         if (wdPrev) wdPrev.style.display = '';
         if (wdNext) wdNext.style.display = '';
       }
-      function isVerticalRatio(r) { return r < 0.2; }
+      // height/width > 1.8 ≒ width/height < 0.556 で縦読みと判定（works.jsと揃える）
+      function isVerticalRatio(r) { return r < 0.556; }
 
-      // 即座にカルーセルモードで仮表示（体感速度向上）
-      applyCarouselMode();
+      // WPの view_type を最優先（画像ロード不要で確定）
+      var forcedVertical = work.view_type === 'vertical_only' || work.view_type === 'vertical' || work.mode === 'vertical';
 
-      // 1ページ目で縦読み判定
-      var hasGallery = work.gallery && work.gallery.length > 0;
-      var firstSrc = hasGallery && work.gallery[0] ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
+      if (forcedVertical) {
+        applyVerticalMode();
+      } else {
+        // 即座にカルーセルモードで仮表示（体感速度向上）
+        applyCarouselMode();
 
-      var testImg = new Image();
-      testImg.src = firstSrc;
-      testImg.onload = function() {
-        if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
-          applyVerticalMode();
-        }
-      };
+        // 1ページ目で縦読み判定（view_typeが未設定の旧データ向けフォールバック）
+        var hasGallery = work.gallery && work.gallery.length > 0;
+        var firstSrc = hasGallery && work.gallery[0] ? work.gallery[0] : 'https://contentsx.jp/material/manga/' + work.id + '/01.webp';
+
+        var testImg = new Image();
+        testImg.src = firstSrc;
+        testImg.onload = function() {
+          if (isVerticalRatio(testImg.naturalWidth / testImg.naturalHeight)) {
+            applyVerticalMode();
+          }
+        };
+      }
     }
 
     wdOverlay.classList.add('active');
