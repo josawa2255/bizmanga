@@ -61,26 +61,69 @@
       transform-origin: 50% 50%;
     }
 
-    /* 1台のスマホ端末 — 角丸 + ベゼル */
+    /* 1台のスマホ端末 — iPhone風フレーム(太めベゼル + 強い角丸 + 側面の色変化) */
     .s3d-screen {
       position: relative;
       width: var(--s3d-tile-w);
       height: var(--s3d-tile-h);
       background: #000;
       overflow: hidden;
-      border-radius: 28px;
+      border-radius: 44px;
       opacity: 0;
       transition: opacity 0.5s ease;
-      /* 端末ベゼル(黒枠) + ドロップシャドウで浮遊感 */
-      border: 4px solid #111;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.45), 0 40px 80px rgba(0,0,0,0.25);
+      /* iPhone ボディ: 黒に近いダークグレーのベゼル */
+      border: 7px solid #0a0a0a;
+      /* 立体感: インナーハイライト + 外側ドロップシャドウ */
+      box-shadow:
+        inset 0 0 0 1.5px #2a2a2a,
+        0 1px 0 0.5px rgba(255,255,255,0.06) inset,
+        0 22px 44px rgba(0,0,0,0.5),
+        0 46px 90px rgba(0,0,0,0.28);
     }
     .s3d-screen.is-ready { opacity: 1; }
     @media (max-width: 768px) {
       .s3d-screen {
-        border-radius: 14px;
-        border-width: 2px;
+        border-radius: 22px;
+        border-width: 3px;
       }
+    }
+
+    /* Dynamic Island (ピル型ノッチ) — 画面上部中央 */
+    .s3d-notch {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38%;
+      max-width: 95px;
+      height: 22px;
+      background: #000;
+      border-radius: 14px;
+      z-index: 6;
+      pointer-events: none;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.9);
+    }
+    @media (max-width: 768px) {
+      .s3d-notch { top: 4px; height: 10px; max-width: 42px; border-radius: 6px; }
+    }
+
+    /* ホームインジケータ (白いバー) — 画面下部中央 */
+    .s3d-home-indicator {
+      position: absolute;
+      bottom: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38%;
+      max-width: 110px;
+      height: 4px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 3px;
+      z-index: 6;
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    @media (max-width: 768px) {
+      .s3d-home-indicator { bottom: 3px; height: 2px; max-width: 40px; }
     }
 
     .s3d-screen iframe {
@@ -296,6 +339,8 @@
       margin-bottom: 8px;
     }
   </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e85500">
 </head>
 
 <body>
@@ -352,14 +397,20 @@
           <div class="s3d-screens" id="s3dScreens">
             <div class="s3d-screen" data-idx="0">
               <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
               <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
             </div>
             <div class="s3d-screen s3d-screen--hero" data-idx="1">
               <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
               <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
             </div>
             <div class="s3d-screen s3d-screen--video" data-idx="2">
               <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
             </div>
           </div>
         </div>
