@@ -161,26 +161,85 @@
       filter: blur(0.5px);
     }
 
-    /* 見出し */
+    /* 見出し(黒背景に白文字ではなく、明るいステージなので濃い文字に) */
     .s3d-heading {
       position: absolute;
-      top: 60px; left: 50%;
+      top: 40px; left: 50%;
       transform: translateX(-50%);
-      color: #fff;
+      color: #222;
       text-align: center;
       z-index: 3;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.5s ease;
+      max-width: 92vw;
     }
     .s3d-heading.is-shown { opacity: 1; }
-    .s3d-heading h2 {
-      font-size: clamp(24px, 3.2vw, 40px);
-      font-weight: 900;
+    .s3d-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      color: #e85a1a;
+      margin: 0 0 8px;
     }
-    .s3d-heading p {
-      margin-top: 10px; font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
+    .s3d-heading h2 {
+      font-size: clamp(22px, 3.2vw, 38px);
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
+    .s3d-heading .s3d-sub {
+      margin: 10px 0 0;
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: rgba(34, 34, 34, 0.7);
+      font-weight: 500;
+    }
+
+    /* タイル群ラッパー（ラベル + タイル一体化） */
+    .s3d-screens-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      will-change: transform;
+      transform-origin: 50% 50%;
+    }
+    /* 3タイル分のラベル行。タイルと完全に同じ幅 */
+    .s3d-labels {
+      display: grid;
+      grid-template-columns: repeat(3, var(--s3d-tile-w));
+      gap: 0;
+      width: calc(var(--s3d-tile-w) * 3);
+    }
+    .s3d-label {
+      text-align: center;
+      padding: 0 8px;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .s3d-label.is-shown { opacity: 1; }
+    .s3d-label-title {
+      display: block;
+      font-size: clamp(14px, 1.8vw, 22px);
+      font-weight: 900;
+      color: #111;
+      letter-spacing: 0.02em;
+    }
+    .s3d-label-sub {
+      display: block;
+      margin-top: 4px;
+      font-size: clamp(10px, 1vw, 12px);
+      color: rgba(17, 17, 17, 0.6);
+      font-weight: 500;
+    }
+    /* モバイルはラベルフォント縮小(タイルが 110x238 なので圧縮) */
+    @media (max-width: 768px) {
+      .s3d-labels { gap: 0; }
+      .s3d-label { padding: 0 2px; }
+      .s3d-label-title { font-size: 11px; letter-spacing: 0; }
+      .s3d-label-sub { font-size: 9px; margin-top: 2px; }
     }
 
     /* スクロールヒント */
@@ -256,23 +315,41 @@
     <section class="s3d-section" id="s3dSection">
       <div class="s3d-stage" id="s3dStage">
         <div class="s3d-heading" id="s3dHeading">
-          <h2>3つの画面、無限の物語</h2>
-          <p>全ての作品は実際にあなたのブラウザで読める</p>
+          <p class="s3d-eyebrow">WHAT WE MAKE</p>
+          <h2>さまざまな媒体・形式で制作しています</h2>
+          <p class="s3d-sub">カラー、Webtoon、採用…目的に合わせて最適な形式で。</p>
         </div>
 
-        <div class="s3d-screens" id="s3dScreens">
-          <!-- 左 / 中央(hero) / 右 — 横1列 -->
-          <div class="s3d-screen" data-idx="0">
-            <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
+        <div class="s3d-screens-wrap" id="s3dScreensWrap">
+          <!-- 各タイルの上に形式ラベル -->
+          <div class="s3d-labels" id="s3dLabels">
+            <div class="s3d-label" data-tile="0">
+              <span class="s3d-label-title">カラー</span>
+              <span class="s3d-label-sub">ブランド訴求・感情を動かす</span>
+            </div>
+            <div class="s3d-label s3d-label--hero" data-tile="1">
+              <span class="s3d-label-title">Webtoon</span>
+              <span class="s3d-label-sub">縦読み・SNS/スマホ世代に刺さる</span>
+            </div>
+            <div class="s3d-label" data-tile="2">
+              <span class="s3d-label-title">採用</span>
+              <span class="s3d-label-sub">採用サイトに埋め込めるストーリー</span>
+            </div>
           </div>
-          <div class="s3d-screen s3d-screen--hero" data-idx="1">
-            <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
-          </div>
-          <div class="s3d-screen" data-idx="2">
-            <iframe src="/embed-viewer?manga=bms-unso&speed=0.55&ltr=1" loading="lazy" title="BMS運送"></iframe>
-            <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
+
+          <div class="s3d-screens" id="s3dScreens">
+            <div class="s3d-screen" data-idx="0">
+              <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.45" loading="lazy" title="一戸ホーム"></iframe>
+              <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
+            </div>
+            <div class="s3d-screen s3d-screen--hero" data-idx="1">
+              <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.5" loading="lazy" title="黄色いおまとめ忍者"></iframe>
+              <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
+            </div>
+            <div class="s3d-screen" data-idx="2">
+              <iframe src="/embed-viewer?manga=bms-unso&speed=0.55&ltr=1" loading="lazy" title="BMS運送"></iframe>
+              <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
+            </div>
           </div>
         </div>
 
@@ -324,11 +401,14 @@
 
       if (window.gsap && window.ScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
+        var wrap   = document.getElementById('s3dScreensWrap');
         var group  = document.getElementById('s3dScreens');
         var hero   = group.querySelector('.s3d-screen--hero');
         var others = Array.prototype.slice.call(
           group.querySelectorAll('.s3d-screen:not(.s3d-screen--hero)')
         );
+        var labels = Array.prototype.slice.call(document.querySelectorAll('.s3d-label'));
+        var sideLabels = labels.filter(function(el) { return !el.classList.contains('s3d-label--hero'); });
         var heading = document.getElementById('s3dHeading');
         var scrollHint = document.getElementById('s3dScrollHint');
 
@@ -340,13 +420,15 @@
         //   絶対ルール: 初期は必ず1画面のみ表示
         // ==========================================
         // 初期 hero をビューポートに大きく表示(動画の「1画面フルスクリーン」感)
-        // PC: 440x330 を 2.6倍 = 1144x858、モバイル: 110x238 を 2.8倍 = 308x666
+        // wrap(ラベル + タイル)を一体的に scale することでラベルも一緒に拡大
         var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 2.6;
-        gsap.set(group, {
+        gsap.set(wrap, {
           scale: initScale,
           transformOrigin: '50% 50%'
         });
         gsap.set(others, { opacity: 0, scale: 0.6 });
+        // ラベルは初期非表示(分裂完了後に現れる)
+        gsap.set(labels, { opacity: 0, y: 8 });
 
         var tl = gsap.timeline({
           scrollTrigger: {
@@ -373,9 +455,9 @@
         });
 
         // 動画の分裂感に合わせてタイムラインをタイトに圧縮
-        // フェーズ1: hero フルスクリーン → グリッドへ引き (0〜0.5)
-        tl.to(group, { scale: 1, ease: 'power3.out', duration: 0.5 }, 0);
-        // フェーズ2: 他2枚が左右にパッと出現 (0.2〜0.5、重なって素早く)
+        // フェーズ1: wrap フルスクリーン → グリッドへ引き (0〜0.5)
+        tl.to(wrap, { scale: 1, ease: 'power3.out', duration: 0.5 }, 0);
+        // フェーズ2: 他2枚が左右にパッと出現 (0.2〜0.5)
         tl.to(others, {
           opacity: 1,
           scale: 1,
@@ -383,8 +465,16 @@
           duration: 0.3,
           stagger: 0.05
         }, 0.2);
-        // フェーズ3: 落ち着いて読む時間 (0.5〜1.0)
-        tl.to({}, { duration: 0.5 });
+        // フェーズ3: ラベルが上からフワッと降りてくる (0.45〜0.8)
+        tl.to(labels, {
+          opacity: 1,
+          y: 0,
+          ease: 'power2.out',
+          duration: 0.35,
+          stagger: 0.08
+        }, 0.45);
+        // フェーズ4: 読む時間のホールド
+        tl.to({}, { duration: 0.4 });
       }
     });
   </script>
