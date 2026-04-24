@@ -41,8 +41,8 @@
       background: #fff;
     }
     .s3d-stage {
-      position: sticky;
-      top: 0;
+      /* GSAP pin が fixed で管理する。CSS sticky と競合すると逆方向再生が死ぬので除去 */
+      position: relative;
       height: 100vh;
       width: 100%;
       display: flex; align-items: center; justify-content: center;
