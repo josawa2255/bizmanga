@@ -189,10 +189,10 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 ### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
 - `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
-- **3タブ**: 全て / Webtoon（縦読み） / マンガ型
+- **3タブ**: 全て / Webtoon（縦読み） / 横読み
 - 判定は `window.bmViewType.isForcedVertical(work)` に委譲（BUGS #013 の一元化ヘルパー）
   - Webtoon = `view_type in ['vertical_only','vertical']`
-  - マンガ型 = それ以外
+  - 横読み = それ以外
 - タブ切替時は `bm-home.js` が `filterData()` → `buildGalleryCards()` で再描画、オートスクロールも再起動
 - 該当作品0件時は `#bmGalleryEmpty` の「該当する作品がまだありません。」を表示
 - i18n: `data-ja` / `data-en` 属性で英語切替対応
