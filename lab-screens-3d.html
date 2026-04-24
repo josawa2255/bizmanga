@@ -392,10 +392,11 @@
           var scrollHint = document.getElementById('s3dScrollHint');
 
           // ==========================================
-          // 初期: 中央（スマホ）のみ大きく表示
-          //   左右PCは中央の下に隠れる (xPercent で重ねる)
+          // 初期: 中央 iPhone のみを大きく表示（動画の hero フルスクリーン相当）
+          //   左右PCは中央の裏に完全に隠す（opacity 0 + xPercent ±140）
+          //   絶対ルール: 初期は必ず1画面のみ表示
           // ==========================================
-          gsap.set(group, { scale: 1.6 });
+          gsap.set(group, { scale: 2.8 });
           gsap.set(left,  { opacity: 0, xPercent: 140 });
           gsap.set(right, { opacity: 0, xPercent: -140 });
 
@@ -422,7 +423,7 @@
             }
           });
 
-          // フェーズ1: 視点引き（scale 1.6 → 1）
+          // フェーズ1: 視点引き（scale 2.8 → 1）
           tl.to(group, { scale: 1, ease: 'power2.out', duration: 0.6 }, 0);
 
           // フェーズ2: 左右スライドアウト + フェードイン
