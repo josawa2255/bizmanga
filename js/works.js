@@ -277,7 +277,7 @@ if (getBmLang() === 'en') {
           cta_label_en: w.cta_label_en || '',
           cta_enabled: !!w.cta_enabled,
         };
-        if (w.view_type === 'vertical_only' || w.view_type === 'vertical') {
+        if (window.bmViewType && window.bmViewType.isForcedVertical(w)) {
           mangaData[w.id].viewType = 'vertical';
         }
       });
@@ -716,14 +716,11 @@ function openManga(key) {
   probe.src = firstSrc;
 
   function proceedOpen() {
-    // 縦長自動検出: height/width > 1.8 なら縦読みに強制切り替え
-    if (probe.naturalWidth > 0 && probe.naturalHeight > 0) {
-      const ratio = probe.naturalHeight / probe.naturalWidth;
-      if (ratio > 1.8) {
-        data.viewType = 'vertical';
-        data.tallCover = true;
-        data.verticalOnly = true; // 見開き不可
-      }
+    // 縦長自動検出: 共通ヘルパーで閾値一元管理
+    if (window.bmViewType && window.bmViewType.isVerticalByRatio(probe.naturalWidth, probe.naturalHeight)) {
+      data.viewType = 'vertical';
+      data.tallCover = true;
+      data.verticalOnly = true; // 見開き不可
     }
     // WPでvertical_only指定の場合もロック
     if (data.verticalOnly) {
@@ -1693,7 +1690,7 @@ if (isDirectMode) {
         // (以前URL内に 'webtoon' を含むか？という代替判定が残っており、
         //  新作のP1.webp系ファイル名では縦読み判定に失敗して spread になる不具合があった)
         var apiViewType = data.view_type || 'spread';
-        var viewType = (apiViewType === 'vertical_only' || apiViewType === 'vertical') ? 'vertical' : apiViewType;
+        var viewType = (window.bmViewType && window.bmViewType.isForcedVertical(data)) ? 'vertical' : apiViewType;
         mangaData[data.id] = {
           id: data.id,
           title: data.title_ja || data.id,

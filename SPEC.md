@@ -111,6 +111,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
 | `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
 | `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL |
+| `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
 
 ## 4. i18n 仕様

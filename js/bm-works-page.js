@@ -373,8 +373,8 @@
         wdCarousel.appendChild(frag);
       }
 
-      // WPのview_typeフィールドで縦読み判定（画像ロード不要）
-      var isVertical = work.view_type === 'vertical_only' || work.view_type === 'vertical' || work.mode === 'vertical';
+      // 共通ヘルパーで判定（bm-hero.js / works.js と同ロジック）
+      var isVertical = window.bmViewType ? window.bmViewType.isForcedVertical(work) : false;
       if (isVertical) {
         wdCarousel.classList.add('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
