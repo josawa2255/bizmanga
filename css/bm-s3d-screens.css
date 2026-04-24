@@ -49,25 +49,30 @@
   border-radius: 44px;
   opacity: 0;
   transition: opacity 0.5s ease;
-  /* 光沢オレンジベゼル: 明→暗→深のグラデで金属/樹脂調の反射 */
+  /* 光沢オレンジベゼル: 斜め上から入る強い光で鏡面反射のような艶 */
   border: 7px solid transparent;
   background:
     linear-gradient(#000, #000) padding-box,
-    linear-gradient(150deg,
-      #ffb27a 0%,
-      #ff8a3a 20%,
-      #e85a1a 55%,
-      #c24311 85%,
-      #8a2d08 100%) border-box;
+    linear-gradient(135deg,
+      #ffe8c8 0%,      /* ほぼ白のハイライト(斜め上) */
+      #ffb27a 8%,
+      #ff9149 22%,
+      #e85a1a 50%,
+      #b23b0c 78%,
+      #5a1a02 100%) border-box; /* 影部はほぼ黒に近いダークブラウン */
   box-shadow:
-    /* ベゼル内側の明るいリム */
-    inset 0 0 0 1.5px rgba(255, 220, 180, 0.45),
-    /* 外側リムライト(ごく薄い明るいオレンジの縁取り) */
-    0 0 0 1px rgba(255, 154, 74, 0.5),
-    /* オレンジのソフトグロー */
-    0 10px 24px rgba(232, 90, 26, 0.45),
-    0 28px 56px rgba(232, 90, 26, 0.28),
-    0 50px 100px rgba(0,0,0,0.25);
+    /* 内側リム: 明るいオレンジの金属光 */
+    inset 0 0 0 1.5px rgba(255, 235, 200, 0.7),
+    /* ベゼル下部に白いサブハイライト */
+    inset 0 -2px 3px rgba(255, 190, 120, 0.35),
+    /* 外側の薄いリムライト */
+    0 0 0 1px rgba(255, 180, 110, 0.55),
+    /* オレンジのソフトグロー(複層) */
+    0 8px 18px rgba(255, 120, 50, 0.55),
+    0 22px 44px rgba(232, 90, 26, 0.45),
+    0 48px 96px rgba(232, 90, 26, 0.22),
+    /* 床影 */
+    0 60px 80px -20px rgba(0,0,0,0.35);
 }
 .s3d-screen.is-ready { opacity: 1; }
 @media (max-width: 768px) {
@@ -121,7 +126,8 @@
   pointer-events: none;
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
-.s3d-screen--video { background: #000; }
+/* 動画タイル: .s3d-screen の padding-box が既に黒なので背景上書きしない
+   (上書きするとベゼルのオレンジグラデが黒に潰れる) */
 .s3d-screen--video iframe { pointer-events: auto !important; }
 .s3d-screen--video:hover { cursor: pointer; }
 /* 動画タイルは YouTube の音量/字幕コントロールと被るため
@@ -129,38 +135,46 @@
 .s3d-screen--video .s3d-notch,
 .s3d-screen--video .s3d-home-indicator { display: none; }
 
-/* ガラス反射 */
+/* ガラス反射(画面表面) — 光沢強化 */
 .s3d-screen::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
+    /* 斜めの広いグレア(主反射) */
     linear-gradient(125deg,
-      rgba(255,255,255,0.18) 0%,
-      rgba(255,255,255,0.08) 12%,
-      rgba(255,255,255,0.02) 25%,
+      rgba(255,255,255,0.32) 0%,
+      rgba(255,255,255,0.16) 10%,
+      rgba(255,255,255,0.04) 25%,
       transparent 45%),
+    /* 右下の柔らかい逆光 */
     linear-gradient(315deg,
-      rgba(255,255,255,0.08) 0%,
-      transparent 30%);
+      rgba(255,180,140,0.18) 0%,
+      transparent 35%),
+    /* 細い対角ストリーク */
+    linear-gradient(118deg,
+      transparent 42%,
+      rgba(255,255,255,0.14) 46%,
+      transparent 50%);
   pointer-events: none;
   z-index: 3;
   mix-blend-mode: screen;
 }
+/* 画面上部のシャープな反射ライン */
 .s3d-screen::after {
   content: '';
   position: absolute;
-  top: 0; left: -10%;
-  width: 60%;
-  height: 2px;
+  top: 2px; left: -8%;
+  width: 65%;
+  height: 3px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,0.9) 50%,
     transparent 100%);
   transform: skewX(-18deg);
   pointer-events: none;
   z-index: 4;
-  filter: blur(0.5px);
+  filter: blur(0.6px);
 }
 
 /* 見出し */
