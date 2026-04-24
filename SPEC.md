@@ -282,6 +282,44 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
 
+### 2026-04-24 全ページ メタタグ最適化（SEO×マーケ視点）
+
+Google検索結果のタイトル/サイト名/ディスクリプションがmetaと食い違う現象（`ビズマンガ | BizManga — ビジネス漫画制作サービス` / サイト名 `contentsx.jp` / body文を勝手に抽出したdescription）を解消するため、12ページ全ての meta + schema を一括再設計。
+
+**設計原則**:
+- **タイトル 26-33文字**（日本語SERP幅最適化）
+- **ディスクリプション 84-101文字**（SP/PC両方で切れないサイズ）
+- **各ページ独自のプライマリKW**を左詰め（カニバリゼーション防止）
+- 末尾「｜ビズマンガ」統一でブランド浸透
+- **具体価格（19,800円・1/5の価格）をmetaから全削除**（Google景品表示法リスク回避 + 柔軟性確保）
+- **「ビズマンガ」カタカナ統一**（英字「BizManga」「ビズマンガ（BizManga）」は meta/schema から全除去）
+- 実績数字（125項目・2週間・5つの理由・10選・7ジャンル）は信頼性シグナルとして残す
+
+**ページ別プライマリKW**:
+| ページ | 主KW | ファネル |
+|---|---|---|
+| index | ビジネス漫画制作 | Top |
+| works | ビジネス漫画 制作事例 | Mid |
+| biz-library | ビジネス漫画 サンプル | Mid-Low |
+| pricing | ビジネス漫画 料金 | Low |
+| faq | ビジネス漫画 よくある質問 | Low |
+| contact | 無料相談 | Bottom |
+| column | ビジネス漫画 活用 | Top |
+| testimonials | ビジネス漫画 導入事例 | Mid |
+| manga-types | ビジネス漫画 種類 | Top |
+| use-cases | ビジネス漫画 活用場面 | Top-Mid |
+| strength | 選ばれる理由 | Mid |
+| news | 最新情報 | — |
+
+**対応内容**:
+1. 全12ページの `<title>` / `<meta description>` / `<meta og:title/og:description>` / `<meta twitter:title/twitter:description>` を再設計
+2. [index.html](index.html) に **WebSite schema** 追加（`name: "ビズマンガ"`）→ Google検索結果のサイト名を `contentsx.jp` → `ビズマンガ` に変更する見込み
+3. 全HTMLの `Organization.name: "ビズマンガ（BizManga）"` → `"ビズマンガ"` に統一
+4. WebPage schema の name/description を新meta値に同期（pricing / testimonials / biz-library / contact / faq / news / strength / works）
+5. faq.html 本文内の「BizManga」日本語表記をカタカナに統一
+
+**反映待ち**: Google再クロール後、検索結果の表示が新titleに書き換わるまで1〜2週間。WebSite schema認識まで1〜4週間（Google側タイミング依存）。
+
 ### 2026-04-20 日本語禁則処理をサイト全体に適用
 
 日本語は単語境界が無いため、長い見出し（例: 「マーケティング研究所」）がコンテナに収まらないと末尾1文字だけ次行に落ちる「孤立文字」問題が発生する。両サイトの CSS に禁則処理ルールを一括追加。
