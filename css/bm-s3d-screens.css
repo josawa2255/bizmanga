@@ -49,12 +49,13 @@
   border-radius: 44px;
   opacity: 0;
   transition: opacity 0.5s ease;
-  border: 7px solid #0a0a0a;
+  /* ブランドオレンジのベゼル */
+  border: 7px solid #e85a1a;
   box-shadow:
-    inset 0 0 0 1.5px #2a2a2a,
-    0 1px 0 0.5px rgba(255,255,255,0.06) inset,
-    0 22px 44px rgba(0,0,0,0.5),
-    0 46px 90px rgba(0,0,0,0.28);
+    inset 0 0 0 1.5px #ff7a3a,
+    0 1px 0 0.5px rgba(255,255,255,0.12) inset,
+    0 22px 44px rgba(232, 90, 26, 0.35),
+    0 46px 90px rgba(0,0,0,0.25);
 }
 .s3d-screen.is-ready { opacity: 1; }
 @media (max-width: 768px) {
