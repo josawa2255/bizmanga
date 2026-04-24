@@ -496,8 +496,8 @@
         var tl = gsap.timeline({
           scrollTrigger: {
             trigger: '#s3dSection',
-            start: 'top top',
-            // 1→3 分裂は十分な距離で。初期1画面の滞在時間を長く取る
+            // セクション頂点が vp 頂点へ付く前(まだ vp の下20%あたりに居る時)に発動
+            start: 'top 20%',
             end: '+=180%',
             pin: '#s3dStage',
             // scrub を長めにしてゆったり追従
