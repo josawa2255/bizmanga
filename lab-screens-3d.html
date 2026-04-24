@@ -58,21 +58,32 @@
       transform-origin: center center;
     }
 
-    /* 1枚のスクリーン */
+    /* 1枚のスクリーン — 光沢のあるディスプレイ */
     .s3d-screen {
       position: relative;
       width: 440px;
       aspect-ratio: 16 / 10;
       background: #000;
       overflow: hidden;
-      border-radius: 4px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      /* 金属エッジ＋強い奥行き影 */
       box-shadow:
-        /* 内側の暗枠で画面っぽさ */
-        inset 0 0 0 1px rgba(255,255,255,0.04),
-        /* 外の強い影（グリッドギャップを深く見せる） */
-        0 0 0 1px #000,
-        0 20px 40px rgba(0,0,0,0.5);
+        /* 内側：黒い縁でガラス面っぽく */
+        inset 0 0 0 1px rgba(0,0,0,0.8),
+        /* 内側：上からの淡いハイライト（ガラスの縁光） */
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.05),
+        /* 外：金属風チャムファー */
+        0 0 0 2px rgba(255,255,255,0.06),
+        /* 外：深い落影（グリッドギャップを強調） */
+        0 0 0 3px #000,
+        0 20px 50px rgba(0,0,0,0.6),
+        0 40px 80px rgba(0,0,0,0.35);
     }
+    .s3d-screen.is-ready { opacity: 1; }
+
     .s3d-screen iframe {
       position: absolute;
       inset: 0;
@@ -84,55 +95,53 @@
       border: 0;
       display: block;
       background: #fafafa;
+      pointer-events: none; /* iframeへの操作無効 → クリックは下のリンクへ通る */
     }
-    /* 画面の微かなガラス反射 */
-    .s3d-screen::after {
+    /* 画面全体をクリックして作品に遷移 */
+    .s3d-screen-link {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: block;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* ガラス反射レイヤー（強めの対角グレア） */
+    .s3d-screen::before {
       content: '';
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background:
-        linear-gradient(135deg,
-          rgba(255,255,255,0.05) 0%,
-          rgba(255,255,255,0.015) 25%,
-          transparent 50%);
+        /* 対角の大きなグレア */
+        linear-gradient(125deg,
+          rgba(255,255,255,0.18) 0%,
+          rgba(255,255,255,0.08) 12%,
+          rgba(255,255,255,0.02) 25%,
+          transparent 45%),
+        /* 右下のやわらかい逆光 */
+        linear-gradient(315deg,
+          rgba(255,255,255,0.08) 0%,
+          transparent 30%);
       pointer-events: none;
-      z-index: 2;
+      z-index: 3;
       mix-blend-mode: screen;
     }
-
-    /* 初期フェードイン */
-    .s3d-screen {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    .s3d-screen.is-ready { opacity: 1; }
-
-    /* タイトルは画面の下に */
-    .s3d-screen-title {
+    /* ガラスの上部にシャープな一閃ハイライト */
+    .s3d-screen::after {
+      content: '';
       position: absolute;
-      bottom: -44px;
-      left: 0; right: 0;
-      text-align: center;
-      z-index: 11;
-    }
-    .s3d-screen-title a {
-      display: inline-block;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 6px 16px;
-      border-radius: 50px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      text-decoration: none;
-      color: #fff;
-      transition: background 0.25s, transform 0.25s;
-      cursor: pointer;
-    }
-    .s3d-screen-title a:hover {
-      background: rgba(255, 255, 255, 0.18);
-      transform: translateY(-2px);
+      top: 0; left: -10%;
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.7) 50%,
+        transparent 100%);
+      transform: skewX(-18deg);
+      pointer-events: none;
+      z-index: 4;
+      filter: blur(0.5px);
     }
 
     /* 見出し */
@@ -254,25 +263,19 @@
           <!-- 左 -->
           <div class="s3d-screen s3d-screen--left">
             <iframe src="/embed-viewer?manga=ichinohe-home&speed=0.5" loading="lazy" title="一戸ホーム"></iframe>
-            <div class="s3d-screen-title">
-              <a href="/biz-library?manga=ichinohe-home">一戸ホーム →</a>
-            </div>
+            <a class="s3d-screen-link" href="/biz-library?manga=ichinohe-home" aria-label="一戸ホームを開く"></a>
           </div>
 
           <!-- 中央 -->
           <div class="s3d-screen s3d-screen--center">
             <iframe src="/embed-viewer?manga=omatome-ninja-new&speed=0.6" loading="lazy" title="黄色いおまとめ忍者"></iframe>
-            <div class="s3d-screen-title">
-              <a href="/biz-library?manga=omatome-ninja-new">黄色いおまとめ忍者 →</a>
-            </div>
+            <a class="s3d-screen-link" href="/biz-library?manga=omatome-ninja-new" aria-label="黄色いおまとめ忍者を開く"></a>
           </div>
 
           <!-- 右 -->
           <div class="s3d-screen s3d-screen--right">
             <iframe src="/embed-viewer?manga=bms-unso&speed=0.55" loading="lazy" title="BMS運送"></iframe>
-            <div class="s3d-screen-title">
-              <a href="/biz-library?manga=bms-unso">BMS運送 →</a>
-            </div>
+            <a class="s3d-screen-link" href="/biz-library?manga=bms-unso" aria-label="BMS運送を開く"></a>
           </div>
         </div>
 

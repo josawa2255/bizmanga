@@ -142,11 +142,7 @@
       var paused = false;
       var resumeTimer = null;
 
-      // ホバーで停止（iframe内で直接制御）
-      viewer.addEventListener('mouseenter', function() { paused = true; });
-      viewer.addEventListener('mouseleave', function() { paused = false; });
-
-      // ユーザーが手動スクロールしたらしばらく停止
+      // ユーザーが手動ホイールした時だけしばらく停止（ホバーでは停止しない）
       viewer.addEventListener('wheel', function() {
         paused = true;
         clearTimeout(resumeTimer);
