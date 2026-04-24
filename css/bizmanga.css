@@ -304,6 +304,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   gap: 12px;
   pointer-events: none;
 }
+/* 漫画ビューア（manga-modal）が開いている間は全ページでFABを隠す */
+body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-fab__btn {
   --bm-fab-w: 200px;
   --bm-fab-h: 52px;

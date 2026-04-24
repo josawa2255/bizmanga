@@ -178,6 +178,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ### 7.1 追従CTA（`.bm-fab`）— 全ページ共通
 - `js/bm-nav.js` が `contact.html` / `biz-library.html` 以外の全ページで自動注入（2026-04-24〜）
   - `biz-library.html` は漫画ビューアが全画面で開くとFABが被って読書体験を阻害するため除外（[js/bm-nav.js:268](js/bm-nav.js#L268)）
+- **漫画ビューア表示中は全ページで非表示**: `body:has(.manga-modal.open) .bm-fab { display: none }` を [css/bizmanga.css](css/bizmanga.css) に定義。index/works等から漫画モーダルを開いた際も必ずFABが消える
 - **2ボタン構成**: LINEで相談（`#06C755`）/ お問い合わせ（`var(--bm-accent)`）
 - スクロール中も常時表示
 - **デスクトップ**: 左下に固定幅ピルボタン（`--bm-fab-w: 200px; --bm-fab-h: 52px`）を横並び
