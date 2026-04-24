@@ -95,6 +95,7 @@
     var params = new URLSearchParams(location.search);
     var mangaId = params.get('manga') || '';
     var speed = parseFloat(params.get('speed') || '0.5'); // px/frame
+    var reverse = params.get('reverse') === '1'; // 横スクロール方向反転(右→左 → 左→右)
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -198,7 +199,8 @@
       var paused = false;
       var hoverPause = false;
       var resumeTimer = null;
-      var pos = 0;
+      // reverse=1 の場合、初期位置を halfWidth にして左→右へ流す
+      var pos = reverse ? halfWidth : 0;
 
       viewer.addEventListener('mouseenter', function() { hoverPause = true; });
       viewer.addEventListener('mouseleave', function() { hoverPause = false; });
@@ -219,8 +221,13 @@
 
       function tick() {
         if (!paused && !hoverPause) {
-          pos += speed;
-          if (pos >= halfWidth) pos -= halfWidth;
+          if (reverse) {
+            pos -= speed;
+            if (pos <= 0) pos += halfWidth;
+          } else {
+            pos += speed;
+            if (pos >= halfWidth) pos -= halfWidth;
+          }
           hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
         }
         requestAnimationFrame(tick);
