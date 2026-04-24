@@ -107,7 +107,10 @@
     .s3d-screen--video {
       background: #000; /* レターボックス部は黒 = タイル色と一致 */
     }
-    /* ホバー時にカーソルを強制可視化(iframe に入る前のヒント) */
+    /* 動画タイルは常にポインタ受付: is-settled 前でもホバーで YouTube コントロール表示可能に */
+    .s3d-screen--video iframe {
+      pointer-events: auto !important;
+    }
     .s3d-screen--video:hover { cursor: pointer; }
     /* 画面全体クリック（デスクトップは iframe.contentDocument にクリックハンドラ） */
     .s3d-screen-link {
