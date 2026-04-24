@@ -47,7 +47,7 @@
 
 /* タイトル */
 .str-hero-title {
-  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(36px, 7vw, 72px);
   font-weight: 400;
   color: #111;
@@ -58,7 +58,7 @@
   color: var(--bm-accent);
 }
 .str-hero-lead {
-  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(15px, 2vw, 20px);
   font-weight: 700;
   color: #555;
@@ -133,7 +133,7 @@
 
 /* 数字 — 巨大＋グラデーション */
 .str-bento-num {
-  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(48px, 6vw, 80px);
   font-weight: 400;
   color: #222;
@@ -160,7 +160,7 @@
 
 /* 単位 */
 .str-bento-unit {
-  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(14px, 1.5vw, 18px);
   font-weight: 700;
   color: #444;
@@ -170,7 +170,7 @@
 
 /* ラベル */
 .str-bento-label {
-  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(11px, 1.1vw, 13px);
   color: #999;
   margin-top: 16px;
@@ -226,7 +226,7 @@
   margin-bottom: 20px;
 }
 .str-section-title {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(30px, 4.5vw, 48px);
   font-weight: 900;
   color: #222;
@@ -236,7 +236,7 @@
   gap: 14px;
 }
 .str-section-num {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: 1em;
   color: #222;
   font-weight: 900;
@@ -285,7 +285,7 @@
   letter-spacing: 0.03em;
 }
 .str-compare-card-price {
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(32px, 5vw, 48px);
   font-weight: 400;
   color: #333;
@@ -306,7 +306,7 @@
 .str-compare-vs {
   display: flex;
   align-items: center;
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(18px, 2.5vw, 28px);
   color: #ccc;
   font-weight: 400;
@@ -333,7 +333,7 @@
   margin-bottom: 8px;
 }
 .str-speed-num {
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(64px, 10vw, 100px);
   color: var(--bm-accent);
   line-height: 1;
@@ -574,7 +574,7 @@
   border-radius: 14px;
   background: linear-gradient(135deg, var(--bm-accent) 0%, var(--bm-accent-hover) 100%);
   color: #fff;
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: 18px;
   font-weight: 400;
   flex-shrink: 0;
@@ -615,7 +615,7 @@
   margin-bottom: 12px;
 }
 .str-glass-card-title {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(20px, 2.8vw, 28px);
   font-weight: 900;
   color: #222;
@@ -656,7 +656,7 @@
 }
 .str-ba-label {
   display: inline-block;
-  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: #888;
@@ -738,7 +738,7 @@
 }
 .str-stat { display: flex; flex-direction: column; gap: 4px; }
 .str-stat-num {
-  font-family: 'RocknRoll One', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: clamp(36px, 5vw, 52px);
   color: var(--bm-accent);
   line-height: 1;
@@ -832,7 +832,7 @@
   opacity: 0.5;
 }
 .str-media-item-title {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
   font-size: 1rem;
   font-weight: 900;
   color: #333;
