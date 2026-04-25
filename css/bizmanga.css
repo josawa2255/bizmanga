@@ -1722,18 +1722,43 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   font-size: clamp(28px, 4vw, 40px);
   font-weight: 900; color: #1a1a1a;
 }
+/* 上部メニューの「お問い合わせ」CTA(.bm-nav-cta) と同じピル+スイープ塗りエフェクト */
 .bm-gallery-more {
-  font-size: 13px; font-weight: 700;
+  display: inline-block;
+  padding: 10px 24px;
+  background: transparent;
   color: var(--bm-accent);
-  border: 1.5px solid var(--bm-accent);
-  border-radius: 8px; padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: 50px;
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 0;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   text-decoration: none;
-  transition: background 0.3s, color 0.3s, border-color 0.3s;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+.bm-gallery-more::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--bm-accent);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
 }
 .bm-gallery-more:hover {
-  background: var(--bm-accent); color: #fff;
-  border-color: var(--bm-accent);
+  color: #fff;
+  transform: scale(1.06);
+  outline-color: var(--bm-accent);
+  box-shadow: 4px 5px 17px -4px rgba(var(--bm-accent-rgb), 0.5);
 }
+.bm-gallery-more:hover::before { width: 260%; }
 
 /* タブ（全て / Webtoon / マンガ型） */
 .bm-gallery-tabs {
