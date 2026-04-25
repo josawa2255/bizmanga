@@ -85,9 +85,10 @@
     var langSwitch = document.createElement('div');
     langSwitch.className = 'bm-lang-switch';
     langSwitch.id = 'bmLangSwitch';
+    // 言語ボタンのラベルは絶対に翻訳しない（i18n辞書ヒットで幅が変わりレイアウト崩れ）
     langSwitch.innerHTML =
-      '<button class="bm-lang-btn' + (currentLang === 'ja' ? ' active' : '') + '" data-lang="ja">\u65E5\u672C\u8A9E</button>' +
-      '<button class="bm-lang-btn' + (currentLang === 'en' ? ' active' : '') + '" data-lang="en">EN</button>';
+      '<button class="bm-lang-btn' + (currentLang === 'ja' ? ' active' : '') + '" data-lang="ja" data-i18n-skip>\u65E5\u672C\u8A9E</button>' +
+      '<button class="bm-lang-btn' + (currentLang === 'en' ? ' active' : '') + '" data-lang="en" data-i18n-skip>EN</button>';
 
     // お問い合わせボタンの前に挿入
     var cta = headerRight.querySelector('.bm-nav-cta');

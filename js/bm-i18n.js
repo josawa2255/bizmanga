@@ -144,9 +144,21 @@
 
   /**
    * 要素内のテキストノードを走査して翻訳
+   * 祖先に data-i18n-skip / SKIP_TAGS がある場合はスキップ（言語切替ボタン等の保護）
    */
   function translateTextNodes(root) {
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var filter = {
+      acceptNode: function (node) {
+        var p = node.parentElement;
+        while (p) {
+          if (SKIP_TAGS[p.tagName]) return NodeFilter.FILTER_REJECT;
+          if (p.hasAttribute && p.hasAttribute('data-i18n-skip')) return NodeFilter.FILTER_REJECT;
+          p = p.parentElement;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    };
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, filter, false);
     var node;
     while ((node = walker.nextNode())) {
       var text = node.textContent.trim();
