@@ -126,6 +126,24 @@
     // slides=1: 1ページずつフェード遷移する slideshow モード
     var slidesMode = params.get('slides') === '1';
     var slideInterval = parseInt(params.get('interval') || '2000', 10);
+    // hold=1: 親から postMessage('s3d-start') を受け取るまで自動再生を保留する
+    var holdMode = params.get('hold') === '1';
+    var holdReleased = !holdMode;
+    var pendingStarter = null;
+    if (holdMode) {
+      window.addEventListener('message', function(e) {
+        var d = e && e.data;
+        if (!d) return;
+        if (d === 's3d-start' || d.type === 's3d-start') {
+          holdReleased = true;
+          if (pendingStarter) { var fn = pendingStarter; pendingStarter = null; fn(); }
+        }
+      });
+    }
+    function gateStart(fn) {
+      if (holdReleased) fn();
+      else pendingStarter = fn;
+    }
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -172,7 +190,7 @@
         if (i === 0) img.className = 'is-active';
         sSlides.appendChild(img);
       });
-      waitImages(sSlides, startSlides);
+      waitImages(sSlides, function() { gateStart(startSlides); });
     }
 
     var slidesStarted = false;
@@ -205,7 +223,7 @@
           vStack.appendChild(img);
         });
       }
-      waitImages(vStack, startVerticalScroll);
+      waitImages(vStack, function() { gateStart(startVerticalScroll); });
     }
 
     var vStarted = false;
@@ -264,7 +282,7 @@
           hStrip.appendChild(img);
         });
       }
-      waitImages(hStrip, startHorizontalScroll);
+      waitImages(hStrip, function() { gateStart(startHorizontalScroll); });
     }
 
     var hStarted = false;

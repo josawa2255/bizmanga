@@ -12,6 +12,36 @@
       setTimeout(function() { s.classList.add('is-ready'); }, 150 + i * 120);
     });
 
+    // セクションが画面に入ったら、保留中の embed-viewer iframe に開始合図を送る
+    var iframeStartFired = false;
+    function startEmbedIframes() {
+      if (iframeStartFired) return;
+      iframeStartFired = true;
+      var iframes = section.querySelectorAll('.s3d-screen iframe');
+      iframes.forEach(function(f) {
+        try { f.contentWindow && f.contentWindow.postMessage('s3d-start', '*'); } catch (e) {}
+      });
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(en) {
+          if (en.isIntersecting) { startEmbedIframes(); io.disconnect(); }
+        });
+      }, { threshold: 0.15 });
+      io.observe(section);
+    } else {
+      // 古いブラウザ向けフォールバック: 即時開始
+      startEmbedIframes();
+    }
+    // iframe のロード完了タイミングがセクション到達後の場合に備え、load 後にも再送
+    section.querySelectorAll('.s3d-screen iframe').forEach(function(f) {
+      f.addEventListener('load', function() {
+        if (iframeStartFired) {
+          try { f.contentWindow && f.contentWindow.postMessage('s3d-start', '*'); } catch (e) {}
+        }
+      });
+    });
+
     if (!(window.gsap && window.ScrollTrigger)) return;
 
     gsap.registerPlugin(ScrollTrigger);
