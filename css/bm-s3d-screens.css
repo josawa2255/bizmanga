@@ -130,6 +130,9 @@
   pointer-events: none;
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
+/* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
+.s3d-screen--hero iframe,
+.s3d-screens.is-settled .s3d-screen--hero iframe { pointer-events: none !important; }
 /* 動画タイル: .s3d-screen の padding-box が既に黒なので背景上書きしない
    (上書きするとベゼルのオレンジグラデが黒に潰れる) */
 .s3d-screen--video iframe { pointer-events: auto !important; }
