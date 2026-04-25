@@ -186,7 +186,7 @@
   }
 
   /* ── コラムデータをロード・ホームカード描画 ── */
-  var COLUMN_HOME_LIMIT = 4;
+  var COLUMN_HOME_LIMIT = 8;
 
   async function loadColumns() {
     var data = await apiFetch('/columns?site=bizmanga&per_page=50');
