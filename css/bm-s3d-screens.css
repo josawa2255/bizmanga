@@ -245,12 +245,25 @@
   .s3d-labels { bottom: calc(100% + 8px); gap: 10px; width: calc(var(--s3d-tile-w) * 3 + 20px); }
 }
 
+/* h2 と CTA を同じ行に並べて見出し領域の縦高さを抑える */
+.s3d-heading-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.s3d-heading-row h2 { margin: 0; }
+@media (max-width: 768px) {
+  .s3d-heading-row { gap: 8px; }
+}
+
 /* 見出し横のCTA: 上部メニュー「お問い合わせ」と同じピル+斜めスイープ塗りエフェクト */
 .s3d-heading-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 14px;
   padding: 10px 24px;
   background: transparent;
   color: var(--bm-accent);
@@ -290,7 +303,7 @@
 }
 .s3d-heading-cta:hover::before { width: 260%; }
 @media (max-width: 768px) {
-  .s3d-heading-cta { margin-top: 10px; padding: 8px 18px; font-size: 12px; }
+  .s3d-heading-cta { padding: 8px 18px; font-size: 12px; }
 }
 
 /* タイル下: ボタンではなくシンプルなテキストリンク */
