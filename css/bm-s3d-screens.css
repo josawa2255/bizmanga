@@ -12,14 +12,17 @@
 }
 .s3d-stage {
   position: relative;
-  height: 100vh;
+  /* 100vh だと padding 込みでタイル+ラベル+見出し+CTA が入らず重なる
+     min-height で内容に応じて伸びる安全構成に */
+  min-height: 100vh;
   width: 100%;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
   background: #fff;
-  /* 上: 見出し + タイル上ラベル分のクリアランス / 下: 余白 */
-  padding-top: 150px;
-  padding-bottom: 60px;
+  /* 上: 見出し + タイル上ラベルのクリアランス確保
+     下: タイル下 CTA のクリアランス確保 */
+  padding-top: 200px;
+  padding-bottom: 120px;
   box-sizing: border-box;
   z-index: 1;
 }
@@ -213,8 +216,8 @@
   position: relative;
   will-change: transform;
   transform-origin: 50% 0%;
-  --s3d-tile-w: 300px;
-  --s3d-tile-h: 640px;
+  --s3d-tile-w: 280px;
+  --s3d-tile-h: 580px;
 }
 @media (max-width: 768px) {
   .s3d-screens-wrap {
