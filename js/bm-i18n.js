@@ -297,7 +297,8 @@
     }
 
     // お問い合わせCTAボタン（bm-nav.js 互換）
-    document.querySelectorAll('.bm-nav-cta').forEach(function (el) {
+    // ※ .bm-nav-cta--line（LINE相談ボタン）は SVG + 子span構造なので textContent 上書き禁止
+    document.querySelectorAll('.bm-nav-cta:not(.bm-nav-cta--line)').forEach(function (el) {
       el.textContent = lang === 'en' ? 'Contact' : 'お問い合わせ';
     });
 
