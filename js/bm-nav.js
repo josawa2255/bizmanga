@@ -6,7 +6,8 @@
   var NAV_ITEMS = [
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
     { label: '制作事例',   labelEn: 'Works',      href: '/works' },
-    { label: 'サービス',   labelEn: 'Services',   href: '/biz-library', mega: true, columns: [
+    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
       {
         heading: 'マーケ・広報部門向け',
         headingEn: 'For Marketing & PR',
@@ -25,14 +26,6 @@
           { label: '営業資料マンガ',     labelEn: 'Sales Manga',     href: '/sales-manga' },
           { label: '研修マンガ',         labelEn: 'Training Manga',  href: '/training-manga' },
           { label: 'IR・周年史マンガ',   labelEn: 'IR Manga',        href: '/ir-manga' }
-        ]
-      },
-      {
-        heading: '作品を見る',
-        headingEn: 'See Our Work',
-        items: [
-          { label: '制作事例',           labelEn: 'Works',           href: '/works' },
-          { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' }
         ]
       },
       {
