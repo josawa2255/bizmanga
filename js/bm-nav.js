@@ -28,13 +28,20 @@
         ]
       },
       {
+        heading: '作品を見る',
+        headingEn: 'See Our Work',
+        items: [
+          { label: '制作事例',           labelEn: 'Works',           href: '/works' },
+          { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' }
+        ]
+      },
+      {
         heading: 'ビズマンガを知る',
         headingEn: 'About BizManga',
         items: [
           { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
           { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
-          { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' },
-          { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' }
+          { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' }
         ]
       }
     ]},
