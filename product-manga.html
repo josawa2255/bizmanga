@@ -139,7 +139,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/bm-lp-template.css">
-  <link rel="stylesheet" href="css/production-flow.css">
 </head>
 <body class="pm-page">
 
@@ -416,104 +415,117 @@
     </section>
 
     <!-- ===== 7. エンディング ===== -->
-    <!-- ===== 制作フロー（ホーム版を流用、HowTo Schema 連動） ===== -->
-    <section class="pm-section pm-flow-section pf-flow-section" id="productionFlow" aria-label="制作フロー">
-      <div class="pm-container">
-        <div class="flow" id="flow">
-          <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
-          <h2 class="pm-section-title">商品紹介マンガの制作フロー</h2>
-          <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで高品質なビジネス漫画をお届けします。</p>
-          <div class="flow-layout">
-            <!-- 左: 画像ギャラリー -->
-            <div class="flow-gallery-wrap">
-              <div class="flow-gallery" id="flowGallery">
-                <div class="flow-gallery-spacer"></div>
-              <div class="flow-gallery-item" data-step="1">
-                <picture><source type="image/avif" srcset="material/images/flow/step1_hearing.avif"><img src="material/images/flow/step1_hearing.webp" alt="ヒアリング" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP1 ヒアリング" data-en="STEP1 Hearing">STEP1 ヒアリング</span>
-                <span class="flow-gallery-desc" data-ja="目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。" data-en="">目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="2">
-                <picture><source type="image/avif" srcset="material/images/flow/step2_arasuji.avif"><img src="material/images/flow/step2_arasuji.webp" alt="あらすじ" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP2 あらすじ" data-en="STEP2 Synopsis">STEP2 あらすじ</span>
-                <span class="flow-gallery-desc" data-ja="漫画全体のストーリーラインを作成し、方向性を確認します。" data-en="">漫画全体のストーリーラインを作成し、方向性を確認します。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="3">
-                <picture><source type="image/avif" srcset="material/images/flow/step3_scenario.avif"><img src="material/images/flow/step3_scenario.webp" alt="シナリオ" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP3 シナリオ" data-en="STEP3 Script">STEP3 シナリオ</span>
-                <span class="flow-gallery-desc" data-ja="セリフやナレーション、コマ割りの詳細なシナリオを作成します。" data-en="">セリフやナレーション、コマ割りの詳細なシナリオを作成します。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="4">
-                <picture><source type="image/avif" srcset="material/images/flow/step4_gafu.avif"><img src="material/images/flow/step4_gafu.webp" alt="画風決定" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP4 画風決定" data-en="STEP4 Art Style">STEP4 画風決定</span>
-                <span class="flow-gallery-desc" data-ja="ターゲットに合った画風を複数パターンからお選びいただけます。" data-en="">ターゲットに合った画風を複数パターンからお選びいただけます。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="5">
-                <picture><source type="image/avif" srcset="material/images/flow/step5_name.avif"><img src="material/images/flow/step5_name.webp" alt="ネーム" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP5 ネーム" data-en="STEP5 Storyboard">STEP5 ネーム</span>
-                <span class="flow-gallery-desc" data-ja="ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。" data-en="">ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="6">
-                <picture><source type="image/avif" srcset="material/images/flow/step6_seisaku.avif"><img src="material/images/flow/step6_seisaku.webp" alt="漫画制作" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP6 漫画制作" data-en="STEP6 Production">STEP6 漫画制作</span>
-                <span class="flow-gallery-desc" data-ja="プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。" data-en="">プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="7">
-                <picture><source type="image/avif" srcset="material/images/flow/step7_kakunin.avif"><img src="material/images/flow/step7_kakunin.webp" alt="初稿確認" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP7 初稿確認" data-en="STEP7 Draft Review">STEP7 初稿確認</span>
-                <span class="flow-gallery-desc" data-ja="初稿を確認いただき、修正・調整を行います。10回+の品質チェック。" data-en="">初稿を確認いただき、修正・調整を行います。10回+の品質チェック。</span>
-              </div>
-              <div class="flow-gallery-item" data-step="8">
-                <picture><source type="image/avif" srcset="material/images/flow/step8_nouhin.avif"><img src="material/images/flow/step8_nouhin.webp" alt="最終納品" loading="lazy" width="400" height="224"></picture>
-                <span class="flow-gallery-label" data-ja="STEP8 最終納品" data-en="STEP8 Final Delivery">STEP8 最終納品</span>
-                <span class="flow-gallery-desc" data-ja="最終データを各媒体に合わせた形式で納品。著作権もお渡しします。" data-en="">最終データを各媒体に合わせた形式で納品。著作権もお渡しします。</span>
-              </div>
-                <div class="flow-gallery-spacer"></div>
-              </div>
-            </div>
-            <!-- 右: 縦ステップリスト -->
-            <div class="flow-steps-vertical">
-            <div class="flow-step" data-step="1">
-              <div class="flow-step-num">1</div>
-              <p data-ja="ヒアリング" data-en="Hearing">ヒアリング</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="2">
-              <div class="flow-step-num">2</div>
-              <p data-ja="あらすじ" data-en="Synopsis">あらすじ</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="3">
-              <div class="flow-step-num">3</div>
-              <p data-ja="シナリオ" data-en="Script">シナリオ</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="4">
-              <div class="flow-step-num">4</div>
-              <p data-ja="画風決定" data-en="Art Style">画風決定</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="5">
-              <div class="flow-step-num">5</div>
-              <p data-ja="ネーム" data-en="Storyboard">ネーム</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="6">
-              <div class="flow-step-num">6</div>
-              <p data-ja="漫画制作" data-en="Production">漫画制作</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="7">
-              <div class="flow-step-num">7</div>
-              <p data-ja="初稿確認" data-en="Draft Review">初稿確認</p>
-            </div>
-            <div class="flow-arrow-v">↓</div>
-            <div class="flow-step" data-step="8">
-              <div class="flow-step-num">8</div>
-              <p data-ja="最終納品" data-en="Final Delivery">最終納品</p>
-            </div>
-            </div>
-          </div>
+    <!-- ===== 制作フロー（クリックで左ペインに画像表示） ===== -->
+    <section class="pm-section pm-flow-section" id="productionFlow" aria-label="制作フロー">
+      <div class="pm-container pm-container--narrow">
+        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
+        <h2 class="pm-section-title">商品紹介マンガの制作フロー</h2>
+        <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで進行します。各ステップをクリックすると、左の編集者ノートに参考画像と説明が表示されます。</p>
+        <div class="pm-flow-list-v">
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="1"
+                    data-pm-flow-slug="step1_hearing"
+                    data-pm-flow-name="ヒアリング"
+                    data-pm-flow-name-en="Hearing"
+                    data-pm-flow-desc="目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。">
+              <span class="flow-step-num">1</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="Hearing">ヒアリング</span>
+                <span class="pm-flow-step-desc" data-ja="目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。" data-en="">目的・ターゲット・ご予算をお伺いし、最適なプランをご提案します。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="2"
+                    data-pm-flow-slug="step2_arasuji"
+                    data-pm-flow-name="あらすじ"
+                    data-pm-flow-name-en="Synopsis"
+                    data-pm-flow-desc="漫画全体のストーリーラインを作成し、方向性を確認します。">
+              <span class="flow-step-num">2</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="Synopsis">あらすじ</span>
+                <span class="pm-flow-step-desc" data-ja="漫画全体のストーリーラインを作成し、方向性を確認します。" data-en="">漫画全体のストーリーラインを作成し、方向性を確認します。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="3"
+                    data-pm-flow-slug="step3_scenario"
+                    data-pm-flow-name="シナリオ"
+                    data-pm-flow-name-en="Script"
+                    data-pm-flow-desc="セリフやナレーション、コマ割りの詳細なシナリオを作成します。">
+              <span class="flow-step-num">3</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="Script">シナリオ</span>
+                <span class="pm-flow-step-desc" data-ja="セリフやナレーション、コマ割りの詳細なシナリオを作成します。" data-en="">セリフやナレーション、コマ割りの詳細なシナリオを作成します。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="4"
+                    data-pm-flow-slug="step4_gafu"
+                    data-pm-flow-name="画風決定"
+                    data-pm-flow-name-en="Art Style"
+                    data-pm-flow-desc="ターゲットに合った画風を複数パターンからお選びいただけます。">
+              <span class="flow-step-num">4</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="画風決定" data-en="Art Style">画風決定</span>
+                <span class="pm-flow-step-desc" data-ja="ターゲットに合った画風を複数パターンからお選びいただけます。" data-en="">ターゲットに合った画風を複数パターンからお選びいただけます。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="5"
+                    data-pm-flow-slug="step5_name"
+                    data-pm-flow-name="ネーム"
+                    data-pm-flow-name-en="Storyboard"
+                    data-pm-flow-desc="ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。">
+              <span class="flow-step-num">5</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="ネーム" data-en="Storyboard">ネーム</span>
+                <span class="pm-flow-step-desc" data-ja="ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。" data-en="">ラフな下書きで全体の構図や流れを確認。修正も柔軟に対応します。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="6"
+                    data-pm-flow-slug="step6_seisaku"
+                    data-pm-flow-name="漫画制作"
+                    data-pm-flow-name-en="Production"
+                    data-pm-flow-desc="プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。">
+              <span class="flow-step-num">6</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="Production">漫画制作</span>
+                <span class="pm-flow-step-desc" data-ja="プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。" data-en="">プロの漫画家が本制作を行います。高品質な仕上がりをお約束します。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="7"
+                    data-pm-flow-slug="step7_kakunin"
+                    data-pm-flow-name="初稿確認"
+                    data-pm-flow-name-en="Draft Review"
+                    data-pm-flow-desc="初稿を確認いただき、修正・調整を行います。10回+の品質チェック。">
+              <span class="flow-step-num">7</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="Draft Review">初稿確認</span>
+                <span class="pm-flow-step-desc" data-ja="初稿を確認いただき、修正・調整を行います。10回+の品質チェック。" data-en="">初稿を確認いただき、修正・調整を行います。10回+の品質チェック。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="flow-step pm-flow-step-row" type="button"
+                    data-pm-flow-step="8"
+                    data-pm-flow-slug="step8_nouhin"
+                    data-pm-flow-name="最終納品"
+                    data-pm-flow-name-en="Final Delivery"
+                    data-pm-flow-desc="最終データを各媒体に合わせた形式で納品。著作権もお渡しします。">
+              <span class="flow-step-num">8</span>
+              <span class="pm-flow-step-info">
+                <span class="pm-flow-step-name" data-ja="最終納品" data-en="Final Delivery">最終納品</span>
+                <span class="pm-flow-step-desc" data-ja="最終データを各媒体に合わせた形式で納品。著作権もお渡しします。" data-en="">最終データを各媒体に合わせた形式で納品。著作権もお渡しします。</span>
+              </span>
+              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
+            </button>
         </div>
       </div>
     </section>
@@ -685,6 +697,5 @@
   <script src="js/bm-lp-library-embed.js" defer></script>
   <!-- LP専用: 3分割レイアウト制御 -->
   <script src="js/bm-product-manga.js" defer></script>
-  <script src="js/bm-flow.js" defer></script>
 </body>
 </html>

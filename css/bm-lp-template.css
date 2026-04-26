@@ -1566,27 +1566,100 @@
 }
 
 /* ============================================================
-   制作フロー（ホーム版 production-flow.css を流用）
-   LP内では image gallery を左、steps を右に配置（DOM順序で制御済み）
+   制作フロー（中央: ステップ縦リスト / 左ペイン: クリックで画像表示）
    ============================================================ */
-.pm-flow-section .flow {
-  padding: 0;
+.pm-flow-list-v {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid #ebe5d7;
+  margin-top: 24px;
 }
-.pm-flow-section .flow-gallery-wrap {
-  flex: 1 1 auto;
-  min-width: 0;
+.pm-flow-step-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 18px 6px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ebe5d7;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: background 0.16s ease;
 }
-.pm-flow-section .flow-steps-vertical {
+.pm-flow-step-row:hover {
+  background: #faf7f2;
+}
+.pm-flow-step-row:focus-visible {
+  outline: 2px solid #e85500;
+  outline-offset: -2px;
+  background: rgba(232, 85, 0, 0.06);
+}
+.pm-flow-step-row .flow-step-num {
+  width: 40px;
+  height: 40px;
+  background: #222;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  transition: background 0.2s ease;
   flex-shrink: 0;
 }
-.pm-flow-section .pm-section-eyebrow,
-.pm-flow-section .pm-section-title,
-.pm-flow-section .pm-section-lead {
-  text-align: left;
+.pm-flow-step-row:hover .flow-step-num,
+.pm-flow-step-row.is-active-flow .flow-step-num {
+  background: #e85500;
+}
+.pm-flow-step-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.pm-flow-step-name {
+  font-family: "Noto Serif JP", serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+}
+.pm-flow-step-desc {
+  font-size: 13.5px;
+  color: #555;
+  line-height: 1.7;
+}
+.pm-flow-step-arrow {
+  font-size: 14px;
+  color: #b08a4a;
+  letter-spacing: 0.05em;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+.pm-flow-step-row:hover .pm-flow-step-arrow,
+.pm-flow-step-row.is-active-flow .pm-flow-step-arrow {
+  color: #e85500;
+  transform: translateX(4px);
+}
+.pm-flow-step-row.is-active-flow {
+  background: rgba(232, 85, 0, 0.06);
 }
 @media (max-width: 720px) {
-  .pm-flow-section .flow-layout {
-    flex-direction: column;
-    gap: 20px;
-  }
+  .pm-flow-step-row { grid-template-columns: 44px 1fr auto; gap: 12px; padding: 14px 0; }
+  .pm-flow-step-row .flow-step-num { width: 32px; height: 32px; font-size: 13px; }
+  .pm-flow-step-name { font-size: 15px; }
+  .pm-flow-step-desc { font-size: 12.5px; }
+}
+
+/* 左ペイン: flow-mode のときの装飾 */
+.pm-rail-character.is-flow-mode {
+  background: #faf7f2;
+  border-radius: 8px;
+  overflow: hidden;
 }

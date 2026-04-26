@@ -22,10 +22,24 @@
     thinking: 'LISTENING…'
   };
 
+  // 元のキャラ画像を保持（flow画像から戻る用）
+  let originalCharacterSrc = null;
+  let originalCharacterAlt = null;
+
+  function captureOriginalCharacter() {
+    if (originalCharacterSrc !== null) return;
+    const img = document.querySelector('#pmCharacter img');
+    if (!img) return;
+    originalCharacterSrc = img.getAttribute('src');
+    originalCharacterAlt = img.getAttribute('alt') || '';
+  }
+
   function setMood(mood) {
     const wrap = document.getElementById('pmCharacter');
     const caption = document.getElementById('pmCaption');
     if (!wrap) return;
+    // flow-mode 中は通常のmood切替を無効化（ユーザーが明示的にflow stepを選んでいるため）
+    if (wrap.dataset.mood && wrap.dataset.mood.startsWith('flow-')) return;
     if (wrap.dataset.mood === mood) return;
     wrap.dataset.mood = mood;
     const img = wrap.querySelector('img');
@@ -36,6 +50,80 @@
       if (caption) caption.textContent = CAPTION_BY_MOOD[mood] || CAPTION_BY_MOOD.confident;
       requestAnimationFrame(() => wrap.classList.remove('is-out'));
     }, 220);
+  }
+
+  // ---------- 制作フロー: ステップクリックで左ペインに画像swap ----------
+  function showFlowStep(item) {
+    captureOriginalCharacter();
+    const wrap = document.getElementById('pmCharacter');
+    const caption = document.getElementById('pmCaption');
+    const railLeft = document.querySelector('.pm-rail--left');
+    const detail = document.getElementById('pmDetail');
+    const titleEl = document.getElementById('pmDetailTitle');
+    const bodyEl = document.getElementById('pmDetailBody');
+    const hint = document.getElementById('pmHint');
+    if (!wrap) return;
+
+    const num = item.dataset.pmFlowStep;
+    const slug = item.dataset.pmFlowSlug;
+    const name = item.dataset.pmFlowName;
+    const desc = item.dataset.pmFlowDesc;
+    if (!slug) return;
+
+    // active 状態を1つだけに
+    document.querySelectorAll('.flow-step.is-active-flow').forEach((el) => el.classList.remove('is-active-flow'));
+    item.classList.add('is-active-flow');
+
+    // 画像 swap
+    const img = wrap.querySelector('img');
+    wrap.classList.add('is-out');
+    setTimeout(() => {
+      if (img) {
+        img.src = `material/images/flow/${slug}.webp`;
+        img.alt = `STEP${num} ${name}`;
+      }
+      wrap.dataset.mood = 'flow-' + num;
+      wrap.classList.add('is-flow-mode');
+      if (caption) caption.textContent = `STEP${num} ${name}`;
+      requestAnimationFrame(() => wrap.classList.remove('is-out'));
+    }, 220);
+
+    // 詳細領域に説明文表示
+    if (detail && titleEl && bodyEl) {
+      titleEl.textContent = `STEP${num} ${name}`;
+      while (bodyEl.firstChild) bodyEl.removeChild(bodyEl.firstChild);
+      const p = document.createElement('p');
+      p.textContent = desc;
+      bodyEl.appendChild(p);
+      if (hint) hint.hidden = true;
+      detail.hidden = false;
+      if (railLeft) railLeft.classList.add('has-detail');
+    }
+  }
+
+  function clearFlowStep() {
+    const wrap = document.getElementById('pmCharacter');
+    const caption = document.getElementById('pmCaption');
+    const detail = document.getElementById('pmDetail');
+    const hint = document.getElementById('pmHint');
+    const railLeft = document.querySelector('.pm-rail--left');
+    document.querySelectorAll('.flow-step.is-active-flow').forEach((el) => el.classList.remove('is-active-flow'));
+    if (!wrap) return;
+    wrap.classList.add('is-out');
+    setTimeout(() => {
+      const img = wrap.querySelector('img');
+      if (img && originalCharacterSrc) {
+        img.src = originalCharacterSrc;
+        img.alt = originalCharacterAlt || '';
+      }
+      wrap.dataset.mood = 'confident';
+      wrap.classList.remove('is-flow-mode');
+      if (caption) caption.textContent = CAPTION_BY_MOOD.confident;
+      requestAnimationFrame(() => wrap.classList.remove('is-out'));
+    }, 220);
+    if (detail) detail.hidden = true;
+    if (hint) hint.hidden = false;
+    if (railLeft) railLeft.classList.remove('has-detail');
   }
 
   // ---------- スクロール連動（IntersectionObserver） ----------
@@ -98,9 +186,21 @@
 
   function initClickDetail() {
     document.addEventListener('click', (e) => {
-      // 戻るボタン
+      // 戻るボタン: flow-mode のときは flow をクリア、それ以外は通常hideDetail
       if (e.target.closest('#pmDetailBack')) {
-        hideDetail();
+        const wrap = document.getElementById('pmCharacter');
+        if (wrap && wrap.dataset.mood && wrap.dataset.mood.startsWith('flow-')) {
+          clearFlowStep();
+        } else {
+          hideDetail();
+        }
+        return;
+      }
+      // 制作フローのステップクリック（PC/SP共通で左ペインに画像表示）
+      const flowStep = e.target.closest('[data-pm-flow-step]');
+      if (flowStep) {
+        e.preventDefault();
+        showFlowStep(flowStep);
         return;
       }
       const item = e.target.closest('[data-pm-detail]');
