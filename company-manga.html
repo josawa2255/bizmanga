@@ -57,7 +57,8 @@
     "dateModified": "2026-04-26",
     "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
     "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
-    "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/company-manga#breadcrumb" }
+    "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/company-manga#breadcrumb" },
+    "primaryImageOfPage": "https://bizmanga.contentsx.jp/material/images/og/og-index.webp"
   }
   </script>
   <script type="application/ld+json">
@@ -77,7 +78,15 @@
       "url": "https://bizmanga.contentsx.jp/contact",
       "priceCurrency": "JPY",
       "availability": "https://schema.org/InStock",
-      "areaServed": { "@type": "Country", "name": "Japan" }
+      "areaServed": { "@type": "Country", "name": "Japan" },
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": 15800,
+        "priceCurrency": "JPY",
+        "unitText": "ページ",
+        "minPrice": 15800,
+        "description": "1ページあたり（基本プラン）。10ページ構成で約17.4万円〜が目安。"
+      }
     }
   }
   </script>
@@ -101,14 +110,14 @@
     "description": "会社紹介マンガ制作の標準的な8ステップ。ヒアリングから納品まで、各工程の詳細を解説。",
     "totalTime": "P6W",
     "step": [
-      { "@type": "HowToStep", "position": 1, "name": "ヒアリング", "text": "目的・ターゲット・予算・スケジュールをオンライン会議または対面でお伺いします。漫画で何を実現したいのか、どんな読者の心を動かしたいのかを編集担当が深掘り。NDA締結後、新製品情報・採用情報・機密戦略も安心してご共有いただけます。この段階で「漫画化すべきテーマか」「動画やテキストなど他手段の方が有効か」も率直にお伝えします。" },
-      { "@type": "HowToStep", "position": 2, "name": "あらすじ", "text": "ヒアリング内容をもとに、漫画全体のストーリーラインを構成します。三幕構成（導入→葛藤→解決）を基本に、読者が思わず最後まで読みたくなる物語の骨組みをテキストで作成。文章ベースでお見せするため、絵が完成する前に「面白さ」「伝わり方」「ペルソナとの一致度」をご判断いただけます。複数案ご提案して方向性を一緒に決めることも可能です。" },
-      { "@type": "HowToStep", "position": 3, "name": "シナリオ", "text": "あらすじ確定後、セリフ・ナレーション・コマ割り指示まで含めた詳細シナリオを作成します。映画脚本に近い形式で、漫画家に渡す前の最終的な言語化フェーズ。読者が知らない専門用語が出る箇所、説明過多になりがちなパートを編集担当が削ぎ落とし、テンポと情報量を最適化。BtoB商材特有の固有名詞も正確に取り扱います。" },
-      { "@type": "HowToStep", "position": 4, "name": "画風決定", "text": "ターゲット読者・媒体・ブランドイメージに合った画風を、複数パターンのラフキャラクター案からお選びいただけます。少年漫画系・少女漫画系・劇画系・4コマ風・線画など、商材と訴求対象に最適な画風を提案。BtoB向けの落ち着いた画風から、若年層向けの華やかな画風まで対応。途中での画風変更も柔軟に承ります。" },
-      { "@type": "HowToStep", "position": 5, "name": "ネーム", "text": "ラフな下書きでコマ割り・セリフ配置・キャラクター表情・カメラアングルを設計します。漫画の品質を最も左右する工程で、ネーム段階でしっかり擦り合わせれば、作画後の大規模修正は通常発生しません。コマの「間」「視線誘導」「ページめくりのリズム」まで考慮された設計図をご確認いただけます。1回の修正までは基本プランに含まれます。" },
-      { "@type": "HowToStep", "position": 6, "name": "漫画制作", "text": "ネーム承認後、プロの漫画家が清書・トーン処理・着色まで一貫対応します。ビズマンガの基準を満たした漫画家・アシスタント体制で、線の質・キャラ表情・背景描写すべてを高品質に仕上げ。125項目の品質チェック（誤字脱字・キャラ整合性・コマ割り違和感・印刷耐性等）を通過した原稿のみをクライアント様にお見せします。" },
-      { "@type": "HowToStep", "position": 7, "name": "初稿確認", "text": "完成した初稿をPDFまたは画像形式でお届けします。文字校正・ファクトチェック・法務監修（必要な場合）を経て、修正対応に入ります。修正は1回まで基本プラン内、それ以上は別途見積もり。誤字レベルから構成レベルまで、修正粒度に応じて柔軟に対応。修正回数を抑えるため、ネーム段階での擦り合わせを重視しています。" },
-      { "@type": "HowToStep", "position": 8, "name": "最終納品", "text": "最終データを各媒体に合わせた形式で納品します。印刷用PDF・Web用PNG/JPEG・編集用PSD/AI・動画化（コマ送りアニメーション）など対応。複数媒体同時納品（パンフレット用＋LP用＋SNS用）もこの段階で一括書き出し。完成原稿の著作権・使用権はクライアント様に帰属し、二次利用や追加カットの相談も継続的に承ります。" }
+      { "@type": "HowToStep", "position": 1, "name": "ヒアリング", "text": "創業者・経営陣・社員へのインタビュー設計、周年記念誌・統合報告書・社内イベントなど複数納品物の同時計画もこの段階で行います。50周年・100周年・上場記念など、マイルストーンの逆算スケジュールにも対応します。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step1_hearing.webp" },
+      { "@type": "HowToStep", "position": 2, "name": "あらすじ", "text": "創業の原点・転機・哲学を、社員・取引先・株主・採用候補者の各ステークホルダーが共感できる軸で構成。事実羅列の社史ではなく「読み物としての企業ストーリー」の骨組みを作ります。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step2_arasuji.webp" },
+      { "@type": "HowToStep", "position": 3, "name": "シナリオ", "text": "社史資料・創業者証言・OB社員インタビューを元に、誇張せず事実をベースにしたセリフを設計。記念誌としての記録性と、漫画としての読みやすさを両立させる文章編集を行います。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step3_scenario.webp" },
+      { "@type": "HowToStep", "position": 4, "name": "画風決定", "text": "企業ブランドの格に合わせた画風を選定。老舗企業は落ち着いた線画＋セピア調、ベンチャー・スタートアップは現代的でカジュアル寄り、グローバル企業は海外でも通用するニュートラル画風など。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step4_gafu.webp" },
+      { "@type": "HowToStep", "position": 5, "name": "ネーム", "text": "創業期・成長期・転機・現在までの時系列を見開き単位で設計。歴史的写真・初代ロゴ・初店舗などをコマ内に組み込み、史実と漫画演出の融合を実現します。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step5_name.webp" },
+      { "@type": "HowToStep", "position": 6, "name": "漫画制作", "text": "創業者・歴代経営者の容姿を写真資料から正確に再現（ご家族の許諾取得後）。当時の風俗・服装・建物まで考証し、漫画としての面白さと記録としての正確さを両立します。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step6_seisaku.webp" },
+      { "@type": "HowToStep", "position": 7, "name": "初稿確認", "text": "経営陣・広報・社史編纂室・OB社員（必要に応じて）の複数視点でレビュー。ご家族の感情面への配慮・取引先の登場可否確認・歴史認識のすり合わせを修正対応に含みます。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step7_kakunin.webp" },
+      { "@type": "HowToStep", "position": 8, "name": "最終納品", "text": "印刷用社史・記念誌PDF（高解像度入稿対応）・統合報告書挿入用PNG・採用サイト掲載用Web版・社内イベント上映用動画など、用途別に書き出し。ご家族・OB社員配布用の特別装丁版にも対応します。", "image": "https://bizmanga.contentsx.jp/material/images/flow/step8_nouhin.webp" }
     ]
   }
   </script>
@@ -408,12 +417,11 @@
                     data-pm-flow-step="1"
                     data-pm-flow-slug="step1_hearing"
                     data-pm-flow-name="ヒアリング"
-                    data-pm-flow-name-en="Hearing"
-                    data-pm-flow-desc="目的・ターゲット・予算・スケジュールをオンライン会議または対面でお伺いします。漫画で何を実現したいのか、どんな読者の心を動かしたいのかを編集担当が深掘り。NDA締結後、新製品情報・採用情報・機密戦略も安心してご共有いただけます。この段階で「漫画化すべきテーマか」「動画やテキストなど他手段の方が有効か」も率直にお伝えします。">
+                    data-pm-flow-desc="創業者・経営陣・社員へのインタビュー設計、周年記念誌・統合報告書・社内イベントなど複数納品物の同時計画もこの段階で行います。50周年・100周年・上場記念など、マイルストーンの逆算スケジュールにも対応します。">
               <span class="flow-step-num">1</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="Hearing">ヒアリング</span>
-                <span class="pm-flow-step-desc" data-ja="目的・ターゲット・予算・スケジュールをオンライン会議または対面でお伺いします。" data-en="">目的・ターゲット・予算・スケジュールをオンライン会議または対面でお伺いします。</span>
+                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="ヒアリング">ヒアリング</span>
+                <span class="pm-flow-step-desc" data-ja="創業者・経営陣・社員へのインタビュー設計、周年記念誌・統合報告書・社内イベントなど複数納品物の同時計画もこの段階で行います。" data-en="">創業者・経営陣・社員へのインタビュー設計、周年記念誌・統合報告書・社内イベントなど複数納品物の同時計画もこの段階で行います。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -421,12 +429,11 @@
                     data-pm-flow-step="2"
                     data-pm-flow-slug="step2_arasuji"
                     data-pm-flow-name="あらすじ"
-                    data-pm-flow-name-en="Synopsis"
-                    data-pm-flow-desc="ヒアリング内容をもとに、漫画全体のストーリーラインを構成します。三幕構成（導入→葛藤→解決）を基本に、読者が思わず最後まで読みたくなる物語の骨組みをテキストで作成。文章ベースでお見せするため、絵が完成する前に「面白さ」「伝わり方」「ペルソナとの一致度」をご判断いただけます。複数案ご提案して方向性を一緒に決めることも可能です。">
+                    data-pm-flow-desc="創業の原点・転機・哲学を、社員・取引先・株主・採用候補者の各ステークホルダーが共感できる軸で構成。事実羅列の社史ではなく「読み物としての企業ストーリー」の骨組みを作ります。">
               <span class="flow-step-num">2</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="Synopsis">あらすじ</span>
-                <span class="pm-flow-step-desc" data-ja="ヒアリング内容をもとに、漫画全体のストーリーラインを構成します。" data-en="">ヒアリング内容をもとに、漫画全体のストーリーラインを構成します。</span>
+                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="あらすじ">あらすじ</span>
+                <span class="pm-flow-step-desc" data-ja="創業の原点・転機・哲学を、社員・取引先・株主・採用候補者の各ステークホルダーが共感できる軸で構成。" data-en="">創業の原点・転機・哲学を、社員・取引先・株主・採用候補者の各ステークホルダーが共感できる軸で構成。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -434,12 +441,11 @@
                     data-pm-flow-step="3"
                     data-pm-flow-slug="step3_scenario"
                     data-pm-flow-name="シナリオ"
-                    data-pm-flow-name-en="Script"
-                    data-pm-flow-desc="あらすじ確定後、セリフ・ナレーション・コマ割り指示まで含めた詳細シナリオを作成します。映画脚本に近い形式で、漫画家に渡す前の最終的な言語化フェーズ。読者が知らない専門用語が出る箇所、説明過多になりがちなパートを編集担当が削ぎ落とし、テンポと情報量を最適化。BtoB商材特有の固有名詞も正確に取り扱います。">
+                    data-pm-flow-desc="社史資料・創業者証言・OB社員インタビューを元に、誇張せず事実をベースにしたセリフを設計。記念誌としての記録性と、漫画としての読みやすさを両立させる文章編集を行います。">
               <span class="flow-step-num">3</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="Script">シナリオ</span>
-                <span class="pm-flow-step-desc" data-ja="あらすじ確定後、セリフ・ナレーション・コマ割り指示まで含めた詳細シナリオを作成します。" data-en="">あらすじ確定後、セリフ・ナレーション・コマ割り指示まで含めた詳細シナリオを作成します。</span>
+                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="シナリオ">シナリオ</span>
+                <span class="pm-flow-step-desc" data-ja="社史資料・創業者証言・OB社員インタビューを元に、誇張せず事実をベースにしたセリフを設計。" data-en="">社史資料・創業者証言・OB社員インタビューを元に、誇張せず事実をベースにしたセリフを設計。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -447,12 +453,11 @@
                     data-pm-flow-step="4"
                     data-pm-flow-slug="step4_gafu"
                     data-pm-flow-name="画風決定"
-                    data-pm-flow-name-en="Art Style"
-                    data-pm-flow-desc="ターゲット読者・媒体・ブランドイメージに合った画風を、複数パターンのラフキャラクター案からお選びいただけます。少年漫画系・少女漫画系・劇画系・4コマ風・線画など、商材と訴求対象に最適な画風を提案。BtoB向けの落ち着いた画風から、若年層向けの華やかな画風まで対応。途中での画風変更も柔軟に承ります。">
+                    data-pm-flow-desc="企業ブランドの格に合わせた画風を選定。老舗企業は落ち着いた線画＋セピア調、ベンチャー・スタートアップは現代的でカジュアル寄り、グローバル企業は海外でも通用するニュートラル画風など。">
               <span class="flow-step-num">4</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="画風決定" data-en="Art Style">画風決定</span>
-                <span class="pm-flow-step-desc" data-ja="ターゲット読者・媒体・ブランドイメージに合った画風を、複数パターンのラフキャラクター案からお選びいただけます。" data-en="">ターゲット読者・媒体・ブランドイメージに合った画風を、複数パターンのラフキャラクター案からお選びいただけます。</span>
+                <span class="pm-flow-step-name" data-ja="画風決定" data-en="画風決定">画風決定</span>
+                <span class="pm-flow-step-desc" data-ja="企業ブランドの格に合わせた画風を選定。" data-en="">企業ブランドの格に合わせた画風を選定。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -460,12 +465,11 @@
                     data-pm-flow-step="5"
                     data-pm-flow-slug="step5_name"
                     data-pm-flow-name="ネーム"
-                    data-pm-flow-name-en="Storyboard"
-                    data-pm-flow-desc="ラフな下書きでコマ割り・セリフ配置・キャラクター表情・カメラアングルを設計します。漫画の品質を最も左右する工程で、ネーム段階でしっかり擦り合わせれば、作画後の大規模修正は通常発生しません。コマの「間」「視線誘導」「ページめくりのリズム」まで考慮された設計図をご確認いただけます。1回の修正までは基本プランに含まれます。">
+                    data-pm-flow-desc="創業期・成長期・転機・現在までの時系列を見開き単位で設計。歴史的写真・初代ロゴ・初店舗などをコマ内に組み込み、史実と漫画演出の融合を実現します。">
               <span class="flow-step-num">5</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ネーム" data-en="Storyboard">ネーム</span>
-                <span class="pm-flow-step-desc" data-ja="ラフな下書きでコマ割り・セリフ配置・キャラクター表情・カメラアングルを設計します。" data-en="">ラフな下書きでコマ割り・セリフ配置・キャラクター表情・カメラアングルを設計します。</span>
+                <span class="pm-flow-step-name" data-ja="ネーム" data-en="ネーム">ネーム</span>
+                <span class="pm-flow-step-desc" data-ja="創業期・成長期・転機・現在までの時系列を見開き単位で設計。" data-en="">創業期・成長期・転機・現在までの時系列を見開き単位で設計。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -473,12 +477,11 @@
                     data-pm-flow-step="6"
                     data-pm-flow-slug="step6_seisaku"
                     data-pm-flow-name="漫画制作"
-                    data-pm-flow-name-en="Production"
-                    data-pm-flow-desc="ネーム承認後、プロの漫画家が清書・トーン処理・着色まで一貫対応します。ビズマンガの基準を満たした漫画家・アシスタント体制で、線の質・キャラ表情・背景描写すべてを高品質に仕上げ。125項目の品質チェック（誤字脱字・キャラ整合性・コマ割り違和感・印刷耐性等）を通過した原稿のみをクライアント様にお見せします。">
+                    data-pm-flow-desc="創業者・歴代経営者の容姿を写真資料から正確に再現（ご家族の許諾取得後）。当時の風俗・服装・建物まで考証し、漫画としての面白さと記録としての正確さを両立します。">
               <span class="flow-step-num">6</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="Production">漫画制作</span>
-                <span class="pm-flow-step-desc" data-ja="ネーム承認後、プロの漫画家が清書・トーン処理・着色まで一貫対応します。" data-en="">ネーム承認後、プロの漫画家が清書・トーン処理・着色まで一貫対応します。</span>
+                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="漫画制作">漫画制作</span>
+                <span class="pm-flow-step-desc" data-ja="創業者・歴代経営者の容姿を写真資料から正確に再現（ご家族の許諾取得後）。" data-en="">創業者・歴代経営者の容姿を写真資料から正確に再現（ご家族の許諾取得後）。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -486,12 +489,11 @@
                     data-pm-flow-step="7"
                     data-pm-flow-slug="step7_kakunin"
                     data-pm-flow-name="初稿確認"
-                    data-pm-flow-name-en="Draft Review"
-                    data-pm-flow-desc="完成した初稿をPDFまたは画像形式でお届けします。文字校正・ファクトチェック・法務監修（必要な場合）を経て、修正対応に入ります。修正は1回まで基本プラン内、それ以上は別途見積もり。誤字レベルから構成レベルまで、修正粒度に応じて柔軟に対応。修正回数を抑えるため、ネーム段階での擦り合わせを重視しています。">
+                    data-pm-flow-desc="経営陣・広報・社史編纂室・OB社員（必要に応じて）の複数視点でレビュー。ご家族の感情面への配慮・取引先の登場可否確認・歴史認識のすり合わせを修正対応に含みます。">
               <span class="flow-step-num">7</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="Draft Review">初稿確認</span>
-                <span class="pm-flow-step-desc" data-ja="完成した初稿をPDFまたは画像形式でお届けします。" data-en="">完成した初稿をPDFまたは画像形式でお届けします。</span>
+                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="初稿確認">初稿確認</span>
+                <span class="pm-flow-step-desc" data-ja="経営陣・広報・社史編纂室・OB社員（必要に応じて）の複数視点でレビュー。" data-en="">経営陣・広報・社史編纂室・OB社員（必要に応じて）の複数視点でレビュー。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
@@ -499,12 +501,11 @@
                     data-pm-flow-step="8"
                     data-pm-flow-slug="step8_nouhin"
                     data-pm-flow-name="最終納品"
-                    data-pm-flow-name-en="Final Delivery"
-                    data-pm-flow-desc="最終データを各媒体に合わせた形式で納品します。印刷用PDF・Web用PNG/JPEG・編集用PSD/AI・動画化（コマ送りアニメーション）など対応。複数媒体同時納品（パンフレット用＋LP用＋SNS用）もこの段階で一括書き出し。完成原稿の著作権・使用権はクライアント様に帰属し、二次利用や追加カットの相談も継続的に承ります。">
+                    data-pm-flow-desc="印刷用社史・記念誌PDF（高解像度入稿対応）・統合報告書挿入用PNG・採用サイト掲載用Web版・社内イベント上映用動画など、用途別に書き出し。ご家族・OB社員配布用の特別装丁版にも対応します。">
               <span class="flow-step-num">8</span>
               <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="最終納品" data-en="Final Delivery">最終納品</span>
-                <span class="pm-flow-step-desc" data-ja="最終データを各媒体に合わせた形式で納品します。" data-en="">最終データを各媒体に合わせた形式で納品します。</span>
+                <span class="pm-flow-step-name" data-ja="最終納品" data-en="最終納品">最終納品</span>
+                <span class="pm-flow-step-desc" data-ja="印刷用社史・記念誌PDF（高解像度入稿対応）・統合報告書挿入用PNG・採用サイト掲載用Web版・社内イベント上映用動画など、用途別に書き出し。" data-en="">印刷用社史・記念誌PDF（高解像度入稿対応）・統合報告書挿入用PNG・採用サイト掲載用Web版・社内イベント上映用動画など、用途別に書き出し。</span>
               </span>
               <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
             </button>
