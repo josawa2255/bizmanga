@@ -6,19 +6,37 @@
   var NAV_ITEMS = [
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
     { label: '制作事例',   labelEn: 'Works',      href: '/works' },
-    { label: 'サービス',   labelEn: 'Services',   href: '/biz-library', children: [
-      { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' },
-      { label: '商品紹介マンガ',     labelEn: 'Product Manga',   href: '/product-manga' },
-      { label: '採用マンガ',         labelEn: 'Recruit Manga',   href: '/recruit-manga' },
-      { label: '会社紹介マンガ',     labelEn: 'Company Manga',   href: '/company-manga' },
-      { label: '営業資料マンガ',     labelEn: 'Sales Manga',     href: '/sales-manga' },
-      { label: '研修マンガ',         labelEn: 'Training Manga',  href: '/training-manga' },
-      { label: 'マンガ広告',         labelEn: 'Manga Ad',        href: '/manga-ad-lp' },
-      { label: 'インバウンド漫画',   labelEn: 'Inbound Manga',   href: '/inbound-manga' },
-      { label: 'IR・周年史マンガ',   labelEn: 'IR Manga',        href: '/ir-manga' },
-      { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
-      { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
-      { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' }
+    { label: 'サービス',   labelEn: 'Services',   href: '/biz-library', mega: true, columns: [
+      {
+        heading: 'マーケ・広報部門向け',
+        headingEn: 'For Marketing & PR',
+        items: [
+          { label: '商品紹介マンガ',     labelEn: 'Product Manga',   href: '/product-manga' },
+          { label: 'マンガ広告',         labelEn: 'Manga Ad',        href: '/manga-ad-lp' },
+          { label: 'インバウンド漫画',   labelEn: 'Inbound Manga',   href: '/inbound-manga' },
+          { label: '会社紹介マンガ',     labelEn: 'Company Manga',   href: '/company-manga' }
+        ]
+      },
+      {
+        heading: '人事・営業部門向け',
+        headingEn: 'For HR & Sales',
+        items: [
+          { label: '採用マンガ',         labelEn: 'Recruit Manga',   href: '/recruit-manga' },
+          { label: '営業資料マンガ',     labelEn: 'Sales Manga',     href: '/sales-manga' },
+          { label: '研修マンガ',         labelEn: 'Training Manga',  href: '/training-manga' },
+          { label: 'IR・周年史マンガ',   labelEn: 'IR Manga',        href: '/ir-manga' }
+        ]
+      },
+      {
+        heading: 'ビズマンガを知る',
+        headingEn: 'About BizManga',
+        items: [
+          { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
+          { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
+          { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' },
+          { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' }
+        ]
+      }
     ]},
     { label: '料金',       labelEn: 'Pricing',    href: '/pricing' },
     { label: 'コラム',     labelEn: 'Column',     href: '/column' },
@@ -45,7 +63,54 @@
   nav.innerHTML = '';
 
   NAV_ITEMS.forEach(function(item) {
-    if (item.children && item.children.length > 0) {
+    if (item.mega && item.columns && item.columns.length > 0) {
+      // メガメニュー
+      var wrapper = document.createElement('div');
+      wrapper.className = 'bm-nav-dropdown bm-nav-megamenu-wrap';
+
+      var a = document.createElement('a');
+      a.href = item.href;
+      a.className = 'bm-nav-link bm-nav-dropdown-toggle';
+      a.setAttribute('data-ja', item.label);
+      a.setAttribute('data-en', item.labelEn);
+      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+
+      var arrow = document.createElement('span');
+      arrow.className = 'bm-nav-dropdown-arrow';
+      arrow.textContent = '▾';
+      a.appendChild(arrow);
+      wrapper.appendChild(a);
+
+      var mega = document.createElement('div');
+      mega.className = 'bm-nav-megamenu';
+      var anyActive = false;
+      item.columns.forEach(function(col) {
+        var colEl = document.createElement('div');
+        colEl.className = 'bm-nav-megamenu-col';
+
+        var h = document.createElement('div');
+        h.className = 'bm-nav-megamenu-heading';
+        h.setAttribute('data-ja', col.heading);
+        h.setAttribute('data-en', col.headingEn || col.heading);
+        h.textContent = currentLang === 'en' ? (col.headingEn || col.heading) : col.heading;
+        colEl.appendChild(h);
+
+        col.items.forEach(function(child) {
+          var ca = document.createElement('a');
+          ca.href = child.href;
+          ca.className = 'bm-nav-dropdown-item bm-nav-megamenu-item';
+          if (isCurrent(child.href)) { ca.className += ' active'; anyActive = true; }
+          ca.setAttribute('data-ja', child.label);
+          ca.setAttribute('data-en', child.labelEn);
+          ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+          colEl.appendChild(ca);
+        });
+        mega.appendChild(colEl);
+      });
+      if (anyActive) a.className += ' active';
+      wrapper.appendChild(mega);
+      nav.appendChild(wrapper);
+    } else if (item.children && item.children.length > 0) {
       // ドロップダウン
       var wrapper = document.createElement('div');
       wrapper.className = 'bm-nav-dropdown';
