@@ -4415,6 +4415,65 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-nav.open .bm-nav-dropdown-item:active {
     background: rgba(235, 82, 0, 0.06);
   }
+  /* メガメニュー: モバイルではドロワー内インライン展開（絶対配置をキャンセル） */
+  .bm-nav.open .bm-nav-megamenu {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    background: #fafafa;
+    border: none;
+    border-bottom: 1px solid #e8e8e8;
+    border-radius: 0;
+    box-shadow: none;
+    display: none;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: none;
+  }
+  .bm-nav.open .bm-nav-megamenu-wrap.is-open .bm-nav-megamenu {
+    display: block;
+    padding: 8px 0 12px;
+  }
+  /* hover/focus による展開はモバイルでは無効化（is-open のみで制御） */
+  .bm-nav.open .bm-nav-megamenu-wrap:hover .bm-nav-megamenu,
+  .bm-nav.open .bm-nav-megamenu-wrap:focus-within .bm-nav-megamenu {
+    display: none;
+    max-height: none;
+    padding: 0;
+  }
+  .bm-nav.open .bm-nav-megamenu-wrap.is-open:hover .bm-nav-megamenu,
+  .bm-nav.open .bm-nav-megamenu-wrap.is-open:focus-within .bm-nav-megamenu {
+    display: block;
+    padding: 8px 0 12px;
+  }
+  .bm-nav.open .bm-nav-megamenu-col {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    margin: 0;
+    padding: 8px 0 4px;
+  }
+  .bm-nav.open .bm-nav-megamenu-col:first-child {
+    border-top: none;
+  }
+  .bm-nav.open .bm-nav-megamenu-heading {
+    padding: 12px 24px 6px;
+    margin-bottom: 0;
+    border-bottom: none;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: rgba(26, 26, 26, 0.55);
+  }
+  .bm-nav.open .bm-nav-megamenu-item {
+    border-radius: 0;
+  }
   /* ハンバーガー → X 変化 */
   .bm-hamburger.is-open span:nth-child(1) {
     transform: translateY(6.5px) rotate(45deg);

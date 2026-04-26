@@ -544,6 +544,7 @@ WordPress で works を追加・更新したら以下いずれか:
 8. **⭐ 住所は「東京都目黒区中目黒1-8-8 目黒F2ビル1F」に統一 / 郵便番号は `153-0061`** → 旧住所「目黒2-11-15 8階」を 2026-04-21 に統一。同日に郵便番号も `153-0042 / 153-0051 / 153-0063` の3系統混在を `153-0061`（中目黒1丁目の正式番号）に統一。新規ページ追加時は必ず新住所 + i18n data-ja/data-en ペア + 正しい郵便番号を記述。NAP一貫性 (Name/Address/Phone) は Trust / Local SEO 直結
 9. **⭐ works ヒーロー画像は `gallery[0]` を使う（`thumbnail` フィールドは使わない）** → WP API の `thumbnail` は 188x300 の自動生成サムネが返ることがあり、1200x630 として引き延ばすと画質劣化 + LCP要素として Lighthouse に認識されない。2026-04-21 に build-works.py を `gallery[0]` 優先に修正
 10. **⭐ 空のお客様コメントは「—」ではなくセクション自体を非表示に** → WP側に `comment` が未入力の場合は `<section>お客様コメント</section>` 全体をレンダリングしない。空欄ダミーは SEO (Helpful Content / E-E-A-T) 減点要因。2026-04-21 build-works.py で条件分岐化
+11. **⭐ メガメニューはモバイルで `position: static` に上書き必須** → `.bm-nav-megamenu` はデスクトップで `position: absolute` + `:hover/:focus-within` 展開。モバイルドロワー（`.bm-nav.open`）では絶対配置のままだと他ナビ項目（料金/コラム/FAQ）に被さってスクロールできない。`@media (max-width: 880px)` 内で `.bm-nav.open .bm-nav-megamenu` を `position: static; display: none;`、`.is-open` 時に `display: block` で展開し、`:hover/:focus-within` 由来のフロート展開を打ち消すこと。2026-04-26 修正
 
 ## 15.1 セキュリティ・既知のリスク
 
