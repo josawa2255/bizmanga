@@ -88,7 +88,7 @@
       requestAnimationFrame(() => wrap.classList.remove('is-out'));
     }, 220);
 
-    // 詳細領域に説明文表示
+    // 詳細領域に説明文表示（flow mode では画像枠も同時表示するため has-flow を使用）
     if (detail && titleEl && bodyEl) {
       titleEl.textContent = `STEP${num} ${name}`;
       while (bodyEl.firstChild) bodyEl.removeChild(bodyEl.firstChild);
@@ -97,7 +97,10 @@
       bodyEl.appendChild(p);
       if (hint) hint.hidden = true;
       detail.hidden = false;
-      if (railLeft) railLeft.classList.add('has-detail');
+      if (railLeft) {
+        railLeft.classList.remove('has-detail');
+        railLeft.classList.add('has-flow');
+      }
     }
   }
 
@@ -123,7 +126,7 @@
     }, 220);
     if (detail) detail.hidden = true;
     if (hint) hint.hidden = false;
-    if (railLeft) railLeft.classList.remove('has-detail');
+    if (railLeft) railLeft.classList.remove('has-flow');
   }
 
   // ---------- スクロール連動（IntersectionObserver） ----------
@@ -161,13 +164,29 @@
     const detailNode = item.querySelector('.pm-pain-detail, .pm-merit-detail, .pm-format-detail');
     if (!detailNode) return;
 
+    // flow mode 中なら先にキャラ画像を復元してから通常 detail に切替
+    const wrap = document.getElementById('pmCharacter');
+    if (wrap && wrap.dataset.mood && wrap.dataset.mood.startsWith('flow-')) {
+      const cimg = wrap.querySelector('img');
+      if (cimg && originalCharacterSrc) {
+        cimg.src = originalCharacterSrc;
+        cimg.alt = originalCharacterAlt || '';
+      }
+      wrap.dataset.mood = 'confident';
+      wrap.classList.remove('is-flow-mode');
+      document.querySelectorAll('.flow-step.is-active-flow').forEach((el) => el.classList.remove('is-active-flow'));
+    }
+
     titleEl.textContent = title;
     while (bodyEl.firstChild) bodyEl.removeChild(bodyEl.firstChild);
     Array.from(detailNode.children).forEach((child) => {
       bodyEl.appendChild(child.cloneNode(true));
     });
     detail.hidden = false;
-    if (railLeft) railLeft.classList.add('has-detail');
+    if (railLeft) {
+      railLeft.classList.remove('has-flow');
+      railLeft.classList.add('has-detail');
+    }
     if (railContent) railContent.scrollTop = 0;
 
     document.querySelectorAll('.pm-pain-item.is-active, .pm-merit-item.is-active, .pm-format-item.is-active')

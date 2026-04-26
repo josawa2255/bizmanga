@@ -905,6 +905,41 @@
 .pm-rail--left.has-detail .pm-rail-caption {
   display: none;
 }
+/* Flow mode: 画像枠を残しつつ説明文も下に表示 */
+.pm-rail--left.has-flow .pm-rail-character-frame {
+  flex: 0 0 auto;
+  height: 42%;
+  min-height: 220px;
+}
+.pm-rail--left.has-flow .pm-rail-caption {
+  display: block;
+  margin: 12px 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b08a4a;
+  font-weight: 700;
+}
+.pm-rail--left.has-flow .pm-rail-content {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.pm-rail-character.is-flow-mode {
+  background: #faf7f2;
+  border-radius: 6px;
+}
+.pm-rail-character.is-flow-mode img {
+  position: relative;
+  inset: auto;
+  bottom: auto;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: center;
+}
 
 /* キャラ下のキャプション（モード表示） */
 .pm-rail-caption {
@@ -1657,9 +1692,3 @@
   .pm-flow-step-desc { font-size: 12.5px; }
 }
 
-/* 左ペイン: flow-mode のときの装飾 */
-.pm-rail-character.is-flow-mode {
-  background: #faf7f2;
-  border-radius: 8px;
-  overflow: hidden;
-}
