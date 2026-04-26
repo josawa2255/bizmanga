@@ -27,7 +27,7 @@
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日英切替・OGP動的更新。Editorial Magazineデザイン |
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行 |
-| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。共通テンプレ `css/bm-lp-template.css`。各LPは Hero→Formats→Problem→Bridge→Merit→Case Study(WP API動的)→ビズ書庫埋込→**関連LP相互リンク7本**→Ending の構成。JSON-LD: WebPage + Service + BreadcrumbList(2階層, `/services` 中間階層なし)、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified: 2026-04-26`、Service に `url` + `audience` + `offers(/contact)` |
+| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。共通テンプレ `css/bm-lp-template.css`。各LPは Hero→Formats→Problem→Bridge→Merit→Case Study(WP API動的)→ビズ書庫埋込→**制作フロー(6 Step, HowTo Schema)**→**FAQ(8問, FAQPage Schema)**→**関連LP相互リンク7本**→Ending の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + HowTo + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified: 2026-04-27`、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 
 ## 2. URL パラメータ・特殊モード
 

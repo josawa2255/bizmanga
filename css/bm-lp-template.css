@@ -1391,3 +1391,175 @@
   .pm-related-card-name { font-size: 14.5px; }
   .pm-related-card-hook { font-size: 12px; }
 }
+
+/* ============================================================
+   汎用セクション見出し（Flow/FAQ で使用）
+   ============================================================ */
+.pm-section-eyebrow {
+  display: block;
+  font-family: "Noto Serif JP", serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: #b08a4a;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.pm-section-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+  line-height: 1.4;
+}
+.pm-section-lead {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.85;
+  margin: 0 0 32px;
+}
+
+/* ============================================================
+   制作フロー（HowTo Schema 連動）
+   ============================================================ */
+.pm-flow-section { background: #faf7f2; border-top: 1px solid #efece6; }
+.pm-flow-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid #ebe5d7;
+}
+.pm-flow-step {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 18px;
+  padding: 22px 4px;
+  border-bottom: 1px solid #ebe5d7;
+}
+.pm-flow-step-num {
+  font-family: "Noto Serif JP", serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: #e85500;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  align-self: start;
+  padding-top: 4px;
+}
+.pm-flow-step-body { min-width: 0; }
+.pm-flow-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.pm-flow-step-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+.pm-flow-step-period {
+  font-size: 12px;
+  color: #b08a4a;
+  letter-spacing: 0.06em;
+  background: #ffffff;
+  border: 1px solid #ebe5d7;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.pm-flow-step-desc {
+  font-size: 14.5px;
+  color: #444;
+  line-height: 1.85;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .pm-flow-step { grid-template-columns: 56px 1fr; gap: 12px; padding: 18px 0; }
+  .pm-flow-step-num { font-size: 26px; }
+  .pm-flow-step-title { font-size: 16px; }
+  .pm-flow-step-desc { font-size: 13.5px; }
+}
+
+/* ============================================================
+   FAQ（FAQPage Schema 連動）
+   ============================================================ */
+.pm-faq-section { border-top: 1px solid #efece6; }
+.pm-faq-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid #ebe5d7; }
+.pm-faq-item {
+  border-bottom: 1px solid #ebe5d7;
+  padding: 0;
+}
+.pm-faq-item[open] { background: #faf7f2; }
+.pm-faq-question {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 4px;
+  font-family: "Noto Serif JP", serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+  line-height: 1.55;
+  position: relative;
+  transition: color 0.16s ease;
+}
+.pm-faq-question::-webkit-details-marker { display: none; }
+.pm-faq-question::before {
+  content: "Q.";
+  font-family: "Noto Serif JP", serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #e85500;
+  flex-shrink: 0;
+  line-height: 1.45;
+}
+.pm-faq-question::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 24px;
+  font-weight: 300;
+  color: #b08a4a;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.pm-faq-item[open] .pm-faq-question::after {
+  content: "−";
+  transform: rotate(0deg);
+}
+.pm-faq-question:hover { color: #c54600; }
+.pm-faq-answer {
+  display: flex;
+  gap: 14px;
+  padding: 0 4px 22px 4px;
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: #444;
+}
+.pm-faq-answer::before {
+  content: "A.";
+  font-family: "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #b08a4a;
+  flex-shrink: 0;
+  line-height: 1.7;
+}
+.pm-faq-answer a { color: #c54600; text-decoration: underline; text-underline-offset: 3px; }
+.pm-faq-answer a:hover { color: #e85500; }
+@media (max-width: 720px) {
+  .pm-faq-question { font-size: 15px; gap: 10px; padding: 16px 0; }
+  .pm-faq-question::before { font-size: 16px; }
+  .pm-faq-answer { font-size: 13.5px; padding: 0 0 18px 0; gap: 10px; }
+}

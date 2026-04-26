@@ -92,6 +92,41 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "@id": "https://bizmanga.contentsx.jp/sales-manga#howto",
+    "name": "営業資料マンガの制作フロー",
+    "description": "営業資料マンガ制作の標準的な進行フロー。ヒアリングから納品までの6ステップ。",
+    "totalTime": "P6W",
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "ヒアリング・課題整理", "text": "営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フローを把握し、組み込みポイントを設計します。" },
+      { "@type": "HowToStep", "position": 2, "name": "構成・脚本提案", "text": "編集担当が「読まれる構成」を企画。三幕構成・キャラクター設計・伝えたい価値の優先順位を整理し、構成案をテキストでご提示します。" },
+      { "@type": "HowToStep", "position": 3, "name": "ネーム作成・確認", "text": "ラフな絵コンテ（ネーム）を作成。コマ割り・セリフ・キャラ表情まで含めた完成形の設計図をご確認いただきます。ここでの修正が品質を決めます。" },
+      { "@type": "HowToStep", "position": 4, "name": "作画・仕上げ", "text": "プロの漫画家が清書・着色・トーン処理まで対応。125項目の品質チェックを通過した原稿のみをクライアント様にお出しします。" },
+      { "@type": "HowToStep", "position": 5, "name": "修正・校正", "text": "細部の修正・コピーライト・法務監修対応。複数媒体展開（パンフ・LP・SNS）が必要な場合はサイズ別の書き出しもこの段階で行います。" },
+      { "@type": "HowToStep", "position": 6, "name": "納品・運用サポート", "text": "PDF・PNG・PSD・AI・動画化など必要な形式で納品。納品後の差し替え・追加カット・多言語展開などの継続支援もご相談ください。" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://bizmanga.contentsx.jp/sales-manga#faq",
+    "mainEntity": [
+      { "@type": "Question", "name": "制作期間はどのくらいかかりますか？", "acceptedAnswer": { "@type": "Answer", "text": "標準的な10ページ構成で約4〜6週間です。ヒアリング1週間・構成と脚本2週間・ネーム1週間・作画2〜3週間・修正と納品1週間が目安。お急ぎの場合は短縮プランもご相談可能です。" } },
+      { "@type": "Question", "name": "費用の相場はいくらですか？", "acceptedAnswer": { "@type": "Answer", "text": "1ページあたり15,800円〜（基本プラン）。10ページ構成で約17.4万円〜が目安。本数割引・オプション・カラー対応など詳細は<a href=\"/pricing\">料金ページ</a>をご覧ください。明朗会計で見積書を即日お届けします。" } },
+      { "@type": "Question", "name": "修正は何回まで対応していますか？", "acceptedAnswer": { "@type": "Answer", "text": "ネーム段階で1回・作画段階で1回が標準で、合計2回までが基本プランに含まれます。ネーム段階で構成や演出をしっかり擦り合わせるため、作画後の大幅修正は通常発生しません。" } },
+      { "@type": "Question", "name": "著作権・使用範囲はどうなりますか？", "acceptedAnswer": { "@type": "Answer", "text": "完成原稿の使用権はクライアント様に帰属します。Web・印刷・SNS・動画化など複数媒体での使用が可能です。二次利用や買取りについても柔軟に対応しますのでご相談ください。" } },
+      { "@type": "Question", "name": "機密保持契約（NDA）には対応していますか？", "acceptedAnswer": { "@type": "Answer", "text": "対応可能です。お見積もりや初回ヒアリング前にNDA締結いただけます。新製品・未公開キャンペーン・採用情報など、機密性の高い案件も多数の実績があります。" } },
+      { "@type": "Question", "name": "英語版・多言語版は作れますか？", "acceptedAnswer": { "@type": "Answer", "text": "対応可能です。日本語で制作した作品の英語ローカライズはもちろん、中国語・韓国語・タイ語など多言語展開もネイティブ校正付きで承ります。インバウンド・海外IR用途で実績があります。" } },
+      { "@type": "Question", "name": "商談で使う場合、何ページ構成が最適ですか？", "acceptedAnswer": { "@type": "Answer", "text": "提案書冒頭の「課題共感パート」として4〜8ページが最適です。導入事例として中盤に8〜12ページ挟むパターンも効果的。商談時間・商材複雑度・決裁フローに合わせて構成設計します。" } },
+      { "@type": "Question", "name": "既存の提案書テンプレート（PowerPoint等）に組み込めますか？", "acceptedAnswer": { "@type": "Answer", "text": "可能です。納品はPNG・PDF・PSDで、PowerPoint・Keynote・Googleスライドへ画像配置できます。表紙差し替えだけで担当者ごとにカスタマイズする運用設計もサポートします。" } }
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -360,6 +395,120 @@
         </div>
       </div>
     </section>
+    <!-- ===== 制作フロー（HowTo Schema 連動） ===== -->
+    <section class="pm-section pm-flow-section" aria-label="制作フロー">
+      <div class="pm-container pm-container--narrow">
+        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
+        <h2 class="pm-section-title">営業資料マンガの制作フロー</h2>
+        <p class="pm-section-lead">ヒアリングから納品まで、専任の編集担当が一貫して伴走。標準で約4〜6週間、内容と分量に応じて柔軟に調整します。</p>
+        <ol class="pm-flow-list">
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">01</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">ヒアリング・課題整理</h3>
+                <span class="pm-flow-step-period">1〜3営業日</span>
+              </div>
+              <p class="pm-flow-step-desc">営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フローを把握し、組み込みポイントを設計します。</p>
+            </div>
+          </li>
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">02</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">構成・脚本提案</h3>
+                <span class="pm-flow-step-period">1〜2週間</span>
+              </div>
+              <p class="pm-flow-step-desc">編集担当が「読まれる構成」を企画。三幕構成・キャラクター設計・伝えたい価値の優先順位を整理し、構成案をテキストでご提示します。</p>
+            </div>
+          </li>
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">03</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">ネーム作成・確認</h3>
+                <span class="pm-flow-step-period">1週間</span>
+              </div>
+              <p class="pm-flow-step-desc">ラフな絵コンテ（ネーム）を作成。コマ割り・セリフ・キャラ表情まで含めた完成形の設計図をご確認いただきます。ここでの修正が品質を決めます。</p>
+            </div>
+          </li>
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">04</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">作画・仕上げ</h3>
+                <span class="pm-flow-step-period">2〜4週間</span>
+              </div>
+              <p class="pm-flow-step-desc">プロの漫画家が清書・着色・トーン処理まで対応。125項目の品質チェックを通過した原稿のみをクライアント様にお出しします。</p>
+            </div>
+          </li>
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">05</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">修正・校正</h3>
+                <span class="pm-flow-step-period">数日〜1週間</span>
+              </div>
+              <p class="pm-flow-step-desc">細部の修正・コピーライト・法務監修対応。複数媒体展開（パンフ・LP・SNS）が必要な場合はサイズ別の書き出しもこの段階で行います。</p>
+            </div>
+          </li>
+          <li class="pm-flow-step">
+            <span class="pm-flow-step-num">06</span>
+            <div class="pm-flow-step-body">
+              <div class="pm-flow-step-head">
+                <h3 class="pm-flow-step-title">納品・運用サポート</h3>
+                <span class="pm-flow-step-period">即日〜数日</span>
+              </div>
+              <p class="pm-flow-step-desc">PDF・PNG・PSD・AI・動画化など必要な形式で納品。納品後の差し替え・追加カット・多言語展開などの継続支援もご相談ください。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== FAQ（FAQPage Schema 連動） ===== -->
+    <section class="pm-section pm-faq-section" aria-label="よくあるご質問">
+      <div class="pm-container pm-container--narrow">
+        <span class="pm-section-eyebrow">FAQ</span>
+        <h2 class="pm-section-title">営業資料マンガについてよくあるご質問</h2>
+        <p class="pm-section-lead">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
+        <div class="pm-faq-list">
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">制作期間はどのくらいかかりますか？</summary>
+            <div class="pm-faq-answer">標準的な10ページ構成で約4〜6週間です。ヒアリング1週間・構成と脚本2週間・ネーム1週間・作画2〜3週間・修正と納品1週間が目安。お急ぎの場合は短縮プランもご相談可能です。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">費用の相場はいくらですか？</summary>
+            <div class="pm-faq-answer">1ページあたり15,800円〜（基本プラン）。10ページ構成で約17.4万円〜が目安。本数割引・オプション・カラー対応など詳細は<a href="/pricing">料金ページ</a>をご覧ください。明朗会計で見積書を即日お届けします。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">修正は何回まで対応していますか？</summary>
+            <div class="pm-faq-answer">ネーム段階で1回・作画段階で1回が標準で、合計2回までが基本プランに含まれます。ネーム段階で構成や演出をしっかり擦り合わせるため、作画後の大幅修正は通常発生しません。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">著作権・使用範囲はどうなりますか？</summary>
+            <div class="pm-faq-answer">完成原稿の使用権はクライアント様に帰属します。Web・印刷・SNS・動画化など複数媒体での使用が可能です。二次利用や買取りについても柔軟に対応しますのでご相談ください。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">機密保持契約（NDA）には対応していますか？</summary>
+            <div class="pm-faq-answer">対応可能です。お見積もりや初回ヒアリング前にNDA締結いただけます。新製品・未公開キャンペーン・採用情報など、機密性の高い案件も多数の実績があります。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">英語版・多言語版は作れますか？</summary>
+            <div class="pm-faq-answer">対応可能です。日本語で制作した作品の英語ローカライズはもちろん、中国語・韓国語・タイ語など多言語展開もネイティブ校正付きで承ります。インバウンド・海外IR用途で実績があります。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">商談で使う場合、何ページ構成が最適ですか？</summary>
+            <div class="pm-faq-answer">提案書冒頭の「課題共感パート」として4〜8ページが最適です。導入事例として中盤に8〜12ページ挟むパターンも効果的。商談時間・商材複雑度・決裁フローに合わせて構成設計します。</div>
+          </details>
+          <details class="pm-faq-item">
+            <summary class="pm-faq-question">既存の提案書テンプレート（PowerPoint等）に組み込めますか？</summary>
+            <div class="pm-faq-answer">可能です。納品はPNG・PDF・PSDで、PowerPoint・Keynote・Googleスライドへ画像配置できます。表紙差し替えだけで担当者ごとにカスタマイズする運用設計もサポートします。</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== 関連LP（他の用途別マンガ） ===== -->
     <section class="pm-related" aria-label="他の用途別マンガ">
       <div class="pm-container pm-container--narrow">
