@@ -28,6 +28,13 @@
   var path = location.pathname;
   var currentFile = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
 
+  // hrefとcurrentFileを正規化して比較する関数（先頭/とindex/末尾スラッシュの差を吸収）
+  function isCurrent(href) {
+    if (!href) return false;
+    var normalizedHref = href.replace(/^\//, '').replace(/\.html$/, '').replace(/\/$/, '') || 'index';
+    return normalizedHref === currentFile;
+  }
+
   // ===== 言語状態の管理 =====
   var currentLang = 'ja';
   try { currentLang = localStorage.getItem('bm-lang') || 'ja'; } catch(e) {}
@@ -46,7 +53,7 @@
       var a = document.createElement('a');
       a.href = item.href;
       a.className = 'bm-nav-link bm-nav-dropdown-toggle';
-      if (item.href === currentFile) a.className += ' active';
+      if (isCurrent(item.href)) a.className += ' active';
       a.setAttribute('data-ja', item.label);
       a.setAttribute('data-en', item.labelEn);
       a.textContent = currentLang === 'en' ? item.labelEn : item.label;
@@ -64,7 +71,7 @@
         var ca = document.createElement('a');
         ca.href = child.href;
         ca.className = 'bm-nav-dropdown-item';
-        if (child.href === currentFile) { ca.className += ' active'; childActive = true; }
+        if (isCurrent(child.href)) { ca.className += ' active'; childActive = true; }
         ca.setAttribute('data-ja', child.label);
         ca.setAttribute('data-en', child.labelEn);
         ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
@@ -77,7 +84,7 @@
       var a = document.createElement('a');
       a.href = item.href;
       a.className = 'bm-nav-link';
-      if (item.href === currentFile) a.className += ' active';
+      if (isCurrent(item.href)) a.className += ' active';
       a.setAttribute('data-ja', item.label);
       a.setAttribute('data-en', item.labelEn);
       a.textContent = currentLang === 'en' ? item.labelEn : item.label;

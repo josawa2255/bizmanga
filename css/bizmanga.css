@@ -191,7 +191,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 }
 .bm-nav-dropdown:hover .bm-nav-dropdown-menu,
 .bm-nav-dropdown:focus-within .bm-nav-dropdown-menu {
-  max-height: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
   opacity: 1;
   pointer-events: auto;
   padding: 0 0 8px;
@@ -253,10 +254,12 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 .bm-nav-dropdown-item.active {
   color: var(--bm-accent);
   font-weight: 700;
+  background: rgba(232, 85, 0, 0.06);
 }
 .bm-nav-dropdown-item.active::after {
-  content: '●';
-  font-size: 8px;
+  content: '→';
+  font-size: 16px;
+  font-weight: 300;
   color: var(--bm-accent);
 }
 
