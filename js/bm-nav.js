@@ -6,10 +6,19 @@
   var NAV_ITEMS = [
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
     { label: '制作事例',   labelEn: 'Works',      href: '/works' },
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
-    { label: '強み',       labelEn: 'Strengths',  href: '/strength', children: [
-      { label: 'マンガの種類', labelEn: 'Manga Types',  href: '/manga-types' },
-      { label: '活用場面',     labelEn: 'Use Cases',    href: '/use-cases' }
+    { label: 'サービス',   labelEn: 'Services',   href: '/biz-library', children: [
+      { label: 'ビズ書庫',           labelEn: 'Biz Library',     href: '/biz-library' },
+      { label: '商品紹介マンガ',     labelEn: 'Product Manga',   href: '/product-manga' },
+      { label: '採用マンガ',         labelEn: 'Recruit Manga',   href: '/recruit-manga' },
+      { label: '会社紹介マンガ',     labelEn: 'Company Manga',   href: '/company-manga' },
+      { label: '営業資料マンガ',     labelEn: 'Sales Manga',     href: '/sales-manga' },
+      { label: '研修マンガ',         labelEn: 'Training Manga',  href: '/training-manga' },
+      { label: 'マンガ広告',         labelEn: 'Manga Ad',        href: '/manga-ad-lp' },
+      { label: 'インバウンド漫画',   labelEn: 'Inbound Manga',   href: '/inbound-manga' },
+      { label: 'IR・周年史マンガ',   labelEn: 'IR Manga',        href: '/ir-manga' },
+      { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
+      { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
+      { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' }
     ]},
     { label: '料金',       labelEn: 'Pricing',    href: '/pricing' },
     { label: 'コラム',     labelEn: 'Column',     href: '/column' },
