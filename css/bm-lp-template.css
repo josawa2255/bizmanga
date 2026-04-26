@@ -1540,26 +1540,53 @@
 }
 .pm-faq-question:hover { color: #c54600; }
 .pm-faq-answer {
-  display: flex;
-  gap: 14px;
-  padding: 0 4px 22px 4px;
+  position: relative;
+  padding: 0 4px 22px 32px;
   font-size: 14.5px;
   line-height: 1.95;
   color: #444;
 }
 .pm-faq-answer::before {
   content: "A.";
+  position: absolute;
+  left: 4px;
+  top: 0;
   font-family: "Noto Serif JP", serif;
   font-size: 16px;
   font-weight: 700;
   color: #b08a4a;
-  flex-shrink: 0;
   line-height: 1.7;
 }
-.pm-faq-answer a { color: #c54600; text-decoration: underline; text-underline-offset: 3px; }
+.pm-faq-answer a { color: #c54600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .pm-faq-answer a:hover { color: #e85500; }
 @media (max-width: 720px) {
   .pm-faq-question { font-size: 15px; gap: 10px; padding: 16px 0; }
   .pm-faq-question::before { font-size: 16px; }
-  .pm-faq-answer { font-size: 13.5px; padding: 0 0 18px 0; gap: 10px; }
+  .pm-faq-answer { font-size: 13.5px; padding: 0 0 18px 28px; }
+}
+
+/* ============================================================
+   制作フロー（ホーム版 production-flow.css を流用）
+   LP内では image gallery を左、steps を右に配置（DOM順序で制御済み）
+   ============================================================ */
+.pm-flow-section .flow {
+  padding: 0;
+}
+.pm-flow-section .flow-gallery-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pm-flow-section .flow-steps-vertical {
+  flex-shrink: 0;
+}
+.pm-flow-section .pm-section-eyebrow,
+.pm-flow-section .pm-section-title,
+.pm-flow-section .pm-section-lead {
+  text-align: left;
+}
+@media (max-width: 720px) {
+  .pm-flow-section .flow-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
