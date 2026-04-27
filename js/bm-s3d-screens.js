@@ -58,23 +58,29 @@
     // 初期は中央スマホを大きく見せる(viewport 高さに迫る迫力)
     var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.55;
     gsap.set(wrap, { scale: initScale, transformOrigin: '50% 0%' });
-    gsap.set(others, { opacity: 0, scale: 0.6 });
-    gsap.set(labels, { opacity: 0, y: -8 });
-    if (heading) gsap.set(heading, { autoAlpha: 0 });
+    // 左右スマホは下から押し上げる + フェード + 縮小スタート
+    gsap.set(others, { opacity: 0, scale: 0.55, y: 60 });
+    gsap.set(labels, { opacity: 0, y: -12 });
+    if (heading) gsap.set(heading, { autoAlpha: 0, y: 12 });
 
-    // セクションが viewport に入った時に一度だけ自動再生(scroll 奪取なし)
+    // 1.4秒 → 約2.7秒に伸ばし、各段階の余韻を作る
     var tl = gsap.timeline({ paused: true });
-    tl.to(wrap,   { scale: 1, ease: 'power3.out', duration: 0.85 }, 0);
-    tl.to(others, { opacity: 1, scale: 1, ease: 'power3.out', duration: 0.55, stagger: 0.1 }, 0.3);
-    tl.to(labels, { opacity: 1, y: 0, ease: 'power2.out', duration: 0.45, stagger: 0.1 }, 0.95);
-    if (heading) tl.to(heading, { autoAlpha: 1, duration: 0.5 }, 0.8);
-    tl.call(function() { group.classList.add('is-settled'); }, null, 1.1);
-    if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, 1.2);
+    // (1) 中央スマホがゆっくり viewport サイズに収まる
+    tl.to(wrap,    { scale: 1, ease: 'power3.out', duration: 1.6 }, 0);
+    // (2) 左右スマホが少し遅れて、下から押し上がる + 拡大しながらフェードイン
+    tl.to(others,  { opacity: 1, scale: 1, y: 0, ease: 'power3.out', duration: 1.1, stagger: 0.22 }, 0.55);
+    // (3) 各ラベルが上からふわっと
+    tl.to(labels,  { opacity: 1, y: 0, ease: 'power2.out', duration: 0.7, stagger: 0.14 }, 1.7);
+    // (4) 見出しは下からふわり
+    if (heading) tl.to(heading, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.8 }, 1.5);
+    // (5) iframe 操作可能化 / CTA 表示は最後に
+    tl.call(function() { group.classList.add('is-settled'); }, null, 2.3);
+    if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, 2.5);
 
     ScrollTrigger.create({
       trigger: '#s3dSection',
-      // セクション上部が viewport の 65% に到達(≒半分ほど見えた瞬間)でアニメ開始
-      start: 'top 65%',
+      // 80% (≒ 上端が viewport にちょっと顔を出した瞬間) でアニメ開始
+      start: 'top 80%',
       once: true,
       onEnter: function() {
         if (scrollHint) scrollHint.classList.add('is-hidden');
