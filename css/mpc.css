@@ -126,7 +126,11 @@
   color: var(--mpc-ink);
   margin: 0 0 28px;
   max-width: 920px;
-  animation: mpcFadeUp 0.7s ease-out 0.15s both;
+  animation: mpcBounceIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+.mpc-h1 em {
+  display: inline-block;
+  animation: mpcBounceIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s both;
 }
 .mpc-h1 em {
   font-style: normal;
@@ -236,6 +240,12 @@
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes mpcBounceIn {
+  0% { opacity: 0; transform: translateY(60px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-8px) scale(1.02); }
+  80% { transform: translateY(2px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
 @keyframes mpcArrowBob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(4px); }
@@ -243,6 +253,102 @@
 @keyframes mpcScrollGuide {
   0%, 100% { transform: translate(-50%, 0); opacity: 0.5; }
   50% { transform: translate(-50%, 8px); opacity: 1; }
+}
+
+/* ========== 浮遊する漫画コマ装飾（kikasete clouds 流用） ========== */
+.mpc-hero-comics {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mpc-hero-comic {
+  position: absolute;
+  border: 2px solid var(--mpc-ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--mpc-ink);
+  overflow: hidden;
+  opacity: 0.12;
+  transition: opacity 0.6s ease;
+}
+.mpc-hero-comic img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+/* 各コマを散らばせる */
+.mpc-hero-comic--1 { top: 8%;  left: -5%;  width: 200px; height: 110px; transform: rotate(-12deg); animation: mpcCloudDrift 14s ease-in-out infinite; animation-delay: 0s; }
+.mpc-hero-comic--2 { top: 5%;  right: 8%;  width: 180px; height: 100px; transform: rotate(8deg);   animation: mpcCloudDrift 16s ease-in-out infinite; animation-delay: -3s; }
+.mpc-hero-comic--3 { top: 50%; left: 4%;   width: 140px; height: 80px;  transform: rotate(-6deg);  animation: mpcCloudDrift 13s ease-in-out infinite; animation-delay: -5s; }
+.mpc-hero-comic--4 { top: 45%; right: 2%;  width: 220px; height: 120px; transform: rotate(4deg);   animation: mpcCloudDrift 15s ease-in-out infinite; animation-delay: -7s; }
+.mpc-hero-comic--5 { bottom: 8%; left: 12%; width: 160px; height: 90px;  transform: rotate(-3deg);  animation: mpcCloudDrift 17s ease-in-out infinite; animation-delay: -2s; }
+.mpc-hero-comic--6 { bottom: 12%; right: -4%; width: 200px; height: 110px; transform: rotate(11deg); animation: mpcCloudDrift 14s ease-in-out infinite; animation-delay: -8s; }
+.mpc-hero-comic--7 { top: 25%; left: 38%;  width: 150px; height: 84px;  transform: rotate(-2deg);  animation: mpcCloudDrift 19s ease-in-out infinite; animation-delay: -4s; opacity: 0.08; }
+.mpc-hero-comic--8 { bottom: 25%; left: 65%; width: 140px; height: 80px;  transform: rotate(7deg);   animation: mpcCloudDrift 18s ease-in-out infinite; animation-delay: -6s; opacity: 0.10; }
+
+@keyframes mpcCloudDrift {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-18px) rotate(var(--rot, 0deg)); }
+}
+.mpc-hero-comic--1 { --rot: -12deg; }
+.mpc-hero-comic--2 { --rot: 8deg; }
+.mpc-hero-comic--3 { --rot: -6deg; }
+.mpc-hero-comic--4 { --rot: 4deg; }
+.mpc-hero-comic--5 { --rot: -3deg; }
+.mpc-hero-comic--6 { --rot: 11deg; }
+.mpc-hero-comic--7 { --rot: -2deg; }
+.mpc-hero-comic--8 { --rot: 7deg; }
+@media (max-width: 880px) {
+  .mpc-hero-comic--3, .mpc-hero-comic--4, .mpc-hero-comic--7, .mpc-hero-comic--8 { display: none; }
+  .mpc-hero-comic { opacity: 0.06 !important; }
+}
+
+/* ========== 漫画効果線エフェクト（CTA hover） ========== */
+.mpc-btn-primary {
+  position: relative;
+  z-index: 1;
+}
+.mpc-btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 50%, rgba(232, 85, 0, 0.0) 50%),
+    repeating-conic-gradient(from 0deg, transparent 0deg, transparent 12deg, rgba(232, 85, 0, 0.4) 12deg, rgba(232, 85, 0, 0.4) 14deg);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(0.5px);
+}
+.mpc-btn-primary:hover::before {
+  opacity: 0.9;
+  transform: scale(1.15);
+  animation: mpcSpeedLines 0.6s ease-out;
+}
+@keyframes mpcSpeedLines {
+  0% { transform: scale(0.7) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
+  100% { transform: scale(1.15) rotate(30deg); opacity: 0.9; }
+}
+/* SVG漫画風吹き出しの星バースト（追従ボタン用） */
+.mpc-fix-btn::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  background: var(--mpc-accent);
+  border-radius: 999px;
+  opacity: 0.3;
+  z-index: -1;
+  animation: mpcPulse 2.4s ease-in-out infinite;
+}
+@keyframes mpcPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.15); opacity: 0; }
 }
 
 /* ========== ロゴマーキー ========== */
@@ -626,12 +732,12 @@
   color: inherit;
   position: relative;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease-out, transform 0.18s ease, box-shadow 0.18s ease;
+  transform: scale(0.6) translateY(20px);
+  transition: opacity 0.4s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
 }
 .mpc-map-pin.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1) translateY(0);
 }
 .mpc-map-pin:hover {
   transform: translateY(-3px);
