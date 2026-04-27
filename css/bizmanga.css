@@ -5032,3 +5032,50 @@ html[lang="ja"] p,
   margin-top: 8px;
 }
 .bm-work-detail-cta-sub a { color: #e85500; }
+
+/* ============================================================
+   bm-fuwa: 汎用「ふわふわスクロール」ユーティリティ
+   - data-fuwa: スクロールで下から弾むように出現
+   - data-fuwa-float: 出現後も上下にゆっくり浮遊
+   - data-fuwa-parallax="0.3": スクロール時にパララックス
+   - body[data-fuwa-auto]: 自動モード（主要要素を一括 opt-in）
+   bm-fuwa.js とセットで動作
+   ============================================================ */
+html { scroll-behavior: smooth; }
+
+[data-fuwa] {
+  opacity: 0;
+  transform: translateY(40px) scale(0.96);
+  transition:
+    opacity 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+[data-fuwa].is-fuwa-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+[data-fuwa-float] {
+  animation: bmFuwaFloat 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+[data-fuwa-float][data-fuwa]:not(.is-fuwa-in) {
+  animation: none;
+}
+@keyframes bmFuwaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-fuwa],
+  [data-fuwa-float],
+  [data-fuwa-parallax] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
