@@ -63,14 +63,28 @@ def get_work_categories(w):
     return [cat] if cat else []
 
 
+def has_static_detail(work):
+    """/works/{slug}.html が存在するか。
+    存在しないと 404→/biz-library?manga={id} (漫画ビューア) にリダイレクトされてしまうため、
+    LP の CASE STUDY にはここを通った作品だけを出す。"""
+    slug = work.get("id", "")
+    if not slug:
+        return False
+    return (ROOT / "works" / f"{slug}.html").exists()
+
+
 def filter_for_lp(works, lp_slug):
-    """LP のターゲットカテゴリにマッチする作品を返す。"""
+    """LP のターゲットカテゴリにマッチし、かつ静的詳細ページが存在する作品を返す。"""
     targets = set(LP_CATEGORIES[lp_slug])
     matched = []
     for w in works:
         wcats = set(get_work_categories(w))
-        if wcats & targets:
-            matched.append(w)
+        if not (wcats & targets):
+            continue
+        if not has_static_detail(w):
+            # show_site!=both 等で /works/{slug}.html が無い作品は CASE STUDY から除外
+            continue
+        matched.append(w)
     return matched
 
 
