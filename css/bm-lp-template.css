@@ -1692,3 +1692,89 @@
   .pm-flow-step-desc { font-size: 12.5px; }
 }
 
+
+/* ============================================================
+   静的事例カード（CASE STUDIES、SEO/AI Bot 可視化用）
+   ============================================================ */
+.pm-cases-static { padding: 56px 0 32px; border-top: 1px solid #efece6; background: #faf7f2; }
+.pm-cases-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+.pm-case-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #ebe5d7;
+  border-left: 3px solid #e85500;
+  align-items: start;
+}
+.pm-case-thumb {
+  display: block;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f5f1e8;
+}
+.pm-case-thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.pm-case-thumb:hover img { transform: scale(1.04); }
+.pm-case-body { min-width: 0; }
+.pm-case-meta {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #b08a4a;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.pm-case-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+.pm-case-title a { color: inherit; text-decoration: none; }
+.pm-case-title a:hover { color: #e85500; }
+.pm-case-client { font-size: 12.5px; color: #666; margin: 0 0 8px; }
+.pm-case-point { font-size: 14px; line-height: 1.85; color: #333; margin: 0 0 12px; }
+.pm-case-comment {
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: #555;
+  background: #faf7f2;
+  border-left: 3px solid #b08a4a;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  font-style: normal;
+}
+.pm-case-more {
+  display: inline-block;
+  font-size: 13px;
+  color: #e85500;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+}
+.pm-case-more:hover { color: #c54600; }
+.pm-cases-foot { text-align: center; margin: 28px 0 0; }
+@media (max-width: 720px) {
+  .pm-case-card { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  .pm-case-thumb { max-width: 240px; margin: 0 auto; }
+  .pm-case-title { font-size: 17px; }
+  .pm-case-point { font-size: 13px; }
+}
