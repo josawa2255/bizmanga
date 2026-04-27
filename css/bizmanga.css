@@ -1695,11 +1695,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   color: #666;
   font-weight: 600;
 }
-.bm-column-card-readtime::before {
-  content: "📖 ";
-  font-size: 11px;
-  opacity: 0.7;
-}
+/* readtime の絵文字は除去。「分」のサフィックスで読了時間と分かる */
 .bm-column-card-meta .bm-column-card-date {
   margin-top: 0;
   padding-top: 0;

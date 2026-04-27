@@ -217,12 +217,37 @@
 
 .mpc-hero-meta {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   flex-wrap: wrap;
   font-size: 13px;
   color: var(--mpc-ink-mute);
   letter-spacing: 0.05em;
   animation: mpcFadeUp 0.7s ease-out 0.45s both;
+}
+.mpc-hero-meta > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  position: relative;
+}
+.mpc-hero-meta > span + span::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  width: 1px;
+  height: 11px;
+  background: currentColor;
+  opacity: 0.3;
+  transform: translateY(-50%);
+}
+.mpc-meta-label {
+  font-family: "Noto Serif JP", serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--mpc-gold);
+  text-transform: none;
 }
 .mpc-scroll-guide {
   display: block;
@@ -394,11 +419,14 @@
   position: relative;
 }
 .mpc-logo-item--accent::after {
-  content: "★";
+  content: "";
   position: absolute;
-  top: -4px;
-  right: -16px;
-  font-size: 14px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 1px;
+  background: var(--mpc-accent);
 }
 @keyframes mpcMarquee {
   from { transform: translateX(0); }
@@ -597,10 +625,7 @@
   box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
-.mpc-criteria-icon {
-  font-size: 28px;
-  line-height: 1;
-}
+/* .mpc-criteria-icon は廃止 (絵文字アイコン除去) */
 .mpc-criteria-card h3 {
   font-family: "Noto Serif JP", serif;
   font-size: 16px;
@@ -796,6 +821,27 @@
 .mpc-company-card-strength li,
 .mpc-company-card-weakness li {
   margin: 4px 0;
+  padding-left: 1.4em;
+  position: relative;
+}
+/* 編集記号: 強み = +, 弱み = − (絵文字 ✓/△ の代替) */
+.mpc-company-card-strength li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  color: #2ea043;
+}
+.mpc-company-card-weakness li::before {
+  content: "−";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  color: #c66c00;
 }
 .mpc-company-card-strength strong,
 .mpc-company-card-weakness strong {
@@ -858,10 +904,7 @@
   box-shadow: 0 10px 24px -12px rgba(232, 85, 0, 0.3);
   border-left-color: var(--mpc-accent-dark);
 }
-.mpc-map-pin-icon {
-  font-size: 28px;
-  line-height: 1;
-}
+/* .mpc-map-pin-icon は廃止 (絵文字アイコン除去) */
 .mpc-map-pin-title {
   font-family: "Noto Serif JP", serif;
   font-size: 16px;
