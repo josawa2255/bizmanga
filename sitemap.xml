@@ -106,6 +106,13 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- 漫画制作会社 比較ガイド（2026-04-27 公開、最大ブルーオーシャンKW対応） -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/manga-production-company</loc>
+    <lastmod>2026-04-27</lastmod>
+    <priority>1.0</priority>
+  </url>
+
   <!-- 用途別LP（2026-04-26 公開） -->
   <url>
     <loc>https://bizmanga.contentsx.jp/product-manga</loc>

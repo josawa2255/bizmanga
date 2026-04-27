@@ -32,6 +32,7 @@
         heading: 'ビズマンガを知る',
         headingEn: 'About BizManga',
         items: [
+          { label: '漫画制作会社 比較',  labelEn: 'Company Comparison', href: '/manga-production-company' },
           { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
           { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
           { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' }
