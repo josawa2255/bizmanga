@@ -105,36 +105,108 @@ body {
   -webkit-backdrop-filter: blur(8px);
   padding: 16px 0;
 }
+/* === マンガ吹き出し風 フィルターボタン === */
 .filter-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 10px 22px;
-  border-radius: 50px;
-  border: 2px solid #e0d6cc;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 24px;
+  border: 2px solid #1a1a1a;
   background: #fff;
-  color: #666;
-  font-size: 13px; font-weight: 700;
+  color: #1a1a1a;
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif;
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s ease;
   white-space: nowrap;
+  box-shadow: 3px 3px 0 #1a1a1a;
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.16s ease,
+              background 0.16s ease,
+              color 0.16s ease;
+  margin-bottom: 12px; /* 吹き出し尾の表示領域 */
+}
+/* 吹き出しの尾（外側=黒い縁） */
+.filter-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 26px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 12px 0 0;
+  border-color: #1a1a1a transparent transparent transparent;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(2px 2px 0 transparent);
+}
+/* 吹き出しの尾（内側=本体色）*/
+.filter-btn::before {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 9px 0 0;
+  border-color: #fff transparent transparent transparent;
+  z-index: 1;
+  transition: border-color 0.16s ease;
 }
 .filter-btn:hover {
-  border-color: #EB5200;
-  color: #EB5200;
-  background: #FFF9F4;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 #1a1a1a;
+  background: #fff9f4;
+}
+.filter-btn:hover::after {
+  transform: translateY(2px) rotate(-3deg);
 }
 .filter-btn.active {
   background: #EB5200;
-  border-color: #EB5200;
   color: #fff;
+  transform: translate(0, 0);
+  box-shadow: 4px 4px 0 #1a1a1a;
+}
+.filter-btn.active::after {
+  border-color: #1a1a1a transparent transparent transparent;
+  transform: translateY(0) rotate(0);
+  animation: filterTailWag 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.filter-btn.active::before {
+  border-color: #EB5200 transparent transparent transparent;
+}
+@keyframes filterTailWag {
+  0%   { transform: translateY(-4px) rotate(8deg); }
+  50%  { transform: translateY(2px) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0); }
 }
 .filter-btn .filter-count {
+  font-family: "Hiragino Sans", sans-serif;
   font-size: 11px;
-  background: rgba(0,0,0,0.08);
-  padding: 2px 7px;
+  font-weight: 800;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 2px 8px;
   border-radius: 10px;
+  letter-spacing: 0.04em;
+  min-width: 24px;
+  text-align: center;
+  transition: background 0.16s ease, color 0.16s ease;
 }
 .filter-btn.active .filter-count {
-  background: rgba(255,255,255,0.25);
+  background: #fff;
+  color: #EB5200;
+}
+.filter-btn:hover .filter-count {
+  background: #EB5200;
+  color: #fff;
+}
+.filter-btn.active:hover .filter-count {
+  background: #fff;
+  color: #EB5200;
 }
 
 /* Works Grid */
@@ -1428,7 +1500,11 @@ body {
     gap: 6px;
     padding: 10px 4px;
   }
-  .filter-btn { padding: 7px 14px; font-size: 12px; }
+  .filter-btn { padding: 8px 14px; font-size: 12.5px; box-shadow: 2px 2px 0 #1a1a1a; margin-bottom: 10px; }
+  .filter-btn::after { left: 18px; border-width: 7px 9px 0 0; bottom: -7px; }
+  .filter-btn::before { left: 20px; border-width: 5px 6px 0 0; bottom: -5px; }
+  .filter-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 #1a1a1a; }
+  .filter-btn .filter-count { padding: 1px 6px; font-size: 10px; min-width: 20px; }
   .works-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;

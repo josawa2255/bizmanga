@@ -2804,27 +2804,104 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   -webkit-backdrop-filter: blur(8px);
   padding: 16px 0;
 }
+/* === マンガ吹き出し風 (works.css と統一) === */
 .bm-filter-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 10px 22px;
-  border-radius: 50px;
-  border: 2px solid var(--bm-border);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 24px;
+  border: 2px solid #1a1a1a;
   background: #fff;
-  color: var(--bm-text-muted);
-  font-size: 13px; font-weight: 700;
+  color: #1a1a1a;
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif;
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s;
   white-space: nowrap;
+  box-shadow: 3px 3px 0 #1a1a1a;
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.16s ease,
+              background 0.16s ease,
+              color 0.16s ease;
+  margin-bottom: 12px;
+}
+.bm-filter-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 26px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 12px 0 0;
+  border-color: #1a1a1a transparent transparent transparent;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bm-filter-btn::before {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 9px 0 0;
+  border-color: #fff transparent transparent transparent;
+  z-index: 1;
+  transition: border-color 0.16s ease;
 }
 .bm-filter-btn:hover {
-  border-color: var(--bm-accent);
-  color: var(--bm-accent);
-  background: var(--bm-bg-light);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 #1a1a1a;
+  background: #fff9f4;
+}
+.bm-filter-btn:hover::after {
+  transform: translateY(2px) rotate(-3deg);
 }
 .bm-filter-btn.active {
   background: var(--bm-accent);
-  border-color: var(--bm-accent);
   color: #fff;
+  transform: translate(0, 0);
+  box-shadow: 4px 4px 0 #1a1a1a;
+}
+.bm-filter-btn.active::after {
+  transform: translateY(0) rotate(0);
+  animation: bmFilterTailWag 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bm-filter-btn.active::before {
+  border-color: var(--bm-accent) transparent transparent transparent;
+}
+@keyframes bmFilterTailWag {
+  0%   { transform: translateY(-4px) rotate(8deg); }
+  50%  { transform: translateY(2px) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+.bm-filter-btn .filter-count {
+  font-family: "Hiragino Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.04em;
+  min-width: 24px;
+  text-align: center;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.bm-filter-btn.active .filter-count {
+  background: #fff;
+  color: var(--bm-accent);
+}
+.bm-filter-btn:hover .filter-count {
+  background: var(--bm-accent);
+  color: #fff;
+}
+.bm-filter-btn.active:hover .filter-count {
+  background: #fff;
+  color: var(--bm-accent);
 }
 
 /* Works Grid — book.asahi.com 風カードレイアウト */
@@ -4500,10 +4577,18 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     grid-template-columns: repeat(3, 1fr);
   }
   .bm-filter-btn {
-    padding: 8px 0;
-    font-size: 12px;
+    padding: 9px 14px;
+    font-size: 12.5px;
     justify-content: center;
-    border-width: 1.5px;
+    border-width: 2px;
+    box-shadow: 2px 2px 0 #1a1a1a;
+    margin-bottom: 10px;
+  }
+  .bm-filter-btn::after { left: 18px; border-width: 7px 9px 0 0; bottom: -7px; }
+  .bm-filter-btn::before { left: 20px; border-width: 5px 6px 0 0; bottom: -5px; }
+  .bm-filter-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 #1a1a1a;
   }
 
   /* Hero: モバイルで4-5行目も表示 */
