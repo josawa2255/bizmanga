@@ -180,7 +180,21 @@
     titleEl.textContent = title;
     while (bodyEl.firstChild) bodyEl.removeChild(bodyEl.firstChild);
     Array.from(detailNode.children).forEach((child) => {
-      bodyEl.appendChild(child.cloneNode(true));
+      const clone = child.cloneNode(true);
+      // bm-fuwa.js が main p に data-fuwa を付けて opacity:0 にしているため、
+      // 複製した要素から fuwa 関連属性をすべて剥がす（IntersectionObserver は
+      // 元要素しか追跡しないので、クローン側に残ると永遠に非表示になる）
+      clone.removeAttribute('data-fuwa');
+      clone.removeAttribute('data-fuwa-delay');
+      clone.removeAttribute('data-fuwa-float');
+      clone.removeAttribute('data-fuwa-parallax');
+      clone.querySelectorAll('[data-fuwa], [data-fuwa-delay], [data-fuwa-float], [data-fuwa-parallax]').forEach((n) => {
+        n.removeAttribute('data-fuwa');
+        n.removeAttribute('data-fuwa-delay');
+        n.removeAttribute('data-fuwa-float');
+        n.removeAttribute('data-fuwa-parallax');
+      });
+      bodyEl.appendChild(clone);
     });
     detail.hidden = false;
     if (railLeft) {
