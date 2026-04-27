@@ -133,6 +133,10 @@
 
 {{comment_section}}
 
+{{about_section}}
+
+{{usecase_section}}
+
       <section class="bm-work-detail-section">
         <h2>ページ一覧</h2>
         <div class="bm-work-detail-gallery">
@@ -140,14 +144,17 @@
         </div>
       </section>
 
+{{related_section}}
+
       <div style="text-align: center;">
         <a href="/works" class="bm-work-detail-back">&larr; 制作事例一覧に戻る</a>
       </div>
 
       <aside class="bm-work-detail-cta">
-        <h3>こんな漫画を作りたい方へ</h3>
-        <p>ビジネス課題に合わせたオリジナル漫画を制作します。お気軽にご相談ください。</p>
-        <a href="/contact">お問い合わせ・見積もり相談</a>
+        <h3>こんな{{category}}マンガを作りたい方へ</h3>
+        <p>{{cta_lead}}業界相場の約 1/5 のコストで、最短 2 週間納品。125 項目品質チェック付き。お見積もりは無料、初回相談は 30 分から承ります。</p>
+        <a href="/contact" class="bm-work-detail-cta-btn">お問い合わせ・見積もり相談</a>
+        <p class="bm-work-detail-cta-sub">関連用途のサービス紹介ページ: {{cta_lp_link}}</p>
       </aside>
     </div>
   </main>
