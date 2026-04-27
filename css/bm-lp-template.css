@@ -1780,3 +1780,66 @@
   .pm-case-title { font-size: 17px; }
   .pm-case-point { font-size: 13px; }
 }
+
+/* === 事例カード モーダルトリガー（button化） === */
+.pm-case-thumb-button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f5f1e8;
+  max-width: 220px;
+  margin: 0 auto;
+  width: 100%;
+}
+.pm-case-thumb-button:focus-visible {
+  outline: 2px solid #e85500;
+  outline-offset: 3px;
+}
+.pm-case-title-button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.pm-case-title-button:hover { color: #e85500; }
+.pm-case-more-button {
+  appearance: none;
+  border: 0;
+  background: #fff9f4;
+  color: #e85500;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.16s ease, transform 0.16s ease;
+  margin: 8px 0 4px;
+}
+.pm-case-more-button:hover {
+  background: #ffeede;
+  transform: translateX(2px);
+}
+.pm-case-detail-link {
+  display: inline-block;
+  margin-left: 12px;
+  font-size: 12px;
+  color: #b08a4a;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+.pm-case-detail-link:hover { color: #c54600; }

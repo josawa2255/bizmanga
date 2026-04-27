@@ -95,7 +95,11 @@ def html_escape(s):
 
 
 def render_card(work):
-    """1事例分の静的 HTML カード。"""
+    """1事例分の静的 HTML カード。
+    モーダル表示用に [data-work-modal-id] + data-work (JSON) を付与。
+    SEO のため詳細ページリンクも併存。
+    """
+    import json as _json
     wid = work.get("id", "")
     title = html_escape(work.get("title_ja", ""))
     subtitle = html_escape(work.get("subtitle_ja", "") or "")
@@ -110,7 +114,22 @@ def render_card(work):
     thumb = work.get("thumbnail") or ""
     cats_display = " / ".join(html_escape(c) for c in get_work_categories(work))
 
-    # サムネ ALT 文言: 作品名 + クライアント
+    # bm-work-modal.js に渡す JSON データ（必要最小限）
+    work_json = _json.dumps({
+        "id": work.get("id", ""),
+        "title_ja": work.get("title_ja", ""),
+        "category": (get_work_categories(work) or [""])[0],
+        "pages": work.get("pages", 0),
+        "spec": work.get("spec", {}),
+        "media": work.get("media", []),
+        "point": work.get("point", ""),
+        "comment": work.get("comment", ""),
+        "gallery": work.get("gallery", []),
+        "view_type": work.get("view_type", "spread"),
+    }, ensure_ascii=False)
+    work_attr = work_json.replace("&", "&amp;").replace("'", "&#39;").replace('"', "&quot;")
+
+    # サムネ ALT 文言
     alt = f"{title}（{client}）" if client else title
 
     parts = [
@@ -118,12 +137,14 @@ def render_card(work):
     ]
     if thumb:
         parts.append(
-            f'            <a class="pm-case-thumb" href="/works/{wid}" aria-label="{title} の詳細を見る">'
+            f'            <button type="button" class="pm-case-thumb pm-case-thumb-button"'
+            f' data-work-modal-id="{html_escape(wid)}" data-work="{work_attr}"'
+            f' aria-label="{title} の漫画を見る">'
         )
         parts.append(
             f'              <img src="{html_escape(thumb)}" alt="{html_escape(alt)}" loading="lazy" width="240" height="300">'
         )
-        parts.append("            </a>")
+        parts.append("            </button>")
     parts.append('            <div class="pm-case-body">')
     parts.append(
         f'              <span class="pm-case-meta">{cats_display}'
@@ -132,7 +153,10 @@ def render_card(work):
         + "</span>"
     )
     parts.append(f'              <h3 class="pm-case-title">')
-    parts.append(f'                <a href="/works/{wid}">{title}</a>')
+    parts.append(
+        f'                <button type="button" class="pm-case-title-button"'
+        f' data-work-modal-id="{html_escape(wid)}" data-work="{work_attr}">{title}</button>'
+    )
     parts.append(f"              </h3>")
     if client:
         parts.append(f'              <p class="pm-case-client">クライアント: {client}'
@@ -144,7 +168,14 @@ def render_card(work):
         parts.append(
             f'              <blockquote class="pm-case-comment">「{comment}」</blockquote>'
         )
-    parts.append(f'              <a class="pm-case-more" href="/works/{wid}">この事例を詳しく見る →</a>')
+    parts.append(
+        f'              <button type="button" class="pm-case-more pm-case-more-button"'
+        f' data-work-modal-id="{html_escape(wid)}" data-work="{work_attr}">'
+        f'漫画を読む（モーダル） ▶</button>'
+    )
+    parts.append(
+        f'              <a class="pm-case-detail-link" href="/works/{html_escape(wid)}">詳細ページへ →</a>'
+    )
     parts.append("            </div>")
     parts.append("          </article>")
     return "\n".join(parts)
