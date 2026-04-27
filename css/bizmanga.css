@@ -5173,7 +5173,7 @@ html { scroll-behavior: smooth; }
 .bm-floating-comics-bg {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
 }
@@ -5214,11 +5214,7 @@ html { scroll-behavior: smooth; }
   .bm-floating-comic { animation: none !important; }
 }
 
-/* 本文・ヘッダー・フッターを背景より前面に（z-index 衝突防止） */
-.bm-header,
-main,
-.bm-footer,
-footer {
-  position: relative;
-  z-index: 1;
+/* 浮遊背景がある場合のみ body に stacking context を作る（他ページに影響なし） */
+body:has(> .bm-floating-comics-bg) {
+  isolation: isolate;
 }
