@@ -338,8 +338,37 @@
   letter-spacing: 0.05em;
   border: 1.5px solid transparent;
 }
-.pm-btn--ghost { background: transparent; color: #1a1a1a; border-color: #1a1a1a; }
-.pm-btn--ghost:hover { background: #1a1a1a; color: #fff; }
+/* ヘッダーお問い合わせ(.bm-nav-cta)と同じ：オレンジアウトライン+スイープ塗り */
+.pm-btn--ghost {
+  background: transparent;
+  color: var(--bm-accent);
+  border: none;
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 0;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+.pm-btn--ghost::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--bm-accent);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
+}
+.pm-btn--ghost:hover {
+  color: #fff;
+  transform: scale(1.06);
+  outline-color: var(--bm-accent);
+  box-shadow: 4px 5px 17px -4px rgba(var(--bm-accent-rgb), 0.5);
+}
+.pm-btn--ghost:hover::before { width: 260%; }
 
 /* CTAボタン: bm-fab と同じ slide+icon 演出 */
 .pm-cta-btn {
