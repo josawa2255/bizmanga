@@ -115,6 +115,38 @@
     update();
   }
 
+  // ---------- 左 sticky 目次: 現在地ハイライト (a16z風) ----------
+  function initToc() {
+    var toc = document.querySelector('.mpc-toc');
+    if (!toc) return;
+    var links = toc.querySelectorAll('.mpc-toc-list a[data-toc]');
+    if (!links.length || !('IntersectionObserver' in window)) return;
+
+    var linkMap = {};
+    links.forEach(function (a) { linkMap[a.dataset.toc] = a; });
+
+    function setActive(id) {
+      links.forEach(function (a) { a.classList.remove('is-active'); });
+      var active = linkMap[id];
+      if (active) active.classList.add('is-active');
+    }
+
+    // ビューポート上部 30%〜70% に入ったセクションを「現在地」とみなす
+    var io = new IntersectionObserver(function (entries) {
+      // 最も上にあって交差中のセクションを active に
+      var top = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return { id: e.target.id, y: e.boundingClientRect.top }; })
+        .sort(function (a, b) { return a.y - b.y; })[0];
+      if (top) setActive(top.id);
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 });
+
+    Object.keys(linkMap).forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) io.observe(sec);
+    });
+  }
+
   // ---------- 比較表: sticky ヘッダー対応の補正 ----------
   function initStickyTable() {
     var table = document.querySelector('.mpc-table');
@@ -136,6 +168,7 @@
     initCounters();
     initFixBtn();
     initStickyTable();
+    initToc();
   }
 
   if (document.readyState === 'loading') {

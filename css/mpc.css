@@ -1230,3 +1230,126 @@
   .mpc-map-pin { padding: 14px; }
   .mpc-map-pin-title { font-size: 14px; }
 }
+
+/* ============================================================
+   左 sticky 目次 (a16z Big Ideas in Tech 風)
+   - 1280px 以上で表示。コンテナ(1180px)の左側に固定配置
+   - 現在地ハイライトは js/mpc.js の IntersectionObserver で .is-active 付与
+   - hover でラベル表示が伸びる
+============================================================ */
+.mpc-toc {
+  display: none; /* 既定で非表示。1280px以上で表示 */
+}
+
+@media (min-width: 1280px) {
+  .mpc-toc {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: fixed;
+    top: 50%;
+    left: max(20px, calc((100vw - 1180px) / 2 - 220px));
+    transform: translateY(-50%);
+    z-index: 8;
+    pointer-events: none; /* 子のリンクのみ受け取る */
+  }
+  .mpc-toc-eyebrow {
+    font-family: "Noto Serif JP", serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--mpc-gold);
+    margin-bottom: 6px;
+    pointer-events: none;
+  }
+  .mpc-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mpc-toc-list a {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--mpc-ink-mute);
+    font-family: "Noto Serif JP", serif;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    transition: color 0.32s ease, gap 0.32s ease, opacity 0.32s ease;
+    opacity: 0.6;
+  }
+  .mpc-toc-list a:hover {
+    color: var(--mpc-ink);
+    gap: 16px;
+    opacity: 1;
+  }
+  .mpc-toc-num {
+    font-family: "Noto Serif JP", serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: inherit;
+    width: 14px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .mpc-toc-label {
+    position: relative;
+    padding-left: 14px;
+  }
+  .mpc-toc-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 8px;
+    height: 1px;
+    background: currentColor;
+    transform: translateY(-50%);
+    transition: width 0.32s ease, background 0.32s ease;
+  }
+  .mpc-toc-list a.is-active {
+    color: var(--mpc-ink);
+    opacity: 1;
+    font-weight: 700;
+  }
+  .mpc-toc-list a.is-active .mpc-toc-label::before {
+    width: 22px;
+    background: var(--mpc-accent);
+  }
+}
+
+/* ============================================================
+   ヒーロー直下 methodology 行 (RTINGS / シンフィールド風)
+============================================================ */
+.mpc-hero-methodology {
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--mpc-ink-mute);
+  letter-spacing: 0.02em;
+  max-width: 580px;
+  font-family: "Noto Serif JP", serif;
+  font-style: italic;
+  position: relative;
+  padding-left: 16px;
+  animation: mpcFadeUp 0.7s ease-out 0.55s both;
+}
+.mpc-hero-methodology::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--mpc-gold);
+  opacity: 0.5;
+}
+@media (max-width: 560px) {
+  .mpc-hero-methodology { font-size: 11.5px; max-width: 100%; }
+}
