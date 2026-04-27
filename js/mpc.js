@@ -131,9 +131,8 @@
       if (active) active.classList.add('is-active');
     }
 
-    // ビューポート上部 30%〜70% に入ったセクションを「現在地」とみなす
+    // ビューポート上部 30〜45% に入ったセクションを「現在地」とみなす
     var io = new IntersectionObserver(function (entries) {
-      // 最も上にあって交差中のセクションを active に
       var top = entries
         .filter(function (e) { return e.isIntersecting; })
         .map(function (e) { return { id: e.target.id, y: e.boundingClientRect.top }; })
@@ -145,6 +144,18 @@
       var sec = document.getElementById(id);
       if (sec) io.observe(sec);
     });
+
+    // 比較表 (max-width: 1280px) は TOC と幅で被るため、
+    // 表示中だけ TOC を左にスライドアウトさせる
+    var comparison = document.getElementById('comparison');
+    if (comparison) {
+      var tuckIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          toc.classList.toggle('is-tucked', e.isIntersecting);
+        });
+      }, { rootMargin: '-10% 0px -10% 0px', threshold: 0 });
+      tuckIO.observe(comparison);
+    }
   }
 
   // ---------- 比較表: sticky ヘッダー対応の補正 ----------

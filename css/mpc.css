@@ -1276,6 +1276,14 @@
     transform: translateY(-50%);
     z-index: 8;
     pointer-events: none; /* 子のリンクのみ受け取る */
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+  }
+  /* 比較表セクション (max-width: 1280px) が画面内にあるとTOCと幅が
+     被るため、JSで .is-tucked を付けて左へスライドアウト */
+  .mpc-toc.is-tucked {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-130%);
+    visibility: hidden;
   }
   .mpc-toc-eyebrow {
     font-family: "Noto Serif JP", serif;
