@@ -1704,20 +1704,22 @@
   margin-top: 24px;
 }
 .pm-case-card {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   padding: 22px;
   background: #fff;
   border: 1px solid #ebe5d7;
   border-left: 3px solid #e85500;
-  align-items: start;
 }
 .pm-case-thumb {
   display: block;
   overflow: hidden;
   border-radius: 4px;
   background: #f5f1e8;
+  max-width: 220px;
+  margin: 0 auto;
+  width: 100%;
 }
 .pm-case-thumb img {
   width: 100%;
@@ -1773,8 +1775,8 @@
 .pm-case-more:hover { color: #c54600; }
 .pm-cases-foot { text-align: center; margin: 28px 0 0; }
 @media (max-width: 720px) {
-  .pm-case-card { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
-  .pm-case-thumb { max-width: 240px; margin: 0 auto; }
+  .pm-case-card { padding: 16px; }
+  .pm-case-thumb { max-width: 200px; }
   .pm-case-title { font-size: 17px; }
   .pm-case-point { font-size: 13px; }
 }
