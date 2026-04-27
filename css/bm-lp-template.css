@@ -285,6 +285,21 @@
   .pm-masthead-cta .pm-btn--ghost { text-align: center; width: 100%; }
 }
 
+/* iPhone等 360-520px: 4フォーマットカードは1列に。文字あふれ防止 */
+@media (max-width: 520px) {
+  .pm-formats { grid-template-columns: 1fr; gap: 10px; }
+  .pm-format-item {
+    grid-template-columns: 32px 1fr;
+    column-gap: 14px;
+    padding: 16px 18px;
+    align-items: center;
+  }
+  .pm-format-icon { grid-row: 1 / span 3; }
+  .pm-format-name { font-size: 17px; }
+  .pm-format-en { font-size: 10px; letter-spacing: 0.18em; margin: 0; }
+  .pm-format-use { font-size: 13px; line-height: 1.7; margin-top: 2px; }
+}
+
 /* ヒーロー画像（4:3 編集印刷比率にトリミング・誌面感重視） */
 .pm-hero-img-wrap {
   display: block;
@@ -1371,6 +1386,34 @@
   }
 }
 
+/* iPhone等 360-520px: Pain/Merit カードのpadding/gapを詰めてはみ出し防止 */
+@media (max-width: 520px) {
+  .pm-pain-item,
+  .pm-merit-item {
+    padding: 20px 18px 22px;
+    column-gap: 14px;
+  }
+  .pm-pain-num,
+  .pm-merit-num {
+    font-size: 32px;
+  }
+  .pm-pain-title,
+  .pm-merit-title {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .pm-pain-text,
+  .pm-merit-text {
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+  .pm-pain-item[data-pm-detail]::after,
+  .pm-merit-item[data-pm-detail]::after {
+    margin-top: 14px;
+    font-size: 11px;
+  }
+}
+
 /* ============================================================
    関連LPグリッド（孤立解消・内部リンク強化）
    ============================================================ */
@@ -1864,11 +1907,25 @@
   .pm-related-card,
   .pm-case-card,
   .pm-case-body,
+  .pm-pain-item,
+  .pm-pain-item *,
+  .pm-merit-item,
+  .pm-merit-item *,
   .mpc-case-card,
   .mpc-criteria-card,
   .mpc-pain-card,
   .mpc-pain-entry {
     min-width: 0;
+  }
+
+  /* 念押し: SP では Pain/Merit の見出し・本文を強制折り返し可能に */
+  .pm-pain-title,
+  .pm-pain-text,
+  .pm-merit-title,
+  .pm-merit-text {
+    word-break: normal;
+    overflow-wrap: anywhere;
+    line-break: strict;
   }
 
   /* nowrap 解除（漫画吹き出しフィルターも、長いラベル時は折り返し許可） */
