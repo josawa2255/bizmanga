@@ -22,6 +22,32 @@
   var WORKS_API = 'https://cms.contentsx.jp/wp-json/contentsx/v1/works?site=bizmanga';
   var BIZLIBRARY_BASE = '/biz-library?manga=';
 
+  // LP のカテゴリに対応する旧カテゴリ名のマッピング（build-lp-cases.py と統一）
+  var LP_CATEGORY_ALIASES = {
+    '商品紹介':   ['商品紹介', '紹介'],
+    '採用':       ['採用'],
+    '広告':       ['広告', '集客', 'IP'],
+    '会社紹介':   ['会社紹介', '企業紹介', 'ブランド'],
+    '営業資料':   ['営業資料', '営業'],
+    '研修':       ['研修'],
+    'インバウンド': ['インバウンド'],
+    'IR':         ['IR']
+  };
+
+  // work が指定カテゴリにマッチするか（categories 配列 + 旧カテゴリ alias 対応）
+  function workMatchesCategory(w, category) {
+    var aliases = LP_CATEGORY_ALIASES[category] || [category];
+    // 1. categories 配列があれば優先（WP plugin v2026-04-27 以降）
+    if (Array.isArray(w.categories)) {
+      for (var i = 0; i < w.categories.length; i++) {
+        if (aliases.indexOf(w.categories[i]) !== -1) return true;
+      }
+      return false;
+    }
+    // 2. fallback: category 単数
+    return aliases.indexOf(w.category) !== -1;
+  }
+
   // 同一APIへの fetch を1回にまとめる簡易キャッシュ
   var cachedLibraryPromise = null;
   var cachedWorksPromise = null;
@@ -82,7 +108,7 @@
           renderMessage(grid, '作品データが取得できませんでした。', 'ビズ書庫を見る', '/biz-library');
           return;
         }
-        var filtered = works.filter(function(w) { return w.category === category; });
+        var filtered = works.filter(function(w) { return workMatchesCategory(w, category); });
         if (filtered.length === 0) {
           renderMessage(grid, 'このカテゴリの作品はまだ登録されていません。', 'ビズ書庫で全作品を見る', '/biz-library');
           return;
@@ -176,7 +202,7 @@
           renderMessage(grid, '事例データが取得できませんでした。', '制作事例一覧を見る', '/works');
           return;
         }
-        var filtered = works.filter(function(w) { return w.category === category; });
+        var filtered = works.filter(function(w) { return workMatchesCategory(w, category); });
         if (filtered.length === 0) {
           renderMessage(grid, 'このカテゴリの事例はまだ登録されていません。', '制作事例一覧を見る', '/works');
           return;
