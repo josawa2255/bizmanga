@@ -409,13 +409,18 @@
 .mpc-pain-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
+/* 編集誌面風の2カラム: [番号(縦に大きく)] | [見出し→本文] */
 .mpc-pain-card {
   display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 20px;
-  padding: 28px;
+  grid-template-columns: 96px 1fr;
+  grid-template-areas:
+    "num title"
+    "num text";
+  column-gap: 32px;
+  row-gap: 14px;
+  padding: 36px 40px;
   background: #fff;
   border: 1px solid var(--mpc-line);
   border-left: 4px solid var(--mpc-accent);
@@ -423,37 +428,56 @@
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  position: relative;
 }
 .mpc-pain-card.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
 .mpc-pain-num {
+  grid-area: num;
+  align-self: start;
   font-family: "Noto Serif JP", serif;
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 900;
   color: var(--mpc-accent);
-  line-height: 1;
-  letter-spacing: 0.04em;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  /* 編集誌面の章番号らしく、縦の罫線で見出しを支える */
+  padding-right: 24px;
+  border-right: 1px solid color-mix(in srgb, var(--mpc-accent) 25%, transparent);
 }
 .mpc-pain-title {
+  grid-area: title;
   font-family: "Noto Serif JP", serif;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 900;
   color: var(--mpc-ink);
-  margin: 0 0 12px;
-  line-height: 1.5;
+  margin: 0;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  /* 日本語の禁則を有効化、英数の不要な改行を抑制 */
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-wrap: pretty;
 }
 .mpc-pain-text {
-  font-size: 14.5px;
+  grid-area: text;
+  font-size: 15px;
   line-height: 2;
   color: var(--mpc-ink-soft);
   margin: 0;
+  letter-spacing: 0.01em;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-wrap: pretty;
 }
 .mpc-pain-text strong {
   color: var(--mpc-ink);
   font-weight: 700;
-  background: linear-gradient(transparent 65%, rgba(232, 85, 0, 0.16) 65%);
+  background: linear-gradient(transparent 65%, rgba(232, 85, 0, 0.18) 65%);
   padding: 0 4px;
 }
 
@@ -1007,9 +1031,26 @@
   .mpc-hero { padding: 80px 0 60px; }
   .mpc-pain-card {
     grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-areas:
+      "num"
+      "title"
+      "text";
+    column-gap: 0;
+    row-gap: 12px;
+    padding: 24px 22px;
   }
-  .mpc-pain-num { font-size: 48px; }
+  .mpc-pain-num {
+    font-size: 48px;
+    padding-right: 0;
+    padding-bottom: 8px;
+    border-right: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--mpc-accent) 25%, transparent);
+    width: fit-content;
+    padding-left: 2px;
+    padding-right: 24px;
+  }
+  .mpc-pain-title { font-size: 18px; }
+  .mpc-pain-text { font-size: 14.5px; line-height: 1.95; }
   .mpc-criteria-grid { grid-template-columns: 1fr 1fr; }
   .mpc-criteria-card { padding: 16px; }
   .mpc-criteria-card h3 { font-size: 14.5px; }
