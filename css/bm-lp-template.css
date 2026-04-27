@@ -1780,3 +1780,93 @@
   .pm-case-title { font-size: 17px; }
   .pm-case-point { font-size: 13px; }
 }
+
+/* ============================================================
+   iOS Safari スマホ表示パッチ (2026-04-27)
+   - clamp() の vw 単位を控えめに
+   - white-space: nowrap で溢れる要素の解除
+   - flex / grid 子要素に min-width: 0
+   - ヒーロー / セクション見出しで折り返しを許可
+   ============================================================ */
+@media (max-width: 879px) {
+  /* ヒーロータイトル: vw 系 clamp を抑え、必ず折り返す */
+  .pm-hero-title {
+    font-size: clamp(22px, 6.5vw, 32px) !important;
+    line-height: 1.4;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  .pm-hero-title span {
+    white-space: normal !important;
+    display: inline;
+  }
+  .pm-hero-title br { display: inline; }
+
+  /* マストヘッド lead / セクション見出し */
+  .pm-h2,
+  .pm-section-title,
+  .mpc-h1,
+  .mpc-section-title {
+    font-size: clamp(20px, 5.5vw, 28px) !important;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+
+  .pm-lead,
+  .mpc-lead,
+  .mpc-section-lead {
+    font-size: 14.5px !important;
+    line-height: 1.85;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* flex/grid 子要素はテキストオーバーフロー回避のため min-width: 0 */
+  .pm-format-item,
+  .pm-format-item *,
+  .pm-faq-item,
+  .pm-flow-step-row,
+  .pm-flow-step-info,
+  .pm-related-card,
+  .pm-case-card,
+  .pm-case-body,
+  .mpc-case-card,
+  .mpc-criteria-card,
+  .mpc-pain-card {
+    min-width: 0;
+  }
+
+  /* nowrap 解除（漫画吹き出しフィルターも、長いラベル時は折り返し許可） */
+  .filter-btn,
+  .bm-filter-btn {
+    white-space: normal;
+    max-width: 100%;
+  }
+
+  /* 比較表: モバイルで横スクロール可能 */
+  .mpc-table-wrap {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  /* 制作フローのステップタイトル */
+  .pm-flow-step-name,
+  .pm-flow-step-desc {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* ヒーロー overlay の右はみ出し防止 */
+  .pm-hero-overlay,
+  .mpc-hero .mpc-container {
+    right: 16px;
+    max-width: calc(100% - 32px);
+    box-sizing: border-box;
+  }
+}
+
+/* iOS Safari: 100vh をdvhに置換（URLバー考慮） */
+@supports (height: 100dvh) {
+  .work-detail-overlay { height: 100dvh; }
+}

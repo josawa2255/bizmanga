@@ -43,7 +43,24 @@ h1, h2, h3, h4, h5, h6,
 }
 /* overflow-x: hidden でスクロールバー幅起因の横溢れを防止
    clip は sticky を壊さないが古いWindows Edge で未サポートのため hidden を使用 */
-html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  overflow-x: hidden;
+  /* iOS Safari: 縦横回転時のテキスト自動拡大を抑止 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+/* iOS Safari: 全要素の box-sizing と word-wrap デフォルト */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  /* iOS の override 防止 */
+  -webkit-text-size-adjust: 100%;
+  /* 日本語の長い単語が flex/grid でオーバーフローしないように */
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
     -apple-system, BlinkMacSystemFont, sans-serif;
