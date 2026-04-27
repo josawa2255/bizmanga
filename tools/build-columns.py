@@ -317,6 +317,7 @@ def update_sitemap(columns):
         entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/column/{slug}</loc>\n"
+            f"    <lastmod>{date.today().isoformat()}</lastmod>\n"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>0.6</priority>\n"
             "  </url>"

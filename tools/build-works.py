@@ -26,6 +26,7 @@ import html
 import json
 import pathlib
 import re
+from datetime import date
 import sys
 import urllib.request
 
@@ -249,6 +250,7 @@ def update_sitemap(works):
         entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/works/{w['id']}</loc>\n"
+            f"    <lastmod>{date.today().isoformat()}</lastmod>\n"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>0.6</priority>\n"
             "  </url>"
