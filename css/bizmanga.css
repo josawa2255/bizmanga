@@ -5079,3 +5079,61 @@ html { scroll-behavior: smooth; }
     transition: none !important;
   }
 }
+
+/* ============================================================
+   bm-floating-comics: 漫画コマふわふわ背景（汎用・固定背景）
+   - position: fixed で常に画面に残る
+   - 8 用途別 LP / biz-library で利用
+   ============================================================ */
+.bm-floating-comics-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bm-floating-comic {
+  position: absolute;
+  border: 2px solid #1a1a1a;
+  background: #fff;
+  box-shadow: 4px 4px 0 #1a1a1a;
+  overflow: hidden;
+  opacity: 0.10;
+  will-change: transform;
+}
+.bm-floating-comic img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+/* 各コマ位置・回転 */
+.bm-floating-comic--1 { top: 6%;  left: -3%;  width: 200px; height: 110px; --rot: -12deg; transform: rotate(-12deg); animation: bmFloatDrift 14s ease-in-out infinite; animation-delay: 0s; }
+.bm-floating-comic--2 { top: 12%; right: 4%;  width: 180px; height: 100px; --rot: 8deg;   transform: rotate(8deg);   animation: bmFloatDrift 16s ease-in-out infinite; animation-delay: -3s; }
+.bm-floating-comic--3 { top: 38%; left: 2%;   width: 140px; height: 80px;  --rot: -6deg;  transform: rotate(-6deg);  animation: bmFloatDrift 13s ease-in-out infinite; animation-delay: -5s; }
+.bm-floating-comic--4 { top: 42%; right: -3%; width: 220px; height: 120px; --rot: 4deg;   transform: rotate(4deg);   animation: bmFloatDrift 15s ease-in-out infinite; animation-delay: -7s; }
+.bm-floating-comic--5 { bottom: 8%; left: 8%; width: 160px; height: 90px;  --rot: -3deg;  transform: rotate(-3deg);  animation: bmFloatDrift 17s ease-in-out infinite; animation-delay: -2s; }
+.bm-floating-comic--6 { bottom: 14%; right: -2%; width: 200px; height: 110px; --rot: 11deg; transform: rotate(11deg); animation: bmFloatDrift 14s ease-in-out infinite; animation-delay: -8s; }
+.bm-floating-comic--7 { top: 70%; left: 32%;  width: 150px; height: 84px;  --rot: -2deg;  transform: rotate(-2deg);  animation: bmFloatDrift 19s ease-in-out infinite; animation-delay: -4s; opacity: 0.07; }
+.bm-floating-comic--8 { top: 25%; left: 55%;  width: 140px; height: 80px;  --rot: 7deg;   transform: rotate(7deg);   animation: bmFloatDrift 18s ease-in-out infinite; animation-delay: -6s; opacity: 0.08; }
+@keyframes bmFloatDrift {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-18px) rotate(var(--rot, 0deg)); }
+}
+@media (max-width: 880px) {
+  .bm-floating-comic--3, .bm-floating-comic--4,
+  .bm-floating-comic--7, .bm-floating-comic--8 { display: none; }
+  .bm-floating-comic { opacity: 0.06 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bm-floating-comic { animation: none !important; }
+}
+
+/* 本文・ヘッダー・フッターを背景より前面に（z-index 衝突防止） */
+.bm-header,
+main,
+.bm-footer,
+footer {
+  position: relative;
+  z-index: 1;
+}
