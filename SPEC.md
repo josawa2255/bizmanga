@@ -546,6 +546,7 @@ WordPress で works を追加・更新したら以下いずれか:
 9. **⭐ works ヒーロー画像は `gallery[0]` を使う（`thumbnail` フィールドは使わない）** → WP API の `thumbnail` は 188x300 の自動生成サムネが返ることがあり、1200x630 として引き延ばすと画質劣化 + LCP要素として Lighthouse に認識されない。2026-04-21 に build-works.py を `gallery[0]` 優先に修正
 10. **⭐ 空のお客様コメントは「—」ではなくセクション自体を非表示に** → WP側に `comment` が未入力の場合は `<section>お客様コメント</section>` 全体をレンダリングしない。空欄ダミーは SEO (Helpful Content / E-E-A-T) 減点要因。2026-04-21 build-works.py で条件分岐化
 11. **⭐ メガメニューはモバイルで `position: static` に上書き必須** → `.bm-nav-megamenu` はデスクトップで `position: absolute` + `:hover/:focus-within` 展開。モバイルドロワー（`.bm-nav.open`）では絶対配置のままだと他ナビ項目（料金/コラム/FAQ）に被さってスクロールできない。`@media (max-width: 880px)` 内で `.bm-nav.open .bm-nav-megamenu` を `position: static; display: none;`、`.is-open` 時に `display: block` で展開し、`:hover/:focus-within` 由来のフロート展開を打ち消すこと。2026-04-26 修正
+12. **⭐ LP CASE STUDY は静的詳細を持つ作品だけに絞る** → `tools/build-lp-cases.py` が `/works/{slug}` リンクで CASE STUDY カードを生成するが、`build-works.py` は `show_site=="both"` の作品しか静的詳細ページを作らない。それ以外（`shohin-shokai` / `merumaga` 等）を CASE STUDY に出すと、404→`404.html` 内の自動リダイレクトで `/biz-library?manga={slug}` (漫画ビューア) に飛ばされる。`build-lp-cases.py` の `filter_for_lp` で `has_static_detail()` を必ず通すこと。2026-04-27 修正
 
 ## 15.1 セキュリティ・既知のリスク
 
