@@ -1307,6 +1307,10 @@
     letter-spacing: 0.08em;
     color: #b85a2b;
     text-align: right;
+    /* grid 親の場合、全幅にまたがって縦並び崩れを防止 */
+    grid-column: 1 / -1;
+    white-space: nowrap;
+    word-break: keep-all;
   }
   .pm-pain-item.is-open::after,
   .pm-merit-item.is-open::after {
