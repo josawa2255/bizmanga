@@ -1229,6 +1229,30 @@
   .mpc-map-grid { grid-template-columns: 1fr 1fr; }
   .mpc-map-pin { padding: 14px; }
   .mpc-map-pin-title { font-size: 14px; }
+
+  /* iPhone: hero-meta は縦積みでセパレータ罫線を消す。methodology はpadding詰める */
+  .mpc-hero-meta {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+  .mpc-hero-meta > span + span::before { display: none; }
+  .mpc-hero-methodology {
+    font-size: 11.5px;
+    line-height: 1.85;
+    margin-top: 14px;
+  }
+
+  /* hero タイトルを iPhone 向けに 1 サイズ落とす */
+  .mpc-h1 { font-size: clamp(26px, 7vw, 34px); line-height: 1.45; }
+  .mpc-eyebrow { font-size: 10px; letter-spacing: 0.24em; }
+
+  /* ロゴマーキー: テキストサイズ詰める */
+  .mpc-logo-item { font-size: 18px; }
+  .mpc-logo-item--accent { font-size: 21px; }
+
+  /* ピル比較表ボタン群: スワイプ案内テキスト小さく */
+  .mpc-table-swipe-hint { font-size: 11px; }
 }
 
 /* ============================================================
