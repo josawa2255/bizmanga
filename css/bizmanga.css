@@ -111,6 +111,10 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   display: flex; align-items: center; gap: 24px;
   min-width: 0; flex-shrink: 1;
 }
+/* EN モードは英単語が日本語より幅広い (Services / Pricing / Column) ため、
+   ナビ間隔と文字サイズをわずかに圧縮して言語スイッチ・CTAとの被りを回避 */
+html[lang="en"] .bm-nav { gap: 18px; }
+html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 .bm-header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bm-nav-link {
   position: relative;
