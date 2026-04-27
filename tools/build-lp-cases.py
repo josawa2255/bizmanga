@@ -43,7 +43,7 @@ LP_NAMES = {
     "ir-manga":       "IR漫画・周年史マンガ",
 }
 
-MAX_CASES_PER_LP = 3
+MAX_CASES_PER_LP = 100  # ライブラリ統合により全件表示
 
 
 def fetch_works():

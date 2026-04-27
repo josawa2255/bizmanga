@@ -823,7 +823,7 @@
 @media (min-width: 1180px) {
   .pm-shell {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr; /* 右ペイン削除に伴い 2 カラム化（左 1 / 本文 2）*/
     align-items: start;
     background: #fff;
   }
@@ -850,7 +850,7 @@
   .pm-main-col { min-width: 0; }
 }
 @media (min-width: 1380px) {
-  .pm-shell { grid-template-columns: 1fr 1fr 1fr; }
+  .pm-shell { grid-template-columns: 1fr 2fr; }
   .pm-rail--left { padding: 44px 32px 32px; }
   .pm-rail--right { padding: 44px 32px 32px; }
 }
