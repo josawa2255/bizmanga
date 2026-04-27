@@ -1866,7 +1866,8 @@
   .pm-case-body,
   .mpc-case-card,
   .mpc-criteria-card,
-  .mpc-pain-card {
+  .mpc-pain-card,
+  .mpc-pain-entry {
     min-width: 0;
   }
 

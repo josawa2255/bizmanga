@@ -405,80 +405,170 @@
   to { transform: translateX(-50%); }
 }
 
-/* ========== PAIN ========== */
-.mpc-pain-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-/* 編集誌面風の2カラム: [番号(縦に大きく)] | [見出し→本文] */
-.mpc-pain-card {
-  display: grid;
-  grid-template-columns: 96px 1fr;
-  grid-template-areas:
-    "num title"
-    "num text";
-  column-gap: 32px;
-  row-gap: 14px;
-  padding: 36px 40px;
-  background: #fff;
-  border: 1px solid var(--mpc-line);
-  border-left: 4px solid var(--mpc-accent);
-  align-items: start;
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+/* ========== PAIN — 編集誌面 (Investigative trade feature) ==========
+   AI的な「枠付きカード+大番号+マーカー強調」を解体し、
+   日経ビジネス／東洋経済の特集記事風に再構成。
+   ・ヘッダ: 罫線+日本語小タイトル+小英文の三段組
+   ・章番号: ローマ数字 Ⅰ Ⅱ Ⅲ をマージンに垂下、章扉の佇まい
+   ・本文: 枠を全廃、上下の細罫のみで章を区切る
+   ・引用見出し: 「」付き serif pull-quote
+   ・<strong>: 蛍光マーカー → 細い下線(50%)
+*/
+.mpc-pain--editorial {
+  background: var(--mpc-paper);
   position: relative;
 }
-.mpc-pain-card.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+
+/* ---- ヘッダ ---- */
+.mpc-pain-header {
+  margin: 0 0 64px;
+  max-width: 720px;
 }
-.mpc-pain-num {
-  grid-area: num;
-  align-self: start;
-  font-family: "Noto Serif JP", serif;
-  font-size: 72px;
-  font-weight: 900;
-  color: var(--mpc-accent);
-  line-height: 0.95;
-  letter-spacing: 0.02em;
-  /* 編集誌面の章番号らしく、縦の罫線で見出しを支える */
-  padding-right: 24px;
-  border-right: 1px solid color-mix(in srgb, var(--mpc-accent) 25%, transparent);
+.mpc-pain-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 28px;
+  font-size: 0;
+  line-height: 1;
 }
-.mpc-pain-title {
-  grid-area: title;
+.mpc-pain-kicker-rule {
+  display: inline-block;
+  width: 36px;
+  height: 1px;
+  background: var(--mpc-ink);
+  flex-shrink: 0;
+}
+.mpc-pain-kicker-ja {
   font-family: "Noto Serif JP", serif;
-  font-size: 21px;
-  font-weight: 900;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   color: var(--mpc-ink);
-  margin: 0;
-  line-height: 1.55;
-  letter-spacing: 0.01em;
-  /* 日本語の禁則を有効化、英数の不要な改行を抑制 */
-  word-break: normal;
-  overflow-wrap: anywhere;
-  line-break: strict;
-  text-wrap: pretty;
 }
-.mpc-pain-text {
-  grid-area: text;
-  font-size: 15px;
+.mpc-pain-kicker-en {
+  font-family: "Noto Serif JP", serif;
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--mpc-ink-mute);
+}
+.mpc-pain-headline {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(26px, 3.6vw, 38px);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.55;
+  color: var(--mpc-ink);
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+.mpc-pain-deck {
+  font-size: 15.5px;
   line-height: 2;
   color: var(--mpc-ink-soft);
   margin: 0;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+/* ---- 章リスト ---- */
+.mpc-pain-list {
+  display: flex;
+  flex-direction: column;
+}
+.mpc-pain-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  grid-template-areas:
+    "num quote"
+    "num body";
+  column-gap: 32px;
+  row-gap: 22px;
+  padding: 56px 0 64px;
+  border-top: 1px solid var(--mpc-ink);
+  /* fade-up base */
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.mpc-pain-entry:last-child {
+  border-bottom: 1px solid var(--mpc-ink);
+}
+.mpc-pain-entry.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- 章番号 (Ⅰ Ⅱ Ⅲ) ---- */
+.mpc-pain-num {
+  grid-area: num;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 0.85;
+  color: var(--mpc-ink);
+  letter-spacing: 0.02em;
+  padding-top: 4px;
+  user-select: none;
+  /* 章扉らしいかすかな影で紙面の沈み込みを表現 */
+}
+.mpc-pain-num::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--mpc-accent);
+  margin-top: 18px;
+}
+
+/* ---- 引用見出し ---- */
+.mpc-pain-quote {
+  grid-area: quote;
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(19px, 2.2vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.7;
+  color: var(--mpc-ink);
+  margin: 0;
+  text-indent: -0.4em; /* 「 を左に少しはみ出させる pull-quote */
   word-break: normal;
   overflow-wrap: anywhere;
   line-break: strict;
   text-wrap: pretty;
 }
-.mpc-pain-text strong {
-  color: var(--mpc-ink);
+.mpc-pain-quote-mark {
+  color: var(--mpc-accent);
+  font-weight: 900;
+  margin: 0 -0.05em;
+  font-feature-settings: "palt";
+}
+
+/* ---- 本文 ---- */
+.mpc-pain-body {
+  grid-area: body;
+  font-size: 15px;
+  line-height: 2.05;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+  letter-spacing: 0.02em;
+  max-width: 64ch;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-wrap: pretty;
+}
+.mpc-pain-body strong {
   font-weight: 700;
-  background: linear-gradient(transparent 65%, rgba(232, 85, 0, 0.18) 65%);
-  padding: 0 4px;
+  color: var(--mpc-ink);
+  background: none;
+  padding: 0;
+  border-bottom: 1px solid rgba(232, 85, 0, 0.55);
+  padding-bottom: 1px;
 }
 
 /* ========== CRITERIA (8基準) ========== */
@@ -1029,28 +1119,40 @@
 @media (max-width: 880px) {
   .mpc-section { padding: 64px 0; }
   .mpc-hero { padding: 80px 0 60px; }
-  .mpc-pain-card {
+  /* PAIN editorial — SP */
+  .mpc-pain-header { margin-bottom: 44px; }
+  .mpc-pain-kicker { gap: 12px; margin-bottom: 22px; }
+  .mpc-pain-kicker-rule { width: 28px; }
+  .mpc-pain-headline { letter-spacing: 0.04em; line-height: 1.6; }
+  .mpc-pain-deck { font-size: 14.5px; line-height: 1.95; }
+
+  .mpc-pain-entry {
     grid-template-columns: 1fr;
     grid-template-areas:
       "num"
-      "title"
-      "text";
+      "quote"
+      "body";
     column-gap: 0;
-    row-gap: 12px;
-    padding: 24px 22px;
+    row-gap: 18px;
+    padding: 40px 0 44px;
   }
   .mpc-pain-num {
-    font-size: 48px;
-    padding-right: 0;
-    padding-bottom: 8px;
-    border-right: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--mpc-accent) 25%, transparent);
-    width: fit-content;
-    padding-left: 2px;
-    padding-right: 24px;
+    font-size: 44px;
+    padding-top: 0;
   }
-  .mpc-pain-title { font-size: 18px; }
-  .mpc-pain-text { font-size: 14.5px; line-height: 1.95; }
+  .mpc-pain-num::after {
+    width: 22px;
+    margin-top: 12px;
+  }
+  .mpc-pain-quote {
+    font-size: 18px;
+    line-height: 1.75;
+    text-indent: -0.35em;
+  }
+  .mpc-pain-body {
+    font-size: 14.5px;
+    line-height: 1.95;
+  }
   .mpc-criteria-grid { grid-template-columns: 1fr 1fr; }
   .mpc-criteria-card { padding: 16px; }
   .mpc-criteria-card h3 { font-size: 14.5px; }
