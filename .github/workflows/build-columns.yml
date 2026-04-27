@@ -1,8 +1,10 @@
 name: Build column static pages
 
 on:
+  # 毎日 18:00 UTC = 翌03:00 JST に実行 (WP編集の翌朝には反映)。
+  # 旧: 週1 (土曜のみ) で WP 編集から最大1週間反映遅延 → BUGS #018 で日次化
   schedule:
-    - cron: '0 18 * * 6'
+    - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:
