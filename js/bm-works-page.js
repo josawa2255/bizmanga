@@ -38,6 +38,22 @@
     '創業ストーリー': 'Founding Story'
   };
 
+  // ===== カテゴリ → カテゴリページ slug マップ =====
+  // データ上のカテゴリ名 (JA) を /works/category/{slug} の slug に対応付ける。
+  // build-works.py の CATEGORY_PAGES と整合。フィルターボタンを
+  // 該当カテゴリページへの内部リンクに変換するために使用。
+  var CATEGORY_SLUG = {
+    '採用': 'recruit',
+    '商品紹介': 'product',
+    '紹介': 'product',
+    '営業': 'sales',
+    'ブランド': 'company',
+    '集客': 'ad',
+    'IP': 'ad',
+    '研修': 'training',
+    'IR': 'ir'
+  };
+
   // ===== メディア英訳マップ =====
   var MEDIA_EN = {
     '採用パンフレット': 'Recruitment Pamphlet',
@@ -258,21 +274,47 @@
     var isEn = getLang() === 'en';
     var currentWorks = works;
     Object.keys(categories).forEach(function(cat) {
-      var btn = document.createElement('button');
-      var isActive = (!activeCategory && cat === 'すべて') || activeCategory === cat;
-      btn.className = 'bm-filter-btn' + (isActive ? ' active' : '');
-
       var catEn = CATEGORY_EN[cat] || cat;
       var labelJa = cat + '（' + categories[cat] + '）';
       var labelEn = catEn + ' (' + categories[cat] + ')';
-      btn.setAttribute('data-ja', labelJa);
-      btn.setAttribute('data-en', labelEn);
-      btn.textContent = isEn ? labelEn : labelJa;
 
-      btn.addEventListener('click', function() {
-        renderWorks(currentWorks, cat, 1);
-      });
-      filterContainer.appendChild(btn);
+      if (cat === 'すべて') {
+        // 「すべて」はフィルター解除ボタン（/works に留まる）
+        var allBtn = document.createElement('button');
+        var isActive = !activeCategory;
+        allBtn.className = 'bm-filter-btn' + (isActive ? ' active' : '');
+        allBtn.setAttribute('data-ja', labelJa);
+        allBtn.setAttribute('data-en', labelEn);
+        allBtn.textContent = isEn ? labelEn : labelJa;
+        allBtn.addEventListener('click', function() {
+          renderWorks(currentWorks, null, 1);
+        });
+        filterContainer.appendChild(allBtn);
+        return;
+      }
+
+      var slug = CATEGORY_SLUG[cat];
+      if (slug) {
+        // カテゴリページがある場合は <a> リンクとして描画（SEO: 個別URL認識のため）
+        var link = document.createElement('a');
+        link.className = 'bm-filter-btn';
+        link.href = '/works/category/' + slug;
+        link.setAttribute('data-ja', labelJa);
+        link.setAttribute('data-en', labelEn);
+        link.textContent = isEn ? labelEn : labelJa;
+        filterContainer.appendChild(link);
+      } else {
+        // 未マップのカテゴリは従来通り JS フィルター（保険）
+        var fbtn = document.createElement('button');
+        fbtn.className = 'bm-filter-btn';
+        fbtn.setAttribute('data-ja', labelJa);
+        fbtn.setAttribute('data-en', labelEn);
+        fbtn.textContent = isEn ? labelEn : labelJa;
+        fbtn.addEventListener('click', function() {
+          renderWorks(currentWorks, cat, 1);
+        });
+        filterContainer.appendChild(fbtn);
+      }
     });
   }
 

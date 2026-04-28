@@ -64,6 +64,41 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - ❌「`?manga=id` は旧仕様で廃止予定」→ 現役、QR運用の中核
 - ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日曜ビルド後）
 
+### 2.0b 制作事例の用途別カテゴリページ（2026-04-28追加）⭐SEO
+
+`/works/category/{slug}` で**用途別の事例集約ページ**を提供。legika型「showcase/category/」の戦略を踏襲し、用途別KWで個別URLとしてGoogleに認識させる。
+
+| URL | ターゲットKW | 集約データカテゴリ |
+|---|---|---|
+| `/works/category/recruit` | 採用マンガ制作 | 採用 |
+| `/works/category/product` | 商品紹介マンガ制作 | 商品紹介 + 紹介 |
+| `/works/category/sales` | 営業マンガ制作 | 営業 |
+| `/works/category/company` | 会社紹介マンガ制作 | ブランド + 紹介 |
+| `/works/category/training` | 研修マンガ制作 | 研修 |
+| `/works/category/ad` | マンガ広告制作 | 集客 + IP |
+| `/works/category/ir` | IR漫画制作 | IR |
+
+**動作メカニズム:**
+- [tools/build-works.py](tools/build-works.py) の `CATEGORY_PAGES` 定義に基づき [tools/templates/works-category.html.tpl](tools/templates/works-category.html.tpl) から静的HTML生成
+- 該当作品0件のカテゴリは生成スキップ（thin content 回避、sitemap にも含めない）
+- 用途別LP（`/recruit-manga` 等）への内部リンクと、本ページ間の相互カテゴリナビを完備
+
+**SEO構成（各ページ共通）:**
+- title/H1 にKW完全一致を配置
+- BreadcrumbList / CollectionPage / ItemList / FAQPage / Organization の5種JSON-LD
+- 該当作品グリッド + カテゴリ解説200-300字 + FAQ 4問 + CTA 3ボタン
+- canonical: `https://bizmanga.contentsx.jp/works/category/{slug}`
+
+**`/works` のフィルターボタン:**
+- `js/bm-works-page.js` の `buildFilter()` を改修。「すべて」以外のカテゴリボタンは `<a href="/works/category/{slug}">` リンクとして描画
+- JS フィルター動作は廃止（同URL内での絞り込みはGoogleに別ページとして認識されないため）
+- `CATEGORY_SLUG` マップで JA カテゴリ名 → slug 変換
+
+**ビルド統合:**
+- 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
+- sitemap.xml に `BUILD:WORKS_CATEGORIES` ブロックで自動追記
+- 週1ビルド（日曜03:00 JST、`.github/workflows/build-works.yml`）で更新
+
 ### 2.1 QR コード用ダイレクトモード ⭐重要
 ```
 https://bizmanga.contentsx.jp/biz-library?manga={manga-id}

@@ -34,7 +34,9 @@ API = "https://cms.contentsx.jp/wp-json/contentsx/v1/works"
 SITE = "https://bizmanga.contentsx.jp"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE_PATH = ROOT / "tools" / "templates" / "work-detail.html.tpl"
+CATEGORY_TEMPLATE_PATH = ROOT / "tools" / "templates" / "works-category.html.tpl"
 WORKS_DIR = ROOT / "works"
+CATEGORY_DIR = ROOT / "works" / "category"
 
 
 def esc(s):
@@ -328,6 +330,348 @@ def build_detail_page(w, template):
 _all_works_cache = []
 
 
+# ===== カテゴリページ設定 =====
+# /works/category/{slug} で生成される事例集約ページの設計
+# data_categories: WP API の category フィールド値（OR 条件で集約）
+# kw / kw_short: SEO ターゲットKW、画面表示用（H1・タイトル等）
+# title_seo: <title> （65文字以内推奨）
+# description: <meta description>（120-160 文字）
+# intro_lead: ヒーロー直下のリード文（120-200 字）
+# lp_path / lp_label: 用途別LPへの内部リンク
+# faq: FAQ JSON-LD と表示用 [{q, a}, ...]
+CATEGORY_PAGES = {
+    "recruit": {
+        "data_categories": ["採用"],
+        "kw": "採用マンガ制作",
+        "kw_short": "採用マンガ",
+        "title_seo": "採用マンガ制作事例｜会社紹介・社員インタビュー実績｜ビズマンガ",
+        "description": "採用マンガ・採用漫画の制作事例集。会社紹介、社員インタビュー、仕事内容の漫画化など、新卒・中途採用向けに制作した実績を全公開。応募意欲・内定承諾率を高める採用ブランディング事例を業種別にご覧いただけます。",
+        "keywords": "採用マンガ 事例,採用漫画 実績,採用パンフレット 漫画,会社紹介 漫画,新卒採用 マンガ,中途採用 マンガ",
+        "intro_lead": "求職者に「働く姿」を物語で伝え、応募意欲・志望度・内定承諾率を高めた採用マンガの制作事例を公開しています。新卒・中途・アルバイト採用、各フェーズで活用できる実績をご覧ください。",
+        "lp_path": "/recruit-manga",
+        "lp_label": "採用マンガ制作",
+        "faq": [
+            {"q": "採用マンガはどんな場面で使えますか？", "a": "採用サイトのファーストビュー、採用パンフレット、会社説明会の導入動画、SNS（X/Instagram/TikTok）配信、内定者フォローまで幅広く活用できます。"},
+            {"q": "新卒採用向けと中途採用向けで内容は変わりますか？", "a": "はい。新卒向けは入社後のリアリティと成長物語、中途向けは仕事の裁量・スピード・カルチャーマッチを重視した構成にします。ターゲット別に脚本を最適化します。"},
+            {"q": "1冊あたりの制作期間はどれくらいですか？", "a": "標準的な10ページ構成で約4〜6週間が目安です。ヒアリング・脚本・ネーム・作画・修正の各フェーズをワンストップで進行します。"},
+            {"q": "費用感を教えてください。", "a": "1ページ15,800円〜（基本プラン）。10ページ構成で約17.4万円〜が目安です。詳細は無料お見積もりにてご案内します。"},
+        ],
+    },
+    "product": {
+        "data_categories": ["商品紹介", "紹介"],
+        "kw": "商品紹介マンガ制作",
+        "kw_short": "商品紹介マンガ",
+        "title_seo": "商品紹介マンガ制作事例｜BtoB SaaS・無形商材の漫画化実績｜ビズマンガ",
+        "description": "商品紹介マンガ・サービス説明漫画の制作事例集。BtoB SaaS、無形商材、複雑な商品の魅力を物語で伝えた実績を業種別に多数公開。LP・営業資料・展示会・SNS用に展開できる商品漫画事例をご覧いただけます。",
+        "keywords": "商品紹介マンガ 事例,サービス紹介 漫画,SaaS マンガ,BtoB 漫画 事例,商品漫画 実績",
+        "intro_lead": "BtoB SaaSや無形商材、複雑な商品の魅力をストーリーで伝え、LP・営業資料・展示会で成果を上げた商品紹介マンガの制作事例を業種別に公開しています。",
+        "lp_path": "/product-manga",
+        "lp_label": "商品紹介マンガ制作",
+        "faq": [
+            {"q": "商品紹介マンガはどんな媒体で展開できますか？", "a": "LP（ランディングページ）、商品パンフレット、SNS広告、オウンドメディア、展示会パネル、営業資料など、複数媒体に展開可能です。"},
+            {"q": "BtoB SaaSなど抽象的な商品でも漫画化できますか？", "a": "はい。機能比較ではなく「導入後の物語」として価値を伝えるアプローチが得意です。専門用語を避けたペルソナ視点の脚本でCVR改善に貢献します。"},
+            {"q": "ターゲットや訴求軸はどう決めるのですか？", "a": "初回ヒアリングで現状の課題、ターゲット像、競合との差別化ポイントを整理し、脚本の方向性を決めます。お客様の営業資料も参考に最適化します。"},
+            {"q": "短納期にも対応できますか？", "a": "通常4〜6週間の制作期間を、特急対応で2〜3週間に短縮可能です（別途特急料金）。展示会・キャンペーン日程に合わせてご相談ください。"},
+        ],
+    },
+    "sales": {
+        "data_categories": ["営業"],
+        "kw": "営業マンガ制作",
+        "kw_short": "営業マンガ",
+        "title_seo": "営業マンガ制作事例｜営業資料・商談用漫画の実績｜ビズマンガ",
+        "description": "営業マンガ・営業資料漫画の制作事例集。BtoB商談、提案書、稟議資料の漫画化で、決裁者への伝言ゲーム劣化を防ぎ、受注率と説明品質均一化に貢献した実績を公開。インサイドセールスからフィールドセールスまで対応。",
+        "keywords": "営業マンガ 事例,営業資料 漫画,商談用 マンガ,BtoB営業 漫画,提案書 漫画化",
+        "intro_lead": "BtoB商談・提案書・稟議資料の漫画化で、担当者から決裁者への情報劣化を防ぎ、受注率を上げた営業マンガの制作事例を公開しています。",
+        "lp_path": "/sales-manga",
+        "lp_label": "営業資料マンガ制作",
+        "faq": [
+            {"q": "営業マンガはどう活用できますか？", "a": "商談現場、提案書添付、稟議資料、社内勉強会、インサイドセールスのオンライン商談、カスタマーサクセスの定例会など営業プロセス全体で活用できます。"},
+            {"q": "なぜ漫画にすると営業効果が上がるのですか？", "a": "テキスト資料は要点だけ伝わり、口頭説明に依存します。漫画なら「物語のまま」担当者→決裁者へ情報が劣化なく伝わり、稟議通過率と理解度が高まります。"},
+            {"q": "業界・商材を問わず対応できますか？", "a": "はい。SaaS、製造業、不動産、人材、金融、医療、士業まで幅広い業界の営業マンガを制作してきました。業界特性に合わせた脚本設計が可能です。"},
+            {"q": "既存の営業資料との連携は？", "a": "既存資料・サービス紹介スライドを脚本のインプットとして活用します。漫画は「最初の山場」を担当し、テキスト資料は詳細補足として組み合わせるのが効果的です。"},
+        ],
+    },
+    "company": {
+        "data_categories": ["ブランド", "紹介"],
+        "kw": "会社紹介マンガ制作",
+        "kw_short": "会社紹介マンガ",
+        "title_seo": "会社紹介マンガ制作事例｜創業ストーリー・ブランディング実績｜ビズマンガ",
+        "description": "会社紹介マンガ・創業ストーリー漫画の制作事例集。企業理念、沿革、ブランドストーリーを物語で伝え、採用・IR・取引先向けに展開した実績を公開。経営者の想いをステークホルダー全員に届けるコーポレートブランディング事例。",
+        "keywords": "会社紹介マンガ 事例,創業ストーリー 漫画,ブランディング マンガ,企業紹介 漫画,コーポレート漫画",
+        "intro_lead": "経営者の原体験・企業文化・沿革を漫画化し、採用・IR・取引先・社員向けに共感を生み出した会社紹介マンガの制作事例を公開しています。",
+        "lp_path": "/company-manga",
+        "lp_label": "会社紹介マンガ制作",
+        "faq": [
+            {"q": "会社紹介マンガはどう使えますか？", "a": "コーポレートサイト、採用パンフレット、IR文書、周年記念誌、社史、社員ハンドブックなど、ステークホルダー横断で活用できます。"},
+            {"q": "創業ストーリーをどう物語化するのですか？", "a": "経営者・創業メンバーへのヒアリングを通じて「転機」「葛藤」「決断」を抽出し、感情を動かす構成に再編成します。実話ベースで脚色を最小限に抑えます。"},
+            {"q": "上場企業のIR用途にも対応できますか？", "a": "はい。適時開示ルール・金融商品取引法・将来予測表現ガイドラインに準拠した制作経験があります。法務・IR担当者との確認フローも組み込みます。"},
+            {"q": "社内に資料がほとんど無くても作れますか？", "a": "問題ありません。経営者インタビュー（90〜120分）と社内取材を通じて、ゼロから物語を組み立てた事例も多数あります。"},
+        ],
+    },
+    "training": {
+        "data_categories": ["研修"],
+        "kw": "研修マンガ制作",
+        "kw_short": "研修マンガ",
+        "title_seo": "研修マンガ制作事例｜新人研修・コンプライアンス漫画実績｜ビズマンガ",
+        "description": "研修マンガ・教育漫画の制作事例集。新人研修、コンプライアンス、ハラスメント防止、店舗OJT、e-learning向けの漫画化実績を公開。「失敗事例の安全な疑似体験」で社員の理解度・実践率・記憶定着を高めます。",
+        "keywords": "研修マンガ 事例,コンプライアンス 漫画,新人研修 マンガ,e-learning 漫画,OJT教材 漫画",
+        "intro_lead": "新人研修、コンプライアンス、ハラスメント防止、店舗OJTなど、形骸化しがちな研修を「失敗事例の疑似体験」に変えた研修マンガの制作事例を公開しています。",
+        "lp_path": "/training-manga",
+        "lp_label": "研修マンガ制作",
+        "faq": [
+            {"q": "研修マンガはどんなテーマで作れますか？", "a": "コンプライアンス、ハラスメント防止、情報セキュリティ、ビジネスマナー、新人研修、OJT、管理職研修など、社員教育のあらゆるテーマに対応します。"},
+            {"q": "LMS（学習管理システム）への組み込みは？", "a": "可能です。SCORM形式での書き出し、社内LMSへの組み込み、理解度テスト連動など、運用フローまで含めて設計します。"},
+            {"q": "法改正に合わせた更新はできますか？", "a": "年次更新プランをご用意しています。法改正・ガイドライン変更時に該当ページを差し替え、最新版として継続運用できます。"},
+            {"q": "なぜ研修を漫画にすると効果が上がるのですか？", "a": "テキスト・動画では「他人事」になりがちな研修を、漫画なら登場人物の失敗を疑似体験させることで「自分ごと化」させ、行動変容に繋がる学習体験に変換できます。"},
+        ],
+    },
+    "ad": {
+        "data_categories": ["集客", "IP"],
+        "kw": "マンガ広告制作",
+        "kw_short": "マンガ広告",
+        "title_seo": "マンガ広告制作事例｜SNS広告・LP・集客漫画の実績｜ビズマンガ",
+        "description": "マンガ広告・集客漫画の制作事例集。Meta（Facebook/Instagram）、TikTok、LINE、Yahoo!、GDN向けの広告クリエイティブ、LP用漫画、IPコラボ広告の実績を公開。スクロールを止めるストーリー型クリエイティブでCTR・CVR改善。",
+        "keywords": "マンガ広告 事例,SNS広告 漫画,LP 漫画,集客 マンガ,IPコラボ 広告 漫画",
+        "intro_lead": "Meta・Instagram・TikTok・LINEなど主要SNS広告と、LP・集客コンテンツでスクロールを止めるマンガクリエイティブを制作した実績を公開しています。",
+        "lp_path": "/manga-ad-lp",
+        "lp_label": "マンガ広告制作",
+        "faq": [
+            {"q": "どの媒体の広告に対応できますか？", "a": "Meta（Facebook/Instagram）、TikTok、X（旧Twitter）、LINE NEWS、Yahoo!ディスプレイ、GDN（Googleディスプレイネットワーク）など主要SNS／Web広告媒体に対応します。"},
+            {"q": "媒体ごとのサイズ・尺のレギュレーションは？", "a": "各媒体のサイズ・アスペクト比・テキスト比率規制・広告審査ガイドラインを把握しており、入稿仕様に合わせて納品します。動画広告化（モーション付き）にも対応可能です。"},
+            {"q": "IPコラボ広告も制作できますか？", "a": "はい。キャラクターIP・タレント・アーティストとの企業コラボ広告、ライセンス商品プロモーション、コンテンツマーケティング等の制作実績があります。"},
+            {"q": "A/Bテスト用の複数バージョン制作は？", "a": "可能です。同じ商品でも訴求軸の異なる複数バージョン（感情訴求版／機能訴求版／価格訴求版）を制作し、配信結果に応じて改善版を量産する運用にも対応します。"},
+        ],
+    },
+    "ir": {
+        "data_categories": ["IR"],
+        "kw": "IR漫画制作",
+        "kw_short": "IR漫画",
+        "title_seo": "IR漫画制作事例｜統合報告書・株主通信の漫画化実績｜ビズマンガ",
+        "description": "IR漫画・統合報告書漫画の制作事例集。株主通信、株主総会資料、IRサイト、決算説明会、有価証券報告書補足資料の漫画化実績を公開。個人投資家にビジネスモデルを物語で伝え、機関投資家の解像度を高めるIRコンテンツ事例。",
+        "keywords": "IR漫画 事例,統合報告書 漫画,株主通信 漫画,IRサイト 漫画,決算説明 漫画",
+        "intro_lead": "統合報告書、株主通信、株主総会資料、IRサイト掲載など、上場企業のIR文書を漫画化し、個人投資家・機関投資家の理解促進に貢献した制作事例を公開しています。",
+        "lp_path": "/ir-manga",
+        "lp_label": "IR漫画制作",
+        "faq": [
+            {"q": "IR文書の漫画化で気をつけるべきことは？", "a": "適時開示ルール・金融商品取引法・将来予測表現ガイドラインへの準拠が必須です。法務・IR担当者との確認フローを制作プロセスに組み込んでいます。"},
+            {"q": "統合報告書全体を漫画化できますか？", "a": "全体漫画化、特定章のみ漫画化、見開き1〜2ページの導入漫画など、用途と予算に応じて柔軟に設計します。多くは「経営者メッセージ」「事業戦略」セクションでの活用が効果的です。"},
+            {"q": "個人投資家向けと機関投資家向けで違いはありますか？", "a": "はい。個人投資家向けはビジネスモデルを物語で噛み砕く方向、機関投資家向けは事業戦略の解像度を高める補足ビジュアルとしての位置付けが効果的です。"},
+            {"q": "IRサイトへの掲載・配信は？", "a": "Web掲載用の最適化（軽量化・スマホ対応・縦読み版）、PDF版（印刷用統合報告書）、SNS配信用の切り出し版など、複数フォーマットでの納品が可能です。"},
+        ],
+    },
+}
+
+
+def build_category_card(w):
+    """カテゴリページ用のカードHTML（works.html のカードと同形式）"""
+    slug = w["id"]
+    thumb = w.get("thumbnail") or (w.get("gallery") or [""])[0]
+    title_ja = w.get("title_ja", "")
+    category = w.get("category", "")
+    media = " / ".join(w.get("media") or [])
+    point = w.get("point", "")
+    detail_url = f"/works/{slug}"
+    desc_html = f'<p class="bm-works-card-desc">{esc(point)}</p>' if point else ""
+    meta_html = (
+        f'<div class="bm-works-card-meta"><span class="bm-works-card-media">{esc(media)}</span></div>'
+        if media else ""
+    )
+    cat_html = f'<span class="bm-works-card-category">{esc(category)}</span>' if category else ""
+    return (
+        f'          <article class="bm-works-card" data-work-id="{esc(slug)}">\n'
+        f'            <a href="{esc(detail_url)}" class="bm-works-card-link">\n'
+        f'              <div class="bm-works-card-thumb">\n'
+        f'                <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="560">\n'
+        f'              </div>\n'
+        f'              <div class="bm-works-card-body">\n'
+        f'                {cat_html}\n'
+        f'                <h3 class="bm-works-card-title">{esc(title_ja)}</h3>\n'
+        f'                {desc_html}\n'
+        f'                {meta_html}\n'
+        f'              </div>\n'
+        f'            </a>\n'
+        f'          </article>\n'
+    )
+
+
+def build_cat_nav(active_slug, works):
+    """カテゴリページ間ナビ。各カテゴリの該当件数も表示。"""
+    items = []
+    # 「すべて」リンク（works トップへ）
+    total = len(works)
+    items.append(
+        f'        <a class="bm-cat-nav-link" href="/works">'
+        f'すべて<span class="bm-cat-nav-link-count">（{total}）</span></a>'
+    )
+    for slug, cfg in CATEGORY_PAGES.items():
+        count = len([w for w in works if w.get("category") in cfg["data_categories"]])
+        if count == 0:
+            continue
+        is_active = slug == active_slug
+        active_attr = ' aria-current="page"' if is_active else ''
+        items.append(
+            f'        <a class="bm-cat-nav-link" href="/works/category/{slug}"{active_attr}>'
+            f'{esc(cfg["kw_short"])}<span class="bm-cat-nav-link-count">（{count}）</span></a>'
+        )
+    return "\n".join(items)
+
+
+def build_faq_html(faq_items):
+    blocks = []
+    for item in faq_items:
+        blocks.append(
+            f'          <div class="bm-cat-faq-item">\n'
+            f'            <h3 class="bm-cat-faq-q">{esc(item["q"])}</h3>\n'
+            f'            <p class="bm-cat-faq-a">{esc(item["a"])}</p>\n'
+            f'          </div>'
+        )
+    return "\n".join(blocks)
+
+
+def build_faq_jsonld(faq_items):
+    return json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": item["q"],
+                    "acceptedAnswer": {"@type": "Answer", "text": item["a"]},
+                }
+                for item in faq_items
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+def build_breadcrumb_jsonld(slug, kw):
+    return json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"{SITE}/"},
+                {"@type": "ListItem", "position": 2, "name": "制作事例", "item": f"{SITE}/works"},
+                {"@type": "ListItem", "position": 3, "name": kw, "item": f"{SITE}/works/category/{slug}"},
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+def build_itemlist_jsonld(slug, cfg, matched):
+    return json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": f"{SITE}/works/category/{slug}",
+            "name": f"「{cfg['kw_short']}」のマンガ制作事例",
+            "description": cfg["description"],
+            "url": f"{SITE}/works/category/{slug}",
+            "isPartOf": {"@id": f"{SITE}/works"},
+            "mainEntity": {
+                "@type": "ItemList",
+                "name": f"{cfg['kw_short']}制作事例",
+                "numberOfItems": len(matched),
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": i,
+                        "url": f"{SITE}/works/{w['id']}",
+                        "name": w.get("title_ja") or w["id"],
+                    }
+                    for i, w in enumerate(matched, start=1)
+                ],
+            },
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+def generate_category_pages(works):
+    """カテゴリページを /works/category/{slug}.html に生成"""
+    if not CATEGORY_TEMPLATE_PATH.exists():
+        print(f"WARN: category template not found: {CATEGORY_TEMPLATE_PATH}", file=sys.stderr)
+        return
+    template = CATEGORY_TEMPLATE_PATH.read_text(encoding="utf-8")
+    CATEGORY_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 既存カテゴリHTMLをクリーンアップ
+    valid_slugs = set(CATEGORY_PAGES.keys())
+    removed = 0
+    for existing in CATEGORY_DIR.glob("*.html"):
+        if existing.stem not in valid_slugs:
+            existing.unlink()
+            removed += 1
+
+    generated = 0
+    skipped = 0
+    for slug, cfg in CATEGORY_PAGES.items():
+        matched = [w for w in works if w.get("category") in cfg["data_categories"]]
+        if not matched:
+            # 該当作品が0件のカテゴリは生成しない（thin content 回避）
+            # ただし既存ファイルがあれば削除する
+            stale = CATEGORY_DIR / f"{slug}.html"
+            if stale.exists():
+                stale.unlink()
+                removed += 1
+            skipped += 1
+            continue
+
+        cards_html = "".join(build_category_card(w) for w in matched)
+        cat_nav_html = build_cat_nav(slug, works)
+        faq_html = build_faq_html(cfg["faq"])
+        faq_jsonld = build_faq_jsonld(cfg["faq"])
+        breadcrumb_jsonld = build_breadcrumb_jsonld(slug, cfg["kw"])
+        itemlist_jsonld = build_itemlist_jsonld(slug, cfg, matched)
+        usecase_text = ""
+        for cat in cfg["data_categories"]:
+            t = CATEGORY_USECASE.get(cat)
+            if t:
+                usecase_text = t
+                break
+        # OG画像: works トップの og-works.webp を再利用（1200x630 既存）
+        og_image = f"{SITE}/material/images/og/og-works.webp"
+
+        replacements = {
+            "{{slug}}": esc(slug),
+            "{{kw}}": esc(cfg["kw"]),
+            "{{kw_short}}": esc(cfg["kw_short"]),
+            "{{title_seo}}": esc(cfg["title_seo"]),
+            "{{description}}": esc(cfg["description"]),
+            "{{keywords}}": esc(cfg["keywords"]),
+            "{{intro_lead}}": esc(cfg["intro_lead"]),
+            "{{usecase_text}}": esc(usecase_text or cfg["intro_lead"]),
+            "{{count}}": str(len(matched)),
+            "{{lp_path}}": esc(cfg["lp_path"]),
+            "{{lp_label}}": esc(cfg["lp_label"]),
+            "{{cards_html}}": cards_html,
+            "{{cat_nav_html}}": cat_nav_html,
+            "{{faq_html}}": faq_html,
+            "{{faq_jsonld}}": faq_jsonld,
+            "{{breadcrumb_jsonld}}": breadcrumb_jsonld,
+            "{{itemlist_jsonld}}": itemlist_jsonld,
+            "{{og_image}}": og_image,
+            "{{url}}": f"{SITE}/works/category/{slug}",
+            "{{last_modified}}": date.today().isoformat() + "T03:00:00+09:00",
+        }
+        out = template
+        for k, v in replacements.items():
+            out = out.replace(k, v)
+        (CATEGORY_DIR / f"{slug}.html").write_text(out, encoding="utf-8")
+        generated += 1
+
+    print(
+        f"Generated {generated} category pages, "
+        f"skipped {skipped} (no matching works), removed {removed} stale files"
+    )
+
+
 def generate_details(works):
     global _all_works_cache
     _all_works_cache = list(works)
@@ -362,6 +706,12 @@ def update_sitemap(works):
     )
     s = pattern.sub("\n\n", s)
 
+    # カテゴリページ用ブロックも同様に除去
+    cat_pattern = re.compile(
+        r"\s*<!-- BUILD:WORKS_CATEGORIES[^>]*?-->[\s\S]*?<!-- /BUILD:WORKS_CATEGORIES -->\s*"
+    )
+    s = cat_pattern.sub("\n\n", s)
+
     entries = []
     for w in works:
         entries.append(
@@ -377,7 +727,30 @@ def update_sitemap(works):
         + "\n".join(entries)
         + "\n  <!-- /BUILD:WORKS -->\n"
     )
-    s = s.replace("</urlset>", block + "\n</urlset>")
+
+    # カテゴリページ URL も追加
+    cat_entries = []
+    for slug, cfg in CATEGORY_PAGES.items():
+        # 該当作品が0件のカテゴリは sitemap に含めない（薄いコンテンツ回避）
+        matched = [w for w in works if w.get("category") in cfg["data_categories"]]
+        if not matched:
+            continue
+        cat_entries.append(
+            "  <url>\n"
+            f"    <loc>{SITE}/works/category/{slug}</loc>\n"
+            f"    <lastmod>{date.today().isoformat()}</lastmod>\n"
+            "    <changefreq>weekly</changefreq>\n"
+            "    <priority>0.8</priority>\n"
+            "  </url>"
+        )
+    cat_block = (
+        "  <!-- BUILD:WORKS_CATEGORIES (auto-generated by tools/build-works.py) -->\n"
+        + "\n".join(cat_entries)
+        + "\n  <!-- /BUILD:WORKS_CATEGORIES -->\n"
+    ) if cat_entries else ""
+
+    inject = block + ("\n" + cat_block if cat_block else "") + "\n"
+    s = s.replace("</urlset>", inject + "</urlset>")
     p.write_text(s, encoding="utf-8")
     print(f"Updated {p}")
 
@@ -395,6 +768,7 @@ def main():
 
     update_works_html(bm_works)
     generate_details(bm_works)
+    generate_category_pages(bm_works)
     update_sitemap(bm_works)
 
     print("Done.")
