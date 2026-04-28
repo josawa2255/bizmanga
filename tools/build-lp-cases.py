@@ -28,7 +28,7 @@ LP_CATEGORIES = {
     "company-manga":  ["会社紹介", "企業紹介", "ブランド"],
     "sales-manga":    ["営業資料", "営業"],
     "training-manga": ["研修"],
-    "inbound-manga":  ["インバウンド", "英語版", "海外版", "多言語"],
+    "inbound-manga":  ["インバウンド", "英語版", "海外版", "多言語", "集客"],
     "ir-manga":       ["IR"],
 }
 
