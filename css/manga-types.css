@@ -261,12 +261,14 @@
   .mt-hero-content {
     padding: 100px 16px 40px;
   }
+  /* グリッドで「左:キャラ列」と「右:ラベル列」を明示的に分ける。
+     キャラは grid-row span でラベル全行ぶんを占有し、ラベルとの重なりを物理的に排除。 */
   .mt-hero-stage {
     height: auto;
     display: grid;
-    grid-template-columns: 55% 1fr;
-    grid-template-rows: auto auto;
-    gap: 10px 8px;
+    grid-template-columns: 44vw 1fr;
+    grid-template-rows: auto repeat(7, auto);
+    gap: 10px 12px;
     padding: 16px 0;
     align-items: end;
     position: relative;
@@ -276,6 +278,7 @@
   .mt-hero-speech {
     position: static;
     grid-column: 1 / -1;
+    grid-row: 1;
     max-width: none;
     padding: 16px 20px;
     font-size: 16px;
@@ -285,24 +288,29 @@
   .mt-hero-speech::before {
     left: 20%;
   }
-  /* 左にびずちゃん */
+  /* 左カラム: びずちゃん（grid配置で固定、ラベル全行を縦に占有） */
   .mt-hero-character {
-    position: absolute;
-    left: -10%;
-    bottom: 0;
-    width: 55vw;
+    position: static;
+    grid-column: 1;
+    grid-row: 2 / span 7;
+    width: 100%;
     height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: bottom left;
+    align-self: end;
     transform: none;
     z-index: 2;
   }
-  /* 右にラベル群 */
+  /* 右カラム: ラベル群（縦に積む） */
   .mt-label {
     position: static;
-    font-size: 16px;
-    padding: 12px 22px;
+    font-size: 15px;
+    padding: 10px 18px;
     grid-column: 2;
     justify-self: end;
     margin-right: 4px;
+    z-index: 3;
   }
   .mt-pos-l1 { grid-row: 2; }
   .mt-pos-l2 { grid-row: 3; }
@@ -311,9 +319,6 @@
   .mt-pos-r1 { grid-row: 6; }
   .mt-pos-r2 { grid-row: 7; }
   .mt-pos-r3 { grid-row: 8; }
-  .mt-label {
-    z-index: 3;
-  }
   .mt-card {
     flex-direction: column;
     padding: 24px 20px;
