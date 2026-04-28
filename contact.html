@@ -91,6 +91,23 @@ p{margin:0 0 16px;}
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#e85500">
   <link rel="alternate" type="application/rss+xml" title="ビズマンガ RSS" href="https://bizmanga.contentsx.jp/feed.xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://bizmanga.contentsx.jp/#organization",
+  "name": "ビズマンガ",
+  "alternateName": ["BizManga", "ビズ漫画"],
+  "url": "https://bizmanga.contentsx.jp/",
+  "logo": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+  "sameAs": ["https://x.com/Bizmanga_", "https://contentsx.jp/"],
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "Contents X 株式会社",
+    "url": "https://contentsx.jp/"
+  }
+}
+</script>
 </head>
 <body data-fuwa-auto>
 
@@ -292,13 +309,27 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
   "name": "お問い合わせ・無料相談｜ビジネス漫画制作のビズマンガ",
   "description": "ビジネス漫画制作のご相談・お見積もりを無料で受付中。初回30分のヒアリングで、貴社の課題に最適な企画を無料提案。メール・LINE・Zoomからお好きな方法でご連絡ください。2〜3営業日以内に返信します。",
   "url": "https://bizmanga.contentsx.jp/contact",
-  "publisher": {
+  "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+  "mainEntity": {
     "@type": "Organization",
-    "name": "ビズマンガ",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"
-    }
+    "@id": "https://bizmanga.contentsx.jp/#organization",
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "https://bizmanga.contentsx.jp/contact",
+        "availableLanguage": ["Japanese", "English"],
+        "areaServed": "JP"
+      },
+      {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "url": "https://line.me/R/ti/p/@626kzaze",
+        "availableLanguage": ["Japanese"],
+        "areaServed": "JP",
+        "description": "LINE での気軽な相談"
+      }
+    ]
   }
 }
 </script>
