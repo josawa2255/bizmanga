@@ -26,6 +26,12 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
 
+# WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
+DESC_OVERRIDES = {
+    "business-manga-production-guide": "ビジネスマンガ制作の完全ガイド。企画ヒアリング・シナリオ設計・ネーム・作画・修正・納品の7ステップと、業界相場40,000〜100,000円/ページに対するビズマンガ15,800円〜の透明料金体系を解説。発注前に読むべき完全マニュアル。",
+}
+
+
 API_LIST = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns?site=bizmanga&per_page=100"
 API_SINGLE = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns/{id}"
 SITE = "https://bizmanga.contentsx.jp"
@@ -222,8 +228,12 @@ def build_detail_page(col, detail_data, template):
     excerpt = col.get("excerpt_ja") or ""
     content = detail_data.get("content") or ""
 
-    raw_desc = re.sub(r"<[^>]+>", "", excerpt or content).replace("\n", " ").strip()
-    description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
+    override = DESC_OVERRIDES.get(slug)
+    if override:
+        description = override[:200]
+    else:
+        raw_desc = re.sub(r"<[^>]+>", "", excerpt or content).replace("\n", " ").strip()
+        description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
 
     cat_html = (
         f'<span class="bm-col-static-cat">{esc(category)}</span>' if category else ""

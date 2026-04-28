@@ -70,7 +70,8 @@ p{margin:0 0 16px;}
 </style>
   <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
-  <link rel="stylesheet" href="css/bm-s3d-screens.css">
+  <link rel="preload" href="css/bm-s3d-screens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/bm-s3d-screens.css"></noscript>
   <link rel="stylesheet" href="css/production-flow.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -236,7 +237,7 @@ p{margin:0 0 16px;}
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
           <div class="s3d-screen s3d-screen--video" data-idx="2">
-            <iframe src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+            <iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
             <span class="s3d-notch" aria-hidden="true"></span>
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
@@ -634,7 +635,15 @@ if ('serviceWorker' in navigator) {
   "publisher": {
     "@type": "Organization",
     "name": "ビズマンガ",
-    "url": "https://bizmanga.contentsx.jp/"
+    "url": "https://bizmanga.contentsx.jp/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://bizmanga.contentsx.jp/column?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
   }
 }
 </script>
