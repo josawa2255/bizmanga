@@ -2935,6 +2935,17 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 .bm-works-card:first-child { border-top: 1px solid var(--bm-border); }
 .bm-works-card:hover { background: var(--bm-bg-light); }
+/* 静的SEOカードは <a class="bm-works-card-link"> で包まれるため、
+   内側を flex 化して動的カード（<a> 無し）と同じ横並びレイアウトに揃える。 */
+.bm-works-card > .bm-works-card-link {
+  display: flex;
+  flex: 1;
+  gap: 24px;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+.bm-works-card > .bm-works-card-link:hover { color: inherit; }
 .bm-works-card-thumb {
   flex: 0 0 130px;
   height: 180px;
@@ -4659,6 +4670,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 
   /* Works cards: スマホもPC同様の横並び */
   .bm-works-card { gap: 16px; padding: 20px 0; }
+  .bm-works-card > .bm-works-card-link { gap: 16px; }
   .bm-works-card-thumb { flex: none; height: 160px; }
   .bm-works-card-title { font-size: 15px; }
   .bm-works-card-desc { display: none; }
