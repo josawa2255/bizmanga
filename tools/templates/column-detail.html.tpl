@@ -6,8 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title_ja}} | コラム | ビズマンガ</title>
   <meta name="description" content="{{description}}">
+  <meta name="keywords" content="ビジネス漫画,{{category}},漫画制作,マンガマーケティング,BtoB漫画,ビズマンガ コラム">
   <meta name="robots" content="index, follow">
+  <meta http-equiv="last-modified" content="{{modified_ymd}}T03:00:00+09:00">
   <link rel="canonical" href="{{url}}">
+  <link rel="alternate" hreflang="ja" href="{{url}}">
+  <link rel="alternate" hreflang="x-default" href="{{url}}">
   <!-- OGP -->
   <meta property="og:title" content="{{title_ja}} | コラム | ビズマンガ">
   <meta property="og:description" content="{{description}}">
@@ -15,13 +19,22 @@
   <meta property="og:url" content="{{url}}">
   <meta property="og:site_name" content="ビズマンガ">
   <meta property="og:image" content="{{thumbnail}}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{title_ja}}｜ビズマンガ コラム">
   <meta property="og:locale" content="ja_JP">
+  <meta property="article:published_time" content="{{date_ymd}}T00:00:00+09:00">
+  <meta property="article:modified_time" content="{{modified_ymd}}T00:00:00+09:00">
+  <meta property="article:section" content="{{category}}">
+  <meta property="article:publisher" content="https://bizmanga.contentsx.jp/">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
+  <meta name="twitter:creator" content="@Bizmanga_">
   <meta name="twitter:title" content="{{title_ja}} | コラム | ビズマンガ">
   <meta name="twitter:description" content="{{description}}">
   <meta name="twitter:image" content="{{thumbnail}}">
+  <meta name="twitter:image:alt" content="{{title_ja}}｜ビズマンガ コラム">
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q1T3033Q3W');</script>
@@ -79,12 +92,42 @@
   "@type": "Article",
   "headline": "{{title_ja}}",
   "description": "{{description}}",
-  "image": "{{thumbnail}}",
+  "image": {
+    "@type": "ImageObject",
+    "url": "{{thumbnail}}",
+    "width": 1200,
+    "height": 630
+  },
   "datePublished": "{{date_ymd}}",
   "dateModified": "{{modified_ymd}}",
-  "author": { "@type": "Organization", "name": "ビズマンガ編集部", "url": "https://bizmanga.contentsx.jp/", "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" } },
-  "publisher": { "@type": "Organization", "name": "ビズマンガ", "url": "https://bizmanga.contentsx.jp/", "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" } },
+  "inLanguage": "ja",
+  "articleSection": "{{category}}",
+  "author": {
+    "@type": "Organization",
+    "name": "ビズマンガ編集部",
+    "url": "https://bizmanga.contentsx.jp/",
+    "affiliation": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+    "logo": { "@type": "ImageObject", "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp" }
+  },
+  "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
   "mainEntityOfPage": { "@type": "WebPage", "@id": "{{url}}" }
+}
+</script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://bizmanga.contentsx.jp/#organization",
+  "name": "ビズマンガ",
+  "alternateName": ["BizManga", "ビズ漫画"],
+  "url": "https://bizmanga.contentsx.jp/",
+  "logo": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+  "sameAs": ["https://x.com/Bizmanga_", "https://contentsx.jp/"],
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "Contents X 株式会社",
+    "url": "https://contentsx.jp/"
+  }
 }
 </script>
   <script type="application/ld+json">

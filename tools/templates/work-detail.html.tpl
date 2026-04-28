@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title_ja}} | 制作事例 | ビズマンガ</title>
   <meta name="description" content="{{description}}">
+  <meta name="keywords" content="{{title_ja}},{{category}},ビジネス漫画 制作事例,{{category}}漫画,漫画制作 実績,ビズマンガ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{url}}">
+  <link rel="alternate" hreflang="ja" href="{{url}}">
+  <link rel="alternate" hreflang="x-default" href="{{url}}">
   <!-- OGP -->
   <meta property="og:title" content="{{title_ja}} | 制作事例 | ビズマンガ">
   <meta property="og:description" content="{{description}}">
@@ -19,12 +22,16 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="{{title_ja}}｜ビズマンガ制作事例">
   <meta property="og:locale" content="ja_JP">
+  <meta property="article:section" content="{{category}}">
+  <meta property="article:publisher" content="https://bizmanga.contentsx.jp/">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
+  <meta name="twitter:creator" content="@Bizmanga_">
   <meta name="twitter:title" content="{{title_ja}} | 制作事例 | ビズマンガ">
   <meta name="twitter:description" content="{{description}}">
   <meta name="twitter:image" content="{{og_image}}">
+  <meta name="twitter:image:alt" content="{{title_ja}}｜ビズマンガ制作事例">
   <!-- GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Q1T3033Q3W');</script>
@@ -61,6 +68,7 @@
     "alternateName": "{{title_en}}",
     "description": "{{description}}",
     "url": "{{url}}",
+    "inLanguage": "ja",
     "image": {
       "@type": "ImageObject",
       "url": "{{og_image}}",
@@ -68,20 +76,30 @@
       "height": 630
     },
     "genre": "{{category}}",
-    "creator": {
+    "creator": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+    "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+    "isPartOf": {
+      "@type": "CollectionPage",
+      "@id": "https://bizmanga.contentsx.jp/works",
+      "name": "ビジネス漫画 制作事例集"
+    }
+  }
+  </script>
+  <!-- JSON-LD: Organization (canonical reference) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://bizmanga.contentsx.jp/#organization",
+    "name": "ビズマンガ",
+    "alternateName": ["BizManga", "ビズ漫画"],
+    "url": "https://bizmanga.contentsx.jp/",
+    "logo": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+    "sameAs": ["https://x.com/Bizmanga_", "https://contentsx.jp/"],
+    "parentOrganization": {
       "@type": "Organization",
-      "name": "ビズマンガ（BizManga）",
-      "url": "https://bizmanga.contentsx.jp/"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "ビズマンガ（BizManga）",
-      "url": "https://bizmanga.contentsx.jp/",
-      "parentOrganization": {
-        "@type": "Organization",
-        "name": "ContentsX（コンテンツエックス株式会社）",
-        "url": "https://contentsx.jp"
-      }
+      "name": "Contents X 株式会社",
+      "url": "https://contentsx.jp/"
     }
   }
   </script>
