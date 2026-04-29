@@ -26,6 +26,16 @@
   box-sizing: border-box;
   z-index: 1;
 }
+/* スマホ: scale 2.8 は見た目だけ拡大し box は元サイズのまま。
+   stage min-height/wrap min-height を最終状態(scale 1, 3スマホ横並び)に合わせ、
+   初期の拡大スマホは stage の overflow: hidden で自然に見切れさせる。 */
+@media (max-width: 768px) {
+  .s3d-stage {
+    min-height: auto;
+    padding-top: 80px;
+    padding-bottom: 60px;
+  }
+}
 
 /* news セクションを確実に前面に(s3d の pin fixed より上) */
 .bm-news { position: relative; z-index: 2; background: #fff; }
