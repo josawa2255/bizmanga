@@ -1367,8 +1367,9 @@
     margin-top: 20px;
     padding-top: 18px;
     border-top: 1px dashed #d8d4ca;
-  }
-  .pm-format-item.is-open .pm-format-detail {
+    /* 親が grid-template-columns: auto 1fr の2列グリッドのため、
+       grid-column 指定がないと「番号」列(auto=狭い)に押し込まれて
+       1文字ずつ折り返され縦書きのように見える。全幅にまたがる必要がある */
     grid-column: 1 / -1;
   }
   .pm-pain-detail p,

@@ -585,6 +585,7 @@ WordPress で works を追加・更新したら以下いずれか:
 12. **⭐ LP CASE STUDY は静的詳細を持つ作品だけに絞る** → `tools/build-lp-cases.py` が `/works/{slug}` リンクで CASE STUDY カードを生成するが、`build-works.py` は `show_site=="both"` の作品しか静的詳細ページを作らない。それ以外（`shohin-shokai` / `merumaga` 等）を CASE STUDY に出すと、404→`404.html` 内の自動リダイレクトで `/biz-library?manga={slug}` (漫画ビューア) に飛ばされる。`build-lp-cases.py` の `filter_for_lp` で `has_static_detail()` を必ず通すこと。2026-04-27 修正
 13. **⭐ CSS Grid 親要素の子に新タグを追加する時は必ず `grid-area` を指定** → `manga-production-company.html` の `.mpc-pain-entry` は `grid-template-areas: "num quote" / "num body"` の2カラム3行Grid。子に `<ul>` を追加した際、`grid-area` 未指定で auto-placement により細い `num` 列(96px)に配置されてレンダリング崩壊した。Grid親に追加する子要素は (1) `grid-template-areas` を拡張 (2) 子に `grid-area: <name>` を必ず付与の2点セット。2026-04-29 修正
 14. **⭐ `<ul>` の直接の子に `<p>` を置かない** → 同じく 2026-04-29 mpc改善時、`<ul>` 直下に `<p class="mpc-pain-examples-title">` を置いて HTML仕様違反 + ブラウザの暗黙閉じタグでレイアウト崩れ。リスト見出しは `<ul>` の外側 `<div>` でラップして `<span>` か `<p>` で配置すること
+15. **⭐ LP の SP アコーディオンで開く要素は `grid-column: 1 / -1` 必須** → `bm-lp-template.css` の `.pm-pain-item` / `.pm-merit-item` は `grid-template-columns: auto 1fr` の2列Grid（番号列 + 本文列）。`.is-open` で出てくる `.pm-*-detail` に `grid-column` 指定がないと auto-placement で「番号」列(auto=狭い)に押し込まれ、本文が1文字ずつ縦書き状に折り返される。`.pm-format-detail` と同じく `grid-column: 1 / -1` を必ず付ける。Gotcha #13 と同じパターン（Grid親 + 子の暗黙配置）。2026-04-29 修正、BUGS.md #019
 
 ## 15.1 セキュリティ・既知のリスク
 
