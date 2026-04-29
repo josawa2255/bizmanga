@@ -79,10 +79,21 @@
     .bm-col-static-content tr:nth-child(even) td { background: #faf8f5; }
     .bm-col-static-content th:last-child { color: var(--bm-accent, #e85500); }
     .bm-col-static-content td:last-child { color: var(--bm-accent, #e85500); font-weight: 700; }
+    /* 目次 (本文先頭にインライン配置) */
+    .bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
+    .bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
+    .bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
+    .bm-col-static-content h2 { scroll-margin-top: 100px; }
     @media (max-width: 768px) {
       .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
       .bm-col-static-title { margin-bottom: 28px; }
       .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
+      .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
+      .bm-col-toc-list a { font-size: 13.5px; }
     }
   </style>
   <!-- JSON-LD -->
@@ -192,6 +203,15 @@
         </div>
         <h1 class="bm-col-static-title">【徹底解説】ビジネス漫画の効果とは？ 脳科学的根拠から活用法まで</h1>
         <figure class="bm-col-static-hero"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/04/スクリーンショット-2026-04-16-23.01.21-1024x563.png" alt="【徹底解説】ビジネス漫画の効果とは？ 脳科学的根拠から活用法まで" loading="eager"></figure>
+              <nav class="bm-col-toc" aria-label="この記事の目次">
+        <p class="bm-col-toc-label">この記事の目次</p>
+        <ol class="bm-col-toc-list">
+        <li><a href="#sec-1">単なる「説明」を「物語」に変える。漫画が成果を出す3つの理由</a></li>
+        <li><a href="#sec-2">「ビズマンガ」が選ばれる理由。他社とは違う4つのポイント</a></li>
+        <li><a href="#sec-3">採用から営業、研修まで。ビジネスを加速させる活用シーン</a></li>
+        </ol>
+      </nav>
+
         <div class="bm-col-static-content">
           
 
@@ -200,7 +220,7 @@
 
 
 
-<h2>単なる「説明」を「物語」に変える。漫画が成果を出す3つの理由</h2>
+<h2 id="sec-1">単なる「説明」を「物語」に変える。漫画が成果を出す3つの理由</h2>
 <p>漫画の本当の凄さは、絵があることだけではありません。最も重要なのは「物語（ストーリー）」という要素です。</p>
 <ul>
 <li><strong>記憶への残りやすさが最大22倍に：</strong>スタンフォード大学の研究によると、「物語として伝えることで最大22倍も記憶に残りやすくなる」とされています。</li>
@@ -209,7 +229,7 @@
 </ul>
 <p>複雑な事業内容や企業の成り立ちも、漫画というフィルターを通すことで、読者は自然に「共感」し、次のアクションへと繋がりやすくなります。</p>
 
-<h2>「ビズマンガ」が選ばれる理由。他社とは違う4つのポイント</h2>
+<h2 id="sec-2">「ビズマンガ」が選ばれる理由。他社とは違う4つのポイント</h2>
 <p>ビジネス漫画を制作するサービスは数多くありますが、漫画化のメリットを最大限に引き出しつつ、圧倒的なコストパフォーマンスを実現しているのが『ビズマンガ』です。</p>
 <table>
 <thead>
@@ -229,7 +249,7 @@
 
 
 
-<h2>採用から営業、研修まで。ビジネスを加速させる活用シーン</h2>
+<h2 id="sec-3">採用から営業、研修まで。ビジネスを加速させる活用シーン</h2>
 <p>「漫画は集客に使うもの」と思われがちですが、実はビジネスのあらゆる局面で効果を発揮します。</p>
 <ul>
 <li><strong>採用活動：</strong>創業ストーリーや社員の1日を漫画化。候補者の心に響く「共感採用」を実現します。</li>

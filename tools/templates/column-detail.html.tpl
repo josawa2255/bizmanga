@@ -79,10 +79,21 @@
     .bm-col-static-content tr:nth-child(even) td { background: #faf8f5; }
     .bm-col-static-content th:last-child { color: var(--bm-accent, #e85500); }
     .bm-col-static-content td:last-child { color: var(--bm-accent, #e85500); font-weight: 700; }
+    /* 目次 (本文先頭にインライン配置) */
+    .bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
+    .bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
+    .bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
+    .bm-col-static-content h2 { scroll-margin-top: 100px; }
     @media (max-width: 768px) {
       .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
       .bm-col-static-title { margin-bottom: 28px; }
       .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
+      .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
+      .bm-col-toc-list a { font-size: 13.5px; }
     }
   </style>
   <!-- JSON-LD -->
@@ -192,6 +203,7 @@
         </div>
         <h1 class="bm-col-static-title">{{title_ja}}</h1>
         {{hero_html}}
+        {{toc_html}}
         <div class="bm-col-static-content">
           {{content_html}}
         </div>

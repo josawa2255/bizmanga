@@ -79,10 +79,21 @@
     .bm-col-static-content tr:nth-child(even) td { background: #faf8f5; }
     .bm-col-static-content th:last-child { color: var(--bm-accent, #e85500); }
     .bm-col-static-content td:last-child { color: var(--bm-accent, #e85500); font-weight: 700; }
+    /* 目次 (本文先頭にインライン配置) */
+    .bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
+    .bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
+    .bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
+    .bm-col-static-content h2 { scroll-margin-top: 100px; }
     @media (max-width: 768px) {
       .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
       .bm-col-static-title { margin-bottom: 28px; }
       .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
+      .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
+      .bm-col-toc-list a { font-size: 13.5px; }
     }
   </style>
   <!-- JSON-LD -->
@@ -192,13 +203,26 @@
         </div>
         <h1 class="bm-col-static-title">採用マンガとは？4タイプの効果と費用相場・発注先選び5つの基準</h1>
         <figure class="bm-col-static-hero"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/04/採用マンガ修正-へっだー-1024x572.webp" alt="採用マンガとは？4タイプの効果と費用相場・発注先選び5つの基準" loading="eager"></figure>
+              <nav class="bm-col-toc" aria-label="この記事の目次">
+        <p class="bm-col-toc-label">この記事の目次</p>
+        <ol class="bm-col-toc-list">
+        <li><a href="#sec-1">なぜ今、採用にマンガを取り入れる企業が増えているのか</a></li>
+        <li><a href="#sec-2">採用マンガの主な4タイプと、自社課題とのマッチング</a></li>
+        <li><a href="#sec-3">採用マンガはどれだけ数値を動かすのか――定量データで見る効果</a></li>
+        <li><a href="#sec-4">1本の採用マンガを採用以外にも展開する――多用途運用と資産価値</a></li>
+        <li><a href="#sec-5">採用マンガの費用相場と納期――社内稟議で押さえる金額感</a></li>
+        <li><a href="#sec-6">失敗しない発注先の選び方――5つのチェックポイント</a></li>
+        <li><a href="#sec-7">まとめ：採用 マンガを社内提案に進めるための次の一歩</a></li>
+        </ol>
+      </nav>
+
         <div class="bm-col-static-content">
           
 <p>「採用 マンガ」――採用シーンに活用するマンガコンテンツが、応募数や内定承諾率の頭打ちに悩む採用担当者の選択肢として広がっています。とはいえ「具体的にどんな型があり、どれくらい数値が変わり、いくらで、どこに頼めばよいのか」を整理しないまま社内提案を求められる場面も珍しくありません。本記事では、採用マンガの主要タイプ・効果データ・費用相場・発注先選定の基準までを、社内稟議で使える粒度で整理します。読了後には、自社課題に合った提案資料の骨子を組み立てられる状態を目指します。</p>
 
 
 
-<h2 class="wp-block-heading">なぜ今、採用にマンガを取り入れる企業が増えているのか</h2>
+<h2 class="wp-block-heading" id="sec-1">なぜ今、採用にマンガを取り入れる企業が増えているのか</h2>
 
 
 
@@ -222,7 +246,7 @@
 
 
 
-<h2 class="wp-block-heading">採用マンガの主な4タイプと、自社課題とのマッチング</h2>
+<h2 class="wp-block-heading" id="sec-2">採用マンガの主な4タイプと、自社課題とのマッチング</h2>
 
 
 
@@ -282,7 +306,7 @@
 
 
 
-<h2 class="wp-block-heading">採用マンガはどれだけ数値を動かすのか――定量データで見る効果</h2>
+<h2 class="wp-block-heading" id="sec-3">採用マンガはどれだけ数値を動かすのか――定量データで見る効果</h2>
 
 
 
@@ -340,7 +364,7 @@
 
 
 
-<h2 class="wp-block-heading">1本の採用マンガを採用以外にも展開する――多用途運用と資産価値</h2>
+<h2 class="wp-block-heading" id="sec-4">1本の採用マンガを採用以外にも展開する――多用途運用と資産価値</h2>
 
 
 
@@ -368,7 +392,7 @@
 
 
 
-<h2 class="wp-block-heading">採用マンガの費用相場と納期――社内稟議で押さえる金額感</h2>
+<h2 class="wp-block-heading" id="sec-5">採用マンガの費用相場と納期――社内稟議で押さえる金額感</h2>
 
 
 
@@ -400,7 +424,7 @@
 
 
 
-<h2 class="wp-block-heading">失敗しない発注先の選び方――5つのチェックポイント</h2>
+<h2 class="wp-block-heading" id="sec-6">失敗しない発注先の選び方――5つのチェックポイント</h2>
 
 
 
@@ -456,7 +480,7 @@
 
 
 
-<h2 class="wp-block-heading">まとめ：採用 マンガを社内提案に進めるための次の一歩</h2>
+<h2 class="wp-block-heading" id="sec-7">まとめ：採用 マンガを社内提案に進めるための次の一歩</h2>
 
 
 

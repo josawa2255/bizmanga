@@ -92,6 +92,71 @@ def estimate_readtime(text):
     return minutes
 
 
+H2_PATTERN = re.compile(r"<h2(\s[^>]*)?>(.*?)</h2>", re.DOTALL | re.IGNORECASE)
+H2_ID_ATTR = re.compile(r'\bid\s*=\s*"([^"]+)"', re.IGNORECASE)
+
+
+def build_toc_and_inject_ids(content_html):
+    """
+    本文HTMLの <h2> を走査して:
+      - 各見出しに id="sec-N" を付与（既存idは尊重）
+      - 目次HTMLを生成
+
+    h2 が 2 つ未満なら目次は出さない（""を返す）。
+    Returns: (toc_html, content_with_ids)
+    """
+    if not content_html:
+        return "", content_html or ""
+
+    matches = list(H2_PATTERN.finditer(content_html))
+    if len(matches) < 2:
+        return "", content_html
+
+    items = []
+    pieces = []
+    last_end = 0
+
+    for i, m in enumerate(matches, start=1):
+        attrs = m.group(1) or ""
+        inner = m.group(2) or ""
+        existing = H2_ID_ATTR.search(attrs)
+        if existing:
+            sec_id = existing.group(1)
+            new_h2 = m.group(0)  # idがあるならそのまま
+        else:
+            sec_id = f"sec-{i}"
+            new_h2 = f'<h2{attrs} id="{sec_id}">{inner}</h2>'
+
+        toc_text = re.sub(r"<[^>]+>", "", inner).strip()
+        if not toc_text:
+            continue
+
+        items.append((sec_id, toc_text))
+        pieces.append(content_html[last_end:m.start()])
+        pieces.append(new_h2)
+        last_end = m.end()
+
+    pieces.append(content_html[last_end:])
+    content_with_ids = "".join(pieces)
+
+    if len(items) < 2:
+        return "", content_html
+
+    li_html = "".join(
+        f'        <li><a href="#{esc(sid)}">{esc(text)}</a></li>\n'
+        for sid, text in items
+    )
+    toc_html = (
+        '      <nav class="bm-col-toc" aria-label="この記事の目次">\n'
+        '        <p class="bm-col-toc-label">この記事の目次</p>\n'
+        '        <ol class="bm-col-toc-list">\n'
+        f'{li_html}'
+        '        </ol>\n'
+        '      </nav>\n'
+    )
+    return toc_html, content_with_ids
+
+
 def build_card(c):
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
@@ -246,6 +311,8 @@ def build_detail_page(col, detail_data, template):
             f'</figure>'
         )
 
+    toc_html, content_with_ids = build_toc_and_inject_ids(content)
+
     replacements = {
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
@@ -258,7 +325,8 @@ def build_detail_page(col, detail_data, template):
         "{{modified_ymd}}": esc(modified_ymd),
         "{{url}}": f"{SITE}/column/{slug}",
         "{{hero_html}}": hero_html,
-        "{{content_html}}": content,
+        "{{toc_html}}": toc_html,
+        "{{content_html}}": content_with_ids,
     }
 
     out = template

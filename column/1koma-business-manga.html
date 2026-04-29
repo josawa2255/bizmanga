@@ -79,10 +79,21 @@
     .bm-col-static-content tr:nth-child(even) td { background: #faf8f5; }
     .bm-col-static-content th:last-child { color: var(--bm-accent, #e85500); }
     .bm-col-static-content td:last-child { color: var(--bm-accent, #e85500); font-weight: 700; }
+    /* 目次 (本文先頭にインライン配置) */
+    .bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
+    .bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
+    .bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+    .bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+    .bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+    .bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
+    .bm-col-static-content h2 { scroll-margin-top: 100px; }
     @media (max-width: 768px) {
       .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
       .bm-col-static-title { margin-bottom: 28px; }
       .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
+      .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
+      .bm-col-toc-list a { font-size: 13.5px; }
     }
   </style>
   <!-- JSON-LD -->
@@ -192,9 +203,20 @@
         </div>
         <h1 class="bm-col-static-title">読まれない資料を劇的改善！「1コマビジネス漫画」の効果と活用法</h1>
         <figure class="bm-col-static-hero"><img src="https://cms.contentsx.jp/wp-content/uploads/2026/04/スクリーンショット-2026-04-17-9.28.01-1024x570.webp" alt="読まれない資料を劇的改善！「1コマビジネス漫画」の効果と活用法" loading="eager"></figure>
+              <nav class="bm-col-toc" aria-label="この記事の目次">
+        <p class="bm-col-toc-label">この記事の目次</p>
+        <ol class="bm-col-toc-list">
+        <li><a href="#sec-1">なぜ今、ビジネスに「1コマ漫画」が必要なのか？</a></li>
+        <li><a href="#sec-2">科学と歴史が証明する「漫画」の圧倒的な記憶定着率</a></li>
+        <li><a href="#sec-3">低コスト・高品質を実現するビジネス漫画戦略</a></li>
+        <li><a href="#sec-4">採用から販促まで — 明日から使える活用シーン</a></li>
+        <li><a href="#sec-5">まとめ：1コマビジネス漫画が選ばれる理由</a></li>
+        </ol>
+      </nav>
+
         <div class="bm-col-static-content">
           
-<h2>なぜ今、ビジネスに「1コマ漫画」が必要なのか？</h2>
+<h2 id="sec-1">なぜ今、ビジネスに「1コマ漫画」が必要なのか？</h2>
 <p>現代社会では、SNSの普及により1日に接する情報量は20年前の約500倍にまで膨れ上がっています。一方で、Microsoft社の調査によると私たちの平均的な集中時間は<strong>わずか8秒</strong>。せっかく時間をかけて作ったビジネス資料も「読まれない」「伝わらない」という深刻な課題に直面しています。</p>
 <p>特にBtoBビジネスにおいては、複雑な事業内容や専門的なサービスをいかに「一瞬で」理解してもらうかが勝負の分かれ目です。そこで注目されているのが、情報を極限まで凝縮した<strong>「1コマ漫画」</strong>をはじめとするビジネス漫画の活用です。</p>
 
@@ -212,7 +234,7 @@
 
 
 
-<h2>科学と歴史が証明する「漫画」の圧倒的な記憶定着率</h2>
+<h2 id="sec-2">科学と歴史が証明する「漫画」の圧倒的な記憶定着率</h2>
 <p>漫画が選ばれる理由は、単に「親しみやすいから」だけではありません。人間の脳の仕組みに基づいた明確なエビデンスがあります。</p>
 
 <h3>記憶定着率6.5倍、ストーリー効果で最大22倍</h3>
@@ -229,7 +251,7 @@
 
 
 
-<h2>低コスト・高品質を実現するビジネス漫画戦略</h2>
+<h2 id="sec-3">低コスト・高品質を実現するビジネス漫画戦略</h2>
 <p>「漫画制作は高い」「納期がかかる」と思い込んでいませんか？ ビジネス特化型漫画制作サービス『ビズマンガ』は、従来の業界常識を覆す圧倒的なコストパフォーマンスを提供します。</p>
 <table>
 <thead>
@@ -243,7 +265,7 @@
 </table>
 <p>低価格を実現できる理由は、単に質を下げているからではありません。「ビジネス利用に特化」し、プロの漫画家監修のもとで制作工程を最適化しているからです。ページ単価を抑えることで、浮いた予算をストーリーの充実に充て、より「伝わる」コンテンツを制作できます。</p>
 
-<h2>採用から販促まで — 明日から使える活用シーン</h2>
+<h2 id="sec-4">採用から販促まで — 明日から使える活用シーン</h2>
 <p>ビジネス漫画は、あらゆるビジネスシーンで「課題解決のソリューション」として機能します。</p>
 
 <h3>採用広報</h3>
@@ -265,7 +287,7 @@
 
 
 
-<h2>まとめ：1コマビジネス漫画が選ばれる理由</h2>
+<h2 id="sec-5">まとめ：1コマビジネス漫画が選ばれる理由</h2>
 <ul>
 <li><strong>科学的根拠：</strong>二重符号化理論＋ストーリー効果で、文字だけの資料より最大22倍記憶に残る</li>
 <li><strong>文化的強み：</strong>明治時代から続く「一瞬で本質を突く」日本の伝統手法</li>
