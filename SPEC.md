@@ -3,7 +3,7 @@
 **ドメイン**: bizmanga.contentsx.jp
 **リポジトリ**: [josawa2255/bizmanga](https://github.com/josawa2255/bizmanga)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-20
+**最終更新**: 2026-04-29
 
 > このファイルは BizManga 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約しておき、将来のメンテ時に参照します。
 
@@ -28,6 +28,7 @@
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日英切替・OGP動的更新。Editorial Magazineデザイン |
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行 |
 | **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。共通テンプレ `css/bm-lp-template.css`。各LPは Hero→Formats→Problem→Bridge→Merit→Case Study(WP API動的)→ビズ書庫埋込→**制作フロー(6 Step, HowTo Schema)**→**FAQ(8問, FAQPage Schema)**→**関連LP相互リンク7本**→Ending の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + HowTo + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified: 2026-04-27`、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
+| **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-i18n` + `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→数字で見る違い→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加 |
 
 ## 2. URL パラメータ・特殊モード
 
@@ -582,6 +583,8 @@ WordPress で works を追加・更新したら以下いずれか:
 10. **⭐ 空のお客様コメントは「—」ではなくセクション自体を非表示に** → WP側に `comment` が未入力の場合は `<section>お客様コメント</section>` 全体をレンダリングしない。空欄ダミーは SEO (Helpful Content / E-E-A-T) 減点要因。2026-04-21 build-works.py で条件分岐化
 11. **⭐ メガメニューはモバイルで `position: static` に上書き必須** → `.bm-nav-megamenu` はデスクトップで `position: absolute` + `:hover/:focus-within` 展開。モバイルドロワー（`.bm-nav.open`）では絶対配置のままだと他ナビ項目（料金/コラム/FAQ）に被さってスクロールできない。`@media (max-width: 880px)` 内で `.bm-nav.open .bm-nav-megamenu` を `position: static; display: none;`、`.is-open` 時に `display: block` で展開し、`:hover/:focus-within` 由来のフロート展開を打ち消すこと。2026-04-26 修正
 12. **⭐ LP CASE STUDY は静的詳細を持つ作品だけに絞る** → `tools/build-lp-cases.py` が `/works/{slug}` リンクで CASE STUDY カードを生成するが、`build-works.py` は `show_site=="both"` の作品しか静的詳細ページを作らない。それ以外（`shohin-shokai` / `merumaga` 等）を CASE STUDY に出すと、404→`404.html` 内の自動リダイレクトで `/biz-library?manga={slug}` (漫画ビューア) に飛ばされる。`build-lp-cases.py` の `filter_for_lp` で `has_static_detail()` を必ず通すこと。2026-04-27 修正
+13. **⭐ CSS Grid 親要素の子に新タグを追加する時は必ず `grid-area` を指定** → `manga-production-company.html` の `.mpc-pain-entry` は `grid-template-areas: "num quote" / "num body"` の2カラム3行Grid。子に `<ul>` を追加した際、`grid-area` 未指定で auto-placement により細い `num` 列(96px)に配置されてレンダリング崩壊した。Grid親に追加する子要素は (1) `grid-template-areas` を拡張 (2) 子に `grid-area: <name>` を必ず付与の2点セット。2026-04-29 修正
+14. **⭐ `<ul>` の直接の子に `<p>` を置かない** → 同じく 2026-04-29 mpc改善時、`<ul>` 直下に `<p class="mpc-pain-examples-title">` を置いて HTML仕様違反 + ブラウザの暗黙閉じタグでレイアウト崩れ。リスト見出しは `<ul>` の外側 `<div>` でラップして `<span>` か `<p>` で配置すること
 
 ## 15.1 セキュリティ・既知のリスク
 
