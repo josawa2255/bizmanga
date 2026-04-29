@@ -532,18 +532,18 @@
   transform: translateY(0);
 }
 
-/* ---- 章番号 (Ⅰ Ⅱ Ⅲ) ---- */
+/* ---- 章番号 (01 02 03) ---- */
 .mpc-pain-num {
   grid-area: num;
   font-family: "Noto Serif JP", serif;
-  font-weight: 700;
-  font-size: 64px;
+  font-weight: 900;
+  font-size: 56px;
   line-height: 0.85;
   color: var(--mpc-ink);
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   padding-top: 4px;
   user-select: none;
-  /* 章扉らしいかすかな影で紙面の沈み込みを表現 */
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 .mpc-pain-num::after {
   content: "";
@@ -1182,7 +1182,7 @@
     padding: 40px 0 44px;
   }
   .mpc-pain-num {
-    font-size: 44px;
+    font-size: 38px;
     padding-top: 0;
   }
   .mpc-pain-num::after {
@@ -1325,12 +1325,14 @@
   }
   .mpc-toc-num {
     font-family: "Noto Serif JP", serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: inherit;
-    width: 14px;
+    width: 22px;
     flex-shrink: 0;
     text-align: right;
+    letter-spacing: -0.01em;
+    font-feature-settings: "tnum" 1, "lnum" 1;
   }
   .mpc-toc-label {
     position: relative;
