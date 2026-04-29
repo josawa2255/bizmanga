@@ -32,8 +32,11 @@
 @media (max-width: 768px) {
   .s3d-stage {
     min-height: auto;
-    padding-top: 80px;
+    padding-top: 32px;
     padding-bottom: 60px;
+    /* 見出しを絶対配置からフロー配置に変えるため、縦並びに */
+    flex-direction: column;
+    gap: 24px;
   }
 }
 
@@ -222,6 +225,19 @@
   margin: 0;
   letter-spacing: 0.02em;
   line-height: 1.2;
+}
+/* SP: 見出しを絶対配置から外し、スマホ画像の上に普通に積む */
+@media (max-width: 768px) {
+  .s3d-heading {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    width: 100%;
+  }
+  .s3d-heading h2 {
+    font-size: 17px;
+    line-height: 1.4;
+  }
 }
 
 /* タイル群ラッパー */
