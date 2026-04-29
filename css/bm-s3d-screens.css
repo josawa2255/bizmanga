@@ -32,11 +32,13 @@
 @media (max-width: 768px) {
   .s3d-stage {
     min-height: auto;
-    padding-top: 32px;
+    padding-top: 24px;
     padding-bottom: 60px;
     /* 見出しを絶対配置からフロー配置に変えるため、縦並びに */
     flex-direction: column;
-    gap: 24px;
+    /* gap は heading と wrap の間。.s3d-labels が wrap 上端から
+       約 50px 飛び出して絶対配置されるため、それを吸収する大きめの間隔が必要 */
+    gap: 72px;
   }
 }
 
@@ -282,7 +284,12 @@
 }
 .s3d-heading-row h2 { margin: 0; }
 @media (max-width: 768px) {
-  .s3d-heading-row { gap: 8px; }
+  /* SP では h2 と CTA を縦に積む（横並びだと 393px に収まらず CTA がスマホ画像に被る） */
+  .s3d-heading-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 /* 見出し横のCTA: 上部メニュー「お問い合わせ」と同じピル+斜めスイープ塗りエフェクト */
