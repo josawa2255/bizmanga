@@ -170,6 +170,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 |---|---|---|
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
+| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。CV計測イベントは未設定（必要時に thanks ページで `gtag('event','conversion',{send_to:'AW-18108125426/<label>'})` 発火） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
