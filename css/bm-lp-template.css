@@ -267,8 +267,19 @@
   text-align: center;
 }
 @media (max-width: 600px) {
-  .pm-formats--illustrated .pm-format-item { padding: 0 4px 10px; }
-  .pm-format-illust { margin-bottom: 4px; }
+  .pm-formats--illustrated .pm-format-item { padding: 12px 12px 14px; }
+  .pm-format-illust { margin-bottom: 6px; }
+}
+/* SP: イラスト版は2列維持(1列だと画像が大き過ぎ) */
+@media (max-width: 520px) {
+  .pm-formats--illustrated {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .pm-formats--illustrated .pm-format-item { padding: 8px 8px 10px; }
+  .pm-formats--illustrated .pm-format-name { font-size: 14px; }
+  .pm-formats--illustrated .pm-format-en { font-size: 8.5px; }
+  .pm-formats--illustrated .pm-format-use { font-size: 11px; }
 }
 
 /* === pm-merit-list--illustrated / pm-pain-list--illustrated: 番号 | (タイトル/本文/画像 縦積み) === */
