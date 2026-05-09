@@ -224,21 +224,13 @@
   grid-row: 3;
 }
 
-/* === pm-formats--illustrated: large illustration on top, no frame === */
+/* === pm-formats--illustrated: large illustration on top, card frame retained === */
 .pm-formats--illustrated .pm-format-item {
   grid-template-columns: 1fr;
   grid-template-rows: auto auto auto auto;
-  padding: 0 4px 12px;
+  padding: 16px 16px 18px;
   align-items: start;
   row-gap: 2px;
-  border: none;
-  border-left: none;
-  background: transparent;
-}
-.pm-formats--illustrated .pm-format-item:hover {
-  transform: translateY(-3px);
-  box-shadow: none;
-  border-color: transparent;
 }
 .pm-format-illust {
   display: block;
