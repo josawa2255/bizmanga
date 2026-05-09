@@ -48,7 +48,7 @@
 .pm-hero-strip {
   position: relative;
   width: 100%;
-  height: 680px;
+  height: 560px;
   overflow: hidden;
   margin-top: 68px; /* ヘッダー分 */
   background: #1a0f05;
@@ -67,14 +67,14 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 75%;
-  height: 95%;
+  width: 70%;
+  height: 85%;
   background: radial-gradient(
-    ellipse 80% 78% at 28% 70%,
-    rgba(255, 252, 247, 0.96) 0%,
-    rgba(255, 252, 247, 0.84) 24%,
-    rgba(255, 252, 247, 0.55) 50%,
-    rgba(255, 252, 247, 0.22) 74%,
+    ellipse 75% 70% at 28% 75%,
+    rgba(255, 252, 247, 0.92) 0%,
+    rgba(255, 252, 247, 0.75) 22%,
+    rgba(255, 252, 247, 0.45) 48%,
+    rgba(255, 252, 247, 0.18) 72%,
     rgba(255, 252, 247, 0) 100%
   );
   filter: blur(8px);
@@ -84,8 +84,8 @@
 .pm-hero-overlay {
   position: absolute;
   left: max(32px, 5vw);
-  bottom: 48px;
-  max-width: min(880px, 64vw);
+  bottom: 56px;
+  max-width: min(820px, 60vw);
   z-index: 2;
   color: #1a1a1a;
 }
@@ -117,95 +117,6 @@
   height: 3px;
   background: var(--bm-accent, #e85500);
   margin-top: 24px;
-}
-
-/* ヒーロー: サブコピー */
-.pm-hero-sub {
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: clamp(14px, 1.1vw, 17px);
-  line-height: 1.8;
-  color: #2a2520;
-  margin: 22px 0 0;
-  max-width: 540px;
-  letter-spacing: 0.02em;
-}
-
-/* ヒーロー: トラストバッジ（3列） */
-.pm-hero-badges {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin: 28px 0 26px;
-  padding: 0;
-  list-style: none;
-  flex-wrap: wrap;
-}
-.pm-hero-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  padding: 0 22px;
-  flex: 0 0 auto;
-}
-.pm-hero-badge:first-child { padding-left: 0; }
-.pm-hero-badge:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 12%;
-  width: 1px;
-  height: 76%;
-  background: rgba(26, 15, 5, 0.18);
-}
-.pm-hero-badge-num {
-  font-family: 'Noto Serif JP', serif;
-  font-weight: 900;
-  font-size: clamp(22px, 2.2vw, 30px);
-  color: #b85a2b;
-  letter-spacing: 0.01em;
-  line-height: 1;
-  display: block;
-  white-space: nowrap;
-}
-.pm-hero-badge-num small {
-  font-size: 0.5em;
-  margin: 0 1px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-.pm-hero-badge-label {
-  font-size: clamp(11px, 0.85vw, 12.5px);
-  line-height: 1.5;
-  color: #2a2520;
-  margin-top: 8px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
-
-/* ヒーロー: CTA行 */
-.pm-hero-ctas {
-  display: flex;
-  gap: 22px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-.pm-hero-cta { --pm-cta-w: 280px; --pm-cta-h: 56px; }
-.pm-hero-secondary-cta {
-  font-size: 14px;
-  font-weight: 700;
-  color: #2a2520;
-  text-decoration: underline;
-  text-decoration-color: rgba(26, 15, 5, 0.3);
-  text-underline-offset: 6px;
-  letter-spacing: 0.04em;
-  transition: color 0.2s ease, text-decoration-color 0.2s ease;
-}
-.pm-hero-secondary-cta:hover {
-  color: #e85500;
-  text-decoration-color: #e85500;
 }
 
 /* === マストヘッド（ヒーロー直下: リード文 + meta + CTA） === */
@@ -325,21 +236,20 @@
 /* SP */
 @media (max-width: 879px) {
   .pm-hero-strip {
-    height: 740px;
+    height: 460px;
     margin-top: 60px;
   }
-  .pm-hero-strip img { object-position: center 25%; }
+  .pm-hero-strip img { object-position: center 30%; }
   .pm-hero-strip::before {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 78%;
+    height: 60%;
     background: radial-gradient(
-      ellipse 110% 90% at 50% 95%,
-      rgba(255, 252, 247, 0.97) 0%,
-      rgba(255, 252, 247, 0.86) 28%,
-      rgba(255, 252, 247, 0.5) 58%,
-      rgba(255, 252, 247, 0.18) 82%,
+      ellipse 95% 80% at 50% 90%,
+      rgba(255, 252, 247, 0.95) 0%,
+      rgba(255, 252, 247, 0.78) 30%,
+      rgba(255, 252, 247, 0.4) 60%,
       rgba(255, 252, 247, 0) 100%
     );
     filter: blur(10px);
@@ -347,7 +257,7 @@
   .pm-hero-overlay {
     left: 20px;
     right: 20px;
-    bottom: 28px;
+    bottom: 32px;
     max-width: none;
   }
   .pm-hero-eyebrow {
@@ -361,30 +271,6 @@
   }
   .pm-hero-title span { white-space: normal; }
   .pm-hero-divider { width: 40px; margin-top: 18px; }
-  .pm-hero-sub {
-    font-size: 13.5px;
-    line-height: 1.75;
-    margin: 14px 0 0;
-  }
-  .pm-hero-badges {
-    margin: 18px 0 18px;
-    gap: 0;
-  }
-  .pm-hero-badge { padding: 0 12px; }
-  .pm-hero-badge-num { font-size: 18px; }
-  .pm-hero-badge-num small { font-size: 0.55em; }
-  .pm-hero-badge-label {
-    font-size: 10.5px;
-    line-height: 1.45;
-    margin-top: 6px;
-  }
-  .pm-hero-ctas {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .pm-hero-cta { --pm-cta-w: 100%; max-width: 320px; }
-  .pm-hero-secondary-cta { font-size: 13px; }
   .pm-masthead { padding: 40px 0 36px; }
   .pm-lead { font-size: 16px; line-height: 1.95; margin-bottom: 26px; }
   .pm-formats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 32px; }
@@ -590,86 +476,6 @@
   .pm-cta-btn { --pm-cta-w: 100%; max-width: 320px; }
 }
 
-/* === 数値タイル（EFFECT IN NUMBERS） === */
-.pm-stats-section { background: #faf7f2; }
-.pm-stat-tiles {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.pm-stat-tile {
-  background: #fff;
-  border: 1px solid #efece6;
-  border-left: 4px solid #e85500;
-  padding: 22px 22px 22px 26px;
-  display: grid;
-  grid-template-columns: minmax(110px, auto) 1fr;
-  align-items: center;
-  column-gap: 22px;
-  box-shadow: 0 2px 12px rgba(50, 30, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.pm-stat-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(50, 30, 0, 0.1);
-}
-.pm-stat-tile-num {
-  font-family: 'Noto Serif JP', serif;
-  font-weight: 900;
-  font-size: clamp(34px, 4vw, 48px);
-  color: #e85500;
-  line-height: 1;
-  letter-spacing: 0.005em;
-  white-space: nowrap;
-}
-.pm-stat-tile-num small {
-  font-size: 0.45em;
-  margin: 0 1px;
-  font-weight: 700;
-  color: #b85a2b;
-  letter-spacing: 0.04em;
-}
-.pm-stat-tile-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.pm-stat-tile-label {
-  font-family: 'Noto Serif JP', serif;
-  font-size: clamp(15px, 1.2vw, 17px);
-  font-weight: 900;
-  color: #1a1a1a;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
-}
-.pm-stat-tile-note {
-  font-size: clamp(11.5px, 0.85vw, 12.5px);
-  color: #6a625a;
-  line-height: 1.55;
-  letter-spacing: 0.02em;
-}
-.pm-stat-disclaimer {
-  font-size: 11.5px;
-  color: #8a857d;
-  text-align: center;
-  margin: 22px 0 0;
-  letter-spacing: 0.02em;
-  line-height: 1.6;
-}
-@media (max-width: 480px) {
-  .pm-stat-tile {
-    grid-template-columns: 1fr;
-    text-align: center;
-    row-gap: 10px;
-    padding: 22px 20px;
-  }
-  .pm-stat-tile-num { white-space: nowrap; }
-}
-
 /* === 2. ペイン === */
 .pm-pain-list {
   display: grid;
@@ -680,20 +486,12 @@
   padding: 28px 28px 30px;
   background: #fff;
   border: 1px solid #efece6;
-  border-left: 4px solid #e85500;
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   column-gap: 24px;
   row-gap: 8px;
   align-items: start;
-  box-shadow: 0 2px 14px rgba(50, 30, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.pm-pain-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(50, 30, 0, 0.12);
-  border-left-color: #cc4600;
 }
 .pm-pain-num {
   font-family: 'Noto Serif JP', serif;
@@ -755,84 +553,37 @@
   font-weight: 900;
 }
 
-/* === 4. メリット（ダークバンド） === */
-.pm-merit-section {
-  background: #14213d;
-  color: #fff;
-  border-top: 0;
-  position: relative;
-  overflow: hidden;
-}
-.pm-merit-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(232, 85, 0, 0.12), transparent 60%),
-    radial-gradient(ellipse 50% 35% at 100% 100%, rgba(255, 179, 128, 0.08), transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-.pm-merit-section > * { position: relative; z-index: 1; }
-.pm-merit-section .pm-h2 { color: #fff; }
-.pm-merit-section .pm-h2 em {
-  color: #ffb380;
-  background: linear-gradient(transparent 62%, rgba(255, 179, 128, 0.22) 62%);
-}
-.pm-merit-section .pm-eyebrow {
-  color: #ffb380;
-  border-bottom-color: rgba(255, 179, 128, 0.6);
-}
-
+/* === 4. メリット === */
 .pm-merit-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 0;
   counter-reset: merit;
-  border-top: 0;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  border-top: 1px solid #efece6;
 }
 .pm-merit-item {
-  padding: 32px 28px 30px 26px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  padding: 28px 28px 30px;
+  border-bottom: 1px solid #efece6;
   counter-increment: merit;
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
-  column-gap: 22px;
-  row-gap: 10px;
+  column-gap: 24px;
+  row-gap: 8px;
   align-items: start;
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-.pm-merit-item:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 179, 128, 0.4);
 }
 .pm-merit-num {
-  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
-  font-size: 22px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(36px, 3vw, 48px);
   font-weight: 900;
-  color: #fff;
-  background: #e85500;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  color: #e85500;
   line-height: 1;
-  letter-spacing: 0.02em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  letter-spacing: 0;
+  display: block;
   margin: 0;
   grid-row: 1 / span 2;
   grid-column: 1;
-  align-self: start;
-  box-shadow: 0 6px 18px rgba(232, 85, 0, 0.35);
-  flex-shrink: 0;
+  align-self: center;
 }
 .pm-merit-num::before { content: '0'; }
 .pm-merit-num::after { content: counter(merit); }
@@ -841,44 +592,24 @@
   font-size: clamp(17px, 1.4vw, 20px);
   font-weight: 900;
   line-height: 1.55;
-  color: #fff;
+  color: #1a1a1a;
   margin: 0;
-  letter-spacing: 0.02em;
   grid-column: 2;
   grid-row: 1;
-  align-self: center;
 }
 .pm-merit-title em {
   font-style: normal;
-  color: #ffb380;
-  background: linear-gradient(transparent 62%, rgba(255, 179, 128, 0.22) 62%);
+  color: #e85500;
+  background: linear-gradient(transparent 62%, rgba(232, 85, 0, 0.18) 62%);
   padding: 0 2px;
 }
 .pm-merit-text {
   font-size: clamp(14px, 1.05vw, 15.5px);
   line-height: 1.85;
-  color: rgba(255, 255, 255, 0.84);
+  color: #4a4640;
   margin: 0;
   grid-column: 2;
   grid-row: 2;
-  letter-spacing: 0.02em;
-}
-@media (max-width: 480px) {
-  .pm-merit-item {
-    grid-template-columns: 1fr;
-    column-gap: 0;
-    row-gap: 14px;
-    padding: 26px 22px;
-  }
-  .pm-merit-num {
-    grid-row: 1;
-    grid-column: 1;
-    width: 48px;
-    height: 48px;
-    font-size: 18px;
-  }
-  .pm-merit-title { grid-column: 1; grid-row: 2; }
-  .pm-merit-text { grid-column: 1; grid-row: 3; }
 }
 
 /* === 5. 制作事例（works.html風 エディトリアル横長カード・コンパクト版） === */
@@ -1103,76 +834,6 @@
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
-}
-
-/* === pm-end--rich: 安心ポイントチェックリスト === */
-.pm-end-points {
-  list-style: none;
-  padding: 0;
-  margin: 8px auto 44px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  max-width: 520px;
-  text-align: left;
-}
-.pm-end-point {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 16px;
-  align-items: start;
-  padding: 14px 18px;
-  background: #fff;
-  border: 1px solid #efece6;
-  border-left: 3px solid #e85500;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(50, 30, 0, 0.04);
-}
-.pm-end-point-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #e85500;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.pm-end-point-icon svg {
-  width: 18px;
-  height: 18px;
-}
-.pm-end-point-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  line-height: 1.5;
-  min-width: 0;
-}
-.pm-end-point-text strong {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 15.5px;
-  font-weight: 900;
-  color: #1a1a1a;
-  letter-spacing: 0.03em;
-}
-.pm-end-point-text span {
-  font-size: 12.5px;
-  color: #4a4640;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
-}
-.pm-end--rich {
-  background: linear-gradient(180deg, #fff 0%, #fdf6ee 100%);
-}
-@media (max-width: 480px) {
-  .pm-end-points { gap: 10px; margin-bottom: 32px; }
-  .pm-end-point { padding: 12px 14px; gap: 12px; }
-  .pm-end-point-icon { width: 28px; height: 28px; }
-  .pm-end-point-icon svg { width: 16px; height: 16px; }
-  .pm-end-point-text strong { font-size: 14.5px; }
-  .pm-end-point-text span { font-size: 12px; }
 }
 
 /* 罫線飾り */
@@ -1653,7 +1314,7 @@
     background: #fffaf3 !important;
   }
   .pm-merit-item[data-pm-detail]:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: #fffdf8;
   }
   .pm-merit-item[data-pm-detail]::after {
     content: '詳しく →';
@@ -1663,14 +1324,13 @@
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.1em;
-    color: #ffb380;
+    color: #b85a2b;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
   .pm-merit-item[data-pm-detail]:hover::after { opacity: 1; }
   .pm-merit-item.is-active {
-    background: rgba(232, 85, 0, 0.12) !important;
-    border-color: rgba(255, 179, 128, 0.5) !important;
+    background: #fffaf3 !important;
   }
 }
 
@@ -1734,14 +1394,9 @@
     padding: 20px 18px 22px;
     column-gap: 14px;
   }
-  .pm-pain-num {
-    font-size: 32px;
-  }
-  /* メリット番号は紺ダーク背景上の丸バッジなのでサイズ別管理 */
+  .pm-pain-num,
   .pm-merit-num {
-    font-size: 16px;
-    width: 44px;
-    height: 44px;
+    font-size: 32px;
   }
   .pm-pain-title,
   .pm-merit-title {
@@ -1757,9 +1412,6 @@
   .pm-merit-item[data-pm-detail]::after {
     margin-top: 14px;
     font-size: 11px;
-  }
-  .pm-merit-item[data-pm-detail]::after {
-    color: #ffb380;
   }
 }
 
@@ -2032,42 +1684,27 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 32px;
-  position: relative;
-  padding-left: 24px;
-}
-/* 左側の縦コネクタ線（ステップを視覚的に繋ぐ） */
-.pm-flow-list-v::before {
-  content: "";
-  position: absolute;
-  left: 47px;
-  top: 36px;
-  bottom: 36px;
-  width: 2px;
-  background: linear-gradient(to bottom, #e85500 0%, #e85500 calc(100% - 24px), rgba(232, 85, 0, 0.2) 100%);
-  z-index: 0;
+  border-top: 1px solid #ebe5d7;
+  margin-top: 24px;
 }
 .pm-flow-step-row {
   display: grid;
-  grid-template-columns: 48px 1fr auto;
-  gap: 18px;
+  grid-template-columns: 56px 1fr auto;
+  gap: 16px;
   align-items: center;
   width: 100%;
-  padding: 14px 16px 14px 0;
-  margin-left: -24px;
-  padding-left: 24px;
+  padding: 18px 6px;
   background: transparent;
   border: 0;
+  border-bottom: 1px solid #ebe5d7;
   text-align: left;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
   transition: background 0.16s ease;
-  position: relative;
-  z-index: 1;
 }
 .pm-flow-step-row:hover {
-  background: rgba(232, 85, 0, 0.04);
+  background: #faf7f2;
 }
 .pm-flow-step-row:focus-visible {
   outline: 2px solid #e85500;
@@ -2075,28 +1712,22 @@
   background: rgba(232, 85, 0, 0.06);
 }
 .pm-flow-step-row .flow-step-num {
-  width: 48px;
-  height: 48px;
-  background: #fff;
-  color: #e85500;
-  border: 2px solid #e85500;
+  width: 40px;
+  height: 40px;
+  background: #222;
+  color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Public Sans', 'Noto Sans JP', sans-serif;
-  font-weight: 900;
-  font-size: 17px;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  font-weight: 800;
+  font-size: 15px;
+  transition: background 0.2s ease;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(232, 85, 0, 0.15);
 }
 .pm-flow-step-row:hover .flow-step-num,
 .pm-flow-step-row.is-active-flow .flow-step-num {
   background: #e85500;
-  color: #fff;
-  transform: scale(1.05);
-  box-shadow: 0 6px 18px rgba(232, 85, 0, 0.4);
 }
 .pm-flow-step-info {
   display: flex;
@@ -2132,10 +1763,8 @@
   background: rgba(232, 85, 0, 0.06);
 }
 @media (max-width: 720px) {
-  .pm-flow-list-v { padding-left: 18px; }
-  .pm-flow-list-v::before { left: 39px; }
-  .pm-flow-step-row { grid-template-columns: 44px 1fr auto; gap: 12px; padding: 12px 12px 12px 18px; margin-left: -18px; }
-  .pm-flow-step-row .flow-step-num { width: 42px; height: 42px; font-size: 15px; }
+  .pm-flow-step-row { grid-template-columns: 44px 1fr auto; gap: 12px; padding: 14px 0; }
+  .pm-flow-step-row .flow-step-num { width: 32px; height: 32px; font-size: 13px; }
   .pm-flow-step-name { font-size: 15px; }
   .pm-flow-step-desc { font-size: 12.5px; }
 }
