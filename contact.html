@@ -13,7 +13,7 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
+    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); gtag('event', 'conversion', {'send_to': 'AW-18108125426/9tNKCNH49agcEPKh0LpD'}); });
   </script>
   <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
@@ -285,6 +285,10 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
           return res.text().then(function(t) { throw new Error(t); });
         })
         .then(function() {
+          // Google広告コンバージョン: お問合せフォーム送信完了サンクス
+          if (typeof gtag === 'function') {
+            gtag('event', 'conversion', {'send_to': 'AW-18108125426/F13ECl3R3qgcEPKh0LpD'});
+          }
           var form = document.getElementById('bmContactForm');
           var thanks = document.createElement('div');
           thanks.innerHTML = '<div style="text-align:center;padding:40px 0;">'
