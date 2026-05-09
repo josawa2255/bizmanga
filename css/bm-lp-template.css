@@ -270,16 +270,46 @@
   .pm-formats--illustrated .pm-format-item { padding: 12px 12px 14px; }
   .pm-format-illust { margin-bottom: 6px; }
 }
-/* SP: イラスト版は2列維持(1列だと画像が大き過ぎ) */
+/* SP <=520px: 横並びリスト型 (左:小画像 / 右:テキスト) で省スペース */
 @media (max-width: 520px) {
-  .pm-formats--illustrated {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+  .pm-formats.pm-formats--illustrated {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
-  .pm-formats--illustrated .pm-format-item { padding: 8px 8px 10px; }
-  .pm-formats--illustrated .pm-format-name { font-size: 14px; }
-  .pm-formats--illustrated .pm-format-en { font-size: 8.5px; }
-  .pm-formats--illustrated .pm-format-use { font-size: 11px; }
+  .pm-formats--illustrated .pm-format-item {
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 2px 14px;
+    padding: 12px 14px;
+    align-items: center;
+  }
+  .pm-formats--illustrated .pm-format-illust {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    width: 96px;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    align-self: center;
+  }
+  .pm-formats--illustrated .pm-format-name {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: left;
+    font-size: 15px;
+  }
+  .pm-formats--illustrated .pm-format-en {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: left;
+    font-size: 9px;
+  }
+  .pm-formats--illustrated .pm-format-use {
+    grid-column: 2;
+    grid-row: 3;
+    text-align: left;
+    font-size: 12px;
+    margin-top: 3px;
+  }
 }
 
 /* === pm-merit-list--illustrated / pm-pain-list--illustrated: 番号 | (タイトル/本文/画像 縦積み) === */
@@ -321,6 +351,34 @@
   display: block;
   margin: 0 auto;
   object-fit: contain;
+}
+
+/* SP <=720px: 番号とタイトル横並び、本文・画像はフル幅 */
+@media (max-width: 720px) {
+  .pm-merit-list--illustrated .pm-merit-item,
+  .pm-pain-list--illustrated .pm-pain-item {
+    column-gap: 14px;
+    padding: 22px 18px 24px;
+  }
+  .pm-merit-list--illustrated .pm-merit-num,
+  .pm-pain-list--illustrated .pm-pain-num {
+    grid-row: 1;
+    align-self: start;
+    font-size: 32px;
+  }
+  .pm-merit-list--illustrated .pm-merit-text,
+  .pm-pain-list--illustrated .pm-pain-text {
+    grid-column: 1 / -1;
+  }
+  .pm-merit-illust,
+  .pm-pain-illust {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+  }
+  .pm-merit-illust img,
+  .pm-pain-illust img {
+    max-width: 300px;
+  }
 }
 
 .pm-masthead-cta {
