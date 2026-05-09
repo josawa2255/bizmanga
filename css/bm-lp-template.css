@@ -271,49 +271,61 @@
   .pm-format-illust { margin-bottom: 4px; }
 }
 
-/* === pm-merit-list--illustrated: image on top of each merit card === */
+/* === pm-merit-list--illustrated: text-only illustration on right, text on left === */
+.pm-merit-list--illustrated .pm-merit-item {
+  grid-template-columns: auto 1.2fr 1fr;
+  column-gap: 24px;
+  align-items: center;
+}
+.pm-merit-list--illustrated .pm-merit-num {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+.pm-merit-list--illustrated .pm-merit-title {
+  grid-column: 2;
+  grid-row: 1;
+}
+.pm-merit-list--illustrated .pm-merit-text {
+  grid-column: 2;
+  grid-row: 2;
+}
 .pm-merit-illust {
   display: block;
+  grid-column: 3;
+  grid-row: 1 / span 2;
   width: 100%;
-  margin: 0 0 14px;
-  grid-column: 1 / -1;
-  grid-row: 1;
+  margin: 0;
 }
 .pm-merit-illust img {
   width: 100%;
-  max-width: 480px;
   height: auto;
   display: block;
-  margin: 0 auto;
-  aspect-ratio: 768 / 512;
+  max-height: 220px;
   object-fit: contain;
 }
-.pm-merit-list--illustrated .pm-merit-item {
-  grid-template-rows: auto auto auto;
-}
-.pm-merit-list--illustrated .pm-merit-num {
-  grid-row: 2;
-}
-.pm-merit-list--illustrated .pm-merit-title {
-  grid-row: 2;
-}
-.pm-merit-list--illustrated .pm-merit-text {
-  grid-row: 3;
-}
 
-/* === pm-pain-list--illustrated: full-banner image, hide num/title/text visually === */
+/* === pm-pain-list--illustrated: text-only illustration on right, text on left === */
 .pm-pain-list--illustrated .pm-pain-item {
-  display: block;
-  padding: 0;
-  border: 1px solid #efece6;
-  background: #fff;
-  overflow: hidden;
+  grid-template-columns: auto 1.2fr 1fr;
+  column-gap: 24px;
+  align-items: center;
 }
-.pm-pain-list--illustrated .pm-pain-item:hover {
-  border-color: #e85500;
+.pm-pain-list--illustrated .pm-pain-num {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+.pm-pain-list--illustrated .pm-pain-title {
+  grid-column: 2;
+  grid-row: 1;
+}
+.pm-pain-list--illustrated .pm-pain-text {
+  grid-column: 2;
+  grid-row: 2;
 }
 .pm-pain-illust {
   display: block;
+  grid-column: 3;
+  grid-row: 1 / span 2;
   width: 100%;
   margin: 0;
 }
@@ -321,21 +333,26 @@
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 1536 / 341;
+  max-height: 220px;
   object-fit: contain;
 }
-.pm-pain-list--illustrated .pm-pain-num,
-.pm-pain-list--illustrated .pm-pain-title,
-.pm-pain-list--illustrated .pm-pain-text {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+
+@media (max-width: 720px) {
+  .pm-merit-list--illustrated .pm-merit-item,
+  .pm-pain-list--illustrated .pm-pain-item {
+    grid-template-columns: auto 1fr;
+  }
+  .pm-merit-illust,
+  .pm-pain-illust {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 12px;
+  }
+  .pm-merit-illust img,
+  .pm-pain-illust img {
+    max-height: 200px;
+    margin: 0 auto;
+  }
 }
 
 .pm-masthead-cta {
