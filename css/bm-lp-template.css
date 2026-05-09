@@ -248,13 +248,15 @@
   margin: 0 0 6px;
   background: transparent;
   border-radius: 0;
+  aspect-ratio: 1 / 1;
 }
 .pm-format-illust img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  aspect-ratio: 425 / 586;
   object-fit: contain;
+  filter: none;
+  box-shadow: none;
 }
 .pm-formats--illustrated .pm-format-name {
   grid-column: 1;
