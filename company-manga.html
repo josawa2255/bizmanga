@@ -199,12 +199,12 @@
       <div class="pm-masthead-inner">
         <p class="pm-lead">創業の想い・転換点・現場の挑戦を、<br>会社紹介マンガ・企業紹介漫画として誰もが読み進める物語に残します。</p>
         <p class="pm-formats-caption">企業の節目・接点ごとに展開可能。</p>
-        <ul class="pm-formats" aria-label="活用フォーマット">
+        <ul class="pm-formats pm-formats--illustrated" aria-label="活用フォーマット">
           <li class="pm-format-item" data-pm-detail data-detail-id="format-company-profile" data-detail-title="会社案内・企業パンフレット">
-            <svg class="pm-format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 5h7v15H3zM14 5h7v15h-7z"/>
-              <path d="M10 5v15M14 5v15"/>
-            </svg>
+            <picture class="pm-format-illust">
+              <source type="image/webp" srcset="images/company-manga/format-company-profile.webp">
+              <img src="images/company-manga/format-company-profile.png" alt="" loading="lazy" decoding="async" width="540" height="716">
+            </picture>
             <h3 class="pm-format-name">会社案内</h3>
             <span class="pm-format-en">Company Profile</span>
             <p class="pm-format-use">取引先・新規顧客に渡す</p>
@@ -214,11 +214,10 @@
             </div>
           </li>
           <li class="pm-format-item" data-pm-detail data-detail-id="format-anniversary" data-detail-title="周年記念誌・社史">
-            <svg class="pm-format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 3h11l3 3v15H5z"/>
-              <path d="M16 3v3h3"/>
-              <path d="M9 12h6M9 16h6"/>
-            </svg>
+            <picture class="pm-format-illust">
+              <source type="image/webp" srcset="images/company-manga/format-anniversary.webp">
+              <img src="images/company-manga/format-anniversary.png" alt="" loading="lazy" decoding="async" width="572" height="732">
+            </picture>
             <h3 class="pm-format-name">周年記念誌</h3>
             <span class="pm-format-en">Anniversary</span>
             <p class="pm-format-use">10周年・50周年に残す</p>
@@ -228,10 +227,10 @@
             </div>
           </li>
           <li class="pm-format-item" data-pm-detail data-detail-id="format-recruit-explain" data-detail-title="採用説明会・新人研修">
-            <svg class="pm-format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="2" y="3" width="20" height="14" rx="1"/>
-              <path d="M8 21h8M12 17v4"/>
-            </svg>
+            <picture class="pm-format-illust">
+              <source type="image/webp" srcset="images/company-manga/format-recruit-explain.webp">
+              <img src="images/company-manga/format-recruit-explain.png" alt="" loading="lazy" decoding="async" width="604" height="750">
+            </picture>
             <h3 class="pm-format-name">採用説明会</h3>
             <span class="pm-format-en">Recruiting</span>
             <p class="pm-format-use">求職者・新人に世界観を伝える</p>
@@ -241,10 +240,10 @@
             </div>
           </li>
           <li class="pm-format-item" data-pm-detail data-detail-id="format-ir-stakeholder" data-detail-title="IR資料・ステークホルダー向け">
-            <svg class="pm-format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="6" y="2" width="12" height="20" rx="2"/>
-              <path d="M11 18h2"/>
-            </svg>
+            <picture class="pm-format-illust">
+              <source type="image/webp" srcset="images/company-manga/format-ir-stakeholder.webp">
+              <img src="images/company-manga/format-ir-stakeholder.png" alt="" loading="lazy" decoding="async" width="534" height="738">
+            </picture>
             <h3 class="pm-format-name">IR・株主向け</h3>
             <span class="pm-format-en">IR &amp; Stakeholder</span>
             <p class="pm-format-use">投資家・株主に物語で伝える</p>
@@ -277,8 +276,12 @@
           <span class="pm-eyebrow">PROBLEM</span>
           <h2 class="pm-h2">経営者・広報の、こんな<em>お悩み</em>。</h2>
         </div>
-        <ul class="pm-pain-list" style="list-style:none; padding:0; margin:0;">
+        <ul class="pm-pain-list pm-pain-list--illustrated" style="list-style:none; padding:0; margin:0;">
           <li class="pm-pain-item" data-pm-detail data-detail-id="pain-01" data-detail-title="創業の想いが文字では伝わらない">
+            <picture class="pm-pain-illust">
+              <source type="image/webp" srcset="images/company-manga/pain-01.webp">
+              <img src="images/company-manga/pain-01.png" alt="" loading="lazy" decoding="async" width="1434" height="428">
+            </picture>
             <span class="pm-pain-num">01</span>
             <p class="pm-pain-title">創業の想い・企業文化が、文字では<em>伝わらない</em>。</p>
             <p class="pm-pain-text">会社案内に「お客様第一」「挑戦の文化」と書いても、どこも同じ言葉。創業の苦労や転換点の覚悟が、相手に届いている実感がない。</p>
@@ -288,6 +291,10 @@
             </div>
           </li>
           <li class="pm-pain-item" data-pm-detail data-detail-id="pain-02" data-detail-title="周年事業の記念誌が読まれない">
+            <picture class="pm-pain-illust">
+              <source type="image/webp" srcset="images/company-manga/pain-02.webp">
+              <img src="images/company-manga/pain-02.png" alt="" loading="lazy" decoding="async" width="1420" height="330">
+            </picture>
             <span class="pm-pain-num">02</span>
             <p class="pm-pain-title">周年記念誌を作っても、社員にすら<em>読まれない</em>。</p>
             <p class="pm-pain-text">10周年・30周年・50周年。せっかく予算をかけた記念誌が、配布された日にデスクの引き出しに入って、そのまま忘れ去られる。社員の手にも届かない。</p>
@@ -297,6 +304,10 @@
             </div>
           </li>
           <li class="pm-pain-item" data-pm-detail data-detail-id="pain-03" data-detail-title="ステークホルダーごとに別資料を作る負担">
+            <picture class="pm-pain-illust">
+              <source type="image/webp" srcset="images/company-manga/pain-03.webp">
+              <img src="images/company-manga/pain-03.png" alt="" loading="lazy" decoding="async" width="1428" height="402">
+            </picture>
             <span class="pm-pain-num">03</span>
             <p class="pm-pain-title">採用・営業・IRで<em>別々の会社案内</em>を作っている。</p>
             <p class="pm-pain-text">求職者向け、取引先向け、株主向け、社員向け。同じ会社の話なのに、それぞれ別の資料を作って、どれも中途半端。ブランドの一貫性も保てない。</p>
@@ -321,8 +332,12 @@
           <span class="pm-eyebrow">MERIT</span>
           <h2 class="pm-h2">会社紹介マンガの、4つの強み。</h2>
         </div>
-        <ol class="pm-merit-list" style="list-style:none; padding:0; margin:0;">
+        <ol class="pm-merit-list pm-merit-list--illustrated" style="list-style:none; padding:0; margin:0;">
           <li class="pm-merit-item" data-pm-detail data-detail-id="merit-01" data-detail-title="創業から現在までを物語として体験">
+            <picture class="pm-merit-illust">
+              <source type="image/webp" srcset="images/company-manga/merit-01.webp">
+              <img src="images/company-manga/merit-01.png" alt="" loading="lazy" decoding="async" width="840" height="514">
+            </picture>
             <span class="pm-merit-num"></span>
             <h3 class="pm-merit-title">創業から現在までを、<em>物語として体験できる</em>。</h3>
             <p class="pm-merit-text">読み手は登場人物の感情とともに「この会社の歴史」を追体験できます。年表では伝わらない、創業者の挫折・転換点・覚悟が伝わります。</p>
@@ -332,6 +347,10 @@
             </div>
           </li>
           <li class="pm-merit-item" data-pm-detail data-detail-id="merit-02" data-detail-title="経営者の人となり・想いが伝わる">
+            <picture class="pm-merit-illust">
+              <source type="image/webp" srcset="images/company-manga/merit-02.webp">
+              <img src="images/company-manga/merit-02.png" alt="" loading="lazy" decoding="async" width="852" height="556">
+            </picture>
             <span class="pm-merit-num"></span>
             <h3 class="pm-merit-title">経営者の<em>人となり・想い</em>が伝わる。</h3>
             <p class="pm-merit-text">挨拶文では伝わらない、経営者の素顔・葛藤・夢を漫画として届けられます。共感が生まれ、ブランドへの信頼に繋がります。</p>
@@ -341,6 +360,10 @@
             </div>
           </li>
           <li class="pm-merit-item" data-pm-detail data-detail-id="merit-03" data-detail-title="採用・営業・IRすべてで使い回せる">
+            <picture class="pm-merit-illust">
+              <source type="image/webp" srcset="images/company-manga/merit-03.webp">
+              <img src="images/company-manga/merit-03.png" alt="" loading="lazy" decoding="async" width="874" height="566">
+            </picture>
             <span class="pm-merit-num"></span>
             <h3 class="pm-merit-title">採用・営業・IRで、<em>同じ世界観で使える</em>。</h3>
             <p class="pm-merit-text">1本の漫画を全ステークホルダー向けに派生展開できます。資料制作コストを抑えながら、ブランドの一貫性を保てます。</p>
@@ -350,6 +373,10 @@
             </div>
           </li>
           <li class="pm-merit-item" data-pm-detail data-detail-id="merit-04" data-detail-title="周年事業の記念物としても残る">
+            <picture class="pm-merit-illust">
+              <source type="image/webp" srcset="images/company-manga/merit-04.webp">
+              <img src="images/company-manga/merit-04.png" alt="" loading="lazy" decoding="async" width="870" height="588">
+            </picture>
             <span class="pm-merit-num"></span>
             <h3 class="pm-merit-title">周年事業の<em>記念物としても残る</em>。</h3>
             <p class="pm-merit-text">10周年・50周年の節目に「読まれない年表」ではなく「世代を超えて読まれる物語」を残せます。社員のエンゲージメントも高まります。</p>
