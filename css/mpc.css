@@ -1,0 +1,1600 @@
+/* =============================================================
+   mpc.css — /manga-production-company 専用スタイル
+   参考: x-ad.com (skew accent, marquee), globalwork.jp (fadeup, map-pin),
+         kikasete-journey (fix-btn, scroll story)
+   既存 BizManga UI（pm-* 系統）と統一感を持たせつつ、比較記事
+   特有の sticky table / 浮遊装飾 / カウンター等を独自実装。
+   ============================================================= */
+
+:root {
+  --mpc-accent: #e85500;
+  --mpc-accent-dark: #c54600;
+  --mpc-accent-light: rgba(232, 85, 0, 0.06);
+  --mpc-ink: #1a1a1a;
+  --mpc-ink-soft: #444;
+  --mpc-ink-mute: #666;
+  --mpc-paper: #ffffff;
+  --mpc-cream: #faf7f2;
+  --mpc-line: #ebe5d7;
+  --mpc-gold: #b08a4a;
+}
+
+.mpc-page { background: var(--mpc-paper); color: var(--mpc-ink); }
+
+/* ========== Container ========== */
+.mpc-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.mpc-container--narrow {
+  max-width: 880px;
+}
+
+/* ========== Common Section ========== */
+.mpc-section {
+  padding: 88px 0;
+  border-top: 1px solid var(--mpc-line);
+}
+.mpc-section--alt { background: var(--mpc-cream); }
+.mpc-section-eyebrow {
+  display: block;
+  font-family: "Noto Serif JP", serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--mpc-gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.mpc-section-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: var(--mpc-ink);
+  margin: 0 0 16px;
+}
+.mpc-section-title em {
+  font-style: normal;
+  color: var(--mpc-accent);
+  background: linear-gradient(transparent 62%, rgba(232, 85, 0, 0.18) 62%);
+  padding: 0 6px;
+}
+.mpc-section-lead {
+  font-size: 16px;
+  line-height: 1.95;
+  color: var(--mpc-ink-soft);
+  margin: 0 0 40px;
+}
+
+/* ========== HERO ========== */
+.mpc-hero {
+  position: relative;
+  padding: 120px 0 100px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fff7ef 0%, #fff 100%);
+}
+.mpc-hero-bg-skew {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 200%;
+  background: linear-gradient(120deg, rgba(232, 85, 0, 0.04) 0%, rgba(232, 85, 0, 0.12) 50%, rgba(232, 85, 0, 0.04) 100%);
+  transform: skewX(-22deg) translateX(15%);
+  z-index: 0;
+  border-left: 1px solid rgba(232, 85, 0, 0.15);
+  border-right: 1px solid rgba(232, 85, 0, 0.15);
+}
+.mpc-hero-glow {
+  position: absolute;
+  top: -240px;
+  right: -240px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(232, 85, 0, 0.18) 0%, transparent 60%);
+  border-radius: 50%;
+  z-index: 0;
+  filter: blur(40px);
+  pointer-events: none;
+}
+.mpc-hero .mpc-container {
+  position: relative;
+  z-index: 1;
+}
+.mpc-eyebrow {
+  display: inline-block;
+  font-family: "Noto Serif JP", serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--mpc-accent);
+  background: var(--mpc-paper);
+  padding: 6px 14px;
+  border: 1px solid var(--mpc-accent);
+  border-radius: 999px;
+  margin-bottom: 24px;
+  animation: mpcFadeUp 0.6s ease-out 0.05s both;
+}
+.mpc-h1 {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(32px, 5.5vw, 56px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--mpc-ink);
+  margin: 0 0 28px;
+  max-width: 920px;
+  animation: mpcBounceIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+.mpc-h1 em {
+  display: inline-block;
+  animation: mpcBounceIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s both;
+}
+.mpc-h1 em {
+  font-style: normal;
+  color: var(--mpc-accent);
+  position: relative;
+}
+.mpc-h1 em::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 8px;
+  background: rgba(232, 85, 0, 0.18);
+  z-index: -1;
+}
+.mpc-lead {
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 2;
+  color: var(--mpc-ink-soft);
+  margin: 0 0 36px;
+  max-width: 720px;
+  animation: mpcFadeUp 0.7s ease-out 0.25s both;
+}
+.mpc-lead strong {
+  color: var(--mpc-ink);
+  font-weight: 700;
+  background: linear-gradient(transparent 70%, rgba(232, 85, 0, 0.16) 70%);
+  padding: 0 4px;
+}
+
+.mpc-hero-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  animation: mpcFadeUp 0.7s ease-out 0.35s both;
+}
+.mpc-btn-primary,
+.mpc-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+  cursor: pointer;
+}
+.mpc-btn-primary {
+  background: var(--mpc-accent);
+  color: #fff;
+  box-shadow: 0 8px 22px -10px rgba(232, 85, 0, 0.5);
+}
+.mpc-btn-primary:hover {
+  background: var(--mpc-accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px rgba(232, 85, 0, 0.6);
+}
+.mpc-btn-primary--large { padding: 22px 36px; font-size: 17px; }
+.mpc-btn-ghost {
+  background: transparent;
+  color: var(--mpc-ink);
+  border-color: var(--mpc-ink);
+}
+.mpc-btn-ghost:hover {
+  background: var(--mpc-ink);
+  color: #fff;
+}
+.mpc-btn-arrow-down {
+  font-size: 18px;
+  animation: mpcArrowBob 2s ease-in-out infinite;
+}
+.mpc-btn-arrow {
+  font-size: 18px;
+  transition: transform 0.18s ease;
+}
+.mpc-btn-primary:hover .mpc-btn-arrow { transform: translateX(4px); }
+
+.mpc-hero-meta {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--mpc-ink-mute);
+  letter-spacing: 0.05em;
+  animation: mpcFadeUp 0.7s ease-out 0.45s both;
+}
+.mpc-hero-meta > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  position: relative;
+}
+.mpc-hero-meta > span + span::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  width: 1px;
+  height: 11px;
+  background: currentColor;
+  opacity: 0.3;
+  transform: translateY(-50%);
+}
+.mpc-meta-label {
+  font-family: "Noto Serif JP", serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--mpc-gold);
+  text-transform: none;
+}
+.mpc-scroll-guide {
+  display: block;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--mpc-ink-mute);
+  animation: mpcScrollGuide 2s ease-in-out infinite;
+}
+
+@keyframes mpcFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes mpcBounceIn {
+  0% { opacity: 0; transform: translateY(60px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-8px) scale(1.02); }
+  80% { transform: translateY(2px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes mpcArrowBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+@keyframes mpcScrollGuide {
+  0%, 100% { transform: translate(-50%, 0); opacity: 0.5; }
+  50% { transform: translate(-50%, 8px); opacity: 1; }
+}
+
+/* ========== 浮遊する漫画コマ装飾（kikasete clouds 流用） ========== */
+.mpc-hero-comics {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mpc-hero-comic {
+  position: absolute;
+  border: 2px solid var(--mpc-ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--mpc-ink);
+  overflow: hidden;
+  opacity: 0.12;
+  transition: opacity 0.6s ease;
+}
+.mpc-hero-comic img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+/* 各コマを散らばせる */
+.mpc-hero-comic--1 { top: 8%;  left: -5%;  width: 200px; height: 110px; transform: rotate(-12deg); animation: mpcCloudDrift 14s ease-in-out infinite; animation-delay: 0s; }
+.mpc-hero-comic--2 { top: 5%;  right: 8%;  width: 180px; height: 100px; transform: rotate(8deg);   animation: mpcCloudDrift 16s ease-in-out infinite; animation-delay: -3s; }
+.mpc-hero-comic--3 { top: 50%; left: 4%;   width: 140px; height: 80px;  transform: rotate(-6deg);  animation: mpcCloudDrift 13s ease-in-out infinite; animation-delay: -5s; }
+.mpc-hero-comic--4 { top: 45%; right: 2%;  width: 220px; height: 120px; transform: rotate(4deg);   animation: mpcCloudDrift 15s ease-in-out infinite; animation-delay: -7s; }
+.mpc-hero-comic--5 { bottom: 8%; left: 12%; width: 160px; height: 90px;  transform: rotate(-3deg);  animation: mpcCloudDrift 17s ease-in-out infinite; animation-delay: -2s; }
+.mpc-hero-comic--6 { bottom: 12%; right: -4%; width: 200px; height: 110px; transform: rotate(11deg); animation: mpcCloudDrift 14s ease-in-out infinite; animation-delay: -8s; }
+.mpc-hero-comic--7 { top: 25%; left: 38%;  width: 150px; height: 84px;  transform: rotate(-2deg);  animation: mpcCloudDrift 19s ease-in-out infinite; animation-delay: -4s; opacity: 0.08; }
+.mpc-hero-comic--8 { bottom: 25%; left: 65%; width: 140px; height: 80px;  transform: rotate(7deg);   animation: mpcCloudDrift 18s ease-in-out infinite; animation-delay: -6s; opacity: 0.10; }
+
+@keyframes mpcCloudDrift {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-18px) rotate(var(--rot, 0deg)); }
+}
+.mpc-hero-comic--1 { --rot: -12deg; }
+.mpc-hero-comic--2 { --rot: 8deg; }
+.mpc-hero-comic--3 { --rot: -6deg; }
+.mpc-hero-comic--4 { --rot: 4deg; }
+.mpc-hero-comic--5 { --rot: -3deg; }
+.mpc-hero-comic--6 { --rot: 11deg; }
+.mpc-hero-comic--7 { --rot: -2deg; }
+.mpc-hero-comic--8 { --rot: 7deg; }
+@media (max-width: 880px) {
+  .mpc-hero-comic--3, .mpc-hero-comic--4, .mpc-hero-comic--7, .mpc-hero-comic--8 { display: none; }
+  .mpc-hero-comic { opacity: 0.06 !important; }
+}
+
+/* ========== 漫画効果線エフェクト（CTA hover） ========== */
+.mpc-btn-primary {
+  position: relative;
+  z-index: 1;
+}
+.mpc-btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 50%, rgba(232, 85, 0, 0.0) 50%),
+    repeating-conic-gradient(from 0deg, transparent 0deg, transparent 12deg, rgba(232, 85, 0, 0.4) 12deg, rgba(232, 85, 0, 0.4) 14deg);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(0.5px);
+}
+.mpc-btn-primary:hover::before {
+  opacity: 0.9;
+  transform: scale(1.15);
+  animation: mpcSpeedLines 0.6s ease-out;
+}
+@keyframes mpcSpeedLines {
+  0% { transform: scale(0.7) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
+  100% { transform: scale(1.15) rotate(30deg); opacity: 0.9; }
+}
+/* SVG漫画風吹き出しの星バースト（追従ボタン用） */
+.mpc-fix-btn::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  background: var(--mpc-accent);
+  border-radius: 999px;
+  opacity: 0.3;
+  z-index: -1;
+  animation: mpcPulse 2.4s ease-in-out infinite;
+}
+@keyframes mpcPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.15); opacity: 0; }
+}
+
+/* ========== ロゴマーキー ========== */
+.mpc-logos {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 40px 0;
+  overflow: hidden;
+}
+.mpc-logos-label {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 24px;
+}
+.mpc-logo-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.mpc-logo-track {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  width: max-content;
+  animation: mpcMarquee 28s linear infinite;
+}
+.mpc-logo-item {
+  font-family: "Noto Serif JP", serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mpc-logo-item--accent {
+  color: var(--mpc-accent);
+  font-size: 26px;
+  position: relative;
+}
+.mpc-logo-item--accent::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 1px;
+  background: var(--mpc-accent);
+}
+@keyframes mpcMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ========== PAIN — 編集誌面 (Investigative trade feature) ==========
+   AI的な「枠付きカード+大番号+マーカー強調」を解体し、
+   日経ビジネス／東洋経済の特集記事風に再構成。
+   ・ヘッダ: 罫線+日本語小タイトル+小英文の三段組
+   ・章番号: ローマ数字 Ⅰ Ⅱ Ⅲ をマージンに垂下、章扉の佇まい
+   ・本文: 枠を全廃、上下の細罫のみで章を区切る
+   ・引用見出し: 「」付き serif pull-quote
+   ・<strong>: 蛍光マーカー → 細い下線(50%)
+*/
+.mpc-pain--editorial {
+  background: var(--mpc-paper);
+  position: relative;
+}
+
+/* ---- ヘッダ ---- */
+.mpc-pain-header {
+  margin: 0 0 64px;
+  max-width: 720px;
+}
+.mpc-pain-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 28px;
+  font-size: 0;
+  line-height: 1;
+}
+.mpc-pain-kicker-rule {
+  display: inline-block;
+  width: 36px;
+  height: 1px;
+  background: var(--mpc-ink);
+  flex-shrink: 0;
+}
+.mpc-pain-kicker-ja {
+  font-family: "Noto Serif JP", serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--mpc-ink);
+}
+.mpc-pain-kicker-en {
+  font-family: "Noto Serif JP", serif;
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--mpc-ink-mute);
+}
+.mpc-pain-headline {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(26px, 3.6vw, 38px);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.55;
+  color: var(--mpc-ink);
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+.mpc-pain-deck {
+  font-size: 15.5px;
+  line-height: 2;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+  letter-spacing: 0.02em;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+/* ---- 章リスト ---- */
+.mpc-pain-list {
+  display: flex;
+  flex-direction: column;
+}
+.mpc-pain-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  grid-template-areas:
+    "num quote"
+    "num body"
+    "num examples";
+  column-gap: 32px;
+  row-gap: 22px;
+  padding: 56px 0 64px;
+  border-top: 1px solid var(--mpc-ink);
+  /* fade-up base */
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.mpc-pain-entry:last-child {
+  border-bottom: 1px solid var(--mpc-ink);
+}
+.mpc-pain-entry.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- 章番号 (01 02 03) ---- */
+.mpc-pain-num {
+  grid-area: num;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 900;
+  font-size: 56px;
+  line-height: 0.85;
+  color: var(--mpc-ink);
+  letter-spacing: -0.02em;
+  padding-top: 4px;
+  user-select: none;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.mpc-pain-num::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--mpc-accent);
+  margin-top: 18px;
+}
+
+/* ---- 引用見出し ---- */
+.mpc-pain-quote {
+  grid-area: quote;
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(19px, 2.2vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.7;
+  color: var(--mpc-ink);
+  margin: 0;
+  text-indent: -0.4em; /* 「 を左に少しはみ出させる pull-quote */
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-wrap: pretty;
+}
+.mpc-pain-quote-mark {
+  color: var(--mpc-accent);
+  font-weight: 900;
+  margin: 0 -0.05em;
+  font-feature-settings: "palt";
+}
+
+/* ---- 本文 ---- */
+.mpc-pain-body {
+  grid-area: body;
+  font-size: 15px;
+  line-height: 2.05;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+  letter-spacing: 0.02em;
+  max-width: 64ch;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+  text-wrap: pretty;
+}
+.mpc-pain-body strong {
+  font-weight: 700;
+  color: var(--mpc-ink);
+  background: none;
+  padding: 0;
+  border-bottom: 1px solid rgba(232, 85, 0, 0.55);
+  padding-bottom: 1px;
+}
+
+/* ========== CRITERIA (8基準) ========== */
+.mpc-criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.mpc-criteria-card {
+  background: #fff;
+  border: 1px solid var(--mpc-line);
+  border-left: 3px solid var(--mpc-accent);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out, box-shadow 0.18s ease;
+}
+.mpc-criteria-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.mpc-criteria-card:hover {
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+/* .mpc-criteria-icon は廃止 (絵文字アイコン除去) */
+.mpc-criteria-card h3 {
+  font-family: "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--mpc-ink);
+}
+.mpc-criteria-card p {
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+}
+.mpc-criteria-card strong {
+  color: var(--mpc-accent);
+  font-weight: 700;
+}
+
+/* ========== COMPARISON TABLE ========== */
+.mpc-comparison .mpc-container {
+  max-width: 1280px;
+}
+.mpc-table-wrap {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 24px 0 16px;
+  border: 1px solid var(--mpc-line);
+  border-radius: 6px;
+  background: #fff;
+}
+.mpc-table-swipe-hint {
+  display: none;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--mpc-gold);
+  padding: 6px 0;
+  background: rgba(232, 85, 0, 0.04);
+  margin: 0;
+  border-bottom: 1px solid var(--mpc-line);
+}
+@media (max-width: 880px) {
+  .mpc-table-swipe-hint { display: block; }
+}
+.mpc-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.mpc-table thead th {
+  background: var(--mpc-cream);
+  border-bottom: 2px solid var(--mpc-line);
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.mpc-table-th-row { width: 130px; }
+.mpc-table-th-highlight {
+  background: var(--mpc-accent) !important;
+  color: #fff;
+}
+.mpc-table tbody th {
+  text-align: left;
+  background: var(--mpc-cream);
+  font-weight: 700;
+  padding: 12px 14px;
+  font-size: 13px;
+  border-right: 1px solid var(--mpc-line);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.mpc-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--mpc-line);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.mpc-table-cell-highlight {
+  background: var(--mpc-accent-light);
+  border-left: 1px solid rgba(232, 85, 0, 0.2);
+  border-right: 1px solid rgba(232, 85, 0, 0.2);
+}
+.mpc-table small { color: var(--mpc-ink-mute); display: inline-block; margin-top: 2px; }
+.mpc-table-footnote {
+  font-size: 12.5px;
+  color: var(--mpc-ink-mute);
+  line-height: 1.7;
+  margin: 16px 0 0;
+}
+.mpc-table-footnote a { color: var(--mpc-accent); }
+
+/* ========== COMPANY PROFILES ========== */
+.mpc-company-card {
+  background: #fff;
+  border: 1px solid var(--mpc-line);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+.mpc-company-card:hover {
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+.mpc-company-card--accent {
+  border-color: var(--mpc-accent);
+  border-width: 2px;
+  background: linear-gradient(180deg, var(--mpc-accent-light) 0%, #fff 100%);
+}
+.mpc-company-card-header {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 18px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--mpc-line);
+  align-items: center;
+  background: var(--mpc-cream);
+}
+.mpc-company-card--accent .mpc-company-card-header {
+  background: rgba(232, 85, 0, 0.08);
+}
+.mpc-company-card-num {
+  font-family: "Noto Serif JP", serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.mpc-company-card-name {
+  font-family: "Noto Serif JP", serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--mpc-ink);
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mpc-company-card-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--mpc-accent);
+  color: #fff;
+  padding: 4px 8px;
+  letter-spacing: 0.06em;
+  border-radius: 3px;
+}
+.mpc-company-card-tagline {
+  font-size: 13px;
+  color: var(--mpc-ink-mute);
+  margin: 0;
+}
+.mpc-company-card-body {
+  padding: 24px;
+}
+.mpc-company-card-body > p {
+  font-size: 14px;
+  line-height: 2;
+  color: var(--mpc-ink-soft);
+  margin: 0 0 18px;
+}
+.mpc-company-card-body strong {
+  color: var(--mpc-ink);
+  font-weight: 700;
+  background: linear-gradient(transparent 65%, rgba(232, 85, 0, 0.16) 65%);
+  padding: 0 4px;
+}
+.mpc-company-card-strength,
+.mpc-company-card-weakness {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 14px 18px;
+  border-radius: 4px;
+  font-size: 13.5px;
+  line-height: 1.85;
+}
+.mpc-company-card-strength {
+  background: rgba(46, 160, 67, 0.06);
+  border-left: 3px solid #2ea043;
+}
+.mpc-company-card-weakness {
+  background: rgba(255, 165, 0, 0.06);
+  border-left: 3px solid #ff8c00;
+}
+.mpc-company-card-strength li,
+.mpc-company-card-weakness li {
+  margin: 4px 0;
+  padding-left: 1.4em;
+  position: relative;
+}
+/* 編集記号: 強み = +, 弱み = − (絵文字 ✓/△ の代替) */
+.mpc-company-card-strength li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  color: #2ea043;
+}
+.mpc-company-card-weakness li::before {
+  content: "−";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  color: #c66c00;
+}
+.mpc-company-card-strength strong,
+.mpc-company-card-weakness strong {
+  background: none;
+  padding: 0;
+  color: var(--mpc-accent);
+}
+.mpc-company-card-fit {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--mpc-ink);
+  background: var(--mpc-cream);
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 16px 0 0;
+}
+.mpc-company-card-fit strong { background: none; padding: 0; }
+.mpc-company-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--mpc-accent);
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 16px;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+.mpc-company-card-link:hover { color: var(--mpc-accent-dark); }
+
+/* ========== USE-CASE MAP ========== */
+.mpc-map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+.mpc-map-pin {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 20px;
+  background: #fff;
+  border: 1px solid var(--mpc-line);
+  border-left: 3px solid var(--mpc-accent);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  opacity: 0;
+  transform: scale(0.6) translateY(20px);
+  transition: opacity 0.4s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+}
+.mpc-map-pin.is-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.mpc-map-pin:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -12px rgba(232, 85, 0, 0.3);
+  border-left-color: var(--mpc-accent-dark);
+}
+/* .mpc-map-pin-icon は廃止 (絵文字アイコン除去) */
+.mpc-map-pin-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--mpc-ink);
+}
+.mpc-map-pin-text {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--mpc-ink-mute);
+  margin: 0;
+  flex: 1;
+}
+.mpc-map-pin-arrow {
+  font-size: 12px;
+  color: var(--mpc-accent);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  align-self: flex-end;
+  transition: transform 0.18s ease;
+}
+.mpc-map-pin:hover .mpc-map-pin-arrow {
+  transform: translateX(4px);
+}
+
+/* ========== STATS ========== */
+.mpc-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 28px;
+  margin-top: 24px;
+}
+.mpc-stat {
+  background: #fff;
+  border: 1px solid var(--mpc-line);
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.mpc-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--mpc-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s ease-out;
+}
+.mpc-stat.is-visible::before {
+  transform: scaleX(1);
+}
+.mpc-stat-num {
+  display: inline-block;
+  font-family: "Noto Serif JP", serif;
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.mpc-stat-unit {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--mpc-ink);
+  margin-left: 4px;
+}
+.mpc-stat-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mpc-ink);
+  margin: 12px 0 8px;
+}
+.mpc-stat-desc {
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+  text-align: left;
+}
+
+/* ========== FAQ ========== */
+.mpc-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--mpc-line);
+}
+.mpc-faq-item {
+  border-bottom: 1px solid var(--mpc-line);
+  background: #fff;
+}
+.mpc-faq-item[open] { background: var(--mpc-cream); }
+.mpc-faq-q {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 4px;
+  font-family: "Noto Serif JP", serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--mpc-ink);
+  letter-spacing: 0.02em;
+  line-height: 1.55;
+  transition: color 0.16s ease;
+}
+.mpc-faq-q::-webkit-details-marker { display: none; }
+.mpc-faq-q::before {
+  content: "Q.";
+  font-family: "Noto Serif JP", serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  flex-shrink: 0;
+  line-height: 1.45;
+}
+.mpc-faq-q::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--mpc-gold);
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.mpc-faq-item[open] .mpc-faq-q::after {
+  content: "−";
+}
+.mpc-faq-q:hover { color: var(--mpc-accent-dark); }
+.mpc-faq-a {
+  position: relative;
+  padding: 0 4px 22px 32px;
+  font-size: 14.5px;
+  line-height: 1.95;
+  color: var(--mpc-ink-soft);
+}
+.mpc-faq-a::before {
+  content: "A.";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  font-family: "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mpc-gold);
+  line-height: 1.7;
+}
+
+/* ========== Final CTA ========== */
+.mpc-final-cta {
+  padding: 100px 0;
+  background: linear-gradient(135deg, var(--mpc-ink) 0%, #2a1a08 100%);
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.mpc-final-cta::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(232, 85, 0, 0.3) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+.mpc-final-cta .mpc-container { position: relative; z-index: 1; }
+.mpc-final-cta-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(28px, 4.5vw, 42px);
+  font-weight: 900;
+  line-height: 1.45;
+  margin: 0 0 24px;
+}
+.mpc-final-cta-title em {
+  font-style: normal;
+  color: var(--mpc-accent);
+  background: linear-gradient(transparent 65%, rgba(232, 85, 0, 0.3) 65%);
+  padding: 0 8px;
+}
+.mpc-final-cta-lead {
+  font-size: 15.5px;
+  line-height: 2;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 36px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.mpc-final-cta-lead strong { color: #fff; }
+.mpc-final-cta-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.mpc-final-cta .mpc-btn-ghost {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.mpc-final-cta .mpc-btn-ghost:hover {
+  background: #fff;
+  color: var(--mpc-ink);
+}
+.mpc-final-cta-sub {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ========== 追従CTA (kikasete fix-btn) ========== */
+.mpc-fix-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  background: var(--mpc-accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 12px 28px -8px rgba(232, 85, 0, 0.5);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(80px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.mpc-fix-btn.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.mpc-fix-btn:hover {
+  background: var(--mpc-accent-dark);
+  transform: translateY(-2px);
+}
+
+/* ========== レスポンシブ ========== */
+@media (max-width: 880px) {
+  .mpc-section { padding: 64px 0; }
+  .mpc-hero { padding: 80px 0 60px; }
+  /* PAIN editorial — SP */
+  .mpc-pain-header { margin-bottom: 44px; }
+  .mpc-pain-kicker { gap: 12px; margin-bottom: 22px; }
+  .mpc-pain-kicker-rule { width: 28px; }
+  .mpc-pain-headline { letter-spacing: 0.04em; line-height: 1.6; }
+  .mpc-pain-deck { font-size: 14.5px; line-height: 1.95; }
+
+  .mpc-pain-entry {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "num"
+      "quote"
+      "body"
+      "examples";
+    column-gap: 0;
+    row-gap: 18px;
+    padding: 40px 0 44px;
+  }
+  .mpc-pain-num {
+    font-size: 38px;
+    padding-top: 0;
+  }
+  .mpc-pain-num::after {
+    width: 22px;
+    margin-top: 12px;
+  }
+  .mpc-pain-quote {
+    font-size: 18px;
+    line-height: 1.75;
+    text-indent: -0.35em;
+  }
+  .mpc-pain-body {
+    font-size: 14.5px;
+    line-height: 1.95;
+  }
+  .mpc-criteria-grid { grid-template-columns: 1fr 1fr; }
+  .mpc-criteria-card { padding: 16px; }
+  .mpc-criteria-card h3 { font-size: 14.5px; }
+  .mpc-criteria-card p { font-size: 12.5px; }
+  .mpc-company-card-header {
+    grid-template-columns: 60px 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+  .mpc-company-card-num { font-size: 36px; }
+  .mpc-company-card-name { font-size: 18px; }
+  .mpc-company-card-body { padding: 18px; }
+  .mpc-stats-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .mpc-stat { padding: 22px 16px; }
+  .mpc-stat-num { font-size: 40px; }
+  .mpc-stat-unit { font-size: 14px; }
+  .mpc-stat-desc { font-size: 12px; }
+  .mpc-fix-btn {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 18px;
+    font-size: 12.5px;
+  }
+  .mpc-fix-btn span { display: none; }
+  .mpc-fix-btn { padding: 14px; }
+  .mpc-final-cta-actions { flex-direction: column; }
+}
+@media (max-width: 560px) {
+  .mpc-criteria-grid { grid-template-columns: 1fr; }
+  .mpc-stats-grid { grid-template-columns: 1fr; }
+  .mpc-map-grid { grid-template-columns: 1fr 1fr; }
+  .mpc-map-pin { padding: 14px; }
+  .mpc-map-pin-title { font-size: 14px; }
+
+  /* iPhone: hero-meta は縦積みでセパレータ罫線を消す。methodology はpadding詰める */
+  .mpc-hero-meta {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+  .mpc-hero-meta > span + span::before { display: none; }
+  .mpc-hero-methodology {
+    font-size: 11.5px;
+    line-height: 1.85;
+    margin-top: 14px;
+  }
+
+  /* hero タイトルを iPhone 向けに 1 サイズ落とす */
+  .mpc-h1 { font-size: clamp(26px, 7vw, 34px); line-height: 1.45; }
+  .mpc-eyebrow { font-size: 10px; letter-spacing: 0.24em; }
+
+  /* ロゴマーキー: テキストサイズ詰める */
+  .mpc-logo-item { font-size: 18px; }
+  .mpc-logo-item--accent { font-size: 21px; }
+
+  /* ピル比較表ボタン群: スワイプ案内テキスト小さく */
+  .mpc-table-swipe-hint { font-size: 11px; }
+}
+
+/* ============================================================
+   左 sticky 目次 (a16z Big Ideas in Tech 風)
+   - 1280px 以上で表示。コンテナ(1180px)の左側に固定配置
+   - 現在地ハイライトは js/mpc.js の IntersectionObserver で .is-active 付与
+   - hover でラベル表示が伸びる
+============================================================ */
+.mpc-toc {
+  display: none; /* 既定で非表示。1280px以上で表示 */
+}
+
+@media (min-width: 1280px) {
+  .mpc-toc {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: fixed;
+    top: 50%;
+    left: max(20px, calc((100vw - 1180px) / 2 - 220px));
+    transform: translateY(-50%);
+    z-index: 8;
+    pointer-events: none; /* 子のリンクのみ受け取る */
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+  }
+  /* 比較表セクション (max-width: 1280px) が画面内にあるとTOCと幅が
+     被るため、JSで .is-tucked を付けて左へスライドアウト */
+  .mpc-toc.is-tucked {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-130%);
+    visibility: hidden;
+  }
+  .mpc-toc-eyebrow {
+    font-family: "Noto Serif JP", serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--mpc-gold);
+    margin-bottom: 6px;
+    pointer-events: none;
+  }
+  .mpc-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mpc-toc-list a {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--mpc-ink-mute);
+    font-family: "Noto Serif JP", serif;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    transition: color 0.32s ease, gap 0.32s ease, opacity 0.32s ease;
+    opacity: 0.6;
+  }
+  .mpc-toc-list a:hover {
+    color: var(--mpc-ink);
+    gap: 16px;
+    opacity: 1;
+  }
+  .mpc-toc-num {
+    font-family: "Noto Serif JP", serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: inherit;
+    width: 22px;
+    flex-shrink: 0;
+    text-align: right;
+    letter-spacing: -0.01em;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .mpc-toc-label {
+    position: relative;
+    padding-left: 14px;
+  }
+  .mpc-toc-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 8px;
+    height: 1px;
+    background: currentColor;
+    transform: translateY(-50%);
+    transition: width 0.32s ease, background 0.32s ease;
+  }
+  .mpc-toc-list a.is-active {
+    color: var(--mpc-ink);
+    opacity: 1;
+    font-weight: 700;
+  }
+  .mpc-toc-list a.is-active .mpc-toc-label::before {
+    width: 22px;
+    background: var(--mpc-accent);
+  }
+}
+
+/* ============================================================
+   ヒーロー直下 methodology 行 (RTINGS / シンフィールド風)
+============================================================ */
+.mpc-hero-methodology {
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--mpc-ink-mute);
+  letter-spacing: 0.02em;
+  max-width: 580px;
+  font-family: "Noto Serif JP", serif;
+  font-style: italic;
+  position: relative;
+  padding-left: 16px;
+  animation: mpcFadeUp 0.7s ease-out 0.55s both;
+}
+.mpc-hero-methodology::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--mpc-gold);
+  opacity: 0.5;
+}
+@media (max-width: 560px) {
+  .mpc-hero-methodology { font-size: 11.5px; max-width: 100%; }
+}
+
+/* =============================================================
+   Xserver18項目改善: 装飾・読みやすさ強化 (2026-04-29)
+   ============================================================= */
+
+/* ---- マーカー強調 (重要数字・キーワード用) ---- */
+.mpc-mark {
+  background: linear-gradient(transparent 60%, rgba(232, 85, 0, 0.22) 60%);
+  padding: 0 2px;
+  font-weight: 700;
+  color: var(--mpc-ink);
+}
+
+/* ---- 重要ポイント枠 (Key insight callout) ---- */
+.mpc-callout {
+  margin: 28px 0;
+  padding: 22px 26px 22px 60px;
+  background: var(--mpc-cream);
+  border-left: 4px solid var(--mpc-accent);
+  position: relative;
+  border-radius: 4px;
+}
+.mpc-callout::before {
+  content: "POINT";
+  position: absolute;
+  top: 22px;
+  left: 18px;
+  font-family: "Noto Serif JP", serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: var(--mpc-accent);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  line-height: 1;
+}
+.mpc-callout-title {
+  font-family: "Noto Serif JP", serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--mpc-ink);
+  line-height: 1.5;
+}
+.mpc-callout-body {
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--mpc-ink-soft);
+  margin: 0;
+}
+.mpc-callout-body strong {
+  color: var(--mpc-accent);
+  font-weight: 700;
+}
+
+/* ---- Key Facts (数値カードの帯状callout) ---- */
+.mpc-keyfacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  margin: 24px 0 36px;
+  background: #fff;
+  border: 1px solid var(--mpc-line);
+  border-left: 4px solid var(--mpc-accent);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.mpc-keyfact {
+  padding: 18px 20px;
+  border-right: 1px solid var(--mpc-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mpc-keyfact:last-child { border-right: none; }
+.mpc-keyfact-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--mpc-ink-mute);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.mpc-keyfact-num {
+  font-family: "Noto Serif JP", serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  line-height: 1.2;
+}
+.mpc-keyfact-num small {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mpc-ink-soft);
+  margin-left: 2px;
+}
+.mpc-keyfact-desc {
+  font-size: 12px;
+  color: var(--mpc-ink-mute);
+  line-height: 1.55;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .mpc-keyfact { border-right: none; border-bottom: 1px solid var(--mpc-line); }
+  .mpc-keyfact:last-child { border-bottom: none; }
+}
+
+/* ---- 失敗パターンの「具体例リスト」 ---- */
+.mpc-pain-examples-wrap {
+  grid-area: examples;
+  margin: 0;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.025);
+  border-radius: 4px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--mpc-ink-soft);
+  max-width: 64ch;
+}
+.mpc-pain-examples-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--mpc-ink-mute);
+  font-weight: 700;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  display: block;
+}
+.mpc-pain-examples {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mpc-pain-examples li {
+  margin: 4px 0;
+  padding-left: 1.3em;
+  position: relative;
+}
+.mpc-pain-examples li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--mpc-accent);
+  font-weight: 700;
+}
+
+/* ---- 比較表後の「3行要約」サマリー ---- */
+.mpc-summary {
+  margin: 28px 0 0;
+  padding: 26px 32px;
+  background: linear-gradient(135deg, #fff 0%, var(--mpc-cream) 100%);
+  border: 1px solid var(--mpc-line);
+  border-top: 3px solid var(--mpc-accent);
+  border-radius: 4px;
+}
+.mpc-summary-eyebrow {
+  display: block;
+  font-family: "Noto Serif JP", serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  margin: 0 0 14px;
+  text-transform: uppercase;
+}
+.mpc-summary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mpc-summary-list li {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--mpc-ink);
+  padding-left: 36px;
+  position: relative;
+  counter-increment: mpc-sum;
+}
+.mpc-summary-list {
+  counter-reset: mpc-sum;
+}
+.mpc-summary-list li::before {
+  content: counter(mpc-sum);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--mpc-accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+.mpc-summary-list li strong {
+  color: var(--mpc-accent);
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .mpc-summary { padding: 22px 18px; }
+  .mpc-summary-list li { font-size: 14px; padding-left: 32px; }
+}

@@ -1,0 +1,419 @@
+/* =============================================================
+   3Dスマホ端末ギャラリー (トップページ showcase セクション)
+   ============================================================= */
+
+.s3d-section {
+  /* 高さは GSAP pin spacer に任せる */
+  position: relative;
+  background: #fff;
+  /* pin 中の fixed stage が前後セクションを巻き込まないよう stacking context を分離 */
+  isolation: isolate;
+  z-index: 1;
+}
+.s3d-stage {
+  position: relative;
+  /* 100vh だと padding 込みでタイル+ラベル+見出し+CTA が入らず重なる
+     min-height で内容に応じて伸びる安全構成に */
+  min-height: 100vh;
+  width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: #fff;
+  /* 上: 見出し + タイル上ラベルのクリアランス確保
+     下: タイル下 CTA のクリアランス確保 */
+  padding-top: 200px;
+  padding-bottom: 120px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+/* スマホ: scale 2.8 は見た目だけ拡大し box は元サイズのまま。
+   stage min-height/wrap min-height を最終状態(scale 1, 3スマホ横並び)に合わせ、
+   初期の拡大スマホは stage の overflow: hidden で自然に見切れさせる。 */
+@media (max-width: 768px) {
+  .s3d-stage {
+    min-height: auto;
+    padding-top: 24px;
+    padding-bottom: 60px;
+    /* 見出しを絶対配置からフロー配置に変えるため、縦並びに */
+    flex-direction: column;
+    /* gap は heading と wrap の間。.s3d-labels が wrap 上端から
+       約 50px 飛び出して絶対配置されるため、それを吸収する大きめの間隔が必要 */
+    gap: 72px;
+  }
+}
+
+/* news セクションを確実に前面に(s3d の pin fixed より上) */
+.bm-news { position: relative; z-index: 2; background: #fff; }
+/* gallery も同様 */
+.bm-gallery { position: relative; z-index: 2; }
+
+/* 3画面 — スマホ portrait タイル */
+.s3d-screens {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, var(--s3d-tile-w));
+  grid-template-rows: var(--s3d-tile-h);
+  gap: 28px;
+  will-change: transform;
+  transform-origin: 50% 50%;
+}
+
+/* 1台のスマホ端末 */
+.s3d-screen {
+  position: relative;
+  width: var(--s3d-tile-w);
+  height: var(--s3d-tile-h);
+  background: #000;
+  overflow: hidden;
+  border-radius: 44px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  /* 光沢オレンジベゼル: 斜め上から入る強い光で鏡面反射のような艶 */
+  border: 7px solid transparent;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(135deg,
+      #ffe8c8 0%,      /* ほぼ白のハイライト(斜め上) */
+      #ffb27a 8%,
+      #ff9149 22%,
+      #e85a1a 50%,
+      #b23b0c 78%,
+      #5a1a02 100%) border-box; /* 影部はほぼ黒に近いダークブラウン */
+  box-shadow:
+    /* 内側リム: 明るいオレンジの金属光 */
+    inset 0 0 0 1.5px rgba(255, 235, 200, 0.7),
+    /* ベゼル下部に白いサブハイライト */
+    inset 0 -2px 3px rgba(255, 190, 120, 0.35),
+    /* 外側の薄いリムライト */
+    0 0 0 1px rgba(255, 180, 110, 0.55),
+    /* オレンジのソフトグロー(複層) */
+    0 8px 18px rgba(255, 120, 50, 0.55),
+    0 22px 44px rgba(232, 90, 26, 0.45),
+    0 48px 96px rgba(232, 90, 26, 0.22),
+    /* 床影 */
+    0 60px 80px -20px rgba(0,0,0,0.35);
+}
+.s3d-screen.is-ready { opacity: 1; }
+@media (max-width: 768px) {
+  .s3d-screen { border-radius: 22px; border-width: 3px; }
+}
+
+/* Dynamic Island */
+.s3d-notch {
+  position: absolute;
+  top: 8px; left: 50%;
+  transform: translateX(-50%);
+  width: 38%;
+  max-width: 95px;
+  height: 22px;
+  background: #000;
+  border-radius: 14px;
+  z-index: 6;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.9);
+}
+@media (max-width: 768px) {
+  .s3d-notch { top: 4px; height: 10px; max-width: 42px; border-radius: 6px; }
+}
+
+/* ホームインジケータ */
+.s3d-home-indicator {
+  position: absolute;
+  bottom: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 38%;
+  max-width: 110px;
+  height: 4px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 3px;
+  z-index: 6;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+@media (max-width: 768px) {
+  .s3d-home-indicator { bottom: 3px; height: 2px; max-width: 40px; }
+}
+
+.s3d-screen iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #fafafa;
+  pointer-events: none;
+}
+.s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
+/* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
+.s3d-screen--hero iframe,
+.s3d-screens.is-settled .s3d-screen--hero iframe { pointer-events: none !important; }
+/* 動画タイル: .s3d-screen の padding-box が既に黒なので背景上書きしない
+   (上書きするとベゼルのオレンジグラデが黒に潰れる) */
+.s3d-screen--video iframe { pointer-events: auto !important; }
+.s3d-screen--video:hover { cursor: pointer; }
+/* 動画タイルは YouTube の音量/字幕コントロールと被るため
+   Dynamic Island (ノッチ) と ホームインジケータを非表示 */
+.s3d-screen--video .s3d-notch,
+.s3d-screen--video .s3d-home-indicator { display: none; }
+
+/* ガラス反射(画面表面) — 光沢強化 */
+.s3d-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    /* 斜めの広いグレア(主反射) */
+    linear-gradient(125deg,
+      rgba(255,255,255,0.32) 0%,
+      rgba(255,255,255,0.16) 10%,
+      rgba(255,255,255,0.04) 25%,
+      transparent 45%),
+    /* 右下の柔らかい逆光 */
+    linear-gradient(315deg,
+      rgba(255,180,140,0.18) 0%,
+      transparent 35%),
+    /* 細い対角ストリーク */
+    linear-gradient(118deg,
+      transparent 42%,
+      rgba(255,255,255,0.14) 46%,
+      transparent 50%);
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+/* 画面上部のシャープな反射ライン */
+.s3d-screen::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: -8%;
+  width: 65%;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.9) 50%,
+    transparent 100%);
+  transform: skewX(-18deg);
+  pointer-events: none;
+  z-index: 4;
+  filter: blur(0.6px);
+}
+
+/* 見出し */
+.s3d-heading {
+  position: absolute;
+  top: 16px; left: 50%;
+  transform: translateX(-50%);
+  color: #222;
+  text-align: center;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  max-width: 92vw;
+}
+.s3d-heading.is-shown { opacity: 1; }
+.s3d-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  color: #e85a1a;
+  margin: 0 0 6px;
+}
+.s3d-heading h2 {
+  font-size: clamp(18px, 2.4vw, 28px);
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+/* SP: 見出しを絶対配置から外し、スマホ画像の上に普通に積む */
+@media (max-width: 768px) {
+  .s3d-heading {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    width: 100%;
+  }
+  .s3d-heading h2 {
+    font-size: 17px;
+    line-height: 1.4;
+  }
+}
+
+/* タイル群ラッパー */
+.s3d-screens-wrap {
+  position: relative;
+  will-change: transform;
+  transform-origin: 50% 0%;
+  --s3d-tile-w: 280px;
+  --s3d-tile-h: 580px;
+}
+@media (max-width: 768px) {
+  .s3d-screens-wrap {
+    --s3d-tile-w: 96px;
+    --s3d-tile-h: 208px;
+  }
+}
+
+/* ラベル行 (タイル直上) */
+.s3d-labels {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, var(--s3d-tile-w));
+  gap: 28px;
+  width: calc(var(--s3d-tile-w) * 3 + 56px);
+  z-index: 5;
+}
+@media (max-width: 768px) {
+  .s3d-labels { bottom: calc(100% + 8px); gap: 10px; width: calc(var(--s3d-tile-w) * 3 + 20px); }
+}
+
+/* h2 と CTA を同じ行に並べて見出し領域の縦高さを抑える */
+.s3d-heading-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.s3d-heading-row h2 { margin: 0; }
+@media (max-width: 768px) {
+  /* SP では h2 と CTA を縦に積む（横並びだと 393px に収まらず CTA がスマホ画像に被る） */
+  .s3d-heading-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* 見出し横のCTA: 上部メニュー「お問い合わせ」と同じピル+斜めスイープ塗りエフェクト */
+.s3d-heading-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--bm-accent);
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  opacity: 0;
+  pointer-events: auto;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+.s3d-heading-cta::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--bm-accent);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
+}
+.s3d-heading-cta.is-shown { opacity: 1; }
+.s3d-heading-cta:hover {
+  color: #fff;
+  transform: scale(1.06);
+  outline-color: var(--bm-accent);
+  box-shadow: 4px 5px 17px -4px rgba(var(--bm-accent-rgb), 0.5);
+}
+.s3d-heading-cta:hover::before { width: 260%; }
+@media (max-width: 768px) {
+  .s3d-heading-cta { padding: 8px 18px; font-size: 12px; }
+}
+
+/* タイル下: ボタンではなくシンプルなテキストリンク */
+.s3d-bottom-link {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 26px);
+  transform: translateX(-50%);
+  z-index: 5;
+  color: #555;
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.s3d-bottom-link:hover {
+  opacity: 1;
+  color: var(--bm-accent);
+  transform: translateX(-50%) translateY(2px);
+}
+@media (max-width: 768px) {
+  .s3d-bottom-link { top: calc(100% + 16px); font-size: 11px; }
+}
+.s3d-label {
+  text-align: center;
+  padding: 0 8px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.s3d-label.is-shown { opacity: 1; }
+.s3d-label-title {
+  display: block;
+  font-size: clamp(14px, 1.8vw, 22px);
+  font-weight: 900;
+  color: #111;
+  letter-spacing: 0.02em;
+}
+.s3d-label-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(10px, 1vw, 12px);
+  color: rgba(17, 17, 17, 0.6);
+  font-weight: 500;
+}
+@media (max-width: 768px) {
+  .s3d-labels { gap: 0; }
+  .s3d-label { padding: 0 2px; }
+  .s3d-label-title { font-size: 11px; letter-spacing: 0; }
+  .s3d-label-sub { font-size: 9px; margin-top: 2px; }
+}
+
+/* スクロールヒント */
+.s3d-scroll-hint {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  color: rgba(34, 34, 34, 0.55);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+.s3d-scroll-hint.is-hidden { opacity: 0; }
+.s3d-scroll-hint::after {
+  content: '';
+  width: 1px; height: 30px;
+  background: linear-gradient(180deg, rgba(34,34,34,0.55), transparent);
+  animation: s3dArrow 1.6s ease-in-out infinite;
+}
+@keyframes s3dArrow {
+  0%, 100% { transform: translateY(0); opacity: 0.9; }
+  50% { transform: translateY(10px); opacity: 0.3; }
+}

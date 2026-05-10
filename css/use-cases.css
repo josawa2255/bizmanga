@@ -1,0 +1,272 @@
+/* ===== 活用場面ページ ===== */
+
+/* ===== ヒーロー ===== */
+.uc-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  clip-path: inset(0);
+}
+.uc-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.uc-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.uc-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 249, 244, 0.72);
+}
+
+/* ===== ヒーローコンテンツ ===== */
+.uc-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1100px;
+  padding: 100px 24px 60px;
+}
+
+/* タイトル */
+.uc-hero-title {
+  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 400;
+  color: #111;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 8px rgba(255,255,255,0.5);
+}
+.uc-hero-accent {
+  color: var(--bm-accent);
+}
+.uc-hero-lead {
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 40px;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.6);
+}
+
+/* ===== 3x3 グリッド ===== */
+.uc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 60px 100px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* カード */
+.uc-card {
+  display: block;
+  text-decoration: none;
+  border-radius: 16px;
+  overflow: visible;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.uc-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.uc-card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.uc-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.uc-card:hover .uc-card-img img {
+  transform: scale(1.05);
+}
+.uc-card-label {
+  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  color: #111;
+  text-align: center;
+  padding: 10px 24px;
+  background: #fff;
+  border: 2.5px solid #222;
+  border-radius: 40px;
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.uc-card:hover .uc-card-label {
+  background: var(--bm-accent);
+  color: #fff;
+  border-color: var(--bm-accent);
+}
+
+/* ===== 詳細セクション ===== */
+.uc-detail {
+  padding: 80px 0;
+  background: #fff;
+}
+.uc-detail-card {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e8e4e0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.uc-detail-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.uc-detail-alt {
+  background: linear-gradient(135deg, #fff 0%, #FFEAD4 40%, #FFD4A8 100%);
+}
+.uc-detail-img {
+  flex-shrink: 0;
+  width: 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.uc-detail-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(232, 131, 58, 0.08);
+  pointer-events: none;
+}
+.uc-detail-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.uc-detail-body {
+  flex: 1;
+}
+.uc-detail-title {
+  font-family: 'RocknRoll One', 'Noto Sans JP', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 400;
+  color: #222;
+  margin-bottom: 8px;
+}
+.uc-detail-lead {
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.uc-detail-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.uc-detail-points li {
+  position: relative;
+  padding-left: 20px;
+  font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  font-size: clamp(13px, 1.3vw, 15px);
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 4px;
+}
+.uc-detail-points li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--bm-accent);
+  font-weight: 700;
+}
+
+/* ===== CTA ===== */
+.uc-cta {
+  background: var(--bm-accent);
+  padding: 72px 24px;
+  text-align: center;
+}
+.uc-cta h2 {
+  color: #fff;
+  font-size: clamp(18px, 2.8vw, 28px);
+  font-weight: 900;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.uc-cta-btn {
+  display: inline-block;
+  padding: 16px 48px;
+  background: #fff;
+  color: var(--bm-accent);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+.uc-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+  .uc-hero-content {
+    padding: 90px 16px 40px;
+  }
+  .uc-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .uc-card-label {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+  .uc-detail-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .uc-detail-img {
+    width: 100%;
+  }
+  .uc-detail {
+    padding: 48px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .uc-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .uc-card-label {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+}
