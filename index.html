@@ -27,7 +27,6 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://bizmanga.contentsx.jp/">
   <link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/">
-  <link rel="alternate" hreflang="en" href="https://bizmanga.contentsx.jp/?lang=en">
   <link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/">
   <!-- OG Tags -->
   <meta property="og:title" content="【シナリオ制作無料】業界最安値級のビジネス漫画制作｜最短2週間納品｜ビズマンガ">
@@ -73,7 +72,8 @@ p{margin:0 0 16px;}
   <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
   <link rel="preload" href="css/bm-s3d-screens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="css/bm-s3d-screens.css"></noscript>
-  <link rel="stylesheet" href="css/production-flow.css">
+  <link rel="preload" href="css/production-flow.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/production-flow.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -578,7 +578,12 @@ if ('serviceWorker' in navigator) {
   "name": "ビズマンガ",
   "alternateName": ["BizManga", "ビズマンガ制作", "ビジネスマンガ制作"],
   "url": "https://bizmanga.contentsx.jp/",
-  "logo": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+    "width": 512,
+    "height": 512
+  },
   "image": "https://bizmanga.contentsx.jp/material/images/og/og-index.webp",
   "description": "採用・営業・研修・会社紹介・広告など、企業のコミュニケーション課題をマンガの力で解決。業界相場を下回るコストと最短2週間の短納期、プロ漫画家125項目品質チェックでビジネスに効くマンガを制作。",
   "priceRange": "¥¥",
@@ -620,7 +625,9 @@ if ('serviceWorker' in navigator) {
     "foundingDate": "2026-03-03"
   },
   "sameAs": [
-    "https://x.com/Bizmanga_"
+    "https://x.com/Bizmanga_",
+    "https://contentsx.jp/",
+    "https://www.facebook.com/people/%E3%83%93%E3%82%BA%E3%83%9E%E3%83%B3%E3%82%AC%E3%83%BB%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9%E6%BC%AB%E7%94%BB%E5%88%B6%E4%BD%9C/61573994428093/"
   ]
 }
 </script>
