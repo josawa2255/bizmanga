@@ -486,16 +486,18 @@ p{margin:0 0 16px;}
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
+  "@id": "https://bizmanga.contentsx.jp/pricing#webpage",
   "name": "ビジネス漫画制作の料金【1ページ15,800円〜・大手の約1/5】プラン一覧｜ビズマンガ",
   "description": "業界最安値級のビジネス漫画制作プラン。1ページ15,800円〜・大手の約1/5の価格で高品質を実現し、ページ単価・本数割引・オプションまで明朗会計。他社比較表でコスパが一目でわかります。10ページ約17.4万円から、無料見積もりは即日対応。",
   "url": "https://bizmanga.contentsx.jp/pricing",
-  "publisher": {
-    "@type": "Organization",
-    "name": "ビズマンガ",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"
-    }
+  "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
+  "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+  "author": { "@id": "https://contentsx.jp/leadership#hirasawa" },
+  "primaryImageOfPage": {
+    "@type": "ImageObject",
+    "url": "https://bizmanga.contentsx.jp/material/images/og/og-pricing.webp",
+    "width": 1200,
+    "height": 630
   }
 }
 </script>
@@ -504,21 +506,33 @@ p{margin:0 0 16px;}
 {
   "@context": "https://schema.org",
   "@type": "Service",
+  "@id": "https://bizmanga.contentsx.jp/pricing#service",
   "name": "ビジネス漫画制作｜ビズマンガ",
   "serviceType": "ビジネス漫画制作",
   "description": "採用・営業・研修・広告・会社紹介などビジネス課題に特化した漫画制作サービス。プロ漫画家によるシナリオ設計から作画・納品まで一気通貫対応。",
-  "provider": {
-    "@type": "Organization",
-    "name": "ビズマンガ",
-    "url": "https://bizmanga.contentsx.jp/",
-    "parentOrganization": {
-      "@type": "Organization",
-      "name": "Contents X 株式会社",
-      "url": "https://contentsx.jp"
-    }
-  },
+  "provider": { "@id": "https://bizmanga.contentsx.jp/#organization" },
   "areaServed": { "@type": "Country", "name": "JP" },
-  "offers": [
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "JPY",
+    "lowPrice": "15800",
+    "highPrice": "19800",
+    "offerCount": "4",
+    "offers": [
+    {
+      "@type": "Offer",
+      "name": "ベーシックプラン（1〜10P）",
+      "priceCurrency": "JPY",
+      "price": "15800",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "15800",
+        "priceCurrency": "JPY",
+        "unitText": "PAGE"
+      },
+      "availability": "https://schema.org/InStock",
+      "url": "https://bizmanga.contentsx.jp/pricing"
+    },
     {
       "@type": "Offer",
       "name": "スタンダードプラン（11〜19P）",
@@ -561,7 +575,8 @@ p{margin:0 0 16px;}
       "availability": "https://schema.org/InStock",
       "url": "https://bizmanga.contentsx.jp/pricing"
     }
-  ]
+    ]
+  }
 }
 </script>
 <!-- Start of HubSpot Embed Code -->

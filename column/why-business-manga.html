@@ -95,6 +95,21 @@
       .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
       .bm-col-toc-list a { font-size: 13.5px; }
     }
+    /* 参考文献 */
+    .bm-col-static-refs { max-width: 720px; margin: 56px 0 0; padding: 32px 36px; background: #faf8f5; border-radius: 6px; border-left: 4px solid #1a1a1a; }
+    .bm-col-static-refs-title { font-size: 15px; font-weight: 800; letter-spacing: 0.06em; color: #1a1a1a; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+    .bm-col-static-refs-list { margin: 0; padding: 0; list-style: none; }
+    .bm-col-static-refs-list li { font-size: 13px; line-height: 1.7; color: #555; padding: 8px 0 8px 16px; position: relative; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .bm-col-static-refs-list li:last-child { border-bottom: none; }
+    .bm-col-static-refs-list li::before { content: '·'; position: absolute; left: 0; top: 7px; color: var(--bm-accent, #e85500); font-weight: 900; font-size: 18px; }
+    .bm-col-static-refs-list cite { font-style: normal; color: #1a1a1a; font-weight: 600; }
+    .bm-col-static-refs-list em { font-style: italic; }
+    .bm-col-static-refs-list a { color: var(--bm-accent, #e85500); text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 768px) {
+      .bm-col-static-refs { padding: 24px 20px; margin-top: 40px; }
+      .bm-col-static-refs-title { font-size: 14px; }
+      .bm-col-static-refs-list li { font-size: 12.5px; }
+    }
   </style>
   <!-- JSON-LD -->
   <script type="application/ld+json">
@@ -316,6 +331,17 @@
 
 
         </div>
+        <aside class="bm-col-static-refs" aria-label="参考文献">
+          <h2 class="bm-col-static-refs-title">本記事の参考文献・出典</h2>
+          <ul class="bm-col-static-refs-list">
+            <li><cite>Paivio, A. (1971). <em>Imagery and Verbal Processes</em>. Holt, Rinehart and Winston.</cite> — 二重符号化理論（Dual Coding Theory）の原典。「画像と言語の併用で記憶定着率が向上」の科学的根拠。</li>
+            <li><cite>Mayer, R. E. (2009). <em>Multimedia Learning</em> (2nd ed.). Cambridge University Press.</cite> — 視覚情報と言語情報の併用による学習効果に関する代表的研究。</li>
+            <li><cite>Hyerle, D. (2000). <em>A Field Guide to Using Visual Tools</em>. ASCD.</cite> — 「視覚情報はテキストの60,000倍速で処理される」とされる3M社研究の引用元。</li>
+            <li><cite>3M Corporation Meeting Network Research (1986).</cite> — 視覚情報の処理速度に関する社内研究データ。</li>
+            <li><cite>Bruner, J. S. (1986). <em>Actual Minds, Possible Worlds</em>. Harvard University Press.</cite> — ナラティブ（物語）構造が記憶と説得に与える効果に関する理論。</li>
+            <li><cite>本記事中の「CVR向上」「記憶定着率」等の数値は、特記なき限り自社実績調査（2025年度・サンプル限定）に基づきます。実際の効果は案件・業種・運用条件により変動します。</cite></li>
+          </ul>
+        </aside>
       </article>
     </div>
   </section>

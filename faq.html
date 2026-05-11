@@ -100,8 +100,17 @@ p{margin:0 0 16px;}
   "name": "ビズマンガ",
   "alternateName": ["BizManga", "ビズ漫画"],
   "url": "https://bizmanga.contentsx.jp/",
-  "logo": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
-  "sameAs": ["https://x.com/Bizmanga_", "https://contentsx.jp/"],
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp",
+    "width": 512,
+    "height": 512
+  },
+  "sameAs": [
+    "https://x.com/Bizmanga_",
+    "https://contentsx.jp/",
+    "https://www.facebook.com/people/%E3%83%93%E3%82%BA%E3%83%9E%E3%83%B3%E3%82%AC%E3%83%BB%E3%83%93%E3%82%B8%E3%83%8D%E3%82%B9%E6%BC%AB%E7%94%BB%E5%88%B6%E4%BD%9C/61573994428093/"
+  ],
   "parentOrganization": {
     "@type": "Organization",
     "name": "Contents X 株式会社",
@@ -417,16 +426,18 @@ p{margin:0 0 16px;}
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
+  "@id": "https://bizmanga.contentsx.jp/faq#webpage",
   "name": "ビジネス漫画制作のよくある質問（FAQ）｜料金・期間・著作権・修正回数を解説｜ビズマンガ",
   "description": "初めてビジネス漫画を発注する方の不安をプロがすべて解消。料金の仕組み、制作期間、修正回数、著作権、NDA、多言語対応、納品形式まで発注前に知っておきたいポイントを網羅して解説します。疑問が解決したらそのままお問い合わせフォームへ。初回相談は無料です。",
   "url": "https://bizmanga.contentsx.jp/faq",
-  "publisher": {
-    "@type": "Organization",
-    "name": "ビズマンガ",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://contentsx.jp/material/images/logo/bizmanga-logo.webp"
-    }
+  "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
+  "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
+  "author": { "@id": "https://contentsx.jp/leadership#hirasawa" },
+  "primaryImageOfPage": {
+    "@type": "ImageObject",
+    "url": "https://bizmanga.contentsx.jp/material/images/og/og-faq.webp",
+    "width": 1200,
+    "height": 630
   }
 }
 </script>
