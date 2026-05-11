@@ -239,7 +239,7 @@ p{margin:0 0 16px;}
           </div>
           <div class="s3d-screen s3d-screen--video" data-idx="2">
             <iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
-            <a class="s3d-video-fs-btn" href="https://www.youtube.com/watch?v=yLwkUfi6KfQ" target="_blank" rel="noopener" aria-label="YouTubeで全画面再生" data-ja="タップで全画面再生 ▶" data-en="Tap to play fullscreen ▶">タップで全画面再生 ▶</a>
+            <button type="button" class="s3d-video-fs-btn" id="s3dVideoFsBtn" aria-label="ボイスコミックを拡大表示" data-ja="タップで拡大表示 ▶" data-en="Tap to enlarge ▶">タップで拡大表示 ▶</button>
             <span class="s3d-notch" aria-hidden="true"></span>
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
@@ -733,5 +733,37 @@ if ('serviceWorker' in navigator) {
 <!-- Start of HubSpot Embed Code -->
 <script src="/js/bm-hubspot.js" defer></script>
 <!-- End of HubSpot Embed Code -->
+
+<!-- ボイスコミック モーダル (SP拡大表示用) -->
+<div class="s3d-video-modal" id="s3dVideoModal" role="dialog" aria-modal="true" aria-label="ボイスコミック拡大表示" hidden>
+  <button type="button" class="s3d-video-modal-close" id="s3dVideoModalClose" aria-label="閉じる">×</button>
+  <div class="s3d-video-modal-frame">
+    <iframe id="s3dVideoModalIframe" title="ボイスコミック拡大" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+  </div>
+</div>
+<script>
+  (function(){
+    var btn = document.getElementById('s3dVideoFsBtn');
+    var modal = document.getElementById('s3dVideoModal');
+    var iframe = document.getElementById('s3dVideoModalIframe');
+    var closeBtn = document.getElementById('s3dVideoModalClose');
+    if (!btn || !modal || !iframe) return;
+    var SRC = 'https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1';
+    function open(){
+      iframe.src = SRC;
+      modal.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+    }
+    function close(){
+      iframe.src = '';
+      modal.hidden = true;
+      document.documentElement.style.overflow = '';
+    }
+    btn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !modal.hidden) close(); });
+  })();
+</script>
 </body>
 </html>

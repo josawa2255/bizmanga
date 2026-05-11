@@ -157,7 +157,7 @@
 .s3d-screen--video .s3d-notch,
 .s3d-screen--video .s3d-home-indicator { display: none; }
 
-/* SP用 フルスクリーン誘導ボタン (PCでは非表示) */
+/* SP用 拡大ボタン (PCでは非表示) */
 .s3d-video-fs-btn { display: none; }
 @media (max-width: 768px) {
   .s3d-video-fs-btn {
@@ -165,24 +165,77 @@
     position: absolute;
     inset: 0;
     z-index: 10;
-    align-items: center;
+    border: 0;
+    align-items: flex-end;
     justify-content: center;
     text-align: center;
-    padding: 6px;
+    padding: 6px 6px 14px;
     background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.78) 100%);
     color: #fff;
     font-size: 9.5px;
     font-weight: 800;
     letter-spacing: 0.02em;
     line-height: 1.3;
-    text-decoration: none;
     text-shadow: 0 1px 2px rgba(0,0,0,0.6);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    align-items: flex-end;
-    padding-bottom: 14px;
   }
   .s3d-video-fs-btn:active { background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.9) 100%); }
+}
+
+/* ボイスコミック拡大モーダル */
+.s3d-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.s3d-video-modal[hidden] { display: none; }
+.s3d-video-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.s3d-video-modal-close:active { background: #e85500; color: #fff; }
+.s3d-video-modal-frame {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 9 / 16;
+  max-height: calc(100vh - 32px);
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.s3d-video-modal-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+@media (min-width: 769px) {
+  /* PCではモーダル不要（PCではボタン自体非表示なのでモーダルも開かない） */
 }
 
 /* ガラス反射(画面表面) — 光沢強化 */
