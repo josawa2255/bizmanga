@@ -87,6 +87,26 @@
         tl.play();
       }
     });
+
+    // SP用 ボイスコミック 音声ON/OFFトグル (YouTube IFrame API postMessage)
+    var muteBtn = document.getElementById('s3dMuteToggle');
+    var ytIframe = document.getElementById('s3dVideoIframe');
+    if (muteBtn && ytIframe) {
+      muteBtn.addEventListener('click', function() {
+        var isMuted = muteBtn.getAttribute('data-muted') === 'true';
+        var cmd = isMuted
+          ? '{"event":"command","func":"unMute","args":""}'
+          : '{"event":"command","func":"mute","args":""}';
+        try {
+          ytIframe.contentWindow.postMessage(cmd, '*');
+        } catch (e) {}
+        muteBtn.setAttribute('data-muted', isMuted ? 'false' : 'true');
+        var newLabel = isMuted ? 'ボイスコミックの音声をオフにする' : 'ボイスコミックの音声をオンにする';
+        muteBtn.setAttribute('aria-label', newLabel);
+        var textEl = muteBtn.querySelector('.s3d-mute-text');
+        if (textEl) textEl.textContent = newLabel;
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

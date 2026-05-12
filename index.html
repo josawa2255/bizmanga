@@ -238,11 +238,19 @@ p{margin:0 0 16px;}
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
           <div class="s3d-screen s3d-screen--video" data-idx="2">
-            <iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+            <iframe id="s3dVideoIframe" loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=1&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=1&enablejsapi=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
             <span class="s3d-notch" aria-hidden="true"></span>
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
         </div>
+        <!-- SP用 音声ON/OFFボタン (ボイスコミック専用) -->
+        <button type="button" class="s3d-mute-toggle" id="s3dMuteToggle" aria-label="ボイスコミックの音声をオンにする" data-muted="true">
+          <span class="s3d-mute-icon" aria-hidden="true">
+            <svg class="s3d-mute-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            <svg class="s3d-mute-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </span>
+          <span class="s3d-mute-text" data-ja="ボイスコミックの音声をオンにする" data-en="Turn on voice comic audio">ボイスコミックの音声をオンにする</span>
+        </button>
 
         <a href="#newWorks" class="s3d-bottom-link" data-ja="ギャラリーで作品を見る ↓" data-en="Browse the Gallery ↓">ギャラリーで作品を見る ↓</a>
       </div>
