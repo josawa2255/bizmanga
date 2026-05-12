@@ -1,0 +1,60 @@
+# Python依存パッケージ (BizManga + ContentsX ローカル開発用)
+#
+# 用途:
+#   - BizManga/tools/rank-tracker.py (GSC日次ランクトラッカー: GitHub Actionsでも稼働)
+#   - BizManga/tools/build-{columns,works,feed,lp-cases,works-og}.py (静的HTMLビルド)
+#   - BizManga/tools/indexnow-ping.py (IndexNow送信)
+#   - BizManga/serve.py (ローカル開発サーバ)
+#   - ContentX/tools/build-c-{columns,feed}.py
+#
+# 再構築コマンド:
+#   cd ContentX_HP/
+#   python3 -m venv .venv
+#   source .venv/bin/activate
+#   pip install -r BizManga/tools/requirements.txt
+#
+# 最終更新: 2026-05-12 (.venv削除前のpip freezeから生成)
+
+certifi==2026.2.25
+cffi==2.0.0
+charset-normalizer==3.4.6
+contourpy==1.3.3
+cryptography==46.0.6
+cycler==0.12.1
+fonttools==4.62.1
+google-api-core==2.30.3
+google-api-python-client==2.194.0
+google-auth==2.49.2
+google-auth-httplib2==0.3.1
+googleapis-common-protos==1.74.0
+greenlet==3.4.0
+httplib2==0.31.2
+idna==3.11
+joblib==1.5.3
+kiwisolver==1.5.0
+matplotlib==3.10.9
+numpy==2.4.4
+packaging==26.1
+pdfminer.six==20251230
+pdfplumber==0.11.9
+pillow==12.1.1
+playwright==1.58.0
+proto-plus==1.27.2
+protobuf==7.34.1
+pyasn1==0.6.3
+pyasn1_modules==0.4.2
+pycparser==3.0
+pyee==13.0.1
+pyparsing==3.3.2
+pypdf==6.9.2
+pypdfium2==5.6.0
+python-dateutil==2.9.0.post0
+requests==2.33.1
+scikit-learn==1.8.0
+scipy==1.17.1
+six==1.17.0
+threadpoolctl==3.6.0
+typing_extensions==4.15.0
+uritemplate==4.2.0
+urllib3==2.6.3
+wordcloud==1.9.6
