@@ -846,52 +846,48 @@
 }
 
 /* ===== CTA ===== */
-/* ===== レスポンシブ ===== */
+/* ===== レスポンシブ =====
+   方針: PC/SPで「レイアウト構造」は同一に保つ (横並び・grid配置をSPでも維持)
+   調整するのは「サイズ感」(font-size, padding, gap, min-width)のみ。
+   横スクロールが必要になる場合は許容。
+   ※ 構造を変えてた以前のSPルールは2026-05-12にコメントアウト→削除。
+      復活させたい場合は git log で `strength.css` を確認。
+*/
 @media (max-width: 768px) {
+  /* === ヒーロー: サイズ調整 === */
   .str-hero { padding: 70px 16px 30px; }
   .str-hero-title { font-size: clamp(28px, 8vw, 40px); margin-bottom: 12px; }
   .str-hero-lead { font-size: 14px; margin-bottom: 32px; }
-  .str-bento {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .str-bento-price    { grid-column: 1; grid-row: auto; min-height: 160px; }
-  .str-bento-speed    { grid-column: 2; grid-row: auto; min-height: 160px; }
-  .str-bento-quality  { grid-column: 1; grid-row: auto; }
-  .str-bento-copyright { grid-column: 2; grid-row: auto; }
-  .str-bento-media    { grid-column: 1 / -1; grid-row: auto; }
+
+  /* === Bento Grid: 構造はPC仕様維持、サイズだけ縮小 === */
   .str-bento-card { padding: 24px 20px; border-radius: 18px; }
   .str-bento-num { font-size: clamp(36px, 10vw, 52px); }
-  .str-bento-media { flex-direction: column; align-items: flex-start; gap: 8px; padding: 24px 20px; }
-  .str-bento-media .str-bento-label { border-left: none; border-top: 1px solid rgba(0,0,0,0.06); padding-left: 0; padding-top: 12px; margin-top: 4px; width: 100%; }
+
+  /* === セクション・カード共通: サイズ === */
   .str-section { padding: 64px 16px; }
-  .str-compare { flex-direction: column; }
-  .str-speed-layout { flex-direction: column; gap: 24px; }
-  .str-speed-note { flex: auto; }
-  .str-speed-row { flex-direction: column; align-items: stretch; gap: 8px; }
-  .str-speed-label { min-width: 0; }
-  .str-ba-compare { flex-direction: column; gap: 12px; }
-  .str-ba-arrow { transform: rotate(90deg); }
-  .str-quality-grid { grid-template-columns: 1fr; }
-  .str-quality-pro-card { flex-direction: column; gap: 20px; }
-  .str-quality-pro-img { flex: none; width: 100%; max-height: 200px; }
-  .str-quality-stats { gap: 24px; }
   .str-glass-card { padding: 28px 24px; border-radius: 16px; }
   .str-pill-link { font-size: 0.82rem; padding: 8px 18px; }
   .str-copyright-pills { gap: 10px; }
   .str-copyright-pill { font-size: 0.85rem; padding: 12px 20px; }
-  .str-media-branches { grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* === メディア展開: ハブの見た目 === */
   .str-media-hub { font-size: 0.95rem; padding: 14px 28px; }
-  .str-compare-v2 { flex-direction: column; align-items: center; }
+
+  /* === 比較カード: 最大幅をフィット === */
   .str-compare-card { max-width: 100%; }
-  .str-compare-vs { transform: rotate(90deg); margin: -8px 0; }
-  .str-speed-v2 { grid-template-columns: 1fr; }
-  .str-speed-main { grid-row: auto; padding: 28px 24px; }
+
+  /* === スピード周辺: サイズ === */
   .str-speed-num { font-size: clamp(52px, 15vw, 80px); }
   .str-speed-bar-label { min-width: 80px; font-size: 12px; }
-  .str-speed-bar { height: 36px; }
-  .str-compare-item { min-width: 0; }
   .str-speed-bar { height: 44px; }
+  .str-speed-note { flex: auto; }
+  .str-speed-label { min-width: 0; }
+
+  /* === クオリティ: 統計gap === */
+  .str-quality-stats { gap: 24px; }
+
+  /* === flexアイテムの圧縮許可 === */
+  .str-compare-item { min-width: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
