@@ -5349,3 +5349,84 @@ html { scroll-behavior: smooth; }
 body:has(> .bm-floating-comics-bg) {
   isolation: isolate;
 }
+
+/* ============================================================
+   関連ガイドリンクブロック (.bm-related-guide)
+   - 各ページから /manga-production-company などへの内部リンクを促進
+   - SEO目的: 本文中アンカーテキストで内部リンクパワーを集中させる
+   ============================================================ */
+.bm-related-guide {
+  margin: 56px auto;
+  max-width: 760px;
+  padding: 28px 32px;
+  background: var(--bm-bg-light);
+  border-left: 4px solid var(--bm-accent);
+  border-radius: 0 var(--bm-radius) var(--bm-radius) 0;
+}
+.bm-related-guide-eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bm-accent);
+  letter-spacing: 0.08em;
+}
+.bm-related-guide-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--bm-text);
+}
+.bm-related-guide-text a {
+  color: var(--bm-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.bm-related-guide-text a:hover {
+  color: var(--bm-accent-hover);
+}
+@media (max-width: 640px) {
+  .bm-related-guide {
+    margin: 40px 16px;
+    padding: 20px 22px;
+    border-left-width: 3px;
+  }
+  .bm-related-guide-text {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+}
+
+/* ホーム用バナー型（フルワイド・中央寄せ） */
+.bm-home-comparison-banner {
+  padding: 56px 24px;
+  text-align: center;
+  background: var(--bm-bg-light);
+  border-top: 1px solid var(--bm-border);
+  border-bottom: 1px solid var(--bm-border);
+}
+.bm-home-comparison-banner p {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--bm-text);
+}
+.bm-home-comparison-banner a {
+  color: var(--bm-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.bm-home-comparison-banner a:hover {
+  color: var(--bm-accent-hover);
+}
+@media (max-width: 640px) {
+  .bm-home-comparison-banner {
+    padding: 40px 18px;
+  }
+  .bm-home-comparison-banner p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+}
