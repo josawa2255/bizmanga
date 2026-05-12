@@ -142,9 +142,11 @@
 
 .s3d-screen iframe {
   position: absolute;
-  inset: 0;
+  /* notch (上8+22+余白6=36px) と home-indicator (下7+4+余白5=16px) を避けるinset.
+     これがないとiframe内画像の上端が notch にめり込む。 */
+  inset: 36px 0 16px 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 52px);
   border: 0;
   display: block;
   background: #fafafa;
@@ -152,6 +154,13 @@
   /* iOS Safari iframe 四隅はみ出し対策: iframe にも border-radius を継承 */
   border-radius: inherit;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+@media (max-width: 768px) {
+  .s3d-screen iframe {
+    /* SP: notch (4+10+余白4=18px), home-indicator (3+2+余白3=8px) */
+    inset: 18px 0 8px 0;
+    height: calc(100% - 26px);
+  }
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
 /* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
@@ -162,9 +171,14 @@
 .s3d-screen--video iframe { pointer-events: auto !important; }
 .s3d-screen--video:hover { cursor: pointer; }
 /* 動画タイルは YouTube の音量/字幕コントロールと被るため
-   Dynamic Island (ノッチ) と ホームインジケータを非表示 */
+   Dynamic Island (ノッチ) と ホームインジケータを非表示
+   → notch がないので iframe は inset 0 で full領域使う */
 .s3d-screen--video .s3d-notch,
 .s3d-screen--video .s3d-home-indicator { display: none; }
+.s3d-screen--video iframe {
+  inset: 0 !important;
+  height: 100% !important;
+}
 
 
 /* ガラス反射(画面表面) — 光沢強化 */
