@@ -25,7 +25,7 @@
 .str-hero {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   min-height: 100dvh;
   padding: 80px 24px 40px;
   display: flex;

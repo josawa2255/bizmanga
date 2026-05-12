@@ -5,7 +5,7 @@
 
 .bm-cat-page {
   padding: 24px 0 80px;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100dvh - 60px);
 }
 
 .bm-cat-breadcrumb {

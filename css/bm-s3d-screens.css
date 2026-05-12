@@ -12,9 +12,9 @@
 }
 .s3d-stage {
   position: relative;
-  /* 100vh だと padding 込みでタイル+ラベル+見出し+CTA が入らず重なる
+  /* 100dvh だと padding 込みでタイル+ラベル+見出し+CTA が入らず重なる
      min-height で内容に応じて伸びる安全構成に */
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;

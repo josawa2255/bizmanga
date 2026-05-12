@@ -1035,7 +1035,7 @@
     flex-direction: column;
     position: sticky;
     top: 68px;
-    height: calc(100vh - 68px);
+    height: calc(100dvh - 68px);
     overflow: hidden;
     box-sizing: border-box;
   }
@@ -2116,7 +2116,7 @@
   }
 }
 
-/* iOS Safari: 100vh をdvhに置換（URLバー考慮） */
+/* iOS Safari: 100dvh をdvhに置換（URLバー考慮） */
 @supports (height: 100dvh) {
   .work-detail-overlay { height: 100dvh; }
 }
