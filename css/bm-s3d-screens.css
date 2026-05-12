@@ -68,6 +68,12 @@
   border-radius: 44px;
   opacity: 0;
   transition: opacity 0.5s ease;
+  /* iOS Safari: 親 overflow:hidden + border-radius が iframe を切り抜けないバグ対策
+     transform で compositing layer を強制 + mask-image で確実に角丸クリップ */
+  transform: translateZ(0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  isolation: isolate;
   /* 光沢オレンジベゼル: 斜め上から入る強い光で鏡面反射のような艶 */
   border: 7px solid transparent;
   background:
@@ -143,6 +149,9 @@
   display: block;
   background: #fafafa;
   pointer-events: none;
+  /* iOS Safari iframe 四隅はみ出し対策: iframe にも border-radius を継承 */
+  border-radius: inherit;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
 /* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
