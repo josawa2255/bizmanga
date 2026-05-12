@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+Thumbs.db
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# 一時ファイル
+*.bak
+*~
+*.tmp
+
+# WordPress連携の生成物 (build-columns.py / build-works.py で再生成可)
+# 必要に応じて追加
