@@ -162,14 +162,14 @@
   object-fit: cover;
   object-position: right center;
 }
-/* Cream overlay: 70% opacity on left ~50%, fades out by 70% (image fully visible on right) */
+/* Cream overlay: 90% opacity on left ~50%, fades out by 70% (image fully visible on right) */
 .lpv2-hero-bg::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 248, 237, 0.7) 0%,
-    rgba(255, 248, 237, 0.7) 45%,
-    rgba(255, 248, 237, 0.55) 55%,
+    rgba(255, 248, 237, 0.9) 0%,
+    rgba(255, 248, 237, 0.9) 45%,
+    rgba(255, 248, 237, 0.7) 55%,
     rgba(255, 248, 237, 0) 70%
   );
   pointer-events: none;
@@ -194,14 +194,14 @@
 }
 @media (max-width: 720px) {
   .lpv2-hero { background: var(--lpv2-cream); }
-  /* Mobile: image on top, cream at 70% opacity on bottom half */
+  /* Mobile: image on top, cream at 90% opacity on bottom half */
   .lpv2-hero-bg::after {
     background: linear-gradient(
       180deg,
       rgba(255, 248, 237, 0) 0%,
       rgba(255, 248, 237, 0) 45%,
-      rgba(255, 248, 237, 0.7) 60%,
-      rgba(255, 248, 237, 0.7) 100%
+      rgba(255, 248, 237, 0.9) 60%,
+      rgba(255, 248, 237, 0.9) 100%
     );
   }
   .lpv2-hero-bg img { object-position: 70% top; }
