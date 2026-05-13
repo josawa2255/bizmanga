@@ -376,61 +376,98 @@
   50% { transform: scale(1.15); opacity: 0; }
 }
 
-/* ========== ロゴマーキー ========== */
-.mpc-logos {
-  background: #1a1a1a;
-  color: #fff;
-  padding: 40px 0;
+/* ========== クライアントロゴ無限カルーセル (Cホームと共通仕様、2026-05-13移植) ========== */
+.client-logos {
+  background: var(--mpc-paper);
+  padding: 40px 0 48px;
   overflow: hidden;
+  position: relative;
 }
-.mpc-logos-label {
+.client-logos-heading {
   text-align: center;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: rgba(255, 255, 255, 0.6);
   margin: 0 0 24px;
 }
-.mpc-logo-marquee {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.mpc-logo-track {
+.client-logos-subtitle {
+  margin: 0 auto;
+  font-size: clamp(16px, 1.8vw, 22px);
+  letter-spacing: 0.04em;
+  color: var(--mpc-ink);
+  font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 64px;
-  width: max-content;
-  animation: mpcMarquee 28s linear infinite;
+  justify-content: center;
+  gap: clamp(10px, 1.4vw, 20px);
 }
-.mpc-logo-item {
-  font-family: "Noto Serif JP", serif;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.7);
-  white-space: nowrap;
+.client-logos-subtitle > span {
+  flex: 0 0 auto;
+  text-align: center;
+}
+.client-laurel {
+  width: clamp(22px, 2.2vw, 32px);
+  height: clamp(40px, 4vw, 60px);
   flex-shrink: 0;
 }
-.mpc-logo-item--accent {
-  color: var(--mpc-accent);
-  font-size: 26px;
-  position: relative;
+.client-laurel--right { transform: scaleX(-1); }
+.client-logos-track-wrapper {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
 }
-.mpc-logo-item--accent::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 38px;
-  height: 1px;
-  background: var(--mpc-accent);
+.client-logos-track {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: max-content;
+  animation: clientLogosMarquee 60s linear infinite;
 }
-@keyframes mpcMarquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+.client-logo-item {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 64px;
+  padding: 0 8px;
+  color: #333;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+.client-logo-item:hover { transform: translateY(-1px); }
+.client-logo-item img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.client-logo-text {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+@keyframes clientLogosMarquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-16.6667%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .client-logos-track { animation: none; }
+}
+@media (max-width: 768px) {
+  .client-logos { padding: 28px 0 32px; }
+  .client-logos-track { gap: 36px; animation-duration: 36s; }
+  .client-logo-item { width: 140px; height: 52px; }
+  .client-logo-text { font-size: 15px; }
+  .client-logos-subtitle {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    gap: 6px;
+    padding: 0 8px;
+  }
+  .client-laurel {
+    width: 18px;
+    height: 32px;
+  }
 }
 
 /* ========== PAIN — 編集誌面 (Investigative trade feature) ==========
