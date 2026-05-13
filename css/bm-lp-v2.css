@@ -162,14 +162,14 @@
   object-fit: cover;
   object-position: right center;
 }
-/* Cream overlay: 90% opacity on left ~50%, fades out by 70% (image fully visible on right) */
+/* Cream overlay: 77% opacity on left ~50%, fades out by 70% (image fully visible on right) */
 .lpv2-hero-bg::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 248, 237, 0.9) 0%,
-    rgba(255, 248, 237, 0.9) 45%,
-    rgba(255, 248, 237, 0.7) 55%,
+    rgba(255, 248, 237, 0.77) 0%,
+    rgba(255, 248, 237, 0.77) 45%,
+    rgba(255, 248, 237, 0.6) 55%,
     rgba(255, 248, 237, 0) 70%
   );
   pointer-events: none;
