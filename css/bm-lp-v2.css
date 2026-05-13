@@ -57,6 +57,12 @@
   background-position: 0 0;
 }
 
+/* SP-only line break — <br class="sp-br"> renders only on mobile */
+.sp-br { display: none; }
+@media (max-width: 720px) {
+  .sp-br { display: initial; }
+}
+
 /* ------------------------------------------------------------------
  * 2. Common typography
  * ------------------------------------------------------------------ */
