@@ -563,27 +563,26 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 
 /* bm-header-right は上のルールで上書き済み */
-/* お問い合わせ: プライマリ。塗り強調・大きめ */
+/* お問い合わせ: プライマリ。アウトラインベース・大きめ・ホバーで塗り */
 .bm-nav-cta {
   display: inline-flex;
   align-items: center;
   padding: 12px 26px;
-  background: var(--bm-accent);
-  color: #fff;
+  background: transparent;
+  color: var(--bm-accent);
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.04em;
   border-radius: 50px;
-  outline: 2px solid var(--bm-accent);
+  outline: 2.5px solid var(--bm-accent);
   outline-offset: 0;
   min-height: 44px;
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  box-shadow: 0 4px 14px -4px rgba(232, 85, 0, 0.45);
-  transition: transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
 }
-/* スキューイング・スイープ演出（左から濃色がスライドインしてボタン全体を覆う） */
+/* スキューイング・スイープ演出（左からオレンジがスライドインしてボタン全体を覆う） */
 .bm-nav-cta::before {
   content: "";
   position: absolute;
@@ -591,15 +590,16 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   top: 0;
   width: 0;
   height: 100%;
-  background-color: var(--bm-accent-hover, #cc4600);
+  background-color: var(--bm-accent);
   transform: skewX(45deg);
   z-index: -1;
   transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
 }
 .bm-nav-cta:hover {
+  color: #fff;
   transform: translateY(-1px) scale(1.04);
-  outline-color: var(--bm-accent-hover, #cc4600);
-  box-shadow: 0 8px 22px -6px rgba(232, 85, 0, 0.6);
+  outline-color: var(--bm-accent);
+  box-shadow: 0 8px 22px -6px rgba(232, 85, 0, 0.5);
 }
 .bm-nav-cta:hover::before { width: 260%; }
 
@@ -609,7 +609,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: #fff;
+  background: transparent;
   color: #06C755;
   font-size: 13px;
   font-weight: 700;
