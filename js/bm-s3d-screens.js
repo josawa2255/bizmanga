@@ -61,7 +61,10 @@
     // 左右スマホは下から押し上げる + フェード + 縮小スタート
     gsap.set(others, { opacity: 0, scale: 0.55, y: 60 });
     gsap.set(labels, { opacity: 0, y: -12 });
-    if (heading) gsap.set(heading, { autoAlpha: 0, y: 12 });
+    // CSS の transform: translateX(-50%) は GSAP の transform 書き換えで消えるため、
+    // xPercent: -50 を明示して中央寄せを維持する（SP は position: static のため不要）
+    var isSP = window.matchMedia('(max-width: 768px)').matches;
+    if (heading) gsap.set(heading, isSP ? { autoAlpha: 0, y: 12 } : { autoAlpha: 0, y: 12, xPercent: -50 });
 
     // 1.4秒 → 約2.7秒に伸ばし、各段階の余韻を作る
     var tl = gsap.timeline({ paused: true });
@@ -72,7 +75,9 @@
     // (3) 各ラベルが上からふわっと
     tl.to(labels,  { opacity: 1, y: 0, ease: 'power2.out', duration: 0.7, stagger: 0.14 }, 1.7);
     // (4) 見出しは下からふわり
-    if (heading) tl.to(heading, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.8 }, 1.5);
+    if (heading) tl.to(heading, isSP
+      ? { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.8 }
+      : { autoAlpha: 1, y: 0, xPercent: -50, ease: 'power2.out', duration: 0.8 }, 1.5);
     // (5) iframe 操作可能化 / CTA 表示は最後に
     tl.call(function() { group.classList.add('is-settled'); }, null, 2.3);
     if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, 2.5);
