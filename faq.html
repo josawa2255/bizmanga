@@ -64,11 +64,12 @@ h1,h2,h3,h4,h5,h6{margin:0 0 16px;font-weight:900;line-height:1.4;}h1{font-size:
 p{margin:0 0 16px;}
 @media (max-width:768px){.bm-hamburger{display:block;}.bm-nav,.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -151,107 +152,85 @@ p{margin:0 0 16px;}
   </div>
 
   <!-- ===== FAQ ===== -->
-  <section class="bm-faq-page">
-    <div class="bm-container">
-      <div class="bm-faq-list" id="bmFaqList">
+  <!-- ===== FAQ (v2 design — applied 2026-05-13) ===== -->
+  <section class="lpv2-section lpv2-faq" id="bmFaqList" aria-label="ビジネス漫画制作のよくある質問">
+    <div class="lpv2-container">
+      <header class="lpv2-section-head">
+        <span class="lpv2-chapter-mark">FREQUENTLY ASKED QUESTIONS</span>
+        <h2 class="lpv2-h2"><span data-ja="ビジネス漫画制作について、" data-en="Frequently asked questions about ">ビジネス漫画制作について、</span><em data-ja="よくあるご質問" data-en="business manga production">よくあるご質問</em><span data-ja="。" data-en=".">。</span></h2>
+        <p class="lpv2-lead lpv2-lead--center" data-ja="お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。" data-en="We've gathered the questions our editorial team most often hears before kickoff. If yours isn't here, just reach out.">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
+      </header>
+      <div class="lpv2-faq-list">
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="漫画制作にはどのくらいの期間がかかりますか？" data-en="How long does manga production take?">漫画制作にはどのくらいの期間がかかりますか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="内容やページ数にもよりますが、通常3〜8週間程度です。ヒアリングからシナリオ作成、ネーム確認、作画、修正対応を含めたスケジュールとなります。お急ぎの場合もご相談ください。" data-en="Depending on the content and number of pages, it typically takes 3-8 weeks. The schedule includes hearing, scenario creation, name confirmation, drawing, and revision handling. If you're in a hurry, please feel free to contact us.">内容やページ数にもよりますが、通常3〜8週間程度です。ヒアリングからシナリオ作成、ネーム確認、作画、修正対応を含めたスケジュールとなります。お急ぎの場合もご相談ください。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="漫画制作にはどのくらいの期間がかかりますか？" data-en="How long does manga production take?">漫画制作にはどのくらいの期間がかかりますか？</summary>
+          <div class="lpv2-faq-answer" data-ja="内容やページ数にもよりますが、通常3〜8週間程度です。ヒアリングからシナリオ作成、ネーム確認、作画、修正対応を含めたスケジュールとなります。お急ぎの場合もご相談ください。" data-en="Depending on the content and number of pages, it typically takes 3-8 weeks. The schedule includes hearing, scenario creation, name confirmation, drawing, and revision handling. If you're in a hurry, please feel free to contact us.">内容やページ数にもよりますが、通常3〜8週間程度です。ヒアリングからシナリオ作成、ネーム確認、作画、修正対応を含めたスケジュールとなります。お急ぎの場合もご相談ください。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="漫画のタッチ（絵柄）は選べますか？" data-en="Can you choose the manga style (art style)?">漫画のタッチ（絵柄）は選べますか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="はい、ご要望に合わせて最適なタッチをご提案します。少年漫画風、少女漫画風、ビジネス寄りのシンプルなタッチなど、目的やターゲットに合わせてお選びいただけます。" data-en="Yes, we propose the optimal touch according to your requirements. You can choose according to your purpose and target, such as boys' manga style, girls' manga style, or simple business-oriented touch.">はい、ご要望に合わせて最適なタッチをご提案します。少年漫画風、少女漫画風、ビジネス寄りのシンプルなタッチなど、目的やターゲットに合わせてお選びいただけます。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="漫画のタッチ（絵柄）は選べますか？" data-en="Can you choose the manga style (art style)?">漫画のタッチ（絵柄）は選べますか？</summary>
+          <div class="lpv2-faq-answer" data-ja="はい、ご要望に合わせて最適なタッチをご提案します。少年漫画風、少女漫画風、ビジネス寄りのシンプルなタッチなど、目的やターゲットに合わせてお選びいただけます。" data-en="Yes, we propose the optimal touch according to your requirements. You can choose according to your purpose and target, such as boys' manga style, girls' manga style, or simple business-oriented touch.">はい、ご要望に合わせて最適なタッチをご提案します。少年漫画風、少女漫画風、ビジネス寄りのシンプルなタッチなど、目的やターゲットに合わせてお選びいただけます。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="シナリオ（ストーリー）の作成もお願いできますか？" data-en="Can you create the scenario (story)?">シナリオ（ストーリー）の作成もお願いできますか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="もちろんです。プロのシナリオライターが、ビジネス目的に沿ったストーリーを一から作成します。お客様のヒアリング内容をもとに、訴求ポイントを最大化するシナリオをご提案いたします。" data-en="Of course. Our professional scenario writers create stories from scratch that align with your business objectives. Based on your hearing content, we propose scenarios that maximize your appeal points.">もちろんです。プロのシナリオライターが、ビジネス目的に沿ったストーリーを一から作成します。お客様のヒアリング内容をもとに、訴求ポイントを最大化するシナリオをご提案いたします。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="シナリオ（ストーリー）の作成もお願いできますか？" data-en="Can you create the scenario (story)?">シナリオ（ストーリー）の作成もお願いできますか？</summary>
+          <div class="lpv2-faq-answer" data-ja="もちろんです。プロのシナリオライターが、ビジネス目的に沿ったストーリーを一から作成します。お客様のヒアリング内容をもとに、訴求ポイントを最大化するシナリオをご提案いたします。" data-en="Of course. Our professional scenario writers create stories from scratch that align with your business objectives. Based on your hearing content, we propose scenarios that maximize your appeal points.">もちろんです。プロのシナリオライターが、ビジネス目的に沿ったストーリーを一から作成します。お客様のヒアリング内容をもとに、訴求ポイントを最大化するシナリオをご提案いたします。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="修正は何回まで可能ですか？" data-en="How many revisions are possible?">修正は何回まで可能ですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="絵コンテ段階の修正1回とセリフ修正3回が標準で含まれています。シナリオ・ネーム段階での修正が最も効率的ですので、早い段階でしっかりすり合わせを行います。" data-en="1 storyboard revision and 3 dialogue revisions are included as standard. Revisions at the scenario and name stage are most efficient, so we make sure to align early on.">絵コンテ段階の修正1回とセリフ修正3回が標準で含まれています。シナリオ・ネーム段階での修正が最も効率的ですので、早い段階でしっかりすり合わせを行います。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="修正は何回まで可能ですか？" data-en="How many revisions are possible?">修正は何回まで可能ですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="絵コンテ段階の修正1回とセリフ修正3回が標準で含まれています。シナリオ・ネーム段階での修正が最も効率的ですので、早い段階でしっかりすり合わせを行います。" data-en="1 storyboard revision and 3 dialogue revisions are included as standard. Revisions at the scenario and name stage are most efficient, so we make sure to align early on.">絵コンテ段階の修正1回とセリフ修正3回が標準で含まれています。シナリオ・ネーム段階での修正が最も効率的ですので、早い段階でしっかりすり合わせを行います。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="納品データの形式は何ですか？" data-en="What formats are the deliverables?">納品データの形式は何ですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="Web用（JPEG/PNG/WebP）、印刷用（高解像度PDF/AI）、SNS用（各プラットフォーム最適サイズ）など、用途に合わせたフォーマットで納品いたします。" data-en="We deliver in formats according to your needs, such as Web (JPEG/PNG/WebP), Print (high-resolution PDF/AI), and SNS (optimal size for each platform).">Web用（JPEG/PNG/WebP）、印刷用（高解像度PDF/AI）、SNS用（各プラットフォーム最適サイズ）など、用途に合わせたフォーマットで納品いたします。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="納品データの形式は何ですか？" data-en="What formats are the deliverables?">納品データの形式は何ですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="Web用（JPEG/PNG/WebP）、印刷用（高解像度PDF/AI）、SNS用（各プラットフォーム最適サイズ）など、用途に合わせたフォーマットで納品いたします。" data-en="We deliver in formats according to your needs, such as Web (JPEG/PNG/WebP), Print (high-resolution PDF/AI), and SNS (optimal size for each platform).">Web用（JPEG/PNG/WebP）、印刷用（高解像度PDF/AI）、SNS用（各プラットフォーム最適サイズ）など、用途に合わせたフォーマットで納品いたします。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="予算はどのくらいですか？" data-en="What is the budget?">予算はどのくらいですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="30万円からご対応可能です。ページ数・タッチ・用途によって変動しますので、まずはお気軽にお問い合わせください。お見積もりは無料です。" data-en="We can accommodate from ¥300,000. Prices vary depending on the number of pages, style, and purpose. Please feel free to contact us first. Estimates are free.">30万円からご対応可能です。ページ数・タッチ・用途によって変動しますので、まずはお気軽にお問い合わせください。お見積もりは無料です。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="予算はどのくらいですか？" data-en="What is the budget?">予算はどのくらいですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="30万円からご対応可能です。ページ数・タッチ・用途によって変動しますので、まずはお気軽にお問い合わせください。お見積もりは無料です。" data-en="We can accommodate from ¥300,000. Prices vary depending on the number of pages, style, and purpose. Please feel free to contact us first. Estimates are free.">30万円からご対応可能です。ページ数・タッチ・用途によって変動しますので、まずはお気軽にお問い合わせください。お見積もりは無料です。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="二次利用は可能ですか？" data-en="Is secondary use possible?">二次利用は可能ですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="納品後の著作権はお客様に帰属しますので、Web・SNS・印刷物・動画など、自由にご活用いただけます。二次利用に関する詳細は契約時にご説明いたします。" data-en="Copyright after delivery belongs to you, so you can freely use it for websites, social media, printed materials, videos, etc. Details on secondary use will be explained at the time of contract.">納品後の著作権はお客様に帰属しますので、Web・SNS・印刷物・動画など、自由にご活用いただけます。二次利用に関する詳細は契約時にご説明いたします。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="二次利用は可能ですか？" data-en="Is secondary use possible?">二次利用は可能ですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="納品後の著作権はお客様に帰属しますので、Web・SNS・印刷物・動画など、自由にご活用いただけます。二次利用に関する詳細は契約時にご説明いたします。" data-en="Copyright after delivery belongs to you, so you can freely use it for websites, social media, printed materials, videos, etc. Details on secondary use will be explained at the time of contract.">納品後の著作権はお客様に帰属しますので、Web・SNS・印刷物・動画など、自由にご活用いただけます。二次利用に関する詳細は契約時にご説明いたします。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="地方からの依頼も可能ですか？" data-en="Can we request from outside Tokyo?">地方からの依頼も可能ですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="はい、全国対応しています。オンラインでのヒアリング・打ち合わせが可能ですので、場所を問わずご依頼いただけます。" data-en="Yes, we serve nationwide. Since online hearings and meetings are possible, you can request from anywhere.">はい、全国対応しています。オンラインでのヒアリング・打ち合わせが可能ですので、場所を問わずご依頼いただけます。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="地方からの依頼も可能ですか？" data-en="Can we request from outside Tokyo?">地方からの依頼も可能ですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="はい、全国対応しています。オンラインでのヒアリング・打ち合わせが可能ですので、場所を問わずご依頼いただけます。" data-en="Yes, we serve nationwide. Since online hearings and meetings are possible, you can request from anywhere.">はい、全国対応しています。オンラインでのヒアリング・打ち合わせが可能ですので、場所を問わずご依頼いただけます。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="AI漫画の著作権は大丈夫ですか？商用利用できますか？" data-en="Is AI-assisted manga safe for commercial use?">AI漫画の著作権は大丈夫ですか？商用利用できますか？</button>
-          <div class="bm-faq-a">
-            <p data-i18n-html data-ja="はい、BizMangaで制作したマンガは<strong>商用利用に完全対応</strong>しています。BizMangaの「7割人間・3割AI」ハイブリッド制作では、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。AIで学習素材が混入するリスクや著作権侵害リスクを避けるため、社内で許諾済み素材とオリジナル生成物のみを使用しています。">はい、BizMangaで制作したマンガは<strong>商用利用に完全対応</strong>しています。BizMangaの「7割人間・3割AI」ハイブリッド制作では、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="AI漫画の著作権は大丈夫ですか？商用利用できますか？" data-en="Is AI-assisted manga safe for commercial use?">AI漫画の著作権は大丈夫ですか？商用利用できますか？</summary>
+          <div class="lpv2-faq-answer" data-i18n-html data-ja="はい、BizMangaで制作したマンガは<strong>商用利用に完全対応</strong>しています。BizMangaの「7割人間・3割AI」ハイブリッド制作では、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。AIで学習素材が混入するリスクや著作権侵害リスクを避けるため、社内で許諾済み素材とオリジナル生成物のみを使用しています。">はい、BizMangaで制作したマンガは<strong>商用利用に完全対応</strong>しています。BizMangaの「7割人間・3割AI」ハイブリッド制作では、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="動画広告と漫画広告、どちらが効果的ですか？" data-en="Video ads vs manga ads — which is more effective?">動画広告と漫画広告、どちらが効果的ですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能で、両メディアのハイブリッド展開も選択肢となります。">目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能です。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="動画広告と漫画広告、どちらが効果的ですか？" data-en="Video ads vs manga ads — which is more effective?">動画広告と漫画広告、どちらが効果的ですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能で、両メディアのハイブリッド展開も選択肢となります。">目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能です。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="なぜビズマンガは大手制作会社の1/5の価格で制作できるのですか？" data-en="Why can BizManga deliver at 1/5 the price of major studios?">なぜビズマンガは大手制作会社の1/5の価格で制作できるのですか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="ビズマンガ独自の「7割人間・3割AI」ハイブリッド制作モデルが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは背景作画、効果線、レタッチ、バリエーション出しといった反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ15,800円〜という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当するため、品質は大手と同等以上を維持。さらに125項目の品質チェックで全作品を検証し、安価でも品質に一切妥協しません。">ビズマンガ独自の「7割人間・3割AI」ハイブリッド制作モデルが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ15,800円〜という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当し、125項目の品質チェックで全作品を検証します。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="なぜビズマンガは大手制作会社の1/5の価格で制作できるのですか？" data-en="Why can BizManga deliver at 1/5 the price of major studios?">なぜビズマンガは大手制作会社の1/5の価格で制作できるのですか？</summary>
+          <div class="lpv2-faq-answer" data-ja="ビズマンガ独自の「7割人間・3割AI」ハイブリッド制作モデルが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは背景作画、効果線、レタッチ、バリエーション出しといった反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ15,800円〜という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当するため、品質は大手と同等以上を維持。さらに125項目の品質チェックで全作品を検証し、安価でも品質に一切妥協しません。">ビズマンガ独自の「7割人間・3割AI」ハイブリッド制作モデルが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ15,800円〜という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当し、125項目の品質チェックで全作品を検証します。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="採用パンフレットが読まれない悩みを解決できますか？" data-en="Can BizManga solve the 'nobody reads our recruitment brochure' problem?">採用パンフレットが読まれない悩みを解決できますか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="はい、BizMangaの採用マンガは「読まれない採用パンフ」課題の有効な解決策として多くの企業様にご利用いただいています。従来の採用パンフレットはテキスト中心で最後まで読まれないことが多いですが、マンガ化することで主人公への感情移入、ストーリーによる記憶定着、視覚的な職場イメージ伝達が可能になります。具体的な活用形態としては、(1) 社員1名を主人公にした1日密着型マンガ、(2) 創業者の想いを伝える創業ストーリー型、(3) 入社後の成長を描くキャリア型、などがあります。採用パンフ向け8ページ構成で税込30万円前後、最短2週間で制作可能です。">はい、BizMangaの採用マンガは「読まれない採用パンフ」課題の有効な解決策として多くの企業様にご利用いただいています。マンガ化することで主人公への感情移入、ストーリーによる記憶定着、視覚的な職場イメージ伝達が可能になります。社員密着型、創業ストーリー型、キャリア型など目的に応じた構成をご提案。採用パンフ向け8ページ構成で税込30万円前後、最短2週間で制作可能です。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="採用パンフレットが読まれない悩みを解決できますか？" data-en="Can BizManga solve the 'nobody reads our recruitment brochure' problem?">採用パンフレットが読まれない悩みを解決できますか？</summary>
+          <div class="lpv2-faq-answer" data-ja="はい、BizMangaの採用マンガは「読まれない採用パンフ」課題の有効な解決策として多くの企業様にご利用いただいています。従来の採用パンフレットはテキスト中心で最後まで読まれないことが多いですが、マンガ化することで主人公への感情移入、ストーリーによる記憶定着、視覚的な職場イメージ伝達が可能になります。具体的な活用形態としては、(1) 社員1名を主人公にした1日密着型マンガ、(2) 創業者の想いを伝える創業ストーリー型、(3) 入社後の成長を描くキャリア型、などがあります。採用パンフ向け8ページ構成で税込30万円前後、最短2週間で制作可能です。">はい、BizMangaの採用マンガは「読まれない採用パンフ」課題の有効な解決策として多くの企業様にご利用いただいています。マンガ化することで主人公への感情移入、ストーリーによる記憶定着、視覚的な職場イメージ伝達が可能になります。社員密着型、創業ストーリー型、キャリア型など目的に応じた構成をご提案。採用パンフ向け8ページ構成で税込30万円前後、最短2週間で制作可能です。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="営業資料や提案書に興味を持ってもらえない、漫画で解決できますか？" data-en="Can manga solve the 'nobody is interested in our sales material' problem?">営業資料や提案書に興味を持ってもらえない、漫画で解決できますか？</button>
-          <div class="bm-faq-a">
-            <p data-ja="可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。従来の営業資料は機能・スペック中心で伝わりにくい傾向がありますが、マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感できるストーリーで描写でき、クライアント企業の担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。展示会や商談、LP、メルマガなどで活用することで、商談化率や成約率の向上が期待できます。">可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感ストーリーで描写でき、クライアントの担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="営業資料や提案書に興味を持ってもらえない、漫画で解決できますか？" data-en="Can manga solve the 'nobody is interested in our sales material' problem?">営業資料や提案書に興味を持ってもらえない、漫画で解決できますか？</summary>
+          <div class="lpv2-faq-answer" data-ja="可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。従来の営業資料は機能・スペック中心で伝わりにくい傾向がありますが、マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感できるストーリーで描写でき、クライアント企業の担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。展示会や商談、LP、メルマガなどで活用することで、商談化率や成約率の向上が期待できます。">可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感ストーリーで描写でき、クライアントの担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。</div>
+        </details>
 
-        <div class="bm-faq-item">
-          <button class="bm-faq-q" data-ja="他の漫画制作会社と比較してBizMangaの違いは？" data-en="How does BizManga differ from other manga production companies?">他の漫画制作会社と比較してBizMangaの違いは？</button>
-          <div class="bm-faq-a">
-            <p data-i18n-html data-ja='ビズマンガの主な差別化ポイントは5つです。(1) <strong>価格</strong>: 大手の約1/5（1ページ15,800円〜）を、7割人間3割AIのハイブリッド制作で実現。(2) <strong>納期</strong>: 最短2週間、標準3〜4週間と業界最速クラス。(3) <strong>品質</strong>: 独自の125項目品質チェックをクリアした作品のみ納品。(4) <strong>権威</strong>: 親会社Contents X 株式会社の社外取締役にASOBI SYSTEM共同創業者の中川祐介を迎え、エンターテインメント業界のネットワークと知見を活用。(5) <strong>総合力</strong>: ContentsX本体でマンガ・縦スクロール漫画・動画・IP開発までワンストップ対応可能、将来的なクロスメディア展開にも対応。詳細は <a href="/manga-production-company">漫画制作会社 比較ガイド</a> で主要 5 社との徹底比較を公開しています。'>ビズマンガの主な差別化ポイントは5つです。(1) <strong>価格</strong>: 大手の約1/5（1ページ15,800円〜）を、7割人間3割AIのハイブリッド制作で実現。(2) <strong>納期</strong>: 最短2週間、標準3〜4週間と業界最速クラス。(3) <strong>品質</strong>: 独自の125項目品質チェックをクリアした作品のみ納品。(4) <strong>権威</strong>: 親会社Contents X 株式会社の社外取締役にASOBI SYSTEM共同創業者の中川祐介を迎え、エンターテインメント業界のネットワークと知見を活用。(5) <strong>総合力</strong>: ContentsX本体でマンガ・縦スクロール漫画・動画・IP開発までワンストップ対応可能。詳細は <a href="/manga-production-company">漫画制作会社 比較ガイド</a> で主要 5 社との徹底比較を公開しています。</p>
-          </div>
-        </div>
+        <details class="lpv2-faq-item">
+          <summary data-ja="他の漫画制作会社と比較してBizMangaの違いは？" data-en="How does BizManga differ from other manga production companies?">他の漫画制作会社と比較してBizMangaの違いは？</summary>
+          <div class="lpv2-faq-answer" data-i18n-html data-ja='ビズマンガの主な差別化ポイントは5つです。(1) <strong>価格</strong>: 大手の約1/5（1ページ15,800円〜）を、7割人間3割AIのハイブリッド制作で実現。(2) <strong>納期</strong>: 最短2週間、標準3〜4週間と業界最速クラス。(3) <strong>品質</strong>: 独自の125項目品質チェックをクリアした作品のみ納品。(4) <strong>権威</strong>: 親会社Contents X 株式会社の社外取締役にASOBI SYSTEM共同創業者の中川祐介を迎え、エンターテインメント業界のネットワークと知見を活用。(5) <strong>総合力</strong>: ContentsX本体でマンガ・縦スクロール漫画・動画・IP開発までワンストップ対応可能、将来的なクロスメディア展開にも対応。詳細は <a href="/manga-production-company">漫画制作会社 比較ガイド</a> で主要 5 社との徹底比較を公開しています。'>ビズマンガの主な差別化ポイントは5つです。(1) <strong>価格</strong>: 大手の約1/5（1ページ15,800円〜）を、7割人間3割AIのハイブリッド制作で実現。(2) <strong>納期</strong>: 最短2週間、標準3〜4週間と業界最速クラス。(3) <strong>品質</strong>: 独自の125項目品質チェックをクリアした作品のみ納品。(4) <strong>権威</strong>: 親会社Contents X 株式会社の社外取締役にASOBI SYSTEM共同創業者の中川祐介を迎え、エンターテインメント業界のネットワークと知見を活用。(5) <strong>総合力</strong>: ContentsX本体でマンガ・縦スクロール漫画・動画・IP開発までワンストップ対応可能。詳細は <a href="/manga-production-company">漫画制作会社 比較ガイド</a> で主要 5 社との徹底比較を公開しています。</div>
+        </details>
 
       </div>
     </div>
@@ -291,15 +270,6 @@ p{margin:0 0 16px;}
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-kinsoku.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
-  <script>
-    // FAQ アコーディオン
-    document.querySelectorAll('.bm-faq-q').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var item = btn.parentElement;
-        item.classList.toggle('open');
-      });
-    });
-  </script>
 <!-- JSON-LD: FAQPage -->
 <script type="application/ld+json">
 {
