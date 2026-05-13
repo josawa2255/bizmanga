@@ -1164,6 +1164,14 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   margin-top: 6px;
   letter-spacing: 0.02em;
 }
+.bm-subhero-strong {
+  display: inline-block;
+  color: var(--bm-accent);
+  font-weight: 900;
+  font-size: 1.25em;
+  letter-spacing: -0.01em;
+  margin-left: 2px;
+}
 .bm-subhero-cta {
   display: inline-flex;
   align-items: center;
