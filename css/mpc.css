@@ -1731,7 +1731,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--mpc-accent);
+  background: var(--mpc-accent); /* デフォルト。data-reason ごとに上書き */
   color: #fff;
   display: flex;
   align-items: center;
@@ -1741,6 +1741,11 @@
   width: 24px;
   height: 24px;
 }
+/* カードごとに内容を象徴する色 */
+.mpc-hero-v2-card[data-reason="price"]    .mpc-hero-v2-card-icon { background: #10b981; } /* お金・透明性 = エメラルドグリーン */
+.mpc-hero-v2-card[data-reason="speed"]    .mpc-hero-v2-card-icon { background: #f59e0b; } /* 雷・スピード = アンバー */
+.mpc-hero-v2-card[data-reason="usecase"]  .mpc-hero-v2-card-icon { background: #8b5cf6; } /* 多様性・専門 = バイオレット */
+.mpc-hero-v2-card[data-reason="contract"] .mpc-hero-v2-card-icon { background: #3b82f6; } /* 信頼・盾 = ロイヤルブルー */
 .mpc-hero-v2-card-body { min-width: 0; }
 .mpc-hero-v2-card-title {
   margin: 0 0 2px;
