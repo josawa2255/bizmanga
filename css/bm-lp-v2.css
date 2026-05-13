@@ -194,25 +194,29 @@
 }
 @media (max-width: 720px) {
   .lpv2-hero { background: var(--lpv2-cream); }
-  /* Mobile: image on top, cream at 90% opacity on bottom half */
+  /* Mobile: portrait image fills hero, image's lower portion (character body + speed lines)
+     stays visible. Strong cream overlay masks the upper portion behind the title/CTA stack
+     so text reads cleanly without competing with the character's face. */
   .lpv2-hero-bg::after {
     background: linear-gradient(
       180deg,
-      rgba(255, 248, 237, 0) 0%,
-      rgba(255, 248, 237, 0) 45%,
-      rgba(255, 248, 237, 0.9) 60%,
-      rgba(255, 248, 237, 0.9) 100%
+      rgba(255, 248, 237, 0.96) 0%,
+      rgba(255, 248, 237, 0.96) 38%,
+      rgba(255, 248, 237, 0.75) 50%,
+      rgba(255, 248, 237, 0) 65%
     );
   }
-  .lpv2-hero-bg img { object-position: 70% top; }
-  .lpv2-hero-stage { min-height: 760px; }
+  .lpv2-hero-bg img { object-position: center top; }
+  .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
     grid-template-columns: 1fr;
-    padding: 280px 24px 48px;
-    min-height: 760px;
-    align-items: end;
+    padding: 36px 24px 48px;
+    min-height: clamp(720px, 140vw, 980px);
+    align-items: start;
   }
   .lpv2-hero-text { max-width: 100%; }
+  .lpv2-hero-title { font-size: clamp(36px, 9vw, 56px); }
+  .lpv2-hero-sub { max-width: 100%; }
 }
 
 .lpv2-hero-eyebrow {
