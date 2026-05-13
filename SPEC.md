@@ -316,14 +316,6 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - タグライン「マンガの力でビジネスを動かす」— 1文字ずつ波シャイン
 - 漫画表紙カルーセル5行 + マウスパララックス（PC）
 
-### 7.2a SubHero ポイントバー（2026-05-13追加）⭐CV強化
-- 位置: `.bm-hero` 直下、`.bm-whatis` の直前
-- 役割: シネマティックなヒーローでブランド訴求した直後に、3秒で「何を売っているか」を伝える4ポイント＋無料相談CTA
-- 4ポイント: ¥15,800〜（1ページから）/ 2週間（最短納品）/ 無料（シナリオ制作）/ 125項目（プロ作家チェック）
-- レイアウト: PCは4カラム横並び+右端CTA、SPは2x2グリッド+下にフルワイドCTA
-- CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-subhero` セクション
-- i18n: 各要素に `data-ja` / `data-en` 設定済み
-
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
 - **SP（768px以下）**: 従来の縦積み中央寄せに戻す（`display: block; text-align: center`、アクセント線は `margin: auto`）
