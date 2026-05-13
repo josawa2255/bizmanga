@@ -1131,7 +1131,11 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-subhero-item {
   text-align: center;
   position: relative;
-  padding: 0 8px;
+  padding: 22px 8px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 .bm-subhero-item:not(:last-child)::after {
   content: '';
@@ -1189,10 +1193,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   flex-shrink: 0;
 }
 
-/* 期間限定キャンペーン: 4枚目アイテムを特別扱い */
+/* 期間限定キャンペーン: 4枚目アイテムを特別扱い（padding-topは基底で確保済み） */
 .bm-subhero-item--promo {
   position: relative;
-  padding-top: 22px;
 }
 .bm-subhero-badge {
   position: absolute;
@@ -1254,7 +1257,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 
 @media (max-width: 768px) {
-  .bm-subhero-item--promo { padding-top: 20px; }
+  .bm-subhero-item { padding-top: 18px; }
   .bm-subhero-badge { top: 0; font-size: 9px; padding: 2px 8px; }
   .bm-subhero-num--gold { font-size: 14px !important; }
   .bm-subhero-num-prefix { font-size: 0.6em; }
