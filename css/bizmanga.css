@@ -1176,6 +1176,31 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   letter-spacing: -0.01em;
   margin-left: 2px;
 }
+/* 「1/5」分数表示: 1と5を縦並び、間に横棒 */
+.bm-subhero-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.45em;
+  line-height: 1;
+  color: var(--bm-accent);
+  font-weight: 900;
+  margin: 0 2px 0 4px;
+}
+.bm-subhero-frac-num,
+.bm-subhero-frac-den {
+  display: block;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+.bm-subhero-frac-num {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 1px;
+}
+.bm-subhero-frac-den {
+  padding-top: 1px;
+}
 .bm-subhero-cta {
   display: inline-flex;
   align-items: center;
