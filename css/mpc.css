@@ -1537,7 +1537,8 @@
 
 /* ============================================================
    ヒーロー v2 (2026-05-13 リデザイン)
-   - 背景: /material/images/mpc-hero-bg.webp (女の子+オレンジ波形+漫画コマ)
+   - 背景PC: /material/images/mpc/hero-bg-pc.webp (横長)
+   - 背景SP: /material/images/mpc/hero-bg-sp.webp (縦長正方形)
    - 左カラム: H1 / リード / チェック3項目 / CTA × 2
    - 右カラム: 「ビズマンガが選ばれる理由」+ 4 カード (#comparison へジャンプ)
    - 旧 .mpc-hero* 系は維持 (将来削除予定)
@@ -1795,38 +1796,57 @@
   .mpc-hero-v2-reasons { padding-top: 0; }
 }
 @media (max-width: 640px) {
-  .mpc-hero-v2 { min-height: auto; }
-  /* SP: 背景画像はキャラ部分が右上から覗くように、不透明で表示 */
+  .mpc-hero-v2 {
+    min-height: auto;
+    padding-top: 8px; /* ヘッダー直下に余白 */
+  }
+  /* SP: 画像 (840×896 縦長) はヒーロー上部にアスペクト維持で配置 */
+  .mpc-hero-v2-bg {
+    position: relative; /* PCのabsoluteを上書き */
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 840 / 896;
+    max-height: 58vh;
+  }
   .mpc-hero-v2-bg img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    object-position: right top;
+    object-position: center;
     opacity: 1;
   }
+  /* テキスト群は画像の下に普通に流す (重ねない) */
   .mpc-hero-v2-inner {
-    padding: 24px 18px 36px;
-    gap: 28px;
+    display: block; /* gridを解除して縦積み */
+    padding: 16px 18px 32px;
   }
-  /* テキストは左寄り、キャラ用に右側マージン確保 */
   .mpc-hero-v2-main {
-    padding-right: 130px; /* 右からキャラがはみ出る分の余白 */
+    padding-right: 0;
+    max-width: 100%;
+    margin-bottom: 28px;
   }
-  .mpc-hero-v2-eyebrow { margin-bottom: 12px; }
-  .mpc-hero-v2-h1 { margin-bottom: 18px; }
-  .mpc-hero-v2-h1-em { font-size: clamp(28px, 9vw, 40px); }
-  .mpc-hero-v2-lead { margin-bottom: 18px; padding-right: 0; }
-  .mpc-hero-v2-lead br { display: none; }
-  /* チェック・CTAはキャラの下に回り込ませる (右マージン解除) */
   .mpc-hero-v2-checks,
   .mpc-hero-v2-cta {
-    margin-right: -130px; /* main の padding-right を取り消し */
+    margin-right: 0;
   }
+  .mpc-hero-v2-eyebrow { margin-bottom: 8px; }
+  .mpc-hero-v2-h1 { margin-bottom: 14px; }
+  .mpc-hero-v2-h1-pre { font-size: clamp(18px, 5.4vw, 24px); }
+  .mpc-hero-v2-h1-em { font-size: clamp(30px, 9.5vw, 44px); }
+  .mpc-hero-v2-lead {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .mpc-hero-v2-lead br { display: none; }
+  .mpc-hero-v2-checks { margin-bottom: 24px; }
+  .mpc-hero-v2-checks li { font-size: 13px; }
   .mpc-hero-v2-cta { max-width: 100%; }
-  /* 「選ばれる理由」見出しに斜線アクセント (見本通り) */
-  .mpc-hero-v2-reasons-title {
-    font-size: 16px;
-    gap: 8px;
+  /* 「選ばれる理由」見出し */
+  .mpc-hero-v2-reasons {
+    padding-top: 8px;
   }
-  /* カードは縦並びで少し詰める */
+  .mpc-hero-v2-reasons-title { font-size: 16px; gap: 8px; }
   .mpc-hero-v2-cards { gap: 10px; }
   .mpc-hero-v2-card {
     padding: 14px 16px;
@@ -1834,17 +1854,9 @@
     gap: 12px;
     border-radius: 14px;
   }
-  .mpc-hero-v2-card-icon {
-    width: 48px;
-    height: 48px;
-  }
-  .mpc-hero-v2-card-icon svg {
-    width: 24px;
-    height: 24px;
-  }
+  .mpc-hero-v2-card-icon { width: 48px; height: 48px; }
+  .mpc-hero-v2-card-icon svg { width: 24px; height: 24px; }
   .mpc-hero-v2-card-title { font-size: 14px; }
-  .mpc-hero-v2-card-desc { font-size: 11px; }
-  .mpc-hero-v2-card-link {
-    font-size: 10.5px;
-  }
+  .mpc-hero-v2-card-desc { font-size: 11.5px; }
+  .mpc-hero-v2-card-link { font-size: 10.5px; }
 }

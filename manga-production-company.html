@@ -197,9 +197,12 @@
 
     <!-- ===== 1. ヒーロー (2026-05-13 リデザイン v2) ===== -->
     <section class="mpc-hero-v2" aria-label="漫画制作会社・マンガ制作会社 比較ガイド">
-      <!-- 背景イラスト（右側の女の子+オレンジ波形+漫画コマ装飾を含む） -->
+      <!-- 背景イラスト（PC: 横長 / SP: 縦長正方形に切替） -->
       <div class="mpc-hero-v2-bg" aria-hidden="true">
-        <img src="/material/images/mpc-hero-bg.webp" alt="" loading="eager" fetchpriority="high" width="1700" height="956">
+        <picture>
+          <source srcset="/material/images/mpc/hero-bg-sp.webp" media="(max-width: 640px)" type="image/webp">
+          <img src="/material/images/mpc/hero-bg-pc.webp" alt="" loading="eager" fetchpriority="high" width="1672" height="941">
+        </picture>
       </div>
 
       <div class="mpc-hero-v2-inner">
