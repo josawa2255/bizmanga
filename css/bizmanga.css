@@ -581,14 +581,27 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   overflow: hidden;
   isolation: isolate;
   box-shadow: 0 4px 14px -4px rgba(232, 85, 0, 0.45);
-  transition: transform 300ms ease, box-shadow 300ms ease, background 300ms ease;
+  transition: transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+/* スキューイング・スイープ演出（左から濃色がスライドインしてボタン全体を覆う） */
+.bm-nav-cta::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--bm-accent-hover, #cc4600);
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 800ms cubic-bezier(0.7, 0, 0.3, 1);
 }
 .bm-nav-cta:hover {
-  transform: translateY(-1px) scale(1.03);
-  background: var(--bm-accent-hover, #cc4600);
+  transform: translateY(-1px) scale(1.04);
   outline-color: var(--bm-accent-hover, #cc4600);
   box-shadow: 0 8px 22px -6px rgba(232, 85, 0, 0.6);
 }
+.bm-nav-cta:hover::before { width: 260%; }
 
 /* LINE相談ボタン: セカンダリ。お問い合わせより一回り小さく控えめ */
 .bm-nav-cta--line {
@@ -603,14 +616,19 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   outline: 1.5px solid #06C755;
   min-height: 38px;
   box-shadow: none;
+  transition: color 600ms ease, transform 500ms ease, outline-color 500ms ease, box-shadow 500ms ease;
+}
+/* LINE版のスイープ演出: 透明→緑塗りに切替 */
+.bm-nav-cta--line::before {
+  background-color: #06C755;
 }
 .bm-nav-cta--line:hover {
-  background: #06C755;
   color: #fff;
   outline-color: #06C755;
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.03);
   box-shadow: 0 4px 12px -4px rgba(6, 199, 85, 0.4);
 }
+.bm-nav-cta--line:hover::before { width: 260%; }
 .bm-nav-cta-line-icon { flex-shrink: 0; }
 
 /* 言語切替ボタン */
