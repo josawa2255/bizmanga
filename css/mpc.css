@@ -1527,12 +1527,13 @@
 .mpc-hero-v2-inner {
   position: relative;
   z-index: 1;
-  max-width: 1280px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 80px 32px 56px;
+  /* 右に女の子イラスト用の余白 (約380px) を確保 → 3カラム的構成 */
+  padding: 72px 380px 48px 40px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
-  gap: 64px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 48px;
   align-items: start;
 }
 
@@ -1674,12 +1675,12 @@
 }
 .mpc-hero-v2-card {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
+  grid-template-columns: 48px 1fr auto;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+  gap: 14px;
+  padding: 14px 18px;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 14px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.08);
   text-decoration: none;
   color: var(--mpc-ink);
@@ -1690,8 +1691,8 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 .mpc-hero-v2-card-icon {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--mpc-accent);
   color: #fff;
@@ -1700,25 +1701,25 @@
   justify-content: center;
 }
 .mpc-hero-v2-card-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 .mpc-hero-v2-card-body { min-width: 0; }
 .mpc-hero-v2-card-title {
-  margin: 0 0 4px;
-  font-size: 16px;
+  margin: 0 0 2px;
+  font-size: 14px;
   font-weight: 900;
   color: var(--mpc-ink);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 .mpc-hero-v2-card-desc {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 11.5px;
+  line-height: 1.55;
   color: var(--mpc-ink-mute);
 }
 .mpc-hero-v2-card-link {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--mpc-ink-mute);
   white-space: nowrap;
   font-weight: 700;
@@ -1729,6 +1730,15 @@
 }
 
 /* ===== レスポンシブ ===== */
+/* 1280px以下: 右の女の子余白を縮める */
+@media (max-width: 1280px) {
+  .mpc-hero-v2-inner {
+    padding: 64px 320px 48px 32px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 36px;
+  }
+}
+/* 1100px以下: 女の子を背景に透かす1カラム化 */
 @media (max-width: 1100px) {
   .mpc-hero-v2-inner {
     grid-template-columns: 1fr;
