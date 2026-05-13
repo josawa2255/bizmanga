@@ -1685,54 +1685,101 @@
   font-weight: 900;
 }
 
-/* === 統計バー 3 つ (CTAの代わり、2026-05-13 追加) === */
-.mpc-hero-v2-stats {
-  display: grid;
-  gap: 10px;
-  max-width: 480px;
-}
-.mpc-hero-v2-stat {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 14px;
-  align-items: center;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, var(--mpc-accent) 0%, var(--mpc-accent-dark) 100%);
+/* === 統計バー 横長帯 (ヒーロー直下に独立配置、2026-05-13) === */
+.mpc-stats-bar {
+  background: linear-gradient(135deg, #ff7a2a 0%, var(--mpc-accent) 50%, var(--mpc-accent-dark) 100%);
   color: #fff;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(232, 85, 0, 0.28);
+  padding: 28px 0;
+  position: relative;
+  overflow: hidden;
 }
-.mpc-hero-v2-stat-icon {
-  width: 44px;
-  height: 44px;
-  display: flex;
+.mpc-stats-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.12), transparent 40%),
+              radial-gradient(circle at 85% 50%, rgba(255,255,255,0.08), transparent 40%);
+  pointer-events: none;
+}
+.mpc-stats-bar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+.mpc-stats-bar-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 24px;
+  min-width: 0;
+}
+.mpc-stats-bar-item + .mpc-stats-bar-item {
+  border-left: 1px solid rgba(255, 255, 255, 0.32);
+}
+.mpc-stats-bar-icon {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 50%;
   color: #fff;
 }
-.mpc-hero-v2-stat-icon svg { width: 22px; height: 22px; }
-.mpc-hero-v2-stat-text { min-width: 0; }
-.mpc-hero-v2-stat-eyebrow {
-  margin: 0 0 1px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  opacity: 0.92;
+.mpc-stats-bar-icon svg {
+  width: 100%;
+  height: 100%;
 }
-.mpc-hero-v2-stat-num {
+.mpc-stats-bar-text {
+  min-width: 0;
+}
+.mpc-stats-bar-eyebrow {
   margin: 0 0 2px;
-  font-size: 17px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 0.95;
+}
+.mpc-stats-bar-num {
+  margin: 0 0 4px;
+  font-size: clamp(18px, 1.8vw, 22px);
   font-weight: 900;
-  line-height: 1.25;
+  line-height: 1.15;
   letter-spacing: 0.02em;
 }
-.mpc-hero-v2-stat-sub {
+.mpc-stats-bar-num em {
+  font-style: normal;
+  font-size: clamp(32px, 3.4vw, 42px);
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-right: 2px;
+}
+.mpc-stats-bar-sub {
   margin: 0;
-  font-size: 11.5px;
-  line-height: 1.45;
-  opacity: 0.92;
+  font-size: 11px;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 880px) {
+  .mpc-stats-bar { padding: 0; }
+  .mpc-stats-bar-inner {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+  .mpc-stats-bar-item {
+    padding: 18px 24px;
+    grid-template-columns: 56px 1fr;
+    gap: 14px;
+  }
+  .mpc-stats-bar-item + .mpc-stats-bar-item {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.28);
+  }
+  .mpc-stats-bar-icon { width: 56px; height: 56px; }
 }
 
 /* === 右カラム: 選ばれる理由 4カード === */
@@ -1896,27 +1943,7 @@
     padding-right: 150px; /* チェックもキャラ避け */
   }
   .mpc-hero-v2-checks li { font-size: 13px; }
-  /* CTA は全幅 (キャラの下に回り込み)、旧クラス */
-  .mpc-hero-v2-cta {
-    max-width: 100%;
-    gap: 10px;
-  }
-  /* 統計バー (旧CTA位置) も全幅でキャラ下に */
-  .mpc-hero-v2-stats {
-    max-width: 100%;
-    gap: 8px;
-  }
-  .mpc-hero-v2-stat {
-    padding: 10px 14px;
-    grid-template-columns: 40px 1fr;
-    gap: 12px;
-    border-radius: 12px;
-  }
-  .mpc-hero-v2-stat-icon { width: 40px; height: 40px; }
-  .mpc-hero-v2-stat-icon svg { width: 20px; height: 20px; }
-  .mpc-hero-v2-stat-num { font-size: 15px; }
-  .mpc-hero-v2-stat-sub { font-size: 10.5px; }
-  .mpc-hero-v2-stat-eyebrow { font-size: 10px; }
+  /* 旧 CTA / stats のSP上書きは撤去 (現在は別セクション .mpc-stats-bar) */
   /* 「選ばれる理由」見出し */
   .mpc-hero-v2-reasons {
     padding-top: 8px;
