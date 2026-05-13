@@ -209,47 +209,115 @@
       </ol>
     </nav>
 
-    <!-- ===== 1. ヒーロー ===== -->
-    <section class="mpc-hero" aria-label="漫画制作会社・マンガ制作会社 比較ガイド">
-      <div class="mpc-hero-bg-skew" aria-hidden="true"></div>
-      <div class="mpc-hero-glow" aria-hidden="true"></div>
-      <!-- 浮遊する漫画コマ装飾（既存OGP画像を流用） -->
-      <div class="mpc-hero-comics" aria-hidden="true">
-        <div class="mpc-hero-comic mpc-hero-comic--1"><img src="material/images/og/og-product-manga.webp" alt="" loading="eager"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--2"><img src="material/images/og/og-recruit-manga.webp" alt="" loading="eager"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--3"><img src="material/images/og/og-manga-ad-lp.webp" alt="" loading="lazy"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--4"><img src="material/images/og/og-company-manga.webp" alt="" loading="lazy"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--5"><img src="material/images/og/og-sales-manga.webp" alt="" loading="lazy"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--6"><img src="material/images/og/og-training-manga.webp" alt="" loading="lazy"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--7"><img src="material/images/og/og-inbound-manga.webp" alt="" loading="lazy"></div>
-        <div class="mpc-hero-comic mpc-hero-comic--8"><img src="material/images/og/og-ir-manga.webp" alt="" loading="lazy"></div>
+    <!-- ===== 1. ヒーロー (2026-05-13 リデザイン v2) ===== -->
+    <section class="mpc-hero-v2" aria-label="漫画制作会社・マンガ制作会社 比較ガイド">
+      <!-- 背景イラスト（右側の女の子+オレンジ波形+漫画コマ装飾を含む） -->
+      <div class="mpc-hero-v2-bg" aria-hidden="true">
+        <img src="/material/images/mpc-hero-bg.webp" alt="" loading="eager" fetchpriority="high" width="1700" height="956">
       </div>
-      <div class="mpc-container">
-        <span class="mpc-eyebrow">PRODUCTION COMPANY GUIDE</span>
-        <h1 class="mpc-h1">
-          漫画制作会社・マンガ制作会社の選び方、<br><em>本当に正しいですか？</em>
-        </h1>
-        <p class="mpc-lead">
-          採用漫画・研修漫画・会社紹介漫画・IR漫画・観光漫画など用途別に、業界主要5社を <strong>価格・納期・品質・対応範囲</strong> で徹底比較。<br>
-          失敗しない漫画制作会社（マンガ制作会社）選定ガイドを、第三者目線で公開しました。
-        </p>
-        <div class="mpc-hero-cta">
-          <a href="#comparison" class="mpc-btn-primary">
-            <span>比較表を見る</span>
-            <span class="mpc-btn-arrow-down" aria-hidden="true">↓</span>
-          </a>
-          <a href="/contact" class="mpc-btn-ghost">無料相談する</a>
+
+      <div class="mpc-hero-v2-inner">
+        <!-- 左カラム: 主訴求 -->
+        <div class="mpc-hero-v2-main">
+          <span class="mpc-hero-v2-eyebrow">PRODUCTION COMPANY GUIDE</span>
+          <h1 class="mpc-hero-v2-h1">
+            <span class="mpc-hero-v2-h1-pre">他社と比べて見える</span>
+            <em class="mpc-hero-v2-h1-em">ビズマンガの安心感</em>
+          </h1>
+          <p class="mpc-hero-v2-lead">
+            単なるマンガ制作ではなく、成果につながる<br>ビジネスパートナーとして伴走します。
+          </p>
+          <ul class="mpc-hero-v2-checks">
+            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
+            </span>業界特化の構成・ストーリー設計</li>
+            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
+            </span>伝わるマンガで、問い合わせ・成約を後押し</li>
+            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
+            </span>はじめての方も安心のサポート体制</li>
+          </ul>
+          <div class="mpc-hero-v2-cta">
+            <a href="/contact" class="mpc-hero-v2-btn mpc-hero-v2-btn--primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              <span>無料で相談してみる</span>
+              <span class="mpc-hero-v2-btn-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="#comparison" class="mpc-hero-v2-btn mpc-hero-v2-btn--ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              <span>サービス資料をダウンロード</span>
+            </a>
+          </div>
         </div>
-        <div class="mpc-hero-meta">
-          <span><span class="mpc-meta-label">調査対象</span>6社 × 8項目</span>
-          <span><span class="mpc-meta-label">出典</span>各社公式公開情報</span>
-          <span><span class="mpc-meta-label">公開</span>2026-04-27</span>
-          <span><span class="mpc-meta-label">読了</span>約12分</span>
+
+        <!-- 中央カラム: 選ばれる理由 4カード -->
+        <div class="mpc-hero-v2-reasons">
+          <p class="mpc-hero-v2-reasons-title">
+            <span class="mpc-hero-v2-reasons-slash" aria-hidden="true">＼</span>
+            ビズマンガが選ばれる理由
+            <span class="mpc-hero-v2-reasons-slash" aria-hidden="true">／</span>
+          </p>
+          <div class="mpc-hero-v2-cards">
+            <a href="#comparison" class="mpc-hero-v2-card" data-reason="price">
+              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="24" cy="24" r="20"/>
+                  <path d="M16 16 L24 24 L32 16 M16 24 L32 24 M16 30 L32 30 M24 24 V36"/>
+                </svg>
+              </span>
+              <div class="mpc-hero-v2-card-body">
+                <h3 class="mpc-hero-v2-card-title">料金の透明性</h3>
+                <p class="mpc-hero-v2-card-desc">業界唯一、1ページ 15,800 円〜を<br>公式公開。</p>
+              </div>
+              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
+            </a>
+            <a href="#comparison" class="mpc-hero-v2-card" data-reason="speed">
+              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M26 4 L12 28 H24 L22 44 L36 20 H24 Z"/>
+                </svg>
+              </span>
+              <div class="mpc-hero-v2-card-body">
+                <h3 class="mpc-hero-v2-card-title">業界最速の納期</h3>
+                <p class="mpc-hero-v2-card-desc">最短 2 週間。業界平均 4〜8 週間の<br>半分以下。</p>
+              </div>
+              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
+            </a>
+            <a href="#comparison" class="mpc-hero-v2-card" data-reason="usecase">
+              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="6"  y="6"  width="10" height="10" rx="2"/>
+                  <rect x="19" y="6"  width="10" height="10" rx="2"/>
+                  <rect x="32" y="6"  width="10" height="10" rx="2"/>
+                  <rect x="6"  y="19" width="10" height="10" rx="2"/>
+                  <rect x="19" y="19" width="10" height="10" rx="2"/>
+                  <rect x="32" y="19" width="10" height="10" rx="2"/>
+                  <rect x="6"  y="32" width="10" height="10" rx="2"/>
+                  <rect x="19" y="32" width="10" height="10" rx="2"/>
+                </svg>
+              </span>
+              <div class="mpc-hero-v2-card-body">
+                <h3 class="mpc-hero-v2-card-title">8 用途の専門編集</h3>
+                <p class="mpc-hero-v2-card-desc">採用 / IR / 研修 / 商品紹介 …<br>用途別の専属編集者がアサイン。</p>
+              </div>
+              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
+            </a>
+            <a href="#comparison" class="mpc-hero-v2-card" data-reason="contract">
+              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M24 4 L40 10 V24 C40 34 32 42 24 44 C16 42 8 34 8 24 V10 Z"/>
+                  <path d="M16 24 L22 30 L34 18"/>
+                </svg>
+              </span>
+              <div class="mpc-hero-v2-card-body">
+                <h3 class="mpc-hero-v2-card-title">契約条件オール公開</h3>
+                <p class="mpc-hero-v2-card-desc">修正回数・著作権・NDA を<br>事前にすべて提示。</p>
+              </div>
+              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
+            </a>
+          </div>
         </div>
-        <p class="mpc-hero-methodology">
-          各社公式サイトに掲載されている料金・契約条件・実績情報を、ビズマンガ編集部が項目別に2026年4月時点で照合。非公開項目は「非公開」と明示する。
-        </p>
-        <span class="mpc-scroll-guide" aria-hidden="true">SCROLL ↓</span>
       </div>
     </section>
 

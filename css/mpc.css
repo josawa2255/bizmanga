@@ -1598,3 +1598,276 @@
   .mpc-summary { padding: 22px 18px; }
   .mpc-summary-list li { font-size: 14px; padding-left: 32px; }
 }
+
+/* ============================================================
+   ヒーロー v2 (2026-05-13 リデザイン)
+   - 背景: /material/images/mpc-hero-bg.webp (女の子+オレンジ波形+漫画コマ)
+   - 左カラム: H1 / リード / チェック3項目 / CTA × 2
+   - 右カラム: 「ビズマンガが選ばれる理由」+ 4 カード (#comparison へジャンプ)
+   - 旧 .mpc-hero* 系は維持 (将来削除予定)
+   ============================================================ */
+.mpc-hero-v2 {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #fff;
+  min-height: 720px;
+}
+.mpc-hero-v2-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.mpc-hero-v2-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+.mpc-hero-v2-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px 32px 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+  gap: 64px;
+  align-items: start;
+}
+
+/* === 左カラム === */
+.mpc-hero-v2-main {
+  position: relative;
+  max-width: 560px;
+}
+.mpc-hero-v2-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--mpc-accent);
+  margin-bottom: 16px;
+}
+.mpc-hero-v2-h1 {
+  margin: 0 0 24px;
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.mpc-hero-v2-h1-pre {
+  display: block;
+  font-size: clamp(22px, 3.4vw, 32px);
+  color: var(--mpc-ink);
+}
+.mpc-hero-v2-h1-em {
+  display: block;
+  font-style: normal;
+  font-size: clamp(36px, 5.6vw, 58px);
+  color: var(--mpc-accent);
+  margin-top: 4px;
+}
+.mpc-hero-v2-lead {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--mpc-ink-soft);
+}
+.mpc-hero-v2-checks {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.mpc-hero-v2-checks li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--mpc-ink);
+}
+.mpc-hero-v2-check-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mpc-accent);
+}
+.mpc-hero-v2-check-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.mpc-hero-v2-cta {
+  display: grid;
+  gap: 12px;
+  max-width: 380px;
+}
+.mpc-hero-v2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.mpc-hero-v2-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.mpc-hero-v2-btn--primary {
+  background: var(--mpc-accent);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(232, 85, 0, 0.32);
+}
+.mpc-hero-v2-btn--primary:hover {
+  background: var(--mpc-accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(232, 85, 0, 0.4);
+}
+.mpc-hero-v2-btn--ghost {
+  background: #fff;
+  color: var(--mpc-ink);
+  border: 2px solid var(--mpc-accent);
+}
+.mpc-hero-v2-btn--ghost:hover {
+  background: var(--mpc-accent-light);
+}
+.mpc-hero-v2-btn-arrow {
+  margin-left: 4px;
+  font-weight: 900;
+}
+
+/* === 右カラム: 選ばれる理由 4カード === */
+.mpc-hero-v2-reasons {
+  position: relative;
+  padding-top: 24px;
+}
+.mpc-hero-v2-reasons-title {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--mpc-accent);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.mpc-hero-v2-reasons-slash {
+  color: var(--mpc-accent);
+  font-weight: 700;
+  opacity: 0.85;
+}
+.mpc-hero-v2-cards {
+  display: grid;
+  gap: 12px;
+}
+.mpc-hero-v2-card {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  text-decoration: none;
+  color: var(--mpc-ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.mpc-hero-v2-card:hover {
+  transform: translateX(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.mpc-hero-v2-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--mpc-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mpc-hero-v2-card-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.mpc-hero-v2-card-body { min-width: 0; }
+.mpc-hero-v2-card-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--mpc-ink);
+  line-height: 1.4;
+}
+.mpc-hero-v2-card-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mpc-ink-mute);
+}
+.mpc-hero-v2-card-link {
+  font-size: 12px;
+  color: var(--mpc-ink-mute);
+  white-space: nowrap;
+  font-weight: 700;
+}
+.mpc-hero-v2-card-link .mpc-hero-v2-arrow {
+  margin-left: 4px;
+  color: var(--mpc-accent);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 1100px) {
+  .mpc-hero-v2-inner {
+    grid-template-columns: 1fr;
+    padding: 56px 24px;
+    gap: 40px;
+  }
+  .mpc-hero-v2-bg img {
+    object-position: 90% center;
+    opacity: 0.55;
+  }
+  .mpc-hero-v2-main { max-width: 100%; }
+  .mpc-hero-v2-reasons { padding-top: 0; }
+}
+@media (max-width: 640px) {
+  .mpc-hero-v2 { min-height: auto; }
+  .mpc-hero-v2-bg img {
+    object-position: 100% top;
+    opacity: 0.3;
+  }
+  .mpc-hero-v2-inner {
+    padding: 40px 18px;
+    gap: 32px;
+  }
+  .mpc-hero-v2-h1-em { font-size: clamp(28px, 9vw, 40px); }
+  .mpc-hero-v2-lead br { display: none; }
+  .mpc-hero-v2-cta { max-width: 100%; }
+  .mpc-hero-v2-card {
+    padding: 14px 16px;
+    grid-template-columns: 48px 1fr auto;
+    gap: 12px;
+  }
+  .mpc-hero-v2-card-icon {
+    width: 48px;
+    height: 48px;
+  }
+  .mpc-hero-v2-card-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .mpc-hero-v2-card-link { display: none; }
+}
