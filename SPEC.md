@@ -316,6 +316,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - タグライン「マンガの力でビジネスを動かす」— 1文字ずつ波シャイン
 - 漫画表紙カルーセル5行 + マウスパララックス（PC）
 
+### 7.2b クライアントロゴ無限カルーセル（`.bm-client-logos`）⭐2026-05-13追加
+- 位置: `.bm-news` の直後、`.bm-whatis`（ビズマンガとは？）の直前
+- 役割: 取引/支援企業ロゴを横スクロールで自動再生し、信用補強。ContentsXトップと同じ構成・同じ社数（13社）
+- データ: [js/data/bm-client-logos.js](js/data/bm-client-logos.js) の `BM_CLIENT_LOGOS` を編集すれば追加可
+- 画像参照: ContentX側の `https://contentsx.jp/material/images/{clients,partners}/...` を絶対URLで参照（[[reference_bugs_md]] #020 同様、ContentX/material/ の画像を消すときは両サイトgrep必須）
+- レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
+- CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
+- i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
+
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
 - **SP（768px以下）**: 従来の縦積み中央寄せに戻す（`display: block; text-align: center`、アクセント線は `margin: auto`）
