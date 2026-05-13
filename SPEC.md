@@ -3,7 +3,7 @@
 **ドメイン**: bizmanga.contentsx.jp
 **リポジトリ**: [josawa2255/bizmanga](https://github.com/josawa2255/bizmanga)
 **デプロイ**: GitHub Pages（CNAME: お名前.com）
-**最終更新**: 2026-04-29
+**最終更新**: 2026-05-13
 
 > このファイルは BizManga 単体の仕様を記録します。忘れがちな特殊動作・URLパラメータ・共通コンポーネント・外部連携を一箇所に集約しておき、将来のメンテ時に参照します。
 
@@ -206,6 +206,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 5. `touchend` イベントも `click` と一緒に登録（iOS Safari対策）
 6. **320px (iPhone SE) まで想定して計算**
 
+### 6.1a ヘッダーCTA主従ルール（2026-05-13）
+- **`.bm-nav-cta`（お問い合わせ）= プライマリ**: 塗り強調（`background: var(--bm-accent)` + 白文字）、padding `12px 26px`、font-size 15px、`min-height: 44px`
+- **`.bm-nav-cta--line`（LINE相談）= セカンダリ**: 白背景+緑outline、padding `8px 16px`、font-size 13px、`min-height: 38px`
+- モバイル(≤768px): `.bm-nav-cta--line` は `display: none`（追従CTA `.bm-fab` で代替）、`.bm-nav-cta` は常時可視（padding `10px 18px` に縮小）
+- 過去の outline-only スタイルは廃止。プライマリCTAはサイト全体で塗り強調に統一
+
 ### 6.2 ドロップダウン仕様
 - PC: hover で展開
 - モバイル: 1回目タップで展開、2回目タップで遷移（親リンクあり）
@@ -261,6 +267,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `.bm-hero` 背景: `#000 url(hp-material-1.webp) center/cover fixed`（ContentsXと共有）
 - タグライン「マンガの力でビジネスを動かす」— 1文字ずつ波シャイン
 - 漫画表紙カルーセル5行 + マウスパララックス（PC）
+
+### 7.2a SubHero ポイントバー（2026-05-13追加）⭐CV強化
+- 位置: `.bm-hero` 直下、`.bm-whatis` の直前
+- 役割: シネマティックなヒーローでブランド訴求した直後に、3秒で「何を売っているか」を伝える4ポイント＋無料相談CTA
+- 4ポイント: ¥15,800〜（1ページから）/ 2週間（最短納品）/ 無料（シナリオ制作）/ 125項目（プロ作家チェック）
+- レイアウト: PCは4カラム横並び+右端CTA、SPは2x2グリッド+下にフルワイドCTA
+- CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-subhero` セクション
+- i18n: 各要素に `data-ja` / `data-en` 設定済み
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ

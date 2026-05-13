@@ -61,12 +61,12 @@ img{max-width:100%;height:auto;display:block;}a{color:inherit;text-decoration:no
 .bm-header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:100%;gap:16px;}
 .bm-logo-img{height:36px;width:auto;}.bm-nav{flex:1;}
 .bm-header-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;}
-.bm-nav-cta{padding:8px 14px;border-radius:100px;font-size:13px;font-weight:700;background:var(--bm-accent);color:#fff;white-space:nowrap;}
-.bm-nav-cta--line{background:#06C755;}.bm-hamburger{display:none;order:10;width:40px;height:40px;background:transparent;border:none;cursor:pointer;}
+.bm-nav-cta{padding:12px 22px;border-radius:100px;font-size:14px;font-weight:700;background:var(--bm-accent);color:#fff;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;}
+.bm-nav-cta--line{padding:8px 14px;font-size:12px;background:#06C755;min-height:38px;}.bm-hamburger{display:none;order:10;width:44px;height:44px;background:transparent;border:none;cursor:pointer;}
 .bm-container{max-width:1200px;margin:0 auto;padding:0 20px;}
 h1,h2,h3,h4,h5,h6{margin:0 0 16px;font-weight:900;line-height:1.4;}h1{font-size:clamp(28px,5vw,48px);}h2{font-size:clamp(22px,3.5vw,36px);}h3{font-size:18px;}
 p{margin:0 0 16px;}
-@media (max-width:768px){.bm-hamburger{display:block;}.bm-nav,.bm-nav-cta{display:none;}}
+@media (max-width:768px){.bm-hamburger{display:block;}.bm-nav{display:none;}.bm-nav-cta--line{display:none;}.bm-nav-cta{padding:10px 16px;font-size:13px;min-height:40px;}}
 </style>
   <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
@@ -137,6 +137,31 @@ p{margin:0 0 16px;}
     <div class="bm-hero-scroll-hint">
       <span data-ja="SCROLL" data-en="SCROLL">SCROLL</span>
       <div class="bm-hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ===== SubHero ポイントバー (4つの強みを3秒で伝える) ===== -->
+  <section class="bm-subhero" aria-label="サービスのポイント">
+    <div class="bm-container">
+      <ul class="bm-subhero-list">
+        <li class="bm-subhero-item">
+          <span class="bm-subhero-num">¥15,800<span class="bm-subhero-unit" data-ja="〜" data-en="〜">〜</span></span>
+          <span class="bm-subhero-label" data-ja="1ページから" data-en="Per page">1ページから</span>
+        </li>
+        <li class="bm-subhero-item">
+          <span class="bm-subhero-num">2<span class="bm-subhero-unit" data-ja="週間" data-en="weeks">週間</span></span>
+          <span class="bm-subhero-label" data-ja="最短納品" data-en="Fastest delivery">最短納品</span>
+        </li>
+        <li class="bm-subhero-item">
+          <span class="bm-subhero-num" data-ja="無料" data-en="Free">無料</span>
+          <span class="bm-subhero-label" data-ja="シナリオ制作" data-en="Scenario creation">シナリオ制作</span>
+        </li>
+        <li class="bm-subhero-item">
+          <span class="bm-subhero-num" data-ja="125項目" data-en="125 checks">125項目</span>
+          <span class="bm-subhero-label" data-ja="プロ作家チェック" data-en="Pro artist QA">プロ作家チェック</span>
+        </li>
+      </ul>
+      <a href="contact" class="bm-subhero-cta" data-ja="無料相談する →" data-en="Free consultation →">無料相談する →</a>
     </div>
   </section>
 
