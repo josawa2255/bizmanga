@@ -194,29 +194,31 @@
 }
 @media (max-width: 720px) {
   .lpv2-hero { background: var(--lpv2-cream); }
-  /* Mobile: portrait image fills hero, image's lower portion (character body + speed lines)
-     stays visible. Strong cream overlay masks the upper portion behind the title/CTA stack
-     so text reads cleanly without competing with the character's face. */
-  .lpv2-hero-bg::after {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 248, 237, 0.96) 0%,
-      rgba(255, 248, 237, 0.96) 38%,
-      rgba(255, 248, 237, 0.75) 50%,
-      rgba(255, 248, 237, 0) 65%
-    );
-  }
+  /* Mobile: portrait image shown as-is, no overlay (image has its own cream top area). */
+  .lpv2-hero-bg::after { background: none; display: none; }
   .lpv2-hero-bg img { object-position: center top; }
   .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
     grid-template-columns: 1fr;
-    padding: 36px 24px 48px;
+    padding: 28px 18px 36px;
     min-height: clamp(720px, 140vw, 980px);
     align-items: start;
   }
   .lpv2-hero-text { max-width: 100%; }
-  .lpv2-hero-title { font-size: clamp(36px, 9vw, 56px); }
-  .lpv2-hero-sub { max-width: 100%; }
+  /* Tighter typography on mobile so the title hugs the left edge and doesn't sprawl */
+  .lpv2-hero-eyebrow { font-size: 11px; letter-spacing: 0.2em; gap: 8px; margin-bottom: 18px; }
+  .lpv2-hero-eyebrow::before { width: 28px; }
+  .lpv2-hero-title {
+    font-size: clamp(34px, 9vw, 50px);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    margin-bottom: 22px;
+  }
+  .lpv2-hero-sub { max-width: 100%; font-size: 14px; line-height: 1.85; margin-bottom: 28px; }
+  /* Compact CTAs on mobile (content-width, not stretched) */
+  .lpv2-hero-cta-row { gap: 10px; }
+  .lpv2-hero-cta-row .lpv2-btn { padding: 14px 22px; font-size: 14px; }
+  .lpv2-hero-cta-row .lpv2-btn--lg { padding: 16px 24px; font-size: 14px; }
 }
 
 .lpv2-hero-eyebrow {
