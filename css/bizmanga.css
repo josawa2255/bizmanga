@@ -1180,6 +1180,78 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   transition: transform 250ms ease, box-shadow 250ms ease, background 250ms ease;
   flex-shrink: 0;
 }
+
+/* 期間限定キャンペーン: 4枚目アイテムを特別扱い */
+.bm-subhero-item--promo {
+  position: relative;
+}
+.bm-subhero-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  display: inline-block;
+  padding: 3px 10px;
+  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px -2px rgba(193, 18, 31, 0.5);
+  z-index: 1;
+}
+.bm-subhero-badge::before,
+.bm-subhero-badge::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+}
+.bm-subhero-badge::before { left: -7px; border-right-color: #e63946; }
+.bm-subhero-badge::after { right: -7px; border-left-color: #c1121f; }
+
+.bm-subhero-num--gold {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: clamp(18px, 2.2vw, 24px) !important;
+}
+.bm-subhero-num-prefix {
+  font-size: 0.55em;
+  font-weight: 800;
+  color: var(--bm-text);
+  margin-right: 2px;
+}
+.bm-subhero-gold {
+  font-size: 1.6em;
+  font-weight: 900;
+  background: linear-gradient(135deg, #f6d365 0%, #e8b923 40%, #b8860b 75%, #f6d365 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(184, 134, 11, 0.15);
+  filter: drop-shadow(0 2px 3px rgba(184, 134, 11, 0.25));
+  letter-spacing: -0.02em;
+}
+.bm-subhero-bang {
+  font-size: 1.3em;
+  font-weight: 900;
+  color: #c1121f;
+  margin-left: 1px;
+}
+
+@media (max-width: 768px) {
+  .bm-subhero-item--promo { padding-top: 4px; }
+  .bm-subhero-badge { top: -8px; font-size: 9px; padding: 2px 8px; }
+  .bm-subhero-num--gold { font-size: 14px !important; }
+  .bm-subhero-num-prefix { font-size: 0.6em; }
+  .bm-subhero-gold { font-size: 1.5em; }
+  .bm-subhero-bang { font-size: 1.2em; }
+}
 .bm-subhero-cta:hover {
   transform: translateY(-1px) scale(1.03);
   background: var(--bm-accent-hover, #cc4600);
