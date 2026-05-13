@@ -1798,53 +1798,67 @@
 @media (max-width: 640px) {
   .mpc-hero-v2 {
     min-height: auto;
-    padding-top: 8px; /* ヘッダー直下に余白 */
+    position: relative;
   }
-  /* SP: 画像 (840×896 縦長) はヒーロー上部にアスペクト維持で配置 */
+  /* SP: 画像 (840×896 縦長正方形) はヒーロー右側に背景配置 */
   .mpc-hero-v2-bg {
-    position: relative; /* PCのabsoluteを上書き */
-    inset: auto;
-    width: 100%;
-    aspect-ratio: 840 / 896;
-    max-height: 58vh;
+    position: absolute; /* PCと同じ絶対配置 */
+    inset: 0;
+    z-index: 0;
   }
   .mpc-hero-v2-bg img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    object-position: center;
+    object-fit: cover;
+    object-position: right top; /* キャラを右上で見せる */
     opacity: 1;
   }
-  /* テキスト群は画像の下に普通に流す (重ねない) */
+  /* テキスト群は画像の上に重ねる (左寄せ・キャラ避け) */
   .mpc-hero-v2-inner {
-    display: block; /* gridを解除して縦積み */
-    padding: 16px 18px 32px;
+    display: block;
+    padding: 28px 18px 28px;
+    position: relative;
+    z-index: 1;
   }
+  /* メイン (H1/リード/チェック) はキャラ避けに右余白 */
   .mpc-hero-v2-main {
     padding-right: 0;
     max-width: 100%;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
-  .mpc-hero-v2-checks,
-  .mpc-hero-v2-cta {
-    margin-right: 0;
+  /* SPでは Eyebrow 非表示 (見本に合わせて) */
+  .mpc-hero-v2-eyebrow { display: none; }
+  .mpc-hero-v2-h1 {
+    margin-bottom: 14px;
+    padding-right: 150px; /* キャラの上半身を避ける */
   }
-  .mpc-hero-v2-eyebrow { margin-bottom: 8px; }
-  .mpc-hero-v2-h1 { margin-bottom: 14px; }
-  .mpc-hero-v2-h1-pre { font-size: clamp(18px, 5.4vw, 24px); }
-  .mpc-hero-v2-h1-em { font-size: clamp(30px, 9.5vw, 44px); }
+  .mpc-hero-v2-h1-pre { font-size: clamp(20px, 6vw, 26px); }
+  .mpc-hero-v2-h1-em { font-size: clamp(34px, 11vw, 46px); }
   .mpc-hero-v2-lead {
     margin-bottom: 16px;
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.85;
+    padding-right: 150px; /* リードもキャラ避け */
   }
   .mpc-hero-v2-lead br { display: none; }
-  .mpc-hero-v2-checks { margin-bottom: 24px; }
+  .mpc-hero-v2-checks {
+    margin-bottom: 20px;
+    padding-right: 150px; /* チェックもキャラ避け */
+  }
   .mpc-hero-v2-checks li { font-size: 13px; }
-  .mpc-hero-v2-cta { max-width: 100%; }
+  /* CTA は全幅 (キャラの下に回り込み) */
+  .mpc-hero-v2-cta {
+    max-width: 100%;
+    gap: 10px;
+  }
   /* 「選ばれる理由」見出し */
   .mpc-hero-v2-reasons {
     padding-top: 8px;
+    background: #fff; /* カード周りを白背景にする */
+    margin: 0 -18px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-bottom: 8px;
   }
   .mpc-hero-v2-reasons-title { font-size: 16px; gap: 8px; }
   .mpc-hero-v2-cards { gap: 10px; }
