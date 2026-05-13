@@ -13,7 +13,7 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); });
+    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
   </script>
   <!-- Microsoft Clarity -->
   <script type="text/javascript">
