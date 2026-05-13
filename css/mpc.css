@@ -1796,21 +1796,43 @@
 }
 @media (max-width: 640px) {
   .mpc-hero-v2 { min-height: auto; }
+  /* SP: 背景画像はキャラ部分が右上から覗くように、不透明で表示 */
   .mpc-hero-v2-bg img {
-    object-position: 100% top;
-    opacity: 0.3;
+    object-fit: contain;
+    object-position: right top;
+    opacity: 1;
   }
   .mpc-hero-v2-inner {
-    padding: 40px 18px;
-    gap: 32px;
+    padding: 24px 18px 36px;
+    gap: 28px;
   }
+  /* テキストは左寄り、キャラ用に右側マージン確保 */
+  .mpc-hero-v2-main {
+    padding-right: 130px; /* 右からキャラがはみ出る分の余白 */
+  }
+  .mpc-hero-v2-eyebrow { margin-bottom: 12px; }
+  .mpc-hero-v2-h1 { margin-bottom: 18px; }
   .mpc-hero-v2-h1-em { font-size: clamp(28px, 9vw, 40px); }
+  .mpc-hero-v2-lead { margin-bottom: 18px; padding-right: 0; }
   .mpc-hero-v2-lead br { display: none; }
+  /* チェック・CTAはキャラの下に回り込ませる (右マージン解除) */
+  .mpc-hero-v2-checks,
+  .mpc-hero-v2-cta {
+    margin-right: -130px; /* main の padding-right を取り消し */
+  }
   .mpc-hero-v2-cta { max-width: 100%; }
+  /* 「選ばれる理由」見出しに斜線アクセント (見本通り) */
+  .mpc-hero-v2-reasons-title {
+    font-size: 16px;
+    gap: 8px;
+  }
+  /* カードは縦並びで少し詰める */
+  .mpc-hero-v2-cards { gap: 10px; }
   .mpc-hero-v2-card {
     padding: 14px 16px;
     grid-template-columns: 48px 1fr auto;
     gap: 12px;
+    border-radius: 14px;
   }
   .mpc-hero-v2-card-icon {
     width: 48px;
@@ -1820,5 +1842,9 @@
     width: 24px;
     height: 24px;
   }
-  .mpc-hero-v2-card-link { display: none; }
+  .mpc-hero-v2-card-title { font-size: 14px; }
+  .mpc-hero-v2-card-desc { font-size: 11px; }
+  .mpc-hero-v2-card-link {
+    font-size: 10.5px;
+  }
 }
