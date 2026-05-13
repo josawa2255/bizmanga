@@ -115,48 +115,7 @@
     update();
   }
 
-  // ---------- 左 sticky 目次: 現在地ハイライト (a16z風) ----------
-  function initToc() {
-    var toc = document.querySelector('.mpc-toc');
-    if (!toc) return;
-    var links = toc.querySelectorAll('.mpc-toc-list a[data-toc]');
-    if (!links.length || !('IntersectionObserver' in window)) return;
-
-    var linkMap = {};
-    links.forEach(function (a) { linkMap[a.dataset.toc] = a; });
-
-    function setActive(id) {
-      links.forEach(function (a) { a.classList.remove('is-active'); });
-      var active = linkMap[id];
-      if (active) active.classList.add('is-active');
-    }
-
-    // ビューポート上部 30〜45% に入ったセクションを「現在地」とみなす
-    var io = new IntersectionObserver(function (entries) {
-      var top = entries
-        .filter(function (e) { return e.isIntersecting; })
-        .map(function (e) { return { id: e.target.id, y: e.boundingClientRect.top }; })
-        .sort(function (a, b) { return a.y - b.y; })[0];
-      if (top) setActive(top.id);
-    }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 });
-
-    Object.keys(linkMap).forEach(function (id) {
-      var sec = document.getElementById(id);
-      if (sec) io.observe(sec);
-    });
-
-    // 比較表 (max-width: 1280px) は TOC と幅で被るため、
-    // 表示中だけ TOC を左にスライドアウトさせる
-    var comparison = document.getElementById('comparison');
-    if (comparison) {
-      var tuckIO = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          toc.classList.toggle('is-tucked', e.isIntersecting);
-        });
-      }, { rootMargin: '-10% 0px -10% 0px', threshold: 0 });
-      tuckIO.observe(comparison);
-    }
-  }
+  // 左 sticky 目次 (initToc) は 2026-05-13 削除
 
   // ---------- 比較表: sticky ヘッダー対応の補正 ----------
   function initStickyTable() {
@@ -179,7 +138,6 @@
     initCounters();
     initFixBtn();
     initStickyTable();
-    initToc();
   }
 
   if (document.readyState === 'loading') {
