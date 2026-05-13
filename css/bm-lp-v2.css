@@ -162,19 +162,6 @@
   object-fit: cover;
   object-position: right center;
 }
-/* Cream gradient overlay on the left for text legibility */
-.lpv2-hero-bg::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(
-    100deg,
-    var(--lpv2-cream) 0%,
-    var(--lpv2-cream) 28%,
-    rgba(255, 248, 237, 0.85) 42%,
-    rgba(255, 248, 237, 0.35) 56%,
-    rgba(255, 248, 237, 0) 72%
-  );
-  pointer-events: none;
-}
 
 .lpv2-hero-inner {
   position: relative;
@@ -195,15 +182,6 @@
 }
 @media (max-width: 720px) {
   .lpv2-hero { background: var(--lpv2-cream); }
-  .lpv2-hero-bg::after {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 248, 237, 0) 0%,
-      rgba(255, 248, 237, 0) 42%,
-      rgba(255, 248, 237, 0.9) 64%,
-      var(--lpv2-cream) 80%
-    );
-  }
   .lpv2-hero-bg img { object-position: 70% top; }
   .lpv2-hero-stage { min-height: 760px; }
   .lpv2-hero-inner {
