@@ -27,8 +27,56 @@
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日英切替・OGP動的更新。Editorial Magazineデザイン |
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
-| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。共通テンプレ `css/bm-lp-template.css`。各LPは Hero→Formats→Problem→Bridge→Merit→Case Study(WP API動的)→ビズ書庫埋込→**制作フロー(6 Step, HowTo Schema)**→**FAQ(8問, FAQPage Schema)**→**関連LP相互リンク7本**→Ending の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + HowTo + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified: 2026-04-27`、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
+| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**【旧】共通テンプレ `css/bm-lp-template.css`（`pm-*` クラス）— 7LPで現役**。**【新】v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）— 2026-05-13 `recruit-manga.html` でパイロット導入**。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 | **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-i18n` + `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→数字で見る違い→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加。**2026-05-12 SEO内部リンクハブ化**: 公開後ナビ登録のみで本文中リンクゼロ→Google重要度低判定→順位獲得未達という分析を踏まえ、pricing/faq/works/8用途LP の計11 HTML から `.bm-related-guide` aside で本文中アンカーテキスト付き内部リンクを集中投下。各LP固有のKW（採用マンガ対応の〜/IR漫画対応の〜 等）でアンカー多様化、ペナルティ回避と複合KW強化を両立。共通CSSは `css/bizmanga.css` 末尾。**ホーム(index.html)のバナー(`.bm-home-comparison-banner`)はCV重視で `/strength`（強み5選ページ）に流す方針** — 比較ガイド本体のコンテンツ完成度を訪問者向けに磨き上げるまで、検索流入経由でしか比較ガイドに到達しない設計にして他社情報経由のCV離脱を防ぐ |
+
+## 1a. 用途別LP デザインシステム v2（2026-05-13）⭐進行中
+
+8本の用途別LPは「Editorial Magazine」(pm-* / `bm-lp-template.css`) を共通テンプレとして 2026-04-26 に同時公開した。1位を狙うSEO中核ページであるため、ブランド体験・滞在時間・CV率を底上げする目的で、より大胆な「MANGA MAGAZINE × BRAND SITE」コンセプトの v2 デザインシステムに移行中。
+
+### v2 の構成ファイル
+| ファイル | 役割 |
+|---|---|
+| `css/bm-lp-v2.css` | 新デザインシステム（`lpv2-*` クラス、約760行） |
+| `js/bm-lp-v2.js` | スクロールスパイ目次 + 折りたたみパネル + reveal-on-scroll |
+| HTMLマーカー | `<!-- LP-DESIGN:v2 -->` を `<head>` 直後に置くと v2 判定される |
+| `body` 属性 | `class="lpv2-page"` + `data-lp-v2` |
+
+### v2 ビジュアル原則
+- 黒（#0a0a0a） × クリーム（#fff8ed） × オレンジ（#e85500、ブランドアクセント） × イエロー（#ffd54a、ハイライト）の4色制
+- 太枠（3pxソリッド黒）+ ドロップシャドウ（`8px 8px 0 黒`）の漫画コマ風カード
+- ハーフトーンドット（`radial-gradient` SVG）、雑誌の刷り感
+- Hero: 黒ベース全面写真 + マグ誌風メタ帯（VOL/ISSUE）+ ハーフトーンオーバーレイ + 写真フレーム
+- 全章に章番号（CHAPTER 01..07）を導入し、雑誌のような章立てに
+
+### v2 章立て
+| 章 | セクション | クラス | id |
+|---|---|---|---|
+| Hero | カバー誌風 | `.lpv2-hero` | — |
+| TOC | スティッキー章目次（スクロールスパイ） | `.lpv2-toc` | `#lpv2Toc` |
+| Manifest | 宣言文 + KPI 3パネル | `.lpv2-manifest` | — |
+| 01 | PROBLEM（3パネル、illust + 番号バッジ） | `.lpv2-problem` | `#chapter-01-problem` |
+| Bridge | 全画面ブラック・宣言 | `.lpv2-bridge` | — |
+| 02 | STRENGTH（4-koma風 2×2 + クリック展開） | `.lpv2-merit` | `#chapter-02-merit` |
+| 03 | FORMATS（4カラム媒体カード） | `.lpv2-formats` | `#chapter-03-formats` |
+| 04 | CASE STUDY（WP API、`tools/build-lp-cases.py` v2マークアップ対応） | `.lpv2-cases` | `#chapter-04-cases` |
+| 05 | LIBRARY（ビズ書庫埋込、ブラックBG） | `.lpv2-library` | `#chapter-05-library` |
+| 06 | PRODUCTION FLOW（8パネル、巨大番号アウトライン） | `.lpv2-flow` | `#chapter-06-flow` |
+| 07 | FAQ（Q/Aセリフバッジ、`<details>`） | `.lpv2-faq` | `#chapter-07-faq` |
+| Related | NEXT ISSUE（他7LPカード） | `.lpv2-related` | — |
+| End | TO BE CONTINUED + CTA2本 | `.lpv2-end` | — |
+
+### 移行ステータス
+| LP | 移行状況 |
+|---|---|
+| `recruit-manga.html` | ✅ v2 移行済（2026-05-13、パイロット） |
+| `product-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | ⏳ 旧 `pm-*` テンプレで稼働中、recruit 検証後に順次適用 |
+
+### 旧テンプレとの並存
+- 新旧2つの CSS / クラス体系は完全に独立しており、`pm-*` と `lpv2-*` は名前空間衝突なし
+- 共通の`bm-i18n.js` / `bm-nav.js` / `bm-lp-library-embed.js` / `bm-sanitize.js` / `bm-kinsoku.js` はそのまま利用
+- `tools/build-lp-cases.py` は HTML 内の `LP-DESIGN:v2` マーカーを検出して `pm-*` / `lpv2-*` のどちらでも出力できる
+- 旧 `bm-lp-template.css` は v2 が全LPに展開完了するまで削除しない
 
 ## 2. URL パラメータ・特殊モード
 
