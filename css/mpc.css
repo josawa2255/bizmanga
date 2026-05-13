@@ -1798,15 +1798,17 @@
 @media (max-width: 640px) {
   .mpc-hero-v2 {
     min-height: auto;
-    padding-top: 8px; /* ヘッダー直下に余白 */
+    position: relative;
   }
-  /* SP: 画像 (840×896 縦長) はヒーロー上部にアスペクト維持で配置 */
+  /* SP: 新画像 (941×1672 縦長9:16) はヒーロー上部に背景配置。
+     画像自体に「左余白+右キャラ」レイアウトが組み込み済み */
   .mpc-hero-v2-bg {
-    position: relative; /* PCのabsoluteを上書き */
+    position: relative;
     inset: auto;
     width: 100%;
-    aspect-ratio: 840 / 896;
-    max-height: 58vh;
+    aspect-ratio: 941 / 1672;
+    max-height: 78vh;
+    margin-bottom: -28%; /* テキストを画像下半分に重ねる */
   }
   .mpc-hero-v2-bg img {
     width: 100%;
@@ -1815,15 +1817,17 @@
     object-position: center;
     opacity: 1;
   }
-  /* テキスト群は画像の下に普通に流す (重ねない) */
+  /* コンテンツは画像の下に流す (重ねない、シンプル構成) */
   .mpc-hero-v2-inner {
-    display: block; /* gridを解除して縦積み */
-    padding: 16px 18px 32px;
+    display: block;
+    padding: 8px 18px 32px;
+    position: relative;
+    z-index: 1;
   }
   .mpc-hero-v2-main {
     padding-right: 0;
     max-width: 100%;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   .mpc-hero-v2-checks,
   .mpc-hero-v2-cta {
@@ -1842,10 +1846,7 @@
   .mpc-hero-v2-checks { margin-bottom: 24px; }
   .mpc-hero-v2-checks li { font-size: 13px; }
   .mpc-hero-v2-cta { max-width: 100%; }
-  /* 「選ばれる理由」見出し */
-  .mpc-hero-v2-reasons {
-    padding-top: 8px;
-  }
+  .mpc-hero-v2-reasons { padding-top: 8px; }
   .mpc-hero-v2-reasons-title { font-size: 16px; gap: 8px; }
   .mpc-hero-v2-cards { gap: 10px; }
   .mpc-hero-v2-card {
