@@ -5,7 +5,7 @@
   'use strict';
 
   /* ---------- 料金マスター ---------- */
-  const PRICE_PER_PAGE = { 1: 15800, 3: 14800, 5: 13800 };
+  const PRICE_PER_PAGE = { 1: 16600, 3: 14800, 5: 13800 };
   const MANUSCRIPT_FEE = 0;
   const PLAN_ADD = { light: 0, standard: 15000, premium: 80000 };
 
@@ -40,7 +40,7 @@
       question: '本数を選んでください。', question_en: 'Select quantity.',
       sub: '本数が多いほどページ単価がお得になります', sub_en: 'More volumes = lower price per page',
       options: [
-        { value: 1, label: '1本', label_en: '1 volume',     right: '15,800円 / P', right_en: '¥15,800 / P' },
+        { value: 1, label: '1本', label_en: '1 volume',     right: '16,600円 / P', right_en: '¥16,600 / P' },
         { value: 3, label: '3本', label_en: '3 volumes',     right: '14,800円 / P', right_en: '¥14,800 / P', badge: 'おすすめ', badge_en: 'Recommended' },
         { value: 5, label: '5本以上', label_en: '5+ volumes',  right: '13,800円 / P', right_en: '¥13,800 / P', badge: 'お得', badge_en: 'Best Deal' },
       ],
