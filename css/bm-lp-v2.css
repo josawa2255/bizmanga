@@ -193,7 +193,10 @@
   gap: 48px;
   min-height: clamp(520px, 60vw, 720px);
 }
-.lpv2-hero-text { max-width: 560px; }
+.lpv2-hero-text {
+  max-width: 560px;
+  margin-left: clamp(16px, 4vw, 72px); /* テキスト全体を背景の白い領域 (中央寄り) に */
+}
 
 .lpv2-hero-eyebrow {
   display: inline-flex; align-items: center; gap: 14px;
@@ -213,7 +216,6 @@
   letter-spacing: -0.02em;
   color: var(--lpv2-ink);
   margin: 0 0 32px;
-  padding-left: clamp(8px, 1.5vw, 24px); /* 少し右にずらす */
   word-break: keep-all;
   overflow-wrap: normal;
 }
