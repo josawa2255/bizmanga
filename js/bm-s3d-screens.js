@@ -59,11 +59,10 @@
     // PC/Tablet は中央スマホをでかく見せて zoom-in、SP は縦 Z 配置のため等倍からスタート
     var initScale = isSP ? 1 : 1.55;
     gsap.set(wrap, { scale: initScale, transformOrigin: '50% 0%' });
-    // SP: 左寄せ端末は左から、右寄せ端末は右からスライドイン
+    // SP: 中央縦並びなので下からフェードイン
     // PC: 左右スマホは下から押し上げる + フェード + 縮小スタート
     if (isSP) {
-      // others は data-idx 0 (左) と 2 (左)。中央 hero は data-idx 1 (右)。
-      gsap.set(others, { opacity: 0, x: -32, y: 24 });
+      gsap.set(others, { opacity: 0, y: 32 });
     } else {
       gsap.set(others, { opacity: 0, scale: 0.55, y: 60 });
     }
@@ -74,8 +73,8 @@
     // 1.4秒 → 約2.7秒に伸ばし、各段階の余韻を作る
     var tl = gsap.timeline({ paused: true });
     if (isSP) {
-      // SP: zoom-in なし。左右スマホがそれぞれ Z 字方向からスライドイン
-      tl.to(others, { opacity: 1, x: 0, y: 0, ease: 'power3.out', duration: 0.9, stagger: 0.22 }, 0.3);
+      // SP: zoom-in なし。下からふわっとフェードイン
+      tl.to(others, { opacity: 1, y: 0, ease: 'power3.out', duration: 0.9, stagger: 0.22 }, 0.3);
     } else {
       // (1) 中央スマホがゆっくり viewport サイズに収まる
       tl.to(wrap,    { scale: 1, ease: 'power3.out', duration: 1.6 }, 0);

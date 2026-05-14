@@ -307,9 +307,7 @@
   z-index: 5;
   align-items: end;
 }
-/* SP: 1 カラム縦並び。ラベル → 端末 を 3 セット縦に積む。
-   説明文 (.s3d-label-desc) は必ず端末の真上に来る。
-   Z 字 = 行ごとに ラベル+端末 をペアで左/右に寄せる */
+/* SP: 1 カラム縦並び。ラベル → 端末 を 3 セット中央に積む (真っ直ぐ) */
 @media (max-width: 768px) {
   .s3d-labels {
     position: static;
@@ -330,18 +328,12 @@
   .s3d-screen[data-idx="1"] { order: 4; }
   .s3d-label[data-tile="2"] { order: 5; }
   .s3d-screen[data-idx="2"] { order: 6; }
-  .s3d-mute-toggle { order: 7; justify-self: center; }
-  /* Z 字: 横読み(0)=左, 縦読み(1)=右, ボイスコミック(2)=左
-     ラベルと端末を同じ側へ寄せて、説明文が端末の真上に重なる位置に */
-  .s3d-label[data-tile="0"],
-  .s3d-screen[data-idx="0"],
-  .s3d-label[data-tile="2"],
-  .s3d-screen[data-idx="2"] {
-    justify-self: start;
-  }
-  .s3d-label[data-tile="1"],
-  .s3d-screen[data-idx="1"] {
-    justify-self: end;
+  .s3d-mute-toggle { order: 7; }
+  /* 全要素を中央寄せ (Z字をやめて縦に真っ直ぐ並べる) */
+  .s3d-label,
+  .s3d-screen,
+  .s3d-mute-toggle {
+    justify-self: center;
   }
 }
 
