@@ -1143,6 +1143,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-client-laurel--right { transform: scaleX(-1); }
 .bm-client-logos-track-wrapper {
   overflow: hidden;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 .bm-client-logos-track {
   display: flex;
