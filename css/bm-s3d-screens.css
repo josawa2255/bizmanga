@@ -20,13 +20,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* center だと content > viewport の時 heading が上にはみ出し固定ヘッダーに
+     隠れるため、flex-start で必ず padding-top から積む */
+  justify-content: flex-start;
   gap: 28px;
   overflow: hidden;
   background: #fff;
   /* 上: 固定ヘッダー (~80px) のクリアランス + 余裕
      下: タイル下 CTA のクリアランス確保 */
-  padding-top: 140px;
+  padding-top: 120px;
   padding-bottom: 120px;
   box-sizing: border-box;
   z-index: 1;
