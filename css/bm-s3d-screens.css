@@ -272,24 +272,29 @@
   position: relative;
   will-change: transform;
   transform-origin: 50% 0%;
-  /* タイル幅を viewport に追従させ、ワイドモニタでも左右が余らないように
+  /* タイル幅は原寸 280px 前後を中心に viewport に追従。
      アスペクト比は 280:580 (≒1:2.07) を維持 */
-  --s3d-tile-w: clamp(260px, 24vw, 420px);
+  --s3d-tile-w: clamp(260px, 19vw, 320px);
   --s3d-tile-h: calc(var(--s3d-tile-w) * 580 / 280);
-  /* ワイド画面では gap を広げて 3 端末を視覚的に edge-to-edge に伸ばす */
-  --s3d-gap: clamp(32px, 6vw, 160px);
+  /* タイルは控えめサイズ、gap で 3 端末を viewport 幅いっぱいに広げる */
+  --s3d-gap: clamp(40px, 8vw, 220px);
 }
 @media (max-width: 768px) {
   .s3d-screens-wrap {
-    /* SP: Z字縦並び。フォーマット 1 つあたりが十分な迫力で見えるサイズに */
-    --s3d-tile-w: clamp(220px, 62vw, 300px);
+    /* SP: 2カラム グリッド (端末 + 説明テキスト)。
+       Z字 = 行ごとに端末と説明の左右を入れ替え */
+    --s3d-tile-w: clamp(170px, 48vw, 240px);
     --s3d-tile-h: calc(var(--s3d-tile-w) * 580 / 280);
-    --s3d-gap: 28px;
+    --s3d-gap: 36px;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: var(--s3d-tile-w) 1fr;
+    column-gap: 14px;
     row-gap: var(--s3d-gap);
+    align-items: center;
     width: 100%;
     max-width: 100%;
+    padding: 0 14px;
+    box-sizing: border-box;
   }
 }
 
@@ -308,8 +313,8 @@
   align-items: end;
 }
 /* SP: ラベルと screen を display:contents でほぐして同じ grid に流し込み、
-   order で「ラベル → 端末」を 3 セット縦に並べる。
-   justify-self で Z 字 (左 → 右 → 左) に配置 */
+   grid-column / grid-row で Z 字 (端末左→端末右→端末左) に配置。
+   各行で端末と説明テキストが横並び */
 @media (max-width: 768px) {
   .s3d-labels {
     position: static;
@@ -323,25 +328,20 @@
     display: contents;
     gap: 0;
   }
-  .s3d-label[data-tile="0"] { order: 1; }
-  .s3d-screen[data-idx="0"] { order: 2; }
-  .s3d-label[data-tile="1"] { order: 3; }
-  .s3d-screen[data-idx="1"] { order: 4; }
-  .s3d-label[data-tile="2"] { order: 5; }
-  .s3d-screen[data-idx="2"] { order: 6; }
-  .s3d-mute-toggle { order: 7; justify-self: center; }
-  /* Z 字 — 横読み:左 / 縦読み:右 / ボイスコミック:左 */
-  .s3d-label[data-tile="0"],
-  .s3d-screen[data-idx="0"],
-  .s3d-label[data-tile="2"],
-  .s3d-screen[data-idx="2"] {
-    justify-self: start;
-    margin-left: 6vw;
-  }
-  .s3d-label[data-tile="1"],
-  .s3d-screen[data-idx="1"] {
-    justify-self: end;
-    margin-right: 6vw;
+  /* Row 1: 端末=左 / 説明=右 (横読み) */
+  .s3d-screen[data-idx="0"] { grid-column: 1; grid-row: 1; }
+  .s3d-label[data-tile="0"] { grid-column: 2; grid-row: 1; }
+  /* Row 2: 説明=左 / 端末=右 (縦読み, hero) */
+  .s3d-label[data-tile="1"] { grid-column: 1; grid-row: 2; }
+  .s3d-screen[data-idx="1"] { grid-column: 2; grid-row: 2; }
+  /* Row 3: 端末=左 / 説明=右 (ボイスコミック) */
+  .s3d-screen[data-idx="2"] { grid-column: 1; grid-row: 3; }
+  .s3d-label[data-tile="2"] { grid-column: 2; grid-row: 3; }
+  /* mute トグルは下段中央 */
+  .s3d-mute-toggle {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    justify-self: center;
   }
 }
 
@@ -463,22 +463,28 @@
   line-height: 1.4;
   min-height: 1.4em;
 }
+/* 説明文は SP の 2 カラムレイアウト時のみ表示 (PC ではラベル位置の関係で出さない) */
+.s3d-label-desc { display: none; margin: 0; }
 @media (max-width: 768px) {
-  /* Z字配置: 各ラベルは対応する端末の真上、端末と同じ横位置に */
+  /* 2カラム時のラベル: テキストは左寄せで読みやすく
+     align-items は flex-start で説明文が幅いっぱい改行できるように */
   .s3d-label {
-    width: var(--s3d-tile-w);
+    width: auto;
     padding: 0;
     text-align: left;
-    align-items: flex-start;
-    margin-bottom: -8px; /* 端末との間隔を詰める (row-gap で十分間隔があるため) */
-  }
-  /* 縦読み(右寄せ端末)のラベルは右寄せに */
-  .s3d-label[data-tile="1"] {
-    text-align: right;
-    align-items: flex-end;
+    align-items: stretch;
+    justify-content: center; /* 端末高さに対して縦中央 */
   }
   .s3d-label-title { font-size: 17px; letter-spacing: 0.02em; }
-  .s3d-label-sub { font-size: 12px; margin-top: 4px; }
+  .s3d-label-sub { font-size: 11px; margin-top: 2px; line-height: 1.4; }
+  .s3d-label-desc {
+    display: block;
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(17, 17, 17, 0.78);
+    font-weight: 500;
+  }
 }
 
 /* スクロールヒント */
