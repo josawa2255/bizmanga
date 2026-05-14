@@ -1353,6 +1353,13 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   color: #000;
   line-height: 1.7;
 }
+/* マーカーペン風ハイライト (キーワード強調) — ブランドオレンジで車線風に下半分を塗る */
+.bm-hl {
+  background: linear-gradient(transparent 58%, rgba(255, 178, 122, 0.85) 58%, rgba(255, 178, 122, 0.85) 92%, transparent 92%);
+  padding: 0 2px;
+  font-weight: 900;
+  color: #000;
+}
 
 @media (max-width: 900px) {
   .bm-whatis-folds { grid-template-columns: 1fr; gap: 16px; }
