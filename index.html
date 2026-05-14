@@ -312,6 +312,34 @@ p{margin:0 0 16px;}
     </div>
   </section>
 
+  <!-- ===== 新作漫画ギャラリー (横読み / 縦読み 一覧グリッド) ===== -->
+  <section class="bm-gallery" id="newWorks">
+    <div class="bm-container bm-gallery-inner">
+      <div class="bm-gallery-header">
+        <h2 class="bm-gallery-heading" data-ja="ギャラリー" data-en="Gallery">ギャラリー</h2>
+        <a href="biz-library" class="bm-gallery-more" data-ja="ビズ書庫 →" data-en="BizArchive →">ビズ書庫 →</a>
+      </div>
+
+      <!-- 横読み -->
+      <div class="bm-gallery-group" data-group="manga" id="bmGalleryGroupManga">
+        <h3 class="bm-gallery-group-title" data-ja="横読み" data-en="Horizontal">横読み</h3>
+        <div class="bm-gallery-grid" id="bmGalleryGridManga">
+          <!-- JSが動的に生成 -->
+        </div>
+      </div>
+
+      <!-- 縦読み -->
+      <div class="bm-gallery-group" data-group="webtoon" id="bmGalleryGroupWebtoon">
+        <h3 class="bm-gallery-group-title" data-ja="縦読み" data-en="Vertical">縦読み</h3>
+        <div class="bm-gallery-grid" id="bmGalleryGridWebtoon">
+          <!-- JSが動的に生成 -->
+        </div>
+      </div>
+
+      <p class="bm-gallery-empty" id="bmGalleryEmpty" hidden data-ja="該当する作品がまだありません。" data-en="No works yet in this category.">該当する作品がまだありません。</p>
+    </div>
+  </section>
+
   <!-- ===== About ===== -->
   <section class="bm-about" id="about">
     <div class="bm-container">
@@ -355,35 +383,6 @@ p{margin:0 0 16px;}
           <a href="#" class="bm-news-link" data-ja="ビズマンガの新プランを開始しました" data-en="BizManga new plan has been launched">ビズマンガの新プランを開始しました</a>
         </li>
       </ul>
-    </div>
-  </section>
-
-
-  <!-- ===== 新作漫画ギャラリー (横読み / 縦読み 一覧グリッド) ===== -->
-  <section class="bm-gallery" id="newWorks">
-    <div class="bm-container bm-gallery-inner">
-      <div class="bm-gallery-header">
-        <h2 class="bm-gallery-heading" data-ja="ギャラリー" data-en="Gallery">ギャラリー</h2>
-        <a href="biz-library" class="bm-gallery-more" data-ja="ビズ書庫 →" data-en="BizArchive →">ビズ書庫 →</a>
-      </div>
-
-      <!-- 横読み -->
-      <div class="bm-gallery-group" data-group="manga" id="bmGalleryGroupManga">
-        <h3 class="bm-gallery-group-title" data-ja="横読み" data-en="Horizontal">横読み</h3>
-        <div class="bm-gallery-grid" id="bmGalleryGridManga">
-          <!-- JSが動的に生成 -->
-        </div>
-      </div>
-
-      <!-- 縦読み -->
-      <div class="bm-gallery-group" data-group="webtoon" id="bmGalleryGroupWebtoon">
-        <h3 class="bm-gallery-group-title" data-ja="縦読み" data-en="Vertical">縦読み</h3>
-        <div class="bm-gallery-grid" id="bmGalleryGridWebtoon">
-          <!-- JSが動的に生成 -->
-        </div>
-      </div>
-
-      <p class="bm-gallery-empty" id="bmGalleryEmpty" hidden data-ja="該当する作品がまだありません。" data-en="No works yet in this category.">該当する作品がまだありません。</p>
     </div>
   </section>
 
