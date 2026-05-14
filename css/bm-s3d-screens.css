@@ -12,33 +12,31 @@
 }
 .s3d-stage {
   position: relative;
-  /* 100dvh だと padding 込みでタイル+ラベル+見出し+CTA が入らず重なる
-     min-height で内容に応じて伸びる安全構成に */
   min-height: 100dvh;
   width: 100%;
-  display: flex; align-items: center; justify-content: center;
+  /* 見出し → ラベル → 端末 をフロー積み上げ。絶対配置だとタイル高が
+     伸びた時に heading と labels が重なるため、物理的に重ならない
+     縦並びレイアウトに変更 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
   overflow: hidden;
   background: #fff;
-  /* 上: 見出し + タイル上ラベルのクリアランス確保
+  /* 上: 固定ヘッダー (~80px) のクリアランス + 余裕
      下: タイル下 CTA のクリアランス確保 */
-  padding-top: 200px;
+  padding-top: 140px;
   padding-bottom: 120px;
   box-sizing: border-box;
   z-index: 1;
 }
-/* スマホ: scale 2.8 は見た目だけ拡大し box は元サイズのまま。
-   stage min-height/wrap min-height を最終状態(scale 1, 3スマホ横並び)に合わせ、
-   初期の拡大スマホは stage の overflow: hidden で自然に見切れさせる。 */
 @media (max-width: 768px) {
   .s3d-stage {
     min-height: auto;
     padding-top: 24px;
     padding-bottom: 60px;
-    /* 見出しを絶対配置からフロー配置に変えるため、縦並びに */
-    flex-direction: column;
-    /* gap は heading と wrap の間。.s3d-labels が wrap 上端から
-       約 50px 飛び出して絶対配置されるため、それを吸収する大きめの間隔が必要 */
-    gap: 72px;
+    gap: 28px;
   }
 }
 
@@ -224,11 +222,9 @@
   filter: blur(0.6px);
 }
 
-/* 見出し */
+/* 見出し — フロー配置 (stage の flex-column に積まれる) */
 .s3d-heading {
-  position: absolute;
-  top: 16px; left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   color: #222;
   text-align: center;
   z-index: 3;
@@ -253,11 +249,8 @@
   letter-spacing: 0.02em;
   line-height: 1.2;
 }
-/* SP: 見出しを絶対配置から外し、スマホ画像の上に普通に積む */
 @media (max-width: 768px) {
   .s3d-heading {
-    position: static;
-    transform: none;
     max-width: 100%;
     width: 100%;
   }
@@ -278,19 +271,22 @@
   --s3d-tile-h: calc(var(--s3d-tile-w) * 580 / 280);
   /* タイルは控えめサイズ、gap で 3 端末を viewport 幅いっぱいに広げる */
   --s3d-gap: clamp(40px, 8vw, 220px);
+  /* ラベルを screens の真上にフロー積み上げ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
 }
 @media (max-width: 768px) {
   .s3d-screens-wrap {
-    /* SP: 2カラム グリッド (端末 + 説明テキスト)。
-       Z字 = 行ごとに端末と説明の左右を入れ替え */
-    --s3d-tile-w: clamp(170px, 48vw, 240px);
+    /* SP: 1 カラム縦並び。説明テキストを端末の真上に確実に積む。
+       Z字 = 端末の左右配置を行ごとに切替 (端末1=左, 端末2=右, 端末3=左) */
+    --s3d-tile-w: clamp(220px, 60vw, 300px);
     --s3d-tile-h: calc(var(--s3d-tile-w) * 580 / 280);
-    --s3d-gap: 36px;
+    --s3d-gap: 40px;
     display: grid;
-    grid-template-columns: var(--s3d-tile-w) 1fr;
-    column-gap: 14px;
+    grid-template-columns: 1fr;
     row-gap: var(--s3d-gap);
-    align-items: center;
     width: 100%;
     max-width: 100%;
     padding: 0 14px;
@@ -298,12 +294,9 @@
   }
 }
 
-/* ラベル行 (タイル直上) */
+/* ラベル行 (タイル直上, フロー配置) */
 .s3d-labels {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 14px);
-  transform: translateX(-50%);
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, var(--s3d-tile-w));
   grid-template-rows: auto auto;
@@ -312,9 +305,9 @@
   z-index: 5;
   align-items: end;
 }
-/* SP: ラベルと screen を display:contents でほぐして同じ grid に流し込み、
-   grid-column / grid-row で Z 字 (端末左→端末右→端末左) に配置。
-   各行で端末と説明テキストが横並び */
+/* SP: 1 カラム縦並び。ラベル → 端末 を 3 セット縦に積む。
+   説明文 (.s3d-label-desc) は必ず端末の真上に来る。
+   Z 字 = 行ごとに ラベル+端末 をペアで左/右に寄せる */
 @media (max-width: 768px) {
   .s3d-labels {
     position: static;
@@ -328,20 +321,25 @@
     display: contents;
     gap: 0;
   }
-  /* Row 1: 端末=左 / 説明=右 (横読み) */
-  .s3d-screen[data-idx="0"] { grid-column: 1; grid-row: 1; }
-  .s3d-label[data-tile="0"] { grid-column: 2; grid-row: 1; }
-  /* Row 2: 説明=左 / 端末=右 (縦読み, hero) */
-  .s3d-label[data-tile="1"] { grid-column: 1; grid-row: 2; }
-  .s3d-screen[data-idx="1"] { grid-column: 2; grid-row: 2; }
-  /* Row 3: 端末=左 / 説明=右 (ボイスコミック) */
-  .s3d-screen[data-idx="2"] { grid-column: 1; grid-row: 3; }
-  .s3d-label[data-tile="2"] { grid-column: 2; grid-row: 3; }
-  /* mute トグルは下段中央 */
-  .s3d-mute-toggle {
-    grid-column: 1 / -1;
-    grid-row: 4;
-    justify-self: center;
+  /* 並び順: ラベル → 端末 → ラベル → 端末 ... */
+  .s3d-label[data-tile="0"] { order: 1; }
+  .s3d-screen[data-idx="0"] { order: 2; }
+  .s3d-label[data-tile="1"] { order: 3; }
+  .s3d-screen[data-idx="1"] { order: 4; }
+  .s3d-label[data-tile="2"] { order: 5; }
+  .s3d-screen[data-idx="2"] { order: 6; }
+  .s3d-mute-toggle { order: 7; justify-self: center; }
+  /* Z 字: 横読み(0)=左, 縦読み(1)=右, ボイスコミック(2)=左
+     ラベルと端末を同じ側へ寄せて、説明文が端末の真上に重なる位置に */
+  .s3d-label[data-tile="0"],
+  .s3d-screen[data-idx="0"],
+  .s3d-label[data-tile="2"],
+  .s3d-screen[data-idx="2"] {
+    justify-self: start;
+  }
+  .s3d-label[data-tile="1"],
+  .s3d-screen[data-idx="1"] {
+    justify-self: end;
   }
 }
 
@@ -463,17 +461,17 @@
   line-height: 1.4;
   min-height: 1.4em;
 }
-/* 説明文は SP の 2 カラムレイアウト時のみ表示 (PC ではラベル位置の関係で出さない) */
+/* 説明文は SP のみ表示 (PC では情報過多になるため非表示) */
 .s3d-label-desc { display: none; margin: 0; }
 @media (max-width: 768px) {
-  /* 2カラム時のラベル: テキストは左寄せで読みやすく
-     align-items は flex-start で説明文が幅いっぱい改行できるように */
+  /* SP: ラベルは端末の真上、端末と同じ横幅で中央寄せ */
   .s3d-label {
-    width: auto;
+    width: var(--s3d-tile-w);
+    max-width: 100%;
     padding: 0;
-    text-align: left;
-    align-items: stretch;
-    justify-content: center; /* 端末高さに対して縦中央 */
+    text-align: center;
+    align-items: center;
+    justify-content: flex-end;
   }
   .s3d-label-title { font-size: 17px; letter-spacing: 0.02em; }
   .s3d-label-sub { font-size: 11px; margin-top: 2px; line-height: 1.4; }
@@ -484,6 +482,7 @@
     line-height: 1.55;
     color: rgba(17, 17, 17, 0.78);
     font-weight: 500;
+    text-align: left;
   }
 }
 
