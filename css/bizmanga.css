@@ -2054,23 +2054,12 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 
 /* ============================================
-   新作漫画 (ContentsX同様 横スクロール)
+   漫画ギャラリー (横読み / 縦読み 一覧グリッド — キーエンス風)
    ============================================ */
-/* ---------- Gallery / Carousel ---------- */
 .bm-gallery {
   position: relative;
-  overflow: hidden;
   padding: 72px 0 96px;
   background: #fff;
-}
-.bm-gallery-bg {
-  display: none;
-}
-.bm-gallery-bg img {
-  display: none;
-}
-.bm-gallery-overlay {
-  display: none;
 }
 .bm-gallery-inner {
   position: relative; z-index: 2;
@@ -2121,43 +2110,37 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 .bm-gallery-more:hover::before { width: 260%; }
 
-/* タブ（全て / Webtoon / マンガ型） */
-.bm-gallery-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
+/* 種別グループ (横読み / 縦読み) */
+.bm-gallery-group {
+  margin-bottom: 56px;
 }
-.bm-gallery-tab {
-  appearance: none;
-  border: 1.5px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.85);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+.bm-gallery-group:last-of-type {
+  margin-bottom: 0;
+}
+.bm-gallery-group-title {
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 900;
   color: #000;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 10px 22px;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
-  white-space: nowrap;
+  margin: 0 0 20px;
+  padding-left: 14px;
+  border-left: 6px solid var(--bm-accent);
+  line-height: 1.3;
 }
-.bm-gallery-tab:hover {
-  border-color: var(--bm-accent);
-  color: var(--bm-accent);
+
+/* 一覧グリッド (キーエンス風: 4-5 列 × 自動行) */
+.bm-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 28px 24px;
 }
-.bm-gallery-tab.is-active {
-  background: var(--bm-accent);
-  border-color: var(--bm-accent);
-  color: #fff;
+@media (max-width: 1200px) {
+  .bm-gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.bm-gallery-tab.is-active:hover {
-  color: #fff;
-  transform: none;
+@media (max-width: 900px) {
+  .bm-gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 18px; }
 }
 @media (max-width: 640px) {
-  .bm-gallery-tab { font-size: 13px; padding: 9px 16px; }
+  .bm-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
 }
 
 /* 空表示 */
@@ -2168,36 +2151,25 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   padding: 48px 16px;
 }
 
-/* カルーセル外枠 */
-.bm-gallery-carousel {
-  overflow: hidden;
-  position: relative;
-}
-
-/* 無限ループ用トラック */
-.bm-gallery-track {
-  display: flex; gap: 28px;
-  will-change: transform;
-}
-
 /* カード */
 .bm-gallery-card {
-  flex: 0 0 220px;
-  width: 220px;
-  min-width: 220px;
-  max-width: 220px;
   cursor: pointer;
   transition: transform 0.35s ease, opacity 0.35s ease;
 }
 .bm-gallery-card:hover {
-  transform: translateY(-6px) scale(1.03);
+  transform: translateY(-4px);
 }
 .bm-gallery-card-cover {
   width: 100%;
-  height: 293px;
-  border-radius: 8px; overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   background: #f0f0f0;
+  transition: box-shadow 0.35s ease;
+}
+.bm-gallery-card:hover .bm-gallery-card-cover {
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
 }
 .bm-gallery-card-cover img {
   width: 100%; height: 100%;
@@ -2205,10 +2177,12 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   display: block;
 }
 .bm-gallery-card-title {
-  font-size: 13px; font-weight: 600;
-  color: #000; margin-top: 12px;
-  line-height: 1.4; text-align: center;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin: 12px 0 0;
+  line-height: 1.4;
+  text-align: center;
 }
 
 /* ============================================
@@ -4968,11 +4942,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .work-detail-right { max-height: none; overflow-y: visible; padding: 20px; }
   .work-detail-close { position: fixed; top: 8px; right: 8px; z-index: 10001; }
-}
-
-@media (max-width: 480px) {
-  .bm-gallery-card { flex: 0 0 160px; width: 160px; min-width: 160px; max-width: 160px; }
-  .bm-gallery-card-cover { height: 213px; }
 }
 
 /* ===== 制作過程セクション (ホーム用) ===== */

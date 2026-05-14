@@ -1,223 +1,120 @@
 /**
- * BizManga ホームページ — 新作漫画ギャラリーカルーセル
- * - 自動スクロール（ホバーで一時停止）
- * - 無限ループ（最後→先頭に自然に繋がる）
- * - WP APIデータ到着時に再構築
+ * BizManga ホームページ — 漫画ギャラリー (横読み / 縦読み 一覧グリッド)
+ * - キーエンス風グリッド表示 (4-5 列)
+ * - 横読み / 縦読み の 2 グループに分けて表示
+ * - WP API データ到着時に再描画
  */
 (function() {
   'use strict';
 
-  var MAX_NEW_WORKS = 10;
-  var SCROLL_SPEED  = 0.6;    // px per frame
-  var track = document.getElementById('bmNewWorksTrack');
-  if (!track) return;
+  var MAX_PER_GROUP = 10;
+  var gridManga = document.getElementById('bmGalleryGridManga');
+  var gridWebtoon = document.getElementById('bmGalleryGridWebtoon');
+  if (!gridManga && !gridWebtoon) return;
 
-  // ===== フォールバック用データ（sitemapから除外済みの作品は載せない） =====
-  var FALLBACK_NEW_WORKS = [
+  // ===== フォールバック用データ (sitemap除外作品は載せない) =====
+  var FALLBACK_WORKS = [
     { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },
     { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, added: '2026-03-05' },
     { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, added: '2026-02-28' }
   ];
 
-  var scrollPos = 0;
-  var animId = null;
-  var isPaused = false;
-  var isVisible = true;
-  var singleSetWidth = 0;
-  var allWorksData = [];       // 全作品（フィルタ前）
-  var currentFilter = 'all';   // 'all' | 'webtoon' | 'manga'
+  var allWorksData = [];
 
-  // ===== フィルタ判定（bm-view-type.js に委譲） =====
   function isWebtoon(item) {
     return window.bmViewType ? window.bmViewType.isForcedVertical(item) : false;
   }
-  function filterData(data, mode) {
-    if (mode === 'webtoon') return data.filter(isWebtoon);
-    if (mode === 'manga')   return data.filter(function(d) { return !isWebtoon(d); });
-    return data.slice();
+
+  function renderCard(item) {
+    var card = document.createElement('div');
+    card.className = 'bm-gallery-card';
+
+    var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
+    var titleJa = item.title_ja || '';
+    var titleEn = item.title_en || titleJa;
+    var labelJa = item.subtitle_ja || titleJa;
+    var labelEn = item.subtitle_en || titleEn;
+
+    var coverWrap = document.createElement('div');
+    coverWrap.className = 'bm-gallery-card-cover';
+    var img = document.createElement('img');
+    img.src = coverSrc;
+    img.alt = titleJa;
+    img.loading = 'lazy';
+    coverWrap.appendChild(img);
+
+    var titleEl = document.createElement('p');
+    titleEl.className = 'bm-gallery-card-title';
+    titleEl.setAttribute('data-ja', labelJa);
+    titleEl.setAttribute('data-en', labelEn);
+    titleEl.textContent = labelJa;
+
+    card.appendChild(coverWrap);
+    card.appendChild(titleEl);
+
+    card.addEventListener('click', function() {
+      location.href = 'biz-library?manga=' + item.id;
+    });
+
+    return card;
   }
 
-  // ===== カード生成 =====
-  function buildGalleryCards(data) {
-    var hasAdded = data.some(function(d) { return d && d.added; });
+  function buildGroup(grid, data) {
+    if (!grid) return;
+    while (grid.firstChild) grid.removeChild(grid.firstChild);
+
     var sorted = data.slice();
+    var hasAdded = sorted.some(function(d) { return d && d.added; });
     if (hasAdded) {
-      sorted.sort(function(a, b) {
-        return new Date(b.added || 0) - new Date(a.added || 0);
-      });
+      sorted.sort(function(a, b) { return new Date(b.added || 0) - new Date(a.added || 0); });
     }
-    sorted = sorted.slice(0, MAX_NEW_WORKS);
+    sorted = sorted.slice(0, MAX_PER_GROUP);
 
-    // 空表示の切替
-    var emptyEl = document.getElementById('bmGalleryEmpty');
-    var carouselEl = document.getElementById('bmGalleryCarousel');
+    var groupEl = grid.closest('.bm-gallery-group');
     if (sorted.length === 0) {
-      if (emptyEl) emptyEl.hidden = false;
-      if (carouselEl) {
-        var trackForHide = carouselEl.querySelector('.bm-gallery-track');
-        if (trackForHide) trackForHide.style.display = 'none';
-      }
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-      while (track.firstChild) track.removeChild(track.firstChild);
+      if (groupEl) groupEl.hidden = true;
       return;
-    } else {
-      if (emptyEl) emptyEl.hidden = true;
-      if (carouselEl) {
-        var trackForShow = carouselEl.querySelector('.bm-gallery-track');
-        if (trackForShow) trackForShow.style.display = '';
-      }
+    }
+    if (groupEl) groupEl.hidden = false;
+
+    sorted.forEach(function(item) { grid.appendChild(renderCard(item)); });
+  }
+
+  function buildAll() {
+    var mangaItems = allWorksData.filter(function(d) { return !isWebtoon(d); });
+    var webtoonItems = allWorksData.filter(isWebtoon);
+
+    buildGroup(gridManga, mangaItems);
+    buildGroup(gridWebtoon, webtoonItems);
+
+    // 全体が空なら empty メッセージ
+    var emptyEl = document.getElementById('bmGalleryEmpty');
+    if (emptyEl) {
+      emptyEl.hidden = (mangaItems.length + webtoonItems.length) > 0;
     }
 
-    while (track.firstChild) track.removeChild(track.firstChild);
-
-    // 無限ループ用に2セット分のカードを作る
-    var sets = [sorted, sorted];
-    sets.forEach(function(set, setIdx) {
-      set.forEach(function(item) {
-        var card = document.createElement('div');
-        card.className = 'bm-gallery-card';
-
-        var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
-
-        var titleJa = item.title_ja || '';
-        var titleEn = item.title_en || titleJa;
-        // サブタイトル優先（WP側で設定されていればそちらを表示名に使う）
-        var labelJa = item.subtitle_ja || titleJa;
-        var labelEn = item.subtitle_en || titleEn;
-        card.innerHTML =
-          '<div class="bm-gallery-card-cover">' +
-            '<img src="' + coverSrc + '" alt="' + titleJa + '" loading="lazy">' +
-          '</div>' +
-          '<p class="bm-gallery-card-title" data-ja="' + labelJa + '" data-en="' + labelEn + '">' + labelJa + '</p>';
-
-        // クリック → ビズ書庫で漫画を直接開く
-        (function(workItem) {
-          card.addEventListener('click', function() {
-            location.href = 'biz-library?manga=' + workItem.id;
-          });
-        })(item);
-
-        track.appendChild(card);
-      });
-    });
-
-    // 1セット分の幅を計算
-    requestAnimationFrame(function() {
-      var cards = track.querySelectorAll('.bm-gallery-card');
-      var half = Math.floor(cards.length / 2);
-      if (half === 0) return;
-
-      // 最初のセットの末尾カードの右端位置 + gap
-      var lastCard = cards[half - 1];
-      var gap = 28; // CSS gap
-      singleSetWidth = lastCard.offsetLeft + lastCard.offsetWidth + gap;
-
-      scrollPos = 0;
-      startAutoScroll();
-
-      // 現在の言語が英語なら即座に反映（i18n システムに委譲）
-      var lang = document.documentElement.lang || 'ja';
-      if (lang === 'en') {
-        if (window.i18n && window.i18n.translateAll) {
-          window.i18n.translateAll();
-        } else if (typeof window.bmSwitchLang === 'function') {
-          window.bmSwitchLang('en');
-        }
+    // 英語表示中なら i18n を再適用
+    var lang = document.documentElement.lang || 'ja';
+    if (lang === 'en') {
+      if (window.i18n && window.i18n.translateAll) {
+        window.i18n.translateAll();
+      } else if (typeof window.bmSwitchLang === 'function') {
+        window.bmSwitchLang('en');
       }
-    });
-  }
-
-  // ===== 自動スクロール =====
-  function startAutoScroll() {
-    if (animId) cancelAnimationFrame(animId);
-
-    function step() {
-      if (!isPaused && isVisible) {
-        scrollPos += SCROLL_SPEED;
-
-        // 1セット分スクロールしたらリセット（無限ループ）
-        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-          scrollPos -= singleSetWidth;
-        }
-
-        track.style.transform = 'translateX(' + (-scrollPos) + 'px)';
-      }
-      animId = requestAnimationFrame(step);
     }
-
-    animId = requestAnimationFrame(step);
   }
 
-  // タブが非アクティブな時はrAFを実質停止
-  document.addEventListener('visibilitychange', function() {
-    isVisible = !document.hidden;
-  });
+  // ===== 初期表示 (フォールバック) =====
+  allWorksData = FALLBACK_WORKS;
+  buildAll();
 
-  // ===== 常時スクロール（ホバーで停止しない） =====
-  // 横スクロール（マウスホイール）対応
-  var carousel = document.getElementById('bmGalleryCarousel');
-  // ギャラリーが画面外に出たらrAFを実質停止
-  if (carousel && 'IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries) {
-      isVisible = entries[0].isIntersecting;
-    }, { threshold: 0 });
-    io.observe(carousel);
-  }
-  if (carousel) {
-    carousel.addEventListener('wheel', function(e) {
-      // 横スクロール（トラックパッド横スワイプ or Shift+ホイール）のみカルーセルを操作
-      // 縦スクロール（deltaYが主体）はページスクロールとして通す
-      var isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      var isShiftWheel = e.shiftKey && Math.abs(e.deltaY) > 0;
-      if (isHorizontal || isShiftWheel) {
-        var delta = isShiftWheel ? e.deltaY : e.deltaX;
-        e.preventDefault();
-        scrollPos += delta * 0.8;
-        if (scrollPos < 0) scrollPos += singleSetWidth;
-        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-          scrollPos -= singleSetWidth;
-        }
-      }
-      // deltaYが主体の場合はpreventDefaultしない → ページが縦スクロールする
-    }, { passive: false });
-  }
-
-  // ===== タブ切替 =====
-  function applyFilter(mode) {
-    currentFilter = mode;
-    var tabs = document.querySelectorAll('.bm-gallery-tab');
-    tabs.forEach(function(t) {
-      var active = t.getAttribute('data-filter') === mode;
-      t.classList.toggle('is-active', active);
-      t.setAttribute('aria-selected', active ? 'true' : 'false');
-    });
-    scrollPos = 0;
-    if (animId) cancelAnimationFrame(animId);
-    buildGalleryCards(filterData(allWorksData, mode));
-  }
-  var tabBar = document.getElementById('bmGalleryTabs');
-  if (tabBar) {
-    tabBar.addEventListener('click', function(e) {
-      var btn = e.target.closest('.bm-gallery-tab');
-      if (!btn) return;
-      applyFilter(btn.getAttribute('data-filter'));
-    });
-  }
-
-  // ===== 初期表示（フォールバック） =====
-  allWorksData = FALLBACK_NEW_WORKS;
-  buildGalleryCards(filterData(allWorksData, currentFilter));
-
-  // ===== WP APIデータ到着時に再構築 =====
-  // /works（漫画事例）を優先、無ければ /works-new（新作漫画）にフォールバック
+  // ===== WP API データ到着時に再構築 =====
   function refreshFromWp() {
     var wpData = window.BM_WORKS_DATA;
     if (!wpData || !wpData.length) wpData = window.BM_NEW_WORKS_DATA;
     if (wpData && wpData.length > 0) {
       allWorksData = wpData;
-      scrollPos = 0;
-      if (animId) cancelAnimationFrame(animId);
-      buildGalleryCards(filterData(allWorksData, currentFilter));
+      buildAll();
     }
   }
   window.addEventListener('bm-data-ready', refreshFromWp);
