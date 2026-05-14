@@ -208,19 +208,19 @@
 .lpv2-hero-title {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
-  font-size: clamp(34px, 5.8vw, 72px);
-  line-height: 1.18;
+  font-size: clamp(28px, 5vw, 60px);
+  line-height: 1.22;
   letter-spacing: -0.02em;
   color: var(--lpv2-ink);
   margin: 0 0 32px;
-  /* 日本語の単語の途中で折り返さない (改行位置のズレ防止) */
   word-break: keep-all;
   overflow-wrap: normal;
 }
-/* 各テキスト要素は内部で改行されない単位として扱う */
+/* 各テキスト要素を「絶対に途中改行しない単位」に */
 .lpv2-hero-title > span,
 .lpv2-hero-title > em {
-  display: inline-block;
+  display: inline;
+  white-space: nowrap;
 }
 .lpv2-hero-title em {
   font-style: normal; color: var(--lpv2-accent);
