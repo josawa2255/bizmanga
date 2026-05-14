@@ -1260,14 +1260,15 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-lead .bm-whatis-link { font-weight: 700; }
 
-/* 用途・強み 2枠 (FAQ風) */
+/* 用途・強み 2枠 (FAQ風 / 横並び) */
 .bm-whatis-folds {
-  max-width: 880px;
+  max-width: 1180px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
   text-align: left;
+  align-items: start;
 }
 .bm-whatis-fold {
   background: #fff;
@@ -1327,14 +1328,14 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   letter-spacing: 0.02em;
 }
 
-/* 枠 2: 強みリスト (3項目 横並び/列配置) */
+/* 枠 2: 強みリスト (枠が横並びで狭くなるので縦に積む) */
 .bm-whatis-fold-list {
   list-style: none;
   margin: 0;
   padding: 0 22px 22px 22px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 .bm-whatis-fold-list > li {
   display: flex;
@@ -1359,13 +1360,15 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   line-height: 1.7;
 }
 
+@media (max-width: 900px) {
+  .bm-whatis-folds { grid-template-columns: 1fr; gap: 16px; }
+}
 @media (max-width: 720px) {
   .bm-whatis-fold summary { padding: 14px 16px; gap: 10px; }
   .bm-whatis-fold-badge { min-width: 48px; height: 28px; font-size: 12px; padding: 0 8px; }
   .bm-whatis-fold-body,
   .bm-whatis-fold-list { padding: 0 16px 18px 16px; }
   .bm-whatis-fold-body { font-size: 14px; line-height: 1.9; }
-  .bm-whatis-fold-list { grid-template-columns: 1fr; gap: 14px; }
   .bm-whatis-fold-list-title { font-size: 14px; }
   .bm-whatis-fold-list-desc { font-size: 12.5px; }
 }
