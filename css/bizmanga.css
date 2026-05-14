@@ -1243,7 +1243,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-lead {
   font-size: clamp(15px, 1.9vw, 20px);
-  color: #2a2a2a;
+  color: #1a1a1a;
   line-height: 1.85;
   max-width: 880px;
   margin: 0 auto 48px;
@@ -1315,7 +1315,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   padding: 0 22px 22px 92px;
   font-size: 15px;
   line-height: 1.95;
-  color: #333;
+  color: #1a1a1a;
   letter-spacing: 0.02em;
 }
 
@@ -1346,7 +1346,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-whatis-fold-list-desc {
   font-size: 13.5px;
   font-weight: 500;
-  color: #555;
+  color: #1a1a1a;
   line-height: 1.7;
 }
 
