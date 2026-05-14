@@ -227,7 +227,7 @@
 /* 見出し — フロー配置 (stage の flex-column に積まれる) */
 .s3d-heading {
   position: relative;
-  color: #222;
+  color: #000;
   text-align: center;
   z-index: 3;
   pointer-events: none;
@@ -410,7 +410,7 @@
   top: calc(100% + 26px);
   transform: translateX(-50%);
   z-index: 5;
-  color: #555;
+  color: #000;
   font-size: clamp(12px, 1.05vw, 14px);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -450,7 +450,7 @@
   display: block;
   margin-top: 4px;
   font-size: clamp(10px, 1vw, 12px);
-  color: rgba(17, 17, 17, 0.6);
+  color: #000;
   font-weight: 500;
   line-height: 1.4;
   min-height: 1.4em;
@@ -474,7 +474,7 @@
     margin: 8px 0 0;
     font-size: 12px;
     line-height: 1.55;
-    color: rgba(17, 17, 17, 0.78);
+    color: #000;
     font-weight: 500;
     text-align: left;
   }
@@ -485,7 +485,7 @@
   position: absolute;
   bottom: 32px; left: 50%;
   transform: translateX(-50%);
-  color: rgba(34, 34, 34, 0.55);
+  color: #000;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.15em;

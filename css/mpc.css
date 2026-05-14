@@ -428,7 +428,7 @@
   width: 180px;
   height: 64px;
   padding: 0 8px;
-  color: #333;
+  color: #000;
   text-decoration: none;
   transition: transform 0.2s ease;
 }
