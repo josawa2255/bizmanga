@@ -1287,25 +1287,25 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-whatis-fold-head {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 22px;
+  gap: 16px;
+  padding: 22px 26px;
   font-weight: 900;
-  font-size: clamp(15px, 1.7vw, 18px);
-  line-height: 1.5;
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.45;
   color: #000;
 }
 .bm-whatis-fold-badge {
   flex-shrink: 0;
-  min-width: 56px;
-  height: 32px;
-  padding: 0 12px;
+  min-width: 72px;
+  height: 40px;
+  padding: 0 16px;
   background: var(--bm-accent);
   color: #fff;
   border: 2px solid #1a1a1a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 900;
   letter-spacing: 0.08em;
   box-sizing: border-box;
@@ -1359,7 +1359,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 @media (max-width: 720px) {
   .bm-whatis-fold summary { padding: 14px 16px; gap: 10px; }
-  .bm-whatis-fold-badge { min-width: 48px; height: 28px; font-size: 12px; padding: 0 8px; }
+  .bm-whatis-fold-head { padding: 18px 18px; gap: 12px; font-size: 17px; }
+  .bm-whatis-fold-badge { min-width: 60px; height: 34px; font-size: 14px; padding: 0 12px; }
   .bm-whatis-fold-body,
   .bm-whatis-fold-list { padding: 0 16px 18px 16px; }
   .bm-whatis-fold-body { font-size: 14px; line-height: 1.9; }
