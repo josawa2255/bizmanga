@@ -1220,12 +1220,13 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   margin-bottom: 28px;
   text-align: center;
 }
-/* ロゴと同じディスプレイフォント (Train One: 角ばった重厚な日本語ブロック体) */
-.bm-whatis-logo-text {
-  font-family: 'Train One', 'Reggae One', 'Noto Sans JP', sans-serif;
-  font-weight: 400; /* Train One は単一ウェイト */
-  letter-spacing: 0.04em;
-  margin-right: 0.12em;
+/* ロゴ画像をテキストと併用 (フォントでは再現できない独自書体) */
+.bm-whatis-logo-img {
+  height: clamp(34px, 5.5vw, 60px);
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 0.2em;
 }
 .bm-accent-text {
   color: var(--bm-accent);
@@ -1326,22 +1327,23 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   letter-spacing: 0.02em;
 }
 
-/* 枠 2: 強みリスト */
+/* 枠 2: 強みリスト (3項目 横並び/列配置) */
 .bm-whatis-fold-list {
   list-style: none;
   margin: 0;
-  padding: 0 22px 22px 92px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  padding: 0 22px 22px 22px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
 .bm-whatis-fold-list > li {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding-left: 18px;
+  gap: 6px;
+  padding-left: 14px;
   position: relative;
   border-left: 3px solid var(--bm-accent);
+  min-width: 0;
 }
 .bm-whatis-fold-list-title {
   font-size: 15px;
@@ -1363,6 +1365,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   .bm-whatis-fold-body,
   .bm-whatis-fold-list { padding: 0 16px 18px 16px; }
   .bm-whatis-fold-body { font-size: 14px; line-height: 1.9; }
+  .bm-whatis-fold-list { grid-template-columns: 1fr; gap: 14px; }
   .bm-whatis-fold-list-title { font-size: 14px; }
   .bm-whatis-fold-list-desc { font-size: 12.5px; }
 }
