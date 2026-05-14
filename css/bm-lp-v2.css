@@ -213,6 +213,7 @@
   letter-spacing: -0.02em;
   color: var(--lpv2-ink);
   margin: 0 0 32px;
+  padding-left: clamp(8px, 1.5vw, 24px); /* 少し右にずらす */
   word-break: keep-all;
   overflow-wrap: normal;
 }
