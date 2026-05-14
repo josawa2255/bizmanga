@@ -292,9 +292,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - ラベル位置: タイル直上(`bottom: 100% + 14px`)
 - CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)
 - **デバイス別 動的レイアウト**（2026-05-14 追加）:
-  - PC / Tablet (>768px): 横3列を維持しつつ、`--s3d-tile-w: clamp(260px, 24vw, 420px)` と `--s3d-gap: clamp(32px, 6vw, 160px)` で viewport 幅に追従。ワイドモニタでも左右余白が空かないよう gap を伸ばして3端末を edge-to-edge に広げる。アスペクト比 280:580 は維持
-  - SP (≤768px): 縦1列 Z 字配置。`.s3d-screens-wrap` が `display: grid`、`.s3d-labels` と `.s3d-screens` を `display: contents` で展開し、`order` でラベル→端末を3セット縦に並べる。`justify-self: start/end` で横読み(左) → 縦読み(右) → ボイスコミック(左)の Z 形。タイル幅 `clamp(220px, 62vw, 300px)` で SP でも迫力サイズ
-  - SP では `.s3d-mute-toggle` に `order: 7` を付与して最下段中央に配置
+  - PC / Tablet (>768px): 横3列を維持しつつ、`--s3d-tile-w: clamp(260px, 19vw, 320px)` で原寸 280px 前後に追従。`--s3d-gap: clamp(40px, 8vw, 220px)` でワイドモニタほど 3 端末を edge-to-edge に広げて左右余白を解消。アスペクト比 280:580 は維持。説明文 (`.s3d-label-desc`) は PC では非表示
+  - SP (≤768px): **2 カラム グリッド + Z 字**。`.s3d-screens-wrap` を `display: grid; grid-template-columns: var(--s3d-tile-w) 1fr` に変更し、`.s3d-labels` と `.s3d-screens` を `display: contents` で展開、各要素を `grid-column / grid-row` で配置:
+    - Row 1: 端末=左 / 説明=右 (横読み)
+    - Row 2: 説明=左 / 端末=右 (縦読み, hero)
+    - Row 3: 端末=左 / 説明=右 (ボイスコミック)
+    - mute トグル: `grid-column: 1 / -1` で全幅・中央
+  - SP のラベルは title / sub に加え `.s3d-label-desc` で 2-3 行の説明文を表示 (`<p>` 要素、JA/EN 両対応)
+  - SP のタイル幅は `clamp(170px, 48vw, 240px)` で端末と説明が 1 画面に収まるバランス
 - スクロール演出（GSAP ScrollTrigger + pin）:
   - 初期: 中央1枚 scale 1.55（PC）/ 1（SP=Z字レイアウトでは zoom-in なし）
   - PC: scroll 進行で3分裂 → ラベル fade-in → 見出し表示
