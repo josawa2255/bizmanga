@@ -1252,133 +1252,112 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-lead .bm-whatis-link { font-weight: 700; }
 
-/* USE CASES 見出し */
-.bm-whatis-uses-head {
-  max-width: 1120px;
-  margin: 0 auto 24px;
-  text-align: left;
+/* 用途・強み 2枠 (FAQ風) */
+.bm-whatis-folds {
+  max-width: 880px;
+  margin: 0 auto;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 16px;
-  flex-wrap: wrap;
-  padding: 0 8px;
+  text-align: left;
 }
-.bm-whatis-uses-eyebrow {
-  font-size: 12px;
+.bm-whatis-fold {
+  background: #fff;
+  border: 2px solid #1a1a1a;
+  box-shadow: 5px 5px 0 var(--bm-border);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+.bm-whatis-fold[open] { box-shadow: 7px 7px 0 rgba(232, 90, 26, 0.55); }
+.bm-whatis-fold summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  cursor: pointer;
   font-weight: 800;
-  letter-spacing: 0.3em;
-  color: var(--bm-accent);
-  margin: 0;
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.5;
+  color: #1a1a1a;
+  position: relative;
 }
-.bm-whatis-uses-sub {
-  font-size: clamp(14px, 1.5vw, 17px);
-  font-weight: 700;
+.bm-whatis-fold summary::-webkit-details-marker { display: none; }
+.bm-whatis-fold-badge {
+  flex-shrink: 0;
+  min-width: 56px;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--bm-accent);
+  color: #fff;
+  border: 2px solid #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  box-sizing: border-box;
+}
+.bm-whatis-fold-label { flex: 1; }
+.bm-whatis-fold summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--bm-accent);
+  flex-shrink: 0;
+}
+.bm-whatis-fold[open] summary::after { content: "−"; }
+
+/* 枠 1: 用途リンクの本文 */
+.bm-whatis-fold-body {
+  padding: 0 22px 22px 92px;
+  font-size: 15px;
+  line-height: 1.95;
   color: #333;
-  margin: 0;
+  letter-spacing: 0.02em;
 }
 
-/* 8カード グリッド */
-.bm-whatis-uses {
+/* 枠 2: 強みリスト */
+.bm-whatis-fold-list {
   list-style: none;
-  padding: 0;
-  margin: 0 auto 56px;
-  max-width: 1120px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  margin: 0;
+  padding: 0 22px 22px 92px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
-.bm-whatis-uses > li { list-style: none; }
-.bm-whatis-use-card {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto auto;
-  column-gap: 12px;
-  row-gap: 4px;
-  align-items: center;
-  padding: 18px 16px 18px 18px;
-  background: #fff;
-  border: 1px solid var(--bm-border);
-  border-radius: 12px;
-  text-decoration: none;
-  text-align: left;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+.bm-whatis-fold-list > li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 18px;
   position: relative;
-  overflow: hidden;
-  min-height: 92px;
+  border-left: 3px solid var(--bm-accent);
 }
-.bm-whatis-use-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--bm-accent);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.2s ease;
-}
-.bm-whatis-use-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(232, 90, 26, 0.14);
-  border-color: rgba(232, 90, 26, 0.45);
-}
-.bm-whatis-use-card:hover::before { transform: scaleY(1); }
-.bm-whatis-use-num {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--bm-accent);
-  font-family: 'Roboto Mono', ui-monospace, monospace;
-  line-height: 1;
-  letter-spacing: 0;
-}
-.bm-whatis-use-title {
-  grid-column: 2;
-  grid-row: 1;
+.bm-whatis-fold-list-title {
   font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
+  line-height: 1.5;
   letter-spacing: 0.02em;
-  line-height: 1.3;
-  align-self: end;
 }
-.bm-whatis-use-desc {
-  grid-column: 2;
-  grid-row: 2;
-  font-size: 12px;
+.bm-whatis-fold-list-desc {
+  font-size: 13.5px;
   font-weight: 500;
-  color: #666;
-  line-height: 1.45;
-  align-self: start;
-}
-.bm-whatis-use-arrow {
-  grid-column: 3;
-  grid-row: 1 / 3;
-  font-size: 18px;
-  color: #bbb;
-  font-weight: 700;
-  transition: transform 0.18s ease, color 0.18s ease;
-  align-self: center;
-}
-.bm-whatis-use-card:hover .bm-whatis-use-arrow {
-  transform: translateX(4px);
-  color: var(--bm-accent);
+  color: #555;
+  line-height: 1.7;
 }
 
-@media (max-width: 960px) {
-  .bm-whatis-uses { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-}
-@media (max-width: 560px) {
-  .bm-whatis-uses { grid-template-columns: 1fr; gap: 10px; }
-  .bm-whatis-uses-head { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .bm-whatis-use-card { padding: 14px 14px 14px 16px; min-height: 78px; }
-  .bm-whatis-use-num { font-size: 18px; }
-  .bm-whatis-use-title { font-size: 14px; }
-  .bm-whatis-use-desc { font-size: 11.5px; }
+@media (max-width: 720px) {
+  .bm-whatis-fold summary { padding: 14px 16px; gap: 10px; }
+  .bm-whatis-fold-badge { min-width: 48px; height: 28px; font-size: 12px; padding: 0 8px; }
+  .bm-whatis-fold-body,
+  .bm-whatis-fold-list { padding: 0 16px 18px 16px; }
+  .bm-whatis-fold-body { font-size: 14px; line-height: 1.9; }
+  .bm-whatis-fold-list-title { font-size: 14px; }
+  .bm-whatis-fold-list-desc { font-size: 12.5px; }
 }
 
 /* ============================================
