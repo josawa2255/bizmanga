@@ -168,15 +168,15 @@
   object-fit: cover;
   object-position: right center;
 }
-/* 白オーバーレイ: 左半分はほぼ白でテキスト可読性最優先、右側でキャラを見せる */
+/* Cream overlay: 77% opacity on left ~50%, fades out by 70% (image fully visible on right) */
 .lpv2-hero-bg::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.92) 48%,
-    rgba(255, 255, 255, 0.55) 60%,
-    rgba(255, 255, 255, 0) 72%
+    rgba(255, 248, 237, 0.77) 0%,
+    rgba(255, 248, 237, 0.77) 45%,
+    rgba(255, 248, 237, 0.6) 55%,
+    rgba(255, 248, 237, 0) 70%
   );
   pointer-events: none;
 }
