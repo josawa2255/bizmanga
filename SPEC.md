@@ -317,7 +317,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - 漫画表紙カルーセル5行 + マウスパララックス（PC）
 
 ### 7.2b クライアントロゴ無限カルーセル（`.bm-client-logos`）⭐2026-05-13追加
-- 位置: `.bm-news` の直後、`.bm-whatis`（ビズマンガとは？）の直前
+- 位置: `.bm-hero` の直後、`.bm-about` の直前（2026-05-14に news の後ろから hero 直下へ移動）
 - 役割: 取引/支援企業ロゴを横スクロールで自動再生し、信用補強。ContentsXトップと同じ構成・同じ社数（13社）
 - データ: [js/data/bm-client-logos.js](js/data/bm-client-logos.js) の `BM_CLIENT_LOGOS` を編集すれば追加可
 - 画像参照: ContentX側の `https://contentsx.jp/material/images/{clients,partners}/...` を絶対URLで参照（[[reference_bugs_md]] #020 同様、ContentX/material/ の画像を消すときは両サイトgrep必須）
