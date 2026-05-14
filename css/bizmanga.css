@@ -1216,7 +1216,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-whatis-heading {
   font-size: clamp(26px, 4.2vw, 44px);
   font-weight: 900;
-  color: #222;
+  color: #000;
   margin-bottom: 28px;
   text-align: center;
 }
@@ -1258,12 +1258,12 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-lead {
   font-size: clamp(15px, 1.9vw, 20px);
-  color: #1a1a1a;
+  color: #000;
   line-height: 1.85;
   max-width: 880px;
   margin: 0 auto 48px;
   letter-spacing: 0.02em;
-  font-weight: 500;
+  font-weight: 700;
 }
 .bm-whatis-lead .bm-whatis-link { font-weight: 700; }
 
@@ -1289,10 +1289,10 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   align-items: center;
   gap: 14px;
   padding: 18px 22px;
-  font-weight: 800;
+  font-weight: 900;
   font-size: clamp(15px, 1.7vw, 18px);
   line-height: 1.5;
-  color: #1a1a1a;
+  color: #000;
 }
 .bm-whatis-fold-badge {
   flex-shrink: 0;
@@ -1314,10 +1314,11 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 
 /* 枠 1: 用途リンクの本文 */
 .bm-whatis-fold-body {
-  padding: 0 22px 22px 92px;
+  padding: 0 22px 22px 22px;
   font-size: 15px;
   line-height: 1.95;
-  color: #1a1a1a;
+  color: #000;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
@@ -1341,15 +1342,15 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-fold-list-title {
   font-size: 15px;
-  font-weight: 800;
-  color: #1a1a1a;
+  font-weight: 900;
+  color: #000;
   line-height: 1.5;
   letter-spacing: 0.02em;
 }
 .bm-whatis-fold-list-desc {
   font-size: 13.5px;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-weight: 600;
+  color: #000;
   line-height: 1.7;
 }
 
