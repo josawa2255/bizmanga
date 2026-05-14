@@ -291,9 +291,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + オレンジ光沢ベゼル
 - ラベル位置: タイル直上(`bottom: 100% + 14px`)
 - CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)
+- **デバイス別 動的レイアウト**（2026-05-14 追加）:
+  - PC / Tablet (>768px): 横3列を維持しつつ、`--s3d-tile-w: clamp(260px, 24vw, 420px)` と `--s3d-gap: clamp(32px, 6vw, 160px)` で viewport 幅に追従。ワイドモニタでも左右余白が空かないよう gap を伸ばして3端末を edge-to-edge に広げる。アスペクト比 280:580 は維持
+  - SP (≤768px): 縦1列 Z 字配置。`.s3d-screens-wrap` が `display: grid`、`.s3d-labels` と `.s3d-screens` を `display: contents` で展開し、`order` でラベル→端末を3セット縦に並べる。`justify-self: start/end` で横読み(左) → 縦読み(右) → ボイスコミック(左)の Z 形。タイル幅 `clamp(220px, 62vw, 300px)` で SP でも迫力サイズ
+  - SP では `.s3d-mute-toggle` に `order: 7` を付与して最下段中央に配置
 - スクロール演出（GSAP ScrollTrigger + pin）:
-  - 初期: 中央1枚 scale 1.25（PC）/ 2.8（SP）で viewport 充填
-  - scroll 進行で3分裂 → ラベル fade-in → 見出し表示
+  - 初期: 中央1枚 scale 1.55（PC）/ 1（SP=Z字レイアウトでは zoom-in なし）
+  - PC: scroll 進行で3分裂 → ラベル fade-in → 見出し表示
+  - SP: zoom-in なし、左寄せ端末は左から、右寄せ端末は右からスライドイン
   - **単調増加のみ**: 最大到達 progress を保持、下→上スクロールで逆再生しない
   - `transform-origin: 50% 0%`（上端軸）でスマホ下端だけ伸縮、見出し衝突回避
 - 依存: `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/{gsap,ScrollTrigger}.min.js`

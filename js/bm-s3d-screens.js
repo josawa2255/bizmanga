@@ -55,32 +55,43 @@
     var scrollHint = document.getElementById('s3dScrollHint');
     var cta = document.getElementById('s3dCta');
 
-    // 初期は中央スマホを大きく見せる(viewport 高さに迫る迫力)
-    var initScale = window.matchMedia('(max-width: 768px)').matches ? 2.8 : 1.55;
+    var isSP = window.matchMedia('(max-width: 768px)').matches;
+    // PC/Tablet は中央スマホをでかく見せて zoom-in、SP は縦 Z 配置のため等倍からスタート
+    var initScale = isSP ? 1 : 1.55;
     gsap.set(wrap, { scale: initScale, transformOrigin: '50% 0%' });
-    // 左右スマホは下から押し上げる + フェード + 縮小スタート
-    gsap.set(others, { opacity: 0, scale: 0.55, y: 60 });
+    // SP: 左寄せ端末は左から、右寄せ端末は右からスライドイン
+    // PC: 左右スマホは下から押し上げる + フェード + 縮小スタート
+    if (isSP) {
+      // others は data-idx 0 (左) と 2 (左)。中央 hero は data-idx 1 (右)。
+      gsap.set(others, { opacity: 0, x: -32, y: 24 });
+    } else {
+      gsap.set(others, { opacity: 0, scale: 0.55, y: 60 });
+    }
     gsap.set(labels, { opacity: 0, y: -12 });
     // CSS の transform: translateX(-50%) は GSAP の transform 書き換えで消えるため、
     // xPercent: -50 を明示して中央寄せを維持する（SP は position: static のため不要）
-    var isSP = window.matchMedia('(max-width: 768px)').matches;
     if (heading) gsap.set(heading, isSP ? { autoAlpha: 0, y: 12 } : { autoAlpha: 0, y: 12, xPercent: -50 });
 
     // 1.4秒 → 約2.7秒に伸ばし、各段階の余韻を作る
     var tl = gsap.timeline({ paused: true });
-    // (1) 中央スマホがゆっくり viewport サイズに収まる
-    tl.to(wrap,    { scale: 1, ease: 'power3.out', duration: 1.6 }, 0);
-    // (2) 左右スマホが少し遅れて、下から押し上がる + 拡大しながらフェードイン
-    tl.to(others,  { opacity: 1, scale: 1, y: 0, ease: 'power3.out', duration: 1.1, stagger: 0.22 }, 0.55);
+    if (isSP) {
+      // SP: zoom-in なし。左右スマホがそれぞれ Z 字方向からスライドイン
+      tl.to(others, { opacity: 1, x: 0, y: 0, ease: 'power3.out', duration: 0.9, stagger: 0.22 }, 0.3);
+    } else {
+      // (1) 中央スマホがゆっくり viewport サイズに収まる
+      tl.to(wrap,    { scale: 1, ease: 'power3.out', duration: 1.6 }, 0);
+      // (2) 左右スマホが少し遅れて、下から押し上がる + 拡大しながらフェードイン
+      tl.to(others,  { opacity: 1, scale: 1, y: 0, ease: 'power3.out', duration: 1.1, stagger: 0.22 }, 0.55);
+    }
     // (3) 各ラベルが上からふわっと
-    tl.to(labels,  { opacity: 1, y: 0, ease: 'power2.out', duration: 0.7, stagger: 0.14 }, 1.7);
+    tl.to(labels,  { opacity: 1, y: 0, ease: 'power2.out', duration: 0.7, stagger: 0.14 }, isSP ? 0.5 : 1.7);
     // (4) 見出しは下からふわり
     if (heading) tl.to(heading, isSP
       ? { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.8 }
-      : { autoAlpha: 1, y: 0, xPercent: -50, ease: 'power2.out', duration: 0.8 }, 1.5);
+      : { autoAlpha: 1, y: 0, xPercent: -50, ease: 'power2.out', duration: 0.8 }, isSP ? 0.2 : 1.5);
     // (5) iframe 操作可能化 / CTA 表示は最後に
-    tl.call(function() { group.classList.add('is-settled'); }, null, 2.3);
-    if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, 2.5);
+    tl.call(function() { group.classList.add('is-settled'); }, null, isSP ? 1.4 : 2.3);
+    if (cta) tl.call(function() { cta.classList.add('is-shown'); }, null, isSP ? 1.6 : 2.5);
 
     ScrollTrigger.create({
       trigger: '#s3dSection',
