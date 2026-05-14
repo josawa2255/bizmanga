@@ -9,6 +9,43 @@
 
 ---
 
+## 0. レイアウト原則 ⭐絶対 (2026-05-14 追加)
+
+「端末ごとに見た目が崩れる/位置が飛ぶ」を構造的に防ぐためのルール。新規セクション・LP 作成時はこのルールに準拠する。
+
+### 0.1 サイジング: media query ではなく `clamp()`
+- **font-size / padding / margin / gap / min-width / height** は原則 `clamp(SP値, viewport連動値, PC上限)` で記述
+- `@media (max-width:768px) { font-size: 14px }` のような **px の上書き分岐** は禁止 (`clamp(14px, 1.2vw, 16px)` に置換)
+- 共通スケールは `:root` の `--fs-xs` 〜 `--fs-4xl` / `--sp-xs` 〜 `--sp-2xl` / `--section-py` を参照
+- 高さは `aspect-ratio` で固定する (画像・スマホタイル・カードのカバー)
+
+### 0.2 配置: `position: absolute` はコンテンツに使わない
+- 見出し・ラベル・本文・ボタンなどユーザーが読む要素は **必ず flex/grid のフローに乗せる**
+- 絶対配置は装飾 (notch, glow, ribbon, ::before/::after) と モーダルオーバーレイのみ
+- 過去事例: s3d showcase の heading/labels を absolute にしたら、タイル拡大時に重なって表示崩れ → 2026-05-14 に flex-column に修正
+
+### 0.3 media query で許される 3 ケース
+1. **レイアウト構造の切替** (`grid-template-columns: 1fr 1fr` → `1fr`)
+2. **要素の表示/非表示** (`display: none ↔ block`)
+3. **方向の切替** (`flex-direction: row` → `column`)
+
+それ以外で「PC では 24px、SP では 18px」のような px 上書きが出てきたら **clamp に統合する**。
+
+### 0.4 標準デザイントークン (css/bizmanga.css :root)
+```
+--fs-xs .. --fs-4xl    : 11px → 56px までの 8段階フォントスケール
+--sp-xs .. --sp-2xl    : 6px → 100px までの 6段階スペーシング
+--section-py           : セクションの上下パディング (clamp(56px, 7vw, 96px))
+--container-max / --container-pad : コンテナ幅
+```
+
+### 0.5 参考実装 (この原則で動いている既存セクション)
+- `.s3d-section` (3Dスマホ showcase) — タイル幅 `clamp(260px, 19vw, 320px)` + gap `clamp(40px, 8vw, 220px)`
+- `.bm-about` — `padding: var(--section-py)`、SP は layout (grid→block) のみ media query で切替
+- `.bm-whatis-fold-*` — 見出し/バッジ/本文/リストすべて clamp、SP の media query は 2列→1列のみ
+
+---
+
 ## 1. ページ構成
 
 | ページ | ファイル | 主要JS | 説明 |

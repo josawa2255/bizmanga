@@ -18,6 +18,34 @@
   --bm-card-bg: #ffffff;
   --bm-card-shadow: 0 2px 16px rgba(0,0,0,0.06);
   --bm-radius: 16px;
+
+  /* ---------- 流体トークン (s3d showcase と同じ "device-agnostic" 設計) ----------
+     端末ごとの media query 上書きを減らすため、視覚要素は基本ここを参照する。
+     公式: clamp(SP 値, viewport 連動値, PC 上限) */
+  /* タイポスケール — 段差を一定にして 320-1920px で線形変化 */
+  --fs-xs:  clamp(11px, 0.85vw, 13px);
+  --fs-sm:  clamp(13px, 1.05vw, 15px);
+  --fs-md:  clamp(15px, 1.25vw, 17px);
+  --fs-lg:  clamp(17px, 1.5vw,  20px);
+  --fs-xl:  clamp(20px, 1.9vw,  24px);
+  --fs-2xl: clamp(24px, 2.5vw,  30px);
+  --fs-3xl: clamp(28px, 3.6vw,  40px);
+  --fs-4xl: clamp(34px, 5vw,    56px);
+
+  /* スペーシングスケール — マージン/ギャップで参照 */
+  --sp-xs: clamp(6px,  0.8vw, 10px);
+  --sp-sm: clamp(10px, 1.2vw, 16px);
+  --sp-md: clamp(16px, 2vw,   28px);
+  --sp-lg: clamp(28px, 3.6vw, 48px);
+  --sp-xl: clamp(40px, 5vw,   72px);
+  --sp-2xl: clamp(56px, 7vw,  100px);
+
+  /* セクション padding (上下) — 全セクション共通の縦リズム */
+  --section-py: clamp(56px, 7vw, 96px);
+
+  /* コンテナ */
+  --container-max: 1200px;
+  --container-pad: clamp(16px, 4vw, 48px);
 }
 
 /* ---------- Reset & Base ---------- */
@@ -1038,22 +1066,22 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
    ============================================ */
 .bm-about {
   background: var(--bm-bg);
-  padding: 100px 0 88px;
+  padding: var(--section-py) 0;
   text-align: left;
   border-bottom: 1px solid var(--bm-border);
 }
 .bm-about .bm-container {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
-  gap: 72px;
+  gap: var(--sp-xl);
   align-items: center;
   max-width: 1180px;
 }
 .bm-about-heading {
-  font-size: clamp(24px, 3.2vw, 38px);
+  font-size: clamp(24px, 3.4vw, 42px);
   font-weight: 900;
   color: var(--bm-accent);
-  line-height: 1.6;
+  line-height: 1.55;
   letter-spacing: 0.03em;
   margin-bottom: 0;
   position: relative;
@@ -1077,29 +1105,13 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   padding-top: 8px;
   letter-spacing: 0.02em;
 }
-/* モバイル: 従来の中央縦積みレイアウトに戻す */
+/* SP: layout intent change (grid → block). 内容スケールは clamp に任せる */
 @media (max-width: 768px) {
-  .bm-about {
-    padding: 80px 0 72px;
-    text-align: center;
-  }
-  .bm-about .bm-container {
-    display: block;
-  }
-  .bm-about-heading {
-    font-size: clamp(26px, 4.2vw, 44px);
-    line-height: 1.55;
-    margin-bottom: 32px;
-  }
-  .bm-about-heading::after {
-    margin: 20px auto 0;
-  }
-  .bm-about-text {
-    font-size: clamp(15px, 1.8vw, 19px);
-    max-width: 720px;
-    margin: 0 auto;
-    padding-top: 0;
-  }
+  .bm-about { text-align: center; }
+  .bm-about .bm-container { display: block; }
+  .bm-about-heading { margin-bottom: var(--sp-lg); }
+  .bm-about-heading::after { margin: 20px auto 0; }
+  .bm-about-text { max-width: 720px; margin: 0 auto; padding-top: 0; }
 }
 
 
@@ -1287,25 +1299,25 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-whatis-fold-head {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 22px 26px;
+  gap: clamp(12px, 1.4vw, 18px);
+  padding: clamp(18px, 1.8vw, 24px) clamp(18px, 2vw, 28px);
   font-weight: 900;
-  font-size: clamp(18px, 2.2vw, 24px);
+  font-size: clamp(17px, 1.9vw, 24px);
   line-height: 1.45;
   color: #000;
 }
 .bm-whatis-fold-badge {
   flex-shrink: 0;
-  min-width: 72px;
-  height: 40px;
-  padding: 0 16px;
+  min-width: clamp(60px, 5.6vw, 76px);
+  height: clamp(34px, 3vw, 40px);
+  padding: 0 clamp(12px, 1.2vw, 16px);
   background: var(--bm-accent);
   color: #fff;
   border: 2px solid #1a1a1a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: clamp(14px, 1.3vw, 17px);
   font-weight: 900;
   letter-spacing: 0.08em;
   box-sizing: border-box;
@@ -1314,8 +1326,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 
 /* 枠 1: 用途リンクの本文 */
 .bm-whatis-fold-body {
-  padding: 0 22px 22px 22px;
-  font-size: 17px;
+  padding: 0 clamp(16px, 1.8vw, 24px) clamp(18px, 1.8vw, 24px);
+  font-size: clamp(15.5px, 1.4vw, 17px);
   line-height: 1.9;
   color: #000;
   font-weight: 700;
@@ -1326,7 +1338,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-whatis-fold-list {
   list-style: none;
   margin: 0;
-  padding: 0 22px 22px 22px;
+  padding: 0 clamp(16px, 1.8vw, 24px) clamp(18px, 1.8vw, 24px);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1341,14 +1353,14 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   min-width: 0;
 }
 .bm-whatis-fold-list-title {
-  font-size: 17px;
+  font-size: clamp(15.5px, 1.4vw, 17px);
   font-weight: 900;
   color: #000;
   line-height: 1.45;
   letter-spacing: 0.02em;
 }
 .bm-whatis-fold-list-desc {
-  font-size: 15px;
+  font-size: clamp(14px, 1.25vw, 15px);
   font-weight: 700;
   color: #000;
   line-height: 1.65;
@@ -1361,18 +1373,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   color: #000;
 }
 
+/* SP: layout intent change (2列 → 1列)。文字/余白は clamp が線形補間する */
 @media (max-width: 900px) {
   .bm-whatis-folds { grid-template-columns: 1fr; gap: 16px; }
-}
-@media (max-width: 720px) {
-  .bm-whatis-fold summary { padding: 14px 16px; gap: 10px; }
-  .bm-whatis-fold-head { padding: 18px 18px; gap: 12px; font-size: 17px; }
-  .bm-whatis-fold-badge { min-width: 60px; height: 34px; font-size: 14px; padding: 0 12px; }
-  .bm-whatis-fold-body,
-  .bm-whatis-fold-list { padding: 0 16px 18px 16px; }
-  .bm-whatis-fold-body { font-size: 15.5px; line-height: 1.85; }
-  .bm-whatis-fold-list-title { font-size: 15.5px; }
-  .bm-whatis-fold-list-desc { font-size: 14px; }
 }
 
 /* ============================================
@@ -1380,15 +1383,15 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
    ============================================ */
 .bm-news {
   background: var(--bm-bg);
-  padding: 48px 0 40px;
+  padding: clamp(40px, 5vw, 64px) 0;
   border-bottom: 1px solid var(--bm-border);
 }
 .bm-news-header {
   display: flex; align-items: center;
-  justify-content: space-between; margin-bottom: 24px;
+  justify-content: space-between; margin-bottom: clamp(20px, 2.4vw, 28px);
 }
 .bm-news-heading {
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(24px, 3.4vw, 40px);
   font-weight: 900; color: #000; letter-spacing: 0.04em;
 }
 .bm-news-more {
@@ -1469,7 +1472,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
    コラムセクション (ホーム横スクロール + 一覧ページ)
    ============================================ */
 .bm-column-section {
-  padding: 64px 0 56px;
+  padding: var(--section-py) 0;
   background:
     radial-gradient(ellipse 100% 60% at 50% 100%, #faf8f5 0%, #fff 80%);
 }
@@ -1485,14 +1488,14 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-column-all:hover { opacity: 0.7; }
 .bm-column-cta-row {
   display: flex; justify-content: center;
-  margin-top: 36px;
+  margin-top: clamp(28px, 3.6vw, 40px);
 }
 .bm-column-all-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 14px 36px;
+  padding: clamp(13px, 1.3vw, 16px) clamp(28px, 3.4vw, 40px);
   background: var(--bm-accent); color: #fff;
   border-radius: 100px;
-  font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+  font-size: clamp(14px, 1.2vw, 15px); font-weight: 700; letter-spacing: 0.04em;
   text-decoration: none;
   box-shadow: 0 6px 18px rgba(232, 85, 0, 0.28);
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -1501,10 +1504,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   background: #d44a00;
   transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(232, 85, 0, 0.36);
-}
-@media (max-width: 768px) {
-  .bm-column-cta-row { margin-top: 28px; }
-  .bm-column-all-btn { padding: 13px 28px; font-size: 14px; }
 }
 .bm-column-scroll {
   overflow-x: auto;
@@ -2058,7 +2057,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
    ============================================ */
 .bm-gallery {
   position: relative;
-  padding: 72px 0 96px;
+  padding: var(--section-py) 0;
   background: #fff;
 }
 .bm-gallery-inner {
@@ -4946,13 +4945,13 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 
 /* ===== 制作過程セクション (ホーム用) ===== */
 .bm-pre-section {
-  padding: 48px 0 60px;
+  padding: var(--section-py) 0;
   background: #f4f4f4;
   color: #000;
 }
 .bm-pre-section-title {
   text-align: center;
-  font-size: 24px;
+  font-size: clamp(20px, 2.4vw, 30px);
   font-weight: 800;
   margin-bottom: 6px;
 }
@@ -4962,16 +4961,16 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 .bm-pre-section-subtitle {
   text-align: center;
-  font-size: 11px;
+  font-size: clamp(10px, 0.85vw, 12px);
   color: #000;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-bottom: 32px;
+  margin-bottom: clamp(24px, 3vw, 36px);
 }
 .bm-pre-carousel-wrap {
-  margin: 0 auto 40px;
+  margin: 0 auto clamp(28px, 3.5vw, 44px);
   max-width: 1200px;
-  padding: 0 24px;
+  padding: 0 clamp(16px, 2vw, 24px);
 }
 .bm-pre-carousel-label {
   font-size: 14px;
@@ -5048,15 +5047,13 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-pre-carousel-btn.prev { left: 4px; }
 .bm-pre-carousel-btn.next { right: 4px; }
 
+/* SP: layout intent change (3枚 → 1.25枚スライド)。フォント/余白は clamp で線形補間 */
 @media (max-width: 768px) {
   .bm-pre-carousel-slide {
     flex: 0 0 80%;
     min-width: 80%;
   }
-  .bm-pre-section { padding: 32px 0 40px; }
-  .bm-pre-section-title { font-size: 20px; }
-  .bm-pre-carousel-wrap { max-width: 95%; padding: 0 16px; }
-  .bm-pre-slide-img-wrap { /* auto height */ }
+  .bm-pre-carousel-wrap { max-width: 95%; }
 }
 
 /* ===== お客様の声 一覧ページ ===== */
@@ -5626,7 +5623,7 @@ body:has(> .bm-floating-comics-bg) {
 
 /* ホーム用バナー型（フルワイド・中央寄せ） */
 .bm-home-comparison-banner {
-  padding: 56px 24px;
+  padding: clamp(40px, 5vw, 56px) clamp(18px, 2.4vw, 24px);
   text-align: center;
   background: var(--bm-bg-light);
   border-top: 1px solid var(--bm-border);
@@ -5635,8 +5632,8 @@ body:has(> .bm-floating-comics-bg) {
 .bm-home-comparison-banner p {
   max-width: 760px;
   margin: 0 auto;
-  font-size: 16px;
-  line-height: 1.9;
+  font-size: clamp(14px, 1.3vw, 16px);
+  line-height: 1.85;
   color: var(--bm-text);
 }
 .bm-home-comparison-banner a {
@@ -5647,13 +5644,4 @@ body:has(> .bm-floating-comics-bg) {
 }
 .bm-home-comparison-banner a:hover {
   color: var(--bm-accent-hover);
-}
-@media (max-width: 640px) {
-  .bm-home-comparison-banner {
-    padding: 40px 18px;
-  }
-  .bm-home-comparison-banner p {
-    font-size: 14px;
-    line-height: 1.8;
-  }
 }
