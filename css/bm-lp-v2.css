@@ -255,7 +255,8 @@
   /* Mobile: portrait image shown as-is, no overlay or card backing. Text legibility comes
      from heavy text-shadow + bold weight rather than a background card. */
   .lpv2-hero-bg::after { background: none; display: none; }
-  .lpv2-hero-bg img { object-position: center top; }
+  /* SP: キャラの下半身を画面下部に表示 (上半身は画面外で大胆にオーバーレイ感) */
+  .lpv2-hero-bg img { object-position: center bottom; }
   .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
     grid-template-columns: 1fr;
