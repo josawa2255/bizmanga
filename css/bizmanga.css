@@ -1220,6 +1220,13 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   margin-bottom: 28px;
   text-align: center;
 }
+/* ロゴと同じディスプレイフォント (Train One: 角ばった重厚な日本語ブロック体) */
+.bm-whatis-logo-text {
+  font-family: 'Train One', 'Reggae One', 'Noto Sans JP', sans-serif;
+  font-weight: 400; /* Train One は単一ウェイト */
+  letter-spacing: 0.04em;
+  margin-right: 0.12em;
+}
 .bm-accent-text {
   color: var(--bm-accent);
   font-weight: 900;
