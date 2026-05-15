@@ -605,43 +605,54 @@
 .lpv2-problem-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 28px;
-  max-width: 1080px;
+  gap: 64px; /* ホーム「選ばれる理由」と同じ余裕 */
+  max-width: 1160px;
   margin: 0 auto;
 }
 
+/* Z字交互レイアウト (ホームの「選ばれる理由」と同じ感じ) */
 .lpv2-pain {
   position: relative;
-  background: #fff;
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  padding: 36px 36px 36px 120px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
   align-items: center;
-  box-shadow: var(--lpv2-shadow-panel);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
-.lpv2-pain:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 var(--lpv2-rule); }
+.lpv2-pain:hover { transform: none; box-shadow: none; }
+/* 偶数番目はイラスト ↔ テキストを左右逆転 (Z字) */
+.lpv2-pain:nth-child(even) .lpv2-pain__body { order: 2; }
+.lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 1; }
 @media (max-width: 880px) {
-  .lpv2-pain { grid-template-columns: 1fr; padding: 88px 24px 28px; }
+  .lpv2-problem-grid { gap: 48px; }
+  .lpv2-pain { grid-template-columns: 1fr; gap: 20px; padding: 56px 0 0; }
+  .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 0; }
+  .lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 0; }
 }
 
+/* 番号バッジ: ホーム「選ばれる理由」風の小型インラインスタイル */
 .lpv2-pain__num {
-  position: absolute;
-  top: -28px; left: 28px;
-  width: 76px; height: 76px;
-  background: var(--lpv2-accent);
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  color: #fff;
-  font-family: var(--lpv2-font-display);
-  font-size: 32px; font-weight: 900;
-  display: flex; align-items: center; justify-content: center;
-  letter-spacing: 0;
-  box-shadow: 4px 4px 0 var(--lpv2-rule);
+  position: static;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: auto; height: auto;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--lpv2-accent);
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
 }
 @media (max-width: 880px) {
-  .lpv2-pain__num { top: -24px; left: 20px; width: 60px; height: 60px; font-size: 24px; }
+  .lpv2-pain__num { font-size: 32px; }
 }
 
 .lpv2-pain__body { min-width: 0; }
