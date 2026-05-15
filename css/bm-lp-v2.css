@@ -656,28 +656,40 @@
   .lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 0; }
 }
 
-/* 番号バッジ: ホーム「選ばれる理由」風の小型インラインスタイル */
+.lpv2-pain__body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 20px;
+  row-gap: 4px;
+  align-items: start;
+}
+/* 番号: 左カラムに配置、複数行にまたがって縦中央寄せ */
 .lpv2-pain__num {
   position: static;
-  display: inline-flex;
-  align-items: center; justify-content: center;
+  display: block;
   width: auto; height: auto;
   background: transparent;
   border: 0;
   box-shadow: none;
   color: var(--lpv2-accent);
   font-family: var(--lpv2-font-mono);
-  font-size: clamp(36px, 4vw, 56px);
+  font-size: clamp(44px, 5vw, 72px);
   font-weight: 900;
   line-height: 1;
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
+  letter-spacing: -0.04em;
+  margin: 0;
+  grid-row: 1 / span 3;
+  grid-column: 1;
+  align-self: start;
 }
+.lpv2-pain__title,
+.lpv2-pain__text,
+.lpv2-pain__more { grid-column: 2; }
 @media (max-width: 880px) {
-  .lpv2-pain__num { font-size: 32px; }
+  .lpv2-pain__num { font-size: 36px; }
+  .lpv2-pain__body { column-gap: 14px; }
 }
-
-.lpv2-pain__body { min-width: 0; }
 .lpv2-pain__title {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
