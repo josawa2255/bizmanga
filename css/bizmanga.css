@@ -1279,12 +1279,13 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-whatis-lead .bm-whatis-link { font-weight: 700; }
 
-/* 用途・強み 2枠 (FAQ風 / 横並び・折りたたみなし) */
+/* 用途枠 (FAQ風・折りたたみなし) — 強み枠は撤去済み (2026-05-15)
+   選ばれる理由は .bm-reasons セクションで展開 */
 .bm-whatis-folds {
   max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
   text-align: left;
   align-items: stretch;
@@ -1373,9 +1374,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   color: #000;
 }
 
-/* SP: layout intent change (2列 → 1列)。文字/余白は clamp が線形補間する */
+/* SP: layout intent change (gap 圧縮のみ)。文字/余白は clamp が線形補間する */
 @media (max-width: 900px) {
-  .bm-whatis-folds { grid-template-columns: 1fr; gap: 16px; }
+  .bm-whatis-folds { gap: 16px; }
 }
 
 /* ============================================
@@ -2049,6 +2050,138 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-column-featured-title {
     font-size: 22px;
+  }
+}
+
+/* ============================================
+   ビズマンガが選ばれる理由 (8つの強み Z字交互カード)
+   - 横長カードを 8 行縦に積み、奇数行は image-left / 偶数行は image-right (Z字)
+   - SP では縦積み (image → text の順) に折り返す
+   - サイズは clamp 流体化、端末で位置がブレない
+   ============================================ */
+.bm-reasons {
+  padding: var(--section-py) 0;
+  background: var(--bm-bg-light);
+  border-top: 1px solid var(--bm-border);
+  border-bottom: 1px solid var(--bm-border);
+}
+.bm-reasons-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto clamp(40px, 5vw, 64px);
+  padding: 0 clamp(16px, 3vw, 24px);
+}
+.bm-reasons-heading {
+  font-size: clamp(26px, 3.6vw, 42px);
+  font-weight: 900;
+  color: #000;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  margin: 0 0 clamp(12px, 1.4vw, 18px);
+}
+.bm-reasons-sub {
+  font-size: clamp(14px, 1.3vw, 16px);
+  color: #000;
+  line-height: 1.85;
+  margin: 0;
+  font-weight: 600;
+}
+
+.bm-reasons-list {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1240px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 4.5vw, 64px);
+}
+
+.bm-reason-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 3.5vw, 56px);
+  padding: clamp(20px, 2.4vw, 32px);
+  background: #fff;
+  border: 2px solid #1a1a1a;
+  box-shadow: 8px 8px 0 rgba(232, 90, 26, 0.55);
+  min-width: 0;
+}
+/* Z字: 偶数行は画像を右に */
+.bm-reason-card:nth-child(even) {
+  flex-direction: row-reverse;
+  box-shadow: -8px 8px 0 rgba(232, 90, 26, 0.55);
+}
+
+.bm-reason-media {
+  flex: 1 1 50%;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f0f0f0;
+}
+.bm-reason-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.bm-reason-card:hover .bm-reason-media img {
+  transform: scale(1.04);
+}
+
+.bm-reason-body {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.2vw, 16px);
+}
+.bm-reason-num {
+  display: inline-block;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(36px, 4.8vw, 64px);
+  font-weight: 900;
+  color: var(--bm-accent);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.bm-reason-title {
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 900;
+  color: #000;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.bm-reason-desc {
+  font-size: clamp(14px, 1.3vw, 16px);
+  font-weight: 700;
+  color: #000;
+  line-height: 1.85;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+.bm-reason-desc strong {
+  color: var(--bm-accent);
+  font-weight: 900;
+  font-size: 1.08em;
+}
+
+/* SP: 画像 → テキスト の縦積みに折り返し (Z字を諦めて読みやすさ優先) */
+@media (max-width: 820px) {
+  .bm-reason-card,
+  .bm-reason-card:nth-child(even) {
+    flex-direction: column;
+    align-items: stretch;
+    box-shadow: 6px 6px 0 rgba(232, 90, 26, 0.55);
+  }
+  .bm-reason-media,
+  .bm-reason-body {
+    flex: 1 1 auto;
+    width: 100%;
   }
 }
 
