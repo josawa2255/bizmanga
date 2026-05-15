@@ -267,12 +267,12 @@
     grid-template-columns: 1fr;
     padding: 22px 18px 32px;
     min-height: clamp(720px, 140vw, 980px);
-    align-items: end; /* テキストを下端 (キャラ下半身付近) に */
+    align-items: start; /* テキストを上端に */
   }
   .lpv2-hero-text {
     max-width: 100%;
     margin-left: 0;
-    margin-top: auto; /* 上方に押し上げて下端配置 */
+    margin-top: 0;
     /* カード化は撤去。テキスト自体の縁取りで可読性を担保 */
     background: none;
     border: 0;
