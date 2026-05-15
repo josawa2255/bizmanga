@@ -5120,8 +5120,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 .bm-pre-carousel-wrap {
   margin: 0 auto clamp(28px, 3.5vw, 44px);
-  /* PC でカルーセル全体を一回り縮めて、漫画ページが大きすぎないようにする */
-  max-width: 920px;
+  max-width: 1200px;
   padding: 0 clamp(16px, 2vw, 24px);
 }
 .bm-pre-carousel-label {
@@ -5144,8 +5143,9 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   will-change: transform;
 }
 .bm-pre-carousel-slide {
-  flex: 0 0 calc((100% - 16px) / 3);
-  min-width: calc((100% - 16px) / 3);
+  /* 1 度に 4 枚表示 (gap 8px × 3 = 24px を差し引いて 4 等分) */
+  flex: 0 0 calc((100% - 24px) / 4);
+  min-width: calc((100% - 24px) / 4);
   padding: 0;
   cursor: pointer;
   transition: transform 0.3s;
