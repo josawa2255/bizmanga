@@ -641,9 +641,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 48px;
-  align-items: center;
+  align-items: start; /* 片方を展開してももう片方が引っ張られない */
   transition: transform 0.2s ease;
 }
+.lpv2-pain__illust { align-self: start; }
 .lpv2-pain:hover { transform: none; box-shadow: none; }
 /* 偶数番目はイラスト ↔ テキストを左右逆転 (Z字) */
 .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 2; }
