@@ -2156,6 +2156,24 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   letter-spacing: 0.02em;
   margin: 0;
 }
+/* 2 要素を + で連結して縦積み (例: 「審査を通過した作家陣 + 専属ディレクター」) */
+.bm-reason-title--stacked {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+}
+.bm-reason-plus {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: var(--bm-accent);
+  font-size: 1.3em;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0.15em 0;
+}
 .bm-reason-desc {
   font-size: clamp(14px, 1.3vw, 16px);
   font-weight: 700;
