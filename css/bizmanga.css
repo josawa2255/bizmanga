@@ -5120,7 +5120,8 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 .bm-pre-carousel-wrap {
   margin: 0 auto clamp(28px, 3.5vw, 44px);
-  max-width: 1200px;
+  /* PC でカルーセル全体を一回り縮めて、漫画ページが大きすぎないようにする */
+  max-width: 920px;
   padding: 0 clamp(16px, 2vw, 24px);
 }
 .bm-pre-carousel-label {
