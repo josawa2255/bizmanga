@@ -303,11 +303,14 @@
     paint-order: stroke fill;
   }
   .lpv2-hero-sub {
-    -webkit-text-stroke: 1px #fff;
+    /* H1 と同じ白縁取り (太め) */
+    -webkit-text-stroke: 3px #fff;
     paint-order: stroke fill;
     text-shadow:
-      -1.5px -1.5px 0 #fff,  1.5px -1.5px 0 #fff,
-      -1.5px  1.5px 0 #fff,  1.5px  1.5px 0 #fff;
+      -2px -2px 0 #fff,  2px -2px 0 #fff,
+      -2px  2px 0 #fff,  2px  2px 0 #fff,
+      -2px  0   0 #fff,  2px  0   0 #fff,
+       0   -2px 0 #fff,  0    2px 0 #fff;
   }
   .lpv2-hero-title em::after {
     height: 18%;
