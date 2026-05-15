@@ -5198,14 +5198,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-pre-carousel-btn.prev { left: 4px; }
 .bm-pre-carousel-btn.next { right: 4px; }
 
-/* SP: layout intent change (3枚 → 1.25枚スライド)。フォント/余白は clamp で線形補間 */
-@media (max-width: 768px) {
-  .bm-pre-carousel-slide {
-    flex: 0 0 80%;
-    min-width: 80%;
-  }
-  .bm-pre-carousel-wrap { max-width: 95%; }
-}
+/* SP は PC と同じ 3 枚レイアウトを縮小したまま維持 (1枚表示にしない) */
 
 /* ===== お客様の声 一覧ページ ===== */
 .bm-page-hero {
