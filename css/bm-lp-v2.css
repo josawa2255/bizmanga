@@ -879,15 +879,6 @@
   max-width: 1180px;
   margin: 0 auto;
 }
-@media (max-width: 1000px) { .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) {
-  .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-  .lpv2-format { min-width: 0; padding: 18px 14px 16px; }
-  .lpv2-format__name { font-size: clamp(16px, 4.4vw, 19px); }
-  .lpv2-format__use { font-size: clamp(11px, 3vw, 13px); }
-  .lpv2-format__num { font-size: 10px; letter-spacing: 0.22em; }
-}
-
 .lpv2-format {
   position: relative;
   background: #fff;
@@ -897,6 +888,7 @@
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   cursor: pointer;
   box-shadow: var(--lpv2-shadow-panel-sm);
+  min-width: 0; /* 等幅gridで内容に引っ張られない */
 }
 .lpv2-format:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--lpv2-rule); }
 
@@ -931,6 +923,18 @@
   margin: 0; letter-spacing: 0.04em;
   border-top: 1px dashed var(--lpv2-rule-soft);
   padding-top: 10px;
+}
+/* レスポンシブ (ベースCSSの後に書く=確実に上書きされる) */
+@media (max-width: 1000px) {
+  .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .lpv2-format { padding: 18px 14px 16px; gap: 8px; }
+  .lpv2-format__illust { margin-bottom: 8px; }
+  .lpv2-format__name { font-size: clamp(15px, 4.4vw, 19px); }
+  .lpv2-format__use { font-size: clamp(11px, 3vw, 13px); padding-top: 8px; }
+  .lpv2-format__num { font-size: 10px; letter-spacing: 0.22em; }
 }
 
 /* ------------------------------------------------------------------
