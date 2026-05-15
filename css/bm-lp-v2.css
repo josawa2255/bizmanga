@@ -255,10 +255,12 @@
   /* Mobile: portrait image shown as-is, no overlay or card backing. Text legibility comes
      from heavy text-shadow + bold weight rather than a background card. */
   .lpv2-hero-bg::after { background: none; display: none; }
-  /* SP: 画像の上端を画面上端に揃え、キャラの頭の上の余白を詰める */
+  /* SP: 画像を上にずらしてキャラ頭上の余白を画面外に押し出す */
   .lpv2-hero-bg img {
     object-fit: cover;
     object-position: center top;
+    height: 120%;
+    margin-top: -10%;
   }
   .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
