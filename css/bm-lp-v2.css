@@ -879,8 +879,14 @@
   max-width: 1180px;
   margin: 0 auto;
 }
-@media (max-width: 1000px) { .lpv2-formats-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .lpv2-formats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+@media (max-width: 1000px) { .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .lpv2-formats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .lpv2-format { min-width: 0; padding: 18px 14px 16px; }
+  .lpv2-format__name { font-size: clamp(16px, 4.4vw, 19px); }
+  .lpv2-format__use { font-size: clamp(11px, 3vw, 13px); }
+  .lpv2-format__num { font-size: 10px; letter-spacing: 0.22em; }
+}
 
 .lpv2-format {
   position: relative;
