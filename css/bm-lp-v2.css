@@ -1239,18 +1239,14 @@
  * 16. End CTA
  * ------------------------------------------------------------------ */
 .lpv2-end {
-  background: var(--lpv2-ink); color: #fff;
+  background: #000; color: #fff; /* 漆黒に */
   padding: 140px 0;
   position: relative;
   overflow: hidden;
   text-align: center;
 }
-.lpv2-end::before {
-  content: ""; position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,213,74,0.18) 1px, transparent 1.4px);
-  background-size: 9px 9px;
-  pointer-events: none;
-}
+/* 点々パターン (radial-gradient) は撤去 */
+.lpv2-end::before { display: none; }
 .lpv2-end::after {
   content: ""; position: absolute; inset: 24px;
   border: 1px solid rgba(255,255,255,0.18);
