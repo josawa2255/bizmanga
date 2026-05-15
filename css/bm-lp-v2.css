@@ -969,11 +969,13 @@
  * ------------------------------------------------------------------ */
 .lpv2-cases { background: var(--lpv2-cream); }
 .lpv2-cases-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-  max-width: 1080px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1160px; margin: 0 auto;
 }
-@media (max-width: 720px) { .lpv2-cases-grid { grid-template-columns: 1fr; } }
+@media (max-width: 960px) { .lpv2-cases-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .lpv2-cases-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
 
 .lpv2-case {
   position: relative;
@@ -993,41 +995,40 @@
   overflow: hidden;
 }
 .lpv2-case__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lpv2-case__body { padding: 28px 28px 32px; }
+.lpv2-case__body { padding: 14px 14px 16px; }
 .lpv2-case__meta {
   font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900;
-  letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 10px; font-weight: 900;
+  letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--lpv2-accent);
-  margin: 0 0 12px;
+  margin: 0 0 6px;
 }
 .lpv2-case__title {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
-  font-size: clamp(20px, 2.2vw, 24px);
-  line-height: 1.4;
-  margin: 0 0 8px;
+  font-size: clamp(13px, 1.3vw, 16px);
+  line-height: 1.35;
+  margin: 0 0 4px;
   color: var(--lpv2-ink);
 }
 .lpv2-case__title a { color: inherit; text-decoration: none; border-bottom: 2px solid transparent; transition: border-color 0.2s ease; }
 .lpv2-case__title a:hover { border-color: var(--lpv2-accent); }
 .lpv2-case__client {
-  font-size: 13px; color: var(--lpv2-ink-mute);
-  margin: 0 0 12px; letter-spacing: 0.02em;
+  font-size: 11px; color: var(--lpv2-ink-mute);
+  margin: 0 0 6px; letter-spacing: 0.02em;
 }
 .lpv2-case__point {
-  font-size: 14px; line-height: 1.9;
+  font-size: 11.5px; line-height: 1.6;
   color: var(--lpv2-ink-soft);
-  margin: 0 0 14px;
+  margin: 0 0 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .lpv2-case__quote {
-  border-left: 3px solid var(--lpv2-accent);
-  padding: 8px 14px;
-  margin: 0 0 16px;
-  font-size: 13.5px; line-height: 1.85;
-  color: var(--lpv2-ink-soft);
-  background: var(--lpv2-cream);
-  font-style: normal;
+  display: none; /* 4列表示では引用を省略 */
 }
 .lpv2-case__more {
   display: inline-flex; align-items: center; gap: 6px;
