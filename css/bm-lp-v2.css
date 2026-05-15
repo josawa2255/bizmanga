@@ -119,22 +119,11 @@
 .lpv2-section-head { text-align: center; margin: 0 auto 64px; max-width: 820px; }
 .lpv2-section-head .lpv2-eyebrow { justify-content: center; }
 .lpv2-section-head .lpv2-eyebrow::before { display: none; }
-.lpv2-section-head .lpv2-chapter-mark {
-  font-family: var(--lpv2-font-mono);
-  font-size: 13px; font-weight: 900;
-  letter-spacing: 0.42em;
-  color: var(--lpv2-accent);
-  display: block; margin-bottom: 8px;
-}
+/* 章番号 (大数字 03) と章マーク (CHAPTER 03 · FORMATS) は非表示 (2026-05-15)
+   各章は h2 (採用シーンのあらゆる接点に。等) だけで構成 */
+.lpv2-section-head .lpv2-chapter-mark,
 .lpv2-section-head .lpv2-chapter-num {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(56px, 9vw, 96px);
-  line-height: 1;
-  color: var(--lpv2-accent-soft);
-  -webkit-text-stroke: 1px var(--lpv2-accent);
-  margin: 0 0 -28px;
-  letter-spacing: -0.04em;
+  display: none;
 }
 
 /* ------------------------------------------------------------------
