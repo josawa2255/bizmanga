@@ -143,11 +143,11 @@
 
 .s3d-screen iframe {
   position: absolute;
-  /* notch (上8+22+余白6=36px) と home-indicator (下7+4+余白5=16px) を避けるinset.
-     これがないとiframe内画像の上端が notch にめり込む。 */
-  inset: 36px 0 16px 0;
+  /* 画面いっぱいに表示。notch / home-indicator は z-index:6 で上にオーバーレイ
+     (Dynamic Island 風の表示)。これで上下の白余白がなくなる */
+  inset: 0;
   width: 100%;
-  height: calc(100% - 52px);
+  height: 100%;
   border: 0;
   display: block;
   background: #fafafa;
@@ -155,13 +155,6 @@
   /* iOS Safari iframe 四隅はみ出し対策: iframe にも border-radius を継承 */
   border-radius: inherit;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
-}
-@media (max-width: 768px) {
-  .s3d-screen iframe {
-    /* SP (新): notch (8+20+余白4=32px), home-indicator (6+3+余白5=14px) */
-    inset: 32px 0 14px 0;
-    height: calc(100% - 46px);
-  }
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
 /* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
