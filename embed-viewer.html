@@ -52,7 +52,10 @@
     .s-slides img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: contain;
+      /* contain だと縦長スマホ枠で上下に白余白が出るため cover にし、
+         object-position: top で表紙タイトル側を優先表示 */
+      object-fit: cover;
+      object-position: top center;
       background: #fff;
       opacity: 0;
       transition: opacity 0.45s ease;
