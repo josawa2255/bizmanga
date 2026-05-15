@@ -880,7 +880,7 @@
   margin: 0 auto;
 }
 @media (max-width: 1000px) { .lpv2-formats-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .lpv2-formats-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .lpv2-formats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
 
 .lpv2-format {
   position: relative;
@@ -912,14 +912,16 @@
 .lpv2-format__name {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: clamp(20px, 1.6vw, 24px);
+  line-height: 1.35;
   color: var(--lpv2-ink);
   margin: 0;
   letter-spacing: 0.02em;
 }
 .lpv2-format__use {
-  font-size: 13px; color: var(--lpv2-ink-mute);
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 700;
+  color: var(--lpv2-ink);
   margin: 0; letter-spacing: 0.04em;
   border-top: 1px dashed var(--lpv2-rule-soft);
   padding-top: 10px;
