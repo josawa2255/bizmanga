@@ -1044,10 +1044,9 @@
 /* ------------------------------------------------------------------
  * 12. Library (Biz Library embed)
  * ------------------------------------------------------------------ */
-.lpv2-library { background: var(--lpv2-ink); color: #fff; }
-.lpv2-library .lpv2-section-head { color: #fff; }
-.lpv2-library .lpv2-h2 { color: #fff; }
-.lpv2-library .lpv2-lead { color: rgba(255,255,255,0.78); }
+.lpv2-library { background: var(--lpv2-cream); color: var(--lpv2-ink); }
+.lpv2-library .lpv2-h2 { color: var(--lpv2-ink); }
+.lpv2-library .lpv2-lead { color: var(--lpv2-ink-soft); }
 .lpv2-library-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
