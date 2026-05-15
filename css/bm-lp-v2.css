@@ -258,7 +258,7 @@
   /* SP: キャラの顔は画面上部、下半身は画面下部に大きく表示 */
   .lpv2-hero-bg img {
     object-fit: cover;
-    object-position: center 28%;
+    object-position: center 60%;
   }
   .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
