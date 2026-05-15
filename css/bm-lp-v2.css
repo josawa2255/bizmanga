@@ -872,6 +872,21 @@
  * 10. Formats — magazine 4-up
  * ------------------------------------------------------------------ */
 .lpv2-formats { background: var(--lpv2-paper); }
+/* SP時のみ「採用シーンのあらゆる接点に」のh2まわりにクリーム色のモヤモヤを敷く */
+@media (max-width: 720px) {
+  .lpv2-formats .lpv2-section-head { position: relative; isolation: isolate; }
+  .lpv2-formats .lpv2-section-head::before {
+    content: "";
+    position: absolute;
+    inset: -36px -24px;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 35%, rgba(255, 213, 74, 0.32) 0%, transparent 70%),
+      radial-gradient(ellipse 80% 70% at 50% 50%, rgba(255, 248, 237, 1) 0%, rgba(255, 248, 237, 0.7) 55%, transparent 100%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+}
 .lpv2-formats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
