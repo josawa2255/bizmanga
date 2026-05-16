@@ -825,8 +825,11 @@
   gap: 28px;
   max-width: 1080px;
   margin: 0 auto;
-  align-items: start; /* 片方を展開してももう片方が引っ張られない */
+  /* 各カードを同じ高さに揃える (説明文の長さ差を吸収) */
+  align-items: stretch;
 }
+/* 展開したカードだけ自然な高さ (隣カードに追従させない) */
+.lpv2-merit-card.is-open { align-self: start; }
 @media (max-width: 720px) { .lpv2-merit-grid { grid-template-columns: 1fr; gap: 22px; } }
 
 .lpv2-merit-card {
