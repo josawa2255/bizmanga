@@ -652,8 +652,12 @@
 @media (max-width: 880px) {
   .lpv2-problem-grid { gap: 48px; }
   .lpv2-pain { grid-template-columns: 1fr; gap: 20px; padding: 56px 0 0; }
-  .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 0; }
-  .lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 0; }
+  /* SP順序: body → detail (詳しく読む展開) → illust (写真) */
+  .lpv2-pain .lpv2-pain__body { order: 1; }
+  .lpv2-pain .lpv2-pain__detail { order: 2; }
+  .lpv2-pain .lpv2-pain__illust { order: 3; }
+  .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 1; }
+  .lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 3; }
 }
 
 .lpv2-pain__body {
