@@ -825,6 +825,7 @@
   gap: 28px;
   max-width: 1080px;
   margin: 0 auto;
+  align-items: start; /* 片方を展開してももう片方が引っ張られない */
 }
 @media (max-width: 720px) { .lpv2-merit-grid { grid-template-columns: 1fr; gap: 22px; } }
 
