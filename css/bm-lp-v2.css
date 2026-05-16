@@ -825,11 +825,13 @@
   gap: 28px;
   max-width: 1080px;
   margin: 0 auto;
-  /* 各カードを同じ高さに揃える (説明文の長さ差を吸収) */
+  /* 全 row 同じ高さで揃える (上下4カード全部同じ大きさ) */
   align-items: stretch;
+  grid-auto-rows: 1fr;
 }
+.lpv2-merit-card { height: 100%; }
 /* 展開したカードだけ自然な高さ (隣カードに追従させない) */
-.lpv2-merit-card.is-open { align-self: start; }
+.lpv2-merit-card.is-open { align-self: start; height: auto; }
 @media (max-width: 720px) { .lpv2-merit-grid { grid-template-columns: 1fr; gap: 22px; } }
 
 .lpv2-merit-card {
