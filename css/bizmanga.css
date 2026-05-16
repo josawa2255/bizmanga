@@ -727,6 +727,47 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   background: #000 url('../material/images/strength/hp-material-1.webp') center center / cover no-repeat;
 }
 
+/* --- WP接続待ちプレースホルダ --- */
+.bm-hero-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  text-align: center;
+  color: #fff;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+.bm-hero-loading--hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.bm-hero-loading-text {
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  animation: bmHeroLoadPulse 1.6s ease-in-out infinite;
+}
+.bm-hero-loading-sub {
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+@keyframes bmHeroLoadPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 /* --- 作品カルーセル背景 (集英社スタイル マーキー) --- */
 .bm-hero-works-bg {
   position: absolute;

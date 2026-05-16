@@ -342,11 +342,24 @@
   window.openWorkDetail = openWorkDetail;
 
   // ===== データ初期化 =====
-  // 即座にフォールバックで構築
-  buildMarquee(FALLBACK_WORKS);
+  // WP接続待ちプレースホルダ
+  var heroLoadingEl = document.getElementById('bmHeroLoading');
+  var heroDataApplied = false;
 
-  // WP APIデータが来たら上書き（show_hero_site でフィルタ）
-  // Hero用は BM_HERO_WORKS_DATA を使う（?site= フィルタ無しの全作品）
+  function hideHeroLoading() {
+    if (heroLoadingEl) {
+      heroLoadingEl.classList.add('bm-hero-loading--hidden');
+    }
+  }
+
+  function applyHeroWorks(works) {
+    if (heroDataApplied || !works || works.length === 0) return;
+    heroDataApplied = true;
+    hideHeroLoading();
+    buildMarquee(works);
+  }
+
+  // 初期FALLBACK描画は行わない。WP接続成功 or 8秒タイムアウトまで「接続中」表示。
   var lastWorks = null;
   function rebuildHero() {
     if (!lastWorks) return;
@@ -369,9 +382,17 @@
     });
     if (works.length > 0) {
       lastWorks = works;
-      buildMarquee(works);
+      applyHeroWorks(works);
     }
   });
+
+  // WP無応答時の保険: 8秒経っても未描画ならFALLBACKでマーキー開始
+  setTimeout(function() {
+    if (!heroDataApplied) {
+      lastWorks = FALLBACK_WORKS;
+      applyHeroWorks(FALLBACK_WORKS);
+    }
+  }, 8000);
 
   // ブレークポイントを跨ぐリサイズで再振り分け（debounce）
   var lastRowCount = getActiveRowCount();
