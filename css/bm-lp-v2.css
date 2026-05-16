@@ -726,13 +726,20 @@
 .lpv2-pain.is-open .lpv2-pain__more::after { content: "−"; }
 
 .lpv2-pain__detail {
-  grid-column: 1 / -1;
+  /* PC: bodyの直下 (illustの下にせず文章の下に展開) */
+  grid-column: 1;
+  grid-row: 2;
   padding: 24px 28px;
   background: var(--lpv2-cream);
   border-top: 1px solid var(--lpv2-rule-soft);
   margin-top: 20px;
   font-size: 14px; line-height: 1.95; color: var(--lpv2-ink-soft);
   display: none;
+}
+/* Z字交互: 偶数番目はbodyが右側 → detail も右側 */
+.lpv2-pain:nth-child(even) .lpv2-pain__detail {
+  grid-column: 2;
+  grid-row: 2;
 }
 .lpv2-pain__detail p + p { margin-top: 12px; }
 .lpv2-pain.is-open .lpv2-pain__detail { display: block; }
