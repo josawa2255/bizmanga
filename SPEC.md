@@ -318,9 +318,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - **LINE / 電話（`<ul class="bm-cta-icons">`）**:
   - **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が**下**にポップ（上は画面外で見切れるため、2026-05-17修正）
     - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
-  - **モバイル(≤768px)**: ピル形ボタンスタイルにリスタイル
-    - 電話: 電話アイコン(16px) + `03-6261-0764` テキスト
-    - LINE: `.bm-cta-icon--line { display:none }`（FAB / ハンバーガーメニューに集約）
+  - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示（お問い合わせpillのみ可視）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
 - **i18n**: `data-ja` / `data-en` は `.bm-cta-tooltip` に付与（PCではツールチップ、SPでは可視テキスト）
 - **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視

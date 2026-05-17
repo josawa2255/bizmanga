@@ -5137,46 +5137,9 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-header-right .bm-lang-switch { order: -1; }
 
-  /* モバイル: 丸アイコンCTAを既存ピル形ボタンスタイルに変身させる
-     - お問い合わせ + 電話 を表示、LINEはハンバーガー内へ集約 */
-  .bm-cta-icons { gap: 6px; }
-  .bm-cta-icon { position: static; }
-  .bm-cta-icon > a {
-    width: auto;
-    height: auto;
-    min-height: 40px;
-    padding: 8px 14px;
-    border-radius: 50px;
-    background: transparent;
-    box-shadow: none;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-  }
-  .bm-cta-icon--tel > a {
-    color: var(--bm-accent);
-    outline: 2px solid var(--bm-accent);
-  }
-  .bm-cta-icon--line { display: none; }
-  .bm-cta-icon > a:hover { transform: none; }
-  /* SPではツールチップを通常表示テキストに変換 */
-  .bm-cta-tooltip {
-    position: static;
-    transform: none;
-    opacity: 1;
-    padding: 0;
-    background: transparent !important;
-    color: inherit;
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: none;
-    pointer-events: auto;
-    white-space: nowrap;
-  }
-  .bm-cta-tooltip::before { display: none; }
-  /* SPアイコン: 電話はアイコン+番号 */
-  .bm-cta-icon--tel .bm-cta-svg { width: 16px; height: 16px; }
+  /* モバイル: ヘッダーの丸アイコンCTA(LINE/電話)は丸ごと非表示
+     お問い合わせ(.bm-nav-cta)のみ常時可視。LINE/電話はハンバーガー末尾に集約 */
+  .bm-cta-icons { display: none; }
   .bm-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; white-space: nowrap; }
 
   /* カテゴリフィルター: スマホ用コンパクト表示 */
