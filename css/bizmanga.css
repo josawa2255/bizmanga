@@ -696,7 +696,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-cta-svg { display: block; }
 .bm-cta-tooltip {
   position: absolute;
-  top: 0;
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   padding: 6px 10px;
@@ -717,7 +717,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   content: "";
   position: absolute;
   left: 50%;
-  bottom: -4px;
+  top: -4px;
   width: 8px;
   height: 8px;
   background: inherit;
@@ -725,7 +725,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-cta-icon:hover .bm-cta-tooltip,
 .bm-cta-icon:focus-within .bm-cta-tooltip {
-  top: -44px;
+  top: calc(100% + 10px);
   opacity: 1;
 }
 .bm-cta-icon > a:hover { transform: translateY(-3px); }
