@@ -659,6 +659,101 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-nav-cta--line:hover::before { width: 260%; }
 .bm-nav-cta-line-icon { flex-shrink: 0; }
 
+/* ===== ヘッダー右上 3CTA(丸アイコン): お問い合わせ / LINE / 電話 =====
+   PC: 白丸アイコン+ツールチップ(ホバーで上に浮上&ブランドカラー化)
+   SP: 既存のピル形ボタンに切替(下部 @media max-width:768px で上書き)
+   2026-05-17 追加 */
+.bm-cta-icons {
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 12px;
+}
+.bm-cta-icon { position: relative; }
+.bm-cta-icon > a {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1a1a;
+  text-decoration: none;
+  box-shadow: 0 10px 18px -10px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              color 0.25s ease,
+              background 0.25s ease,
+              box-shadow 0.25s ease;
+}
+.bm-cta-icon > a:focus-visible {
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 3px;
+}
+.bm-cta-svg { display: block; }
+.bm-cta-tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.3);
+  transition: top 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.25s ease;
+  z-index: 5;
+}
+.bm-cta-tooltip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+.bm-cta-icon:hover .bm-cta-tooltip,
+.bm-cta-icon:focus-within .bm-cta-tooltip {
+  top: -44px;
+  opacity: 1;
+}
+.bm-cta-icon > a:hover { transform: translateY(-3px); }
+/* お問い合わせ: BizMangaオレンジ */
+.bm-cta-icon--contact > a:hover,
+.bm-cta-icon--contact > a:focus-visible {
+  background: var(--bm-accent);
+  color: #fff;
+  box-shadow: 0 14px 22px -8px rgba(232, 85, 0, 0.55);
+}
+.bm-cta-icon--contact .bm-cta-tooltip { background: var(--bm-accent); }
+/* LINE: 公式グリーン */
+.bm-cta-icon--line > a:hover,
+.bm-cta-icon--line > a:focus-visible {
+  background: #06C755;
+  color: #fff;
+  box-shadow: 0 14px 22px -8px rgba(6, 199, 85, 0.5);
+}
+.bm-cta-icon--line .bm-cta-tooltip { background: #06C755; }
+/* 電話: ダーク(信頼感) */
+.bm-cta-icon--tel > a:hover,
+.bm-cta-icon--tel > a:focus-visible {
+  background: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 14px 22px -8px rgba(0, 0, 0, 0.45);
+}
+.bm-cta-icon--tel .bm-cta-tooltip { background: #1a1a1a; }
+
 /* 言語切替ボタン */
 .bm-lang-switch {
   display: flex;
@@ -5027,6 +5122,49 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     min-height: 40px;
   }
   .bm-header-right .bm-lang-switch { order: -1; }
+
+  /* モバイル: 丸アイコンCTAを既存ピル形ボタンスタイルに変身させる
+     - お問い合わせ + 電話 を表示、LINEはハンバーガー内へ集約 */
+  .bm-cta-icons { gap: 6px; }
+  .bm-cta-icon { position: static; }
+  .bm-cta-icon > a {
+    width: auto;
+    height: auto;
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 50px;
+    background: transparent;
+    box-shadow: none;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .bm-cta-icon--contact > a,
+  .bm-cta-icon--tel > a {
+    color: var(--bm-accent);
+    outline: 2px solid var(--bm-accent);
+  }
+  .bm-cta-icon--line { display: none; }
+  .bm-cta-icon > a:hover { transform: none; }
+  /* SPではツールチップを通常表示テキストに変換 */
+  .bm-cta-tooltip {
+    position: static;
+    transform: none;
+    opacity: 1;
+    padding: 0;
+    background: transparent !important;
+    color: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: none;
+    pointer-events: auto;
+    white-space: nowrap;
+  }
+  .bm-cta-tooltip::before { display: none; }
+  /* SPアイコン: お問い合わせはテキストのみ(既存挙動と一致)、電話はアイコン+番号 */
+  .bm-cta-icon--contact .bm-cta-svg { display: none; }
+  .bm-cta-icon--tel .bm-cta-svg { width: 16px; height: 16px; }
   .bm-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; white-space: nowrap; }
 
   /* カテゴリフィルター: スマホ用コンパクト表示 */

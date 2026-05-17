@@ -258,6 +258,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECl3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火 |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
 | LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
+| 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開） |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
 
 ### WP API エンドポイント
@@ -296,6 +297,18 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - **`.bm-nav-cta--line`（LINE相談）= セカンダリ**: 白背景+緑outline、padding `8px 16px`、font-size 13px、`min-height: 38px`
 - モバイル(≤768px): `.bm-nav-cta--line` は `display: none`（追従CTA `.bm-fab` で代替）、`.bm-nav-cta` は常時可視（padding `10px 18px` に縮小）
 - 過去の outline-only スタイルは廃止。プライマリCTAはサイト全体で塗り強調に統一
+
+### 6.1b ヘッダーCTA 丸アイコン3点セット化（2026-05-17）
+- 旧 `.bm-nav-cta` / `.bm-nav-cta--line` をヘッダー右上から撤去し、`<ul class="bm-cta-icons">` の **丸アイコン3CTA** に統一（[BizManga/css/bizmanga.css](css/bizmanga.css)）
+- **構成**: お問い合わせ(`/contact`) → LINE(`@626kzaze`) → 電話(`tel:03-6261-0764`)
+- **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が上にポップ
+  - お問い合わせ: `var(--bm-accent)`(オレンジ) / LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
+- **モバイル(≤768px)**: `.bm-cta-icons` 全体を既存ピル形ボタンスタイルにリスタイル
+  - お問い合わせ: テキストのみ（`bm-cta-svg` は `display:none`、既存挙動と一致）
+  - 電話: 電話アイコン(16px) + `03-6261-0764` テキスト
+  - LINE: `.bm-cta-icon--line { display:none }`（FAB および ハンバーガーメニュー内に集約）
+- **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
+- **i18n**: `data-ja` / `data-en` は `.bm-cta-tooltip` に付与（PCではツールチップ、SPでは可視テキスト）
 
 ### 6.2 ドロップダウン仕様
 - PC: hover で展開
