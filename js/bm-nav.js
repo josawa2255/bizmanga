@@ -158,6 +158,39 @@
     }
   });
 
+  // ===== モバイル専用CTA: LINE + 電話 (ハンバーガーメニューの末尾に追加) =====
+  function buildSvg(pathD) {
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '22');
+    svg.setAttribute('height', '22');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', pathD);
+    svg.appendChild(p);
+    return svg;
+  }
+  var PATH_LINE = 'M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z';
+  var PATH_TEL = 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z';
+  var mobileCtas = [
+    { href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831', label: 'LINEで相談', labelEn: 'Chat on LINE', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
+    { href: 'tel:03-6261-0764', label: '03-6261-0764 に電話', labelEn: 'Call 03-6261-0764', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
+  ];
+  mobileCtas.forEach(function(c) {
+    var a = document.createElement('a');
+    a.href = c.href;
+    a.className = c.cls;
+    if (c.target) { a.target = c.target; a.rel = 'noopener'; }
+    a.appendChild(buildSvg(c.pathD));
+    var span = document.createElement('span');
+    span.setAttribute('data-ja', c.label);
+    span.setAttribute('data-en', c.labelEn);
+    span.textContent = currentLang === 'en' ? c.labelEn : c.label;
+    a.appendChild(span);
+    nav.appendChild(a);
+  });
+
   // ===== 言語切替ボタンの挿入 =====
   var headerRight = document.querySelector('.bm-header-right');
   if (headerRight) {

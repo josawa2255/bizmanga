@@ -139,6 +139,8 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   display: flex; align-items: center; gap: 24px;
   min-width: 0; flex-shrink: 1;
 }
+/* モバイル専用CTA(.bm-nav-mobile-cta)はデスクトップでは常に非表示 */
+.bm-nav-mobile-cta { display: none; }
 /* EN モードは英単語が日本語より幅広い (Services / Pricing / Column) ため、
    ナビ間隔と文字サイズをわずかに圧縮して言語スイッチ・CTAとの被りを回避 */
 html[lang="en"] .bm-nav { gap: 18px; }
@@ -4969,6 +4971,26 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     align-items: stretch;
     width: 100%;
   }
+  /* モバイル専用CTAリンク: LINE + 電話 (ハンバーガーメニュー末尾) */
+  .bm-nav.open .bm-nav-mobile-cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 24px;
+    font-size: 16px;
+    font-weight: 800;
+    min-height: 64px;
+    border-bottom: 1px solid #e8e8e8;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    width: 100%;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bm-nav.open .bm-nav-mobile-cta--line { color: #06C755; }
+  .bm-nav.open .bm-nav-mobile-cta--tel  { color: var(--bm-accent); }
+  .bm-nav.open .bm-nav-mobile-cta:active { background: rgba(0, 0, 0, 0.04); }
+  .bm-nav.open .bm-nav-mobile-cta svg { flex-shrink: 0; }
   /* ドロップダウン矢印 */
   .bm-nav.open .bm-nav-dropdown-arrow {
     display: inline-block;

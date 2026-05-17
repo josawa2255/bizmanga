@@ -323,6 +323,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
     - LINE: `.bm-cta-icon--line { display:none }`（FAB / ハンバーガーメニューに集約）
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
 - **i18n**: `data-ja` / `data-en` は `.bm-cta-tooltip` に付与（PCではツールチップ、SPでは可視テキスト）
+- **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視
 
 ### 6.2 ドロップダウン仕様
 - PC: hover で展開
