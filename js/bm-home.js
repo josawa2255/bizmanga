@@ -63,12 +63,13 @@
     if (!grid) return;
     while (grid.firstChild) grid.removeChild(grid.firstChild);
 
+    /* WP /works-new は cx_sort_order 昇順で返ってくる（sort_order 0 は末尾扱い） */
     var sorted = data.slice();
-    var hasOrder = sorted.some(function(d) { return d && typeof d.gallery_order_bm === 'number'; });
+    var hasOrder = sorted.some(function(d) { return d && typeof d.sort_order === 'number' && d.sort_order > 0; });
     if (hasOrder) {
       sorted.sort(function(a, b) {
-        var ao = typeof a.gallery_order_bm === 'number' ? a.gallery_order_bm : 9999;
-        var bo = typeof b.gallery_order_bm === 'number' ? b.gallery_order_bm : 9999;
+        var ao = (typeof a.sort_order === 'number' && a.sort_order > 0) ? a.sort_order : 9999;
+        var bo = (typeof b.sort_order === 'number' && b.sort_order > 0) ? b.sort_order : 9999;
         if (ao !== bo) return ao - bo;
         return new Date(b.added || 0) - new Date(a.added || 0);
       });
@@ -119,19 +120,14 @@
   buildAll();
 
   // ===== WP API データ到着時に再構築 =====
-  // show_gallery_site: 'both' or 'bizmanga' → BizMangaギャラリーに表示
-  // 'contentsx' / 'none' → 非表示
-  // 後方互換: フィールド未設定の旧データは全件表示
+  // ホームのギャラリー枠は /works-new?site=bizmanga (= BM_NEW_WORKS_DATA) を優先。
+  // WP側で cx_show_gallery_bizmanga=1 の作品のみが入っているため、ここでは追加フィルタ不要。
+  // /works-new が空 or 未取得の場合は BM_WORKS_DATA で後方互換フォールバック。
   function refreshFromWp() {
-    var wpData = window.BM_WORKS_DATA;
-    if (!wpData || !wpData.length) wpData = window.BM_NEW_WORKS_DATA;
+    var wpData = window.BM_NEW_WORKS_DATA;
+    if (!wpData || !wpData.length) wpData = window.BM_WORKS_DATA;
     if (wpData && wpData.length > 0) {
-      allWorksData = wpData.filter(function(w) {
-        if ('show_gallery_site' in w) {
-          return w.show_gallery_site === 'both' || w.show_gallery_site === 'bizmanga';
-        }
-        return true;
-      });
+      allWorksData = wpData;
       buildAll();
     }
   }

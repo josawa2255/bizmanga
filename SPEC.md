@@ -279,20 +279,21 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `cx_cta_enabled` — ⭐ ビズ書庫最終ページCTA表示ON/OFFチェックボックス（**唯一の表示制御**）
 - 表示順の運用ルール: N番に新作を挿入するとき、元のN番以降を `+1` ずつずらす（下から順に変更）
 
-### WP 表示先・順序制御フィールド（独立フラグで3系統）⭐
+### WP 表示先・順序制御（4系統が独立フラグ）⭐
 
-| API応答キー | WPメタキー | 値 | 用途 |
-|---|---|---|---|
-| `show_hero_site` | `cx_show_hero_site` | `both` / `bizmanga` / `contentsx` / `none` | Hero マーキー（トップ背景5行カルーセル） |
-| `hero_order_bm` / `hero_order_cx` | 同名 | 整数（小さい順、未設定=末尾） | Hero 内の順序 |
-| `show_gallery_site` ⭐2026-05-17追加 | `cx_show_gallery_site` | `both` / `bizmanga` / `contentsx` / `none` | ホームのギャラリー枠（`#newWorks` 横読み/縦読みグリッド） |
-| `gallery_order_bm` / `gallery_order_cx` ⭐2026-05-17追加 | 同名 | 整数（小さい順、未設定=末尾） | ギャラリー枠内の順序 |
-| `show_library` | `cx_show_library` | bool | ビズ書庫 `/biz-library` |
-| `show_site` | `cx_show_site` | `both` / `bizmanga` / `contentsx` | サイト全体所属（works.htmlやAPI `?site=` フィルタの基準） |
+| 系統 | WPメタキー | API応答キー | 値 | データソース |
+|---|---|---|---|---|
+| **Hero マーキー** | `cx_show_hero_site` | `show_hero_site` | `both`/`bizmanga`/`contentsx`/`none` | `/works`（全件返却、フロントでフィルタ） |
+| Hero 順序 | `cx_hero_order_bm` / `cx_hero_order_cx` | `hero_order_bm` / `hero_order_cx` | 整数（小さい順、未設定=9999末尾） | 同上、編集画面のドラッグUIで並べ替え可 |
+| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（1=表示） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
+| ギャラリー枠 順序 | `cx_sort_order`（全リスト共通の「表示順」入力欄） | `sort_order` | 整数（小さい順、0=末尾） | 同上、WP側で `cx_sort_order` 昇順ソート済み |
+| **ビズ書庫** | `cx_show_library` | `show_library` | bool | `/works` / `/library` |
+| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx` | works.html や `/works?site=` フィルタの基準 |
 
-- 4系統（Hero / Gallery / Library / Site全体）は**完全独立**。「Heroだけ出す/ギャラリーだけ出す/ビズ書庫だけ出す」を自由に組合せ可能
-- **後方互換**: `show_gallery_site` 未設定の旧データは全件表示（[bm-home.js](js/bm-home.js#L112-L126) で `'show_gallery_site' in w` で判定）
-- 順序制御: ギャラリーは `gallery_order_bm` 設定値があれば優先、無ければ `added` 降順（既存挙動）
+- 4系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- ホームのギャラリー枠は **`BM_NEW_WORKS_DATA`（`/works-new` から取得）を優先**（[bm-home.js](js/bm-home.js#L112-L122)）。WP側でフィルタ済みなのでフロントは追加フィルタ不要
+- 後方互換: `/works-new` が空 or 未取得時は `BM_WORKS_DATA` でフォールバック
+- 順序制御: ギャラリー枠は `cx_sort_order` 昇順（同順位は `cx_added_date` 降順）。Heroと違って独立順序フィールドは持たず、編集画面の「表示順」入力欄が共通利用される
 
 ## 6. ヘッダー/ナビ仕様
 
