@@ -298,15 +298,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - モバイル(≤768px): `.bm-nav-cta--line` は `display: none`（追従CTA `.bm-fab` で代替）、`.bm-nav-cta` は常時可視（padding `10px 18px` に縮小）
 - 過去の outline-only スタイルは廃止。プライマリCTAはサイト全体で塗り強調に統一
 
-### 6.1b ヘッダーCTA 丸アイコン3点セット化（2026-05-17）
-- 旧 `.bm-nav-cta` / `.bm-nav-cta--line` をヘッダー右上から撤去し、`<ul class="bm-cta-icons">` の **丸アイコン3CTA** に統一（[BizManga/css/bizmanga.css](css/bizmanga.css)）
-- **構成**: お問い合わせ(`/contact`) → LINE(`@626kzaze`) → 電話(`tel:03-6261-0764`)
-- **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が上にポップ
-  - お問い合わせ: `var(--bm-accent)`(オレンジ) / LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
-- **モバイル(≤768px)**: `.bm-cta-icons` 全体を既存ピル形ボタンスタイルにリスタイル
-  - お問い合わせ: テキストのみ（`bm-cta-svg` は `display:none`、既存挙動と一致）
-  - 電話: 電話アイコン(16px) + `03-6261-0764` テキスト
-  - LINE: `.bm-cta-icon--line { display:none }`（FAB および ハンバーガーメニュー内に集約）
+### 6.1b ヘッダーCTA ハイブリッド構成（お問い合わせ pill + LINE/電話 丸アイコン、2026-05-17）
+- ヘッダー右上 `.bm-header-right` の構成: **`.bm-nav-cta`（お問い合わせ orange pill）→ `<ul class="bm-cta-icons">` 内に LINE + 電話 の丸アイコン** （[BizManga/css/bizmanga.css](css/bizmanga.css)）
+- **お問い合わせ**: 旧 `.bm-nav-cta` 主従ルール（§6.1a）を継続。プライマリCTAとしてテキスト+オレンジpillで強調
+- **LINE / 電話（`<ul class="bm-cta-icons">`）**:
+  - **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が**下**にポップ（上は画面外で見切れるため、2026-05-17修正）
+    - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
+  - **モバイル(≤768px)**: ピル形ボタンスタイルにリスタイル
+    - 電話: 電話アイコン(16px) + `03-6261-0764` テキスト
+    - LINE: `.bm-cta-icon--line { display:none }`（FAB / ハンバーガーメニューに集約）
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
 - **i18n**: `data-ja` / `data-en` は `.bm-cta-tooltip` に付与（PCではツールチップ、SPでは可視テキスト）
 

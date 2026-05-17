@@ -729,14 +729,6 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   opacity: 1;
 }
 .bm-cta-icon > a:hover { transform: translateY(-3px); }
-/* お問い合わせ: BizMangaオレンジ */
-.bm-cta-icon--contact > a:hover,
-.bm-cta-icon--contact > a:focus-visible {
-  background: var(--bm-accent);
-  color: #fff;
-  box-shadow: 0 14px 22px -8px rgba(232, 85, 0, 0.55);
-}
-.bm-cta-icon--contact .bm-cta-tooltip { background: var(--bm-accent); }
 /* LINE: 公式グリーン */
 .bm-cta-icon--line > a:hover,
 .bm-cta-icon--line > a:focus-visible {
@@ -5140,7 +5132,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     font-weight: 800;
     letter-spacing: 0.04em;
   }
-  .bm-cta-icon--contact > a,
   .bm-cta-icon--tel > a {
     color: var(--bm-accent);
     outline: 2px solid var(--bm-accent);
@@ -5162,8 +5153,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     white-space: nowrap;
   }
   .bm-cta-tooltip::before { display: none; }
-  /* SPアイコン: お問い合わせはテキストのみ(既存挙動と一致)、電話はアイコン+番号 */
-  .bm-cta-icon--contact .bm-cta-svg { display: none; }
+  /* SPアイコン: 電話はアイコン+番号 */
   .bm-cta-icon--tel .bm-cta-svg { width: 16px; height: 16px; }
   .bm-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; white-space: nowrap; }
 
