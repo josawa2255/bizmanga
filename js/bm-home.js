@@ -64,9 +64,19 @@
     while (grid.firstChild) grid.removeChild(grid.firstChild);
 
     var sorted = data.slice();
-    var hasAdded = sorted.some(function(d) { return d && d.added; });
-    if (hasAdded) {
-      sorted.sort(function(a, b) { return new Date(b.added || 0) - new Date(a.added || 0); });
+    var hasOrder = sorted.some(function(d) { return d && typeof d.gallery_order_bm === 'number'; });
+    if (hasOrder) {
+      sorted.sort(function(a, b) {
+        var ao = typeof a.gallery_order_bm === 'number' ? a.gallery_order_bm : 9999;
+        var bo = typeof b.gallery_order_bm === 'number' ? b.gallery_order_bm : 9999;
+        if (ao !== bo) return ao - bo;
+        return new Date(b.added || 0) - new Date(a.added || 0);
+      });
+    } else {
+      var hasAdded = sorted.some(function(d) { return d && d.added; });
+      if (hasAdded) {
+        sorted.sort(function(a, b) { return new Date(b.added || 0) - new Date(a.added || 0); });
+      }
     }
     sorted = sorted.slice(0, MAX_PER_GROUP);
 
@@ -109,11 +119,19 @@
   buildAll();
 
   // ===== WP API データ到着時に再構築 =====
+  // show_gallery_site: 'both' or 'bizmanga' → BizMangaギャラリーに表示
+  // 'contentsx' / 'none' → 非表示
+  // 後方互換: フィールド未設定の旧データは全件表示
   function refreshFromWp() {
     var wpData = window.BM_WORKS_DATA;
     if (!wpData || !wpData.length) wpData = window.BM_NEW_WORKS_DATA;
     if (wpData && wpData.length > 0) {
-      allWorksData = wpData;
+      allWorksData = wpData.filter(function(w) {
+        if ('show_gallery_site' in w) {
+          return w.show_gallery_site === 'both' || w.show_gallery_site === 'bizmanga';
+        }
+        return true;
+      });
       buildAll();
     }
   }

@@ -273,12 +273,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
-- `cx_show_gallery_bizmanga` — BizMangaギャラリー表示フラグ
 - `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先URL
 - `cx_cta_label_ja` — ⭐ ビズ書庫最終ページCTAラベル（日本語、空欄＝デフォルト「公式サイトを見る →」）
 - `cx_cta_label_en` — ⭐ ビズ書庫最終ページCTAラベル（英語、空欄＝デフォルト「Visit Official Site →」）
 - `cx_cta_enabled` — ⭐ ビズ書庫最終ページCTA表示ON/OFFチェックボックス（**唯一の表示制御**）
 - 表示順の運用ルール: N番に新作を挿入するとき、元のN番以降を `+1` ずつずらす（下から順に変更）
+
+### WP 表示先・順序制御フィールド（独立フラグで3系統）⭐
+
+| API応答キー | WPメタキー | 値 | 用途 |
+|---|---|---|---|
+| `show_hero_site` | `cx_show_hero_site` | `both` / `bizmanga` / `contentsx` / `none` | Hero マーキー（トップ背景5行カルーセル） |
+| `hero_order_bm` / `hero_order_cx` | 同名 | 整数（小さい順、未設定=末尾） | Hero 内の順序 |
+| `show_gallery_site` ⭐2026-05-17追加 | `cx_show_gallery_site` | `both` / `bizmanga` / `contentsx` / `none` | ホームのギャラリー枠（`#newWorks` 横読み/縦読みグリッド） |
+| `gallery_order_bm` / `gallery_order_cx` ⭐2026-05-17追加 | 同名 | 整数（小さい順、未設定=末尾） | ギャラリー枠内の順序 |
+| `show_library` | `cx_show_library` | bool | ビズ書庫 `/biz-library` |
+| `show_site` | `cx_show_site` | `both` / `bizmanga` / `contentsx` | サイト全体所属（works.htmlやAPI `?site=` フィルタの基準） |
+
+- 4系統（Hero / Gallery / Library / Site全体）は**完全独立**。「Heroだけ出す/ギャラリーだけ出す/ビズ書庫だけ出す」を自由に組合せ可能
+- **後方互換**: `show_gallery_site` 未設定の旧データは全件表示（[bm-home.js](js/bm-home.js#L112-L126) で `'show_gallery_site' in w` で判定）
+- 順序制御: ギャラリーは `gallery_order_bm` 設定値があれば優先、無ければ `added` 降順（既存挙動）
 
 ## 6. ヘッダー/ナビ仕様
 
