@@ -1348,3 +1348,164 @@
     transition: none;
   }
 }
+
+/* ------------------------------------------------------------------
+ * 19. LP CASE STUDY (pm-case-*) — recruit-manga 専用
+ *   build-lp-cases.py が出力する .pm-case-* クラスを v2 デザインで整える。
+ *   recruit-manga.html のみ bm-lp-v2.css をロードするため、ここでの定義は
+ *   他7本の用途別LP（bm-lp-template.css系）に影響しない。
+ * ------------------------------------------------------------------ */
+.pm-cases-static {
+  background: var(--lpv2-cream);
+  padding: 72px 20px;
+}
+.pm-cases-static .pm-container,
+.pm-cases-static .pm-container--narrow {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.pm-cases-static .pm-eyebrow {
+  display: inline-block;
+  font-family: var(--lpv2-font-mono);
+  font-size: 12px; font-weight: 900;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--lpv2-accent);
+  margin-bottom: 8px;
+}
+.pm-cases-static .pm-h2 {
+  font-family: var(--lpv2-font-display);
+  font-weight: 900;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.3;
+  color: var(--lpv2-ink);
+  margin: 0 0 16px;
+}
+.pm-cases-static .pm-lead {
+  font-size: 15px; line-height: 1.7;
+  color: var(--lpv2-ink-soft);
+}
+
+.pm-cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.pm-case-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #fff;
+  border: var(--lpv2-border-w) solid var(--lpv2-ink);
+  box-shadow: var(--lpv2-shadow-panel);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  overflow: hidden;
+}
+.pm-case-card:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 var(--lpv2-rule); }
+
+.pm-case-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--lpv2-cream-deep);
+  border-bottom: var(--lpv2-border-w) solid var(--lpv2-ink);
+  overflow: hidden;
+}
+.pm-case-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.4s ease;
+}
+.pm-case-card:hover .pm-case-thumb img { transform: scale(1.04); }
+
+.pm-case-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+.pm-case-meta {
+  font-family: var(--lpv2-font-mono);
+  font-size: 10px; font-weight: 900;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--lpv2-accent);
+}
+.pm-case-title {
+  font-family: var(--lpv2-font-display);
+  font-weight: 900;
+  font-size: clamp(14px, 1.3vw, 17px);
+  line-height: 1.35;
+  margin: 0;
+  color: var(--lpv2-ink);
+}
+.pm-case-title a {
+  color: inherit; text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+.pm-case-title a:hover { border-color: var(--lpv2-accent); }
+
+.pm-case-client {
+  font-size: 11px;
+  color: var(--lpv2-ink-mute);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.pm-case-point {
+  font-size: 12px; line-height: 1.6;
+  color: var(--lpv2-ink-soft);
+  margin: 0;
+}
+.pm-case-comment {
+  font-size: 12px; line-height: 1.6;
+  color: var(--lpv2-ink-soft);
+  background: var(--lpv2-cream);
+  border-left: 3px solid var(--lpv2-accent);
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  quotes: none;
+}
+.pm-case-more {
+  margin-top: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--lpv2-font-mono);
+  font-size: 11px; font-weight: 900;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--lpv2-accent);
+  text-decoration: none;
+  border-bottom: 2px solid var(--lpv2-accent);
+  padding-bottom: 2px;
+  align-self: flex-start;
+}
+.pm-case-more:hover { color: var(--lpv2-ink); border-color: var(--lpv2-ink); }
+
+.pm-cases-foot { text-align: center; margin-top: 48px; }
+.pm-cases-foot .pm-btn--ghost {
+  display: inline-block;
+  padding: 12px 28px;
+  font-family: var(--lpv2-font-mono);
+  font-size: 13px; font-weight: 900;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--lpv2-ink);
+  background: transparent;
+  border: var(--lpv2-border-w) solid var(--lpv2-ink);
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.pm-cases-foot .pm-btn--ghost:hover { background: var(--lpv2-ink); color: #fff; transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lpv2-rule); }
+
+@media (max-width: 960px) {
+  .pm-cases-static { padding: 56px 16px; }
+  .pm-cases-grid { gap: 16px; }
+}
+@media (max-width: 720px) {
+  .pm-cases-static { padding: 48px 12px; }
+  .pm-cases-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .pm-case-body { padding: 10px 10px 12px; gap: 6px; }
+  .pm-case-meta { font-size: 9px; letter-spacing: 0.14em; }
+  .pm-case-title { font-size: 13px; }
+  .pm-case-client { font-size: 10px; }
+  .pm-case-point, .pm-case-comment { font-size: 11px; line-height: 1.5; }
+  .pm-case-comment { padding: 6px 8px; }
+  .pm-case-more { font-size: 10px; letter-spacing: 0.14em; }
+}

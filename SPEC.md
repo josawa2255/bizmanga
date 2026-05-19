@@ -114,6 +114,7 @@
 - 共通の`bm-i18n.js` / `bm-nav.js` / `bm-lp-library-embed.js` / `bm-sanitize.js` / `bm-kinsoku.js` はそのまま利用
 - `tools/build-lp-cases.py` は HTML 内の `LP-DESIGN:v2` マーカーを検出して `pm-*` / `lpv2-*` のどちらでも出力できる
 - 旧 `bm-lp-template.css` は v2 が全LPに展開完了するまで削除しない
+- **2026-05-19 追記**: `tools/build-lp-cases.py` は実装上まだ `pm-cases-grid` / `pm-case-card` を出力するため、recruit-manga.html では `pm-case-*` が未スタイル状態になっていた。`bm-lp-v2.css` 末尾（セクション19）に `pm-case-*` を v2 トークン整合で再定義し、**CASE STUDYカードを横並び**（`grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))`、SPは160px）に修正。`bm-lp-v2.css` は recruit-manga.html のみが読込むため他7LPには影響しない
 
 ## 2. URL パラメータ・特殊モード
 
