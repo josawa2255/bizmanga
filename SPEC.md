@@ -140,6 +140,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 **動作メカニズム:**
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
+- **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 
 **運用ルール:**
 - 新作品を顧客・商談で共有する時 → `?manga=id` を使う（即時）

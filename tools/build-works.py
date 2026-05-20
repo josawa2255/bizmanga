@@ -38,6 +38,10 @@ CATEGORY_TEMPLATE_PATH = ROOT / "tools" / "templates" / "works-category.html.tpl
 WORKS_DIR = ROOT / "works"
 CATEGORY_DIR = ROOT / "works" / "category"
 
+# 詳細ページ「ページ一覧」で表示する漫画ページ数の上限（抜粋プレビュー）。
+# 全ページは /biz-library の漫画ビューアで閲覧する想定。
+MAX_GALLERY_PAGES = 4
+
 
 def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
@@ -213,7 +217,7 @@ def build_detail_page(w, template):
 
     gallery_html = "\n".join(
         f'          <img src="{esc(g)}" alt="{esc(title_ja)} ページ{i+1}" loading="lazy" decoding="async">'
-        for i, g in enumerate(gallery)
+        for i, g in enumerate(gallery[:MAX_GALLERY_PAGES])
     ) or '          <p style="color:#999;">ギャラリー画像はありません。</p>'
 
     # Description: point の先頭 150 文字 or タイトル
