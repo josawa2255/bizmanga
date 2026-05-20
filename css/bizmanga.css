@@ -1116,17 +1116,18 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 /* SP: 長文タグラインがはみ出すため前半を隠し「マンガの力でビジネスを動かす」のみ表示。
    折返しも許可しておき、極端に狭い端末でも溢れないよう保険をかける。 */
 @media (max-width: 768px) {
+  /* SPは前半非表示で主文「マンガの力でビジネスを動かす」のみ。改行させず1行で表示。
+     font-size は vw 連動で縮むため、最小端末(320px)でも1行に収まり溢れない。 */
   .bm-hero-tagline {
-    white-space: normal;
-    flex-wrap: wrap;
-    width: auto;
-    max-width: 92vw;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    width: max-content;
+    max-width: 96vw;
     letter-spacing: 0.04em;
     line-height: 1.45;
-    font-size: clamp(15px, 4.6vw, 22px);
+    font-size: clamp(14px, 4.8vw, 22px);
   }
-  /* 極端に狭い端末では主文も折返せるよう nowrap を解除（はみ出し保険） */
-  .bm-hero-tagline .tl-seg { white-space: normal; }
+  .bm-hero-tagline .tl-seg { white-space: nowrap; }
   .bm-hero-tagline .tl-seg-pre { display: none; }
 }
 .bm-hero-logo {
