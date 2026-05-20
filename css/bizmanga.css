@@ -1053,6 +1053,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   pointer-events: none;
   padding-bottom: 40px;
+  /* Critical CSS(head内インライン)の translate(-50%,-50%) を打ち消す。
+     残るとinset:0の全画面要素が半分ズレてロゴが画面外へ飛ぶ (#027) */
+  transform: none;
 }
 .bm-hero-tagline {
   position: absolute;
@@ -1103,7 +1106,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   0% { background-position: 100% 50%; }
   100% { background-position: -100% 50%; }
 }
-/* SP: 1行(nowrap)だと長文タグラインがはみ出すため折返し許可 + 字間圧縮 */
+/* SP: 長文タグラインがはみ出すため前半を隠し「マンガの力でビジネスを動かす」のみ表示。
+   折返しも許可しておき、極端に狭い端末でも溢れないよう保険をかける。 */
 @media (max-width: 768px) {
   .bm-hero-tagline {
     white-space: normal;
@@ -1113,6 +1117,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
     line-height: 1.45;
     font-size: clamp(15px, 4.6vw, 22px);
   }
+  .bm-hero-tagline .tl-seg-pre { display: none; }
 }
 .bm-hero-logo {
   width: clamp(280px, 40vw, 650px);

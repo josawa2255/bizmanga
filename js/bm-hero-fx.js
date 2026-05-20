@@ -16,18 +16,29 @@
   var glow = hero.querySelector('.bm-hero-glow');
 
   // ===== タグライン1文字ずつ分割 =====
+  // .tl-seg(前半/後半セグメント)があればセグメント単位で分割。
+  // セグメントは i18n の data-ja/data-en とSP非表示(.tl-seg-pre)を担うため温存する。
   var tagline = document.getElementById('heroTagline');
   if (tagline) {
-    var text = tagline.textContent;
-    var charCount = text.length;
-    tagline.innerHTML = '';
-    for (var ci = 0; ci < charCount; ci++) {
-      var span = document.createElement('span');
-      span.className = 'tl-char';
-      span.textContent = text[ci];
-      span.style.setProperty('--d', (1.6 + ci * 0.06) + 's');
-      span.style.setProperty('--wd', (ci * 0.15) + 's');
-      tagline.appendChild(span);
+    var segs = tagline.querySelectorAll('.tl-seg');
+    var charCount = 0;
+    var splitInto = function (container) {
+      var text = container.textContent;
+      while (container.firstChild) container.removeChild(container.firstChild);
+      for (var ci = 0; ci < text.length; ci++) {
+        var span = document.createElement('span');
+        span.className = 'tl-char';
+        span.textContent = text[ci];
+        span.style.setProperty('--d', (1.6 + charCount * 0.06) + 's');
+        span.style.setProperty('--wd', (charCount * 0.15) + 's');
+        container.appendChild(span);
+        charCount++;
+      }
+    };
+    if (segs.length) {
+      for (var si = 0; si < segs.length; si++) splitInto(segs[si]);
+    } else {
+      splitInto(tagline); // 後方互換: セグメント未導入の旧構造
     }
     // 波打ち登場完了後にシャインを開始
     var lastCharDelay = 1.6 + (charCount - 1) * 0.06 + 0.6; // 最後の文字のdelay + duration

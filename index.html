@@ -68,7 +68,7 @@ h1,h2,h3,h4,h5,h6{margin:0 0 16px;font-weight:900;line-height:1.4;}h1{font-size:
 p{margin:0 0 16px;}
 /* FOUC防止: メインCSS読込前の素サイズ表示を抑える */
 .bm-hero{position:relative;min-height:88vh;background:#0a0a0a;overflow:hidden;}
-.bm-hero-center{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:3;}
+.bm-hero-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;}
 .bm-hero-logo{max-width:180px;height:auto;}
 .bm-hero-tagline{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);width:90%;max-width:900px;color:#fff;text-align:center;font-size:clamp(18px,3vw,32px);margin:0;z-index:3;}
 .bm-client-laurel{width:28px;height:60px;flex:none;}
@@ -157,7 +157,7 @@ svg{max-width:100%;height:auto;}
     </div>
 
     <!-- タグライン（ロゴとは独立・h1として機能） -->
-    <h1 class="bm-hero-tagline" data-ja="ビジネス漫画制作で伝わるメッセージを届ける｜マンガの力でビジネスを動かす" data-en="Business manga production that delivers — Move business with the power of manga" id="heroTagline">ビジネス漫画制作で伝わるメッセージを届ける｜マンガの力でビジネスを動かす</h1>
+    <h1 class="bm-hero-tagline" id="heroTagline"><span class="tl-seg tl-seg-pre" data-ja="ビジネス漫画制作で伝わるメッセージを届ける｜" data-en="Business manga production that delivers — ">ビジネス漫画制作で伝わるメッセージを届ける｜</span><span class="tl-seg tl-seg-main" data-ja="マンガの力でビジネスを動かす" data-en="Move business with the power of manga">マンガの力でビジネスを動かす</span></h1>
 
   </section>
 
