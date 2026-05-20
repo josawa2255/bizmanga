@@ -1067,10 +1067,17 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   font-weight: 800;
   letter-spacing: 0.14em;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  /* width:max-content で本来の1行幅を確保（left:50%だけだと幅が50%に制限され単語途中で折返す）。
+     max-width で画面に収まらない時のみ、下の .tl-seg(nowrap) によりセグメント単位で改行する。 */
+  width: max-content;
+  max-width: 94vw;
   color: #fff;
   white-space: nowrap;
 }
+/* 各セグメント(「…届ける｜」/「マンガの力で…」)は単語途中で割らず、改行は「｜」区切りでのみ */
+.bm-hero-tagline .tl-seg { white-space: nowrap; }
 .bm-hero-tagline .tl-char {
   display: inline-block;
   opacity: 0;
@@ -1112,11 +1119,14 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   .bm-hero-tagline {
     white-space: normal;
     flex-wrap: wrap;
+    width: auto;
     max-width: 92vw;
     letter-spacing: 0.04em;
     line-height: 1.45;
     font-size: clamp(15px, 4.6vw, 22px);
   }
+  /* 極端に狭い端末では主文も折返せるよう nowrap を解除（はみ出し保険） */
+  .bm-hero-tagline .tl-seg { white-space: normal; }
   .bm-hero-tagline .tl-seg-pre { display: none; }
 }
 .bm-hero-logo {
