@@ -1079,7 +1079,7 @@
 .lpv2-library .lpv2-h2 { color: var(--lpv2-ink); }
 .lpv2-library .lpv2-lead { color: var(--lpv2-ink-soft); }
 .lpv2-library-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
   max-width: 1180px; margin: 0 auto 48px;
 }
@@ -1087,10 +1087,19 @@
 
 /* Provide compatibility with bm-lp-library-embed.js DOM hooks */
 .lpv2-library [data-bm-lp-library-grid] {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
 }
 .lpv2-library .bm-lp-lib-loading { color: rgba(255,255,255,0.6); text-align: center; padding: 32px; }
+
+/* SP: 制作事例グリッドと同じく2列流動にして、画面幅に応じて縮小する */
+@media (max-width: 560px) {
+  .lpv2-library-grid,
+  .lpv2-library [data-bm-lp-library-grid] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
 
 /* ------------------------------------------------------------------
  * 13. Flow (storyboard)
