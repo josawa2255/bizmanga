@@ -1817,7 +1817,30 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 @media (max-width: 768px) {
   .bm-column-section { padding: 48px 0 40px; }
-  .bm-column-card { width: 260px; min-width: 260px; }
+  /* ホームのコラム: 横スクロール(1枚しか見えない)をやめ、PC同様に複数枚見える2列グリッドへ */
+  .bm-column-scroll {
+    overflow-x: visible;
+    margin: 0;
+    padding: 0;
+  }
+  .bm-column-scroll .bm-column-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    min-width: 0;
+  }
+  .bm-column-scroll .bm-column-card {
+    width: auto;
+    min-width: 0;
+  }
+  /* 2列で幅が狭くなるため余白・文字を詰める */
+  .bm-column-scroll .bm-column-card-body {
+    padding: 12px 12px 14px;
+    gap: 7px;
+  }
+  .bm-column-scroll .bm-column-card-title { font-size: 14px; line-height: 1.45; }
+  .bm-column-scroll .bm-column-card-excerpt { font-size: 12px; line-height: 1.6; }
+  .bm-column-scroll .bm-column-card-date { font-size: 11px; }
   .bm-column-grid--page {
     grid-template-columns: 1fr;
     gap: 16px;
