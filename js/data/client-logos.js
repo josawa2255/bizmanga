@@ -7,7 +7,6 @@
  */
 const CLIENT_LOGOS = [
   { name: 'MACNICA',            logo: 'https://contentsx.jp/material/images/clients/macnica.png' },
-  { name: '日能研',              logo: 'https://contentsx.jp/material/images/clients/nichinoken.png' },
   { name: 'Birdman',            logo: 'https://contentsx.jp/material/images/clients/birdman.png' },
   { name: 'ガウディア',           logo: 'https://contentsx.jp/material/images/clients/gaudia.png' },
   { name: 'LIFE Entertainment', logo: 'https://contentsx.jp/material/images/clients/life-entertainment.png' },
