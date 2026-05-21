@@ -1817,25 +1817,19 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 @media (max-width: 768px) {
   .bm-column-section { padding: 48px 0 40px; }
-  /* ホームのコラム: 横スクロール(1枚しか見えない)をやめ、PC同様に複数枚見える2列グリッドへ */
-  .bm-column-scroll {
-    overflow-x: visible;
-    margin: 0;
-    padding: 0;
-  }
+  /* ホームのコラム: 横スクロールは維持しつつ、PC同様に複数枚見えるようカード幅を縮小。
+     1枚で画面が埋まらないよう ~2枚＋次の見切れ が出る幅に */
   .bm-column-scroll .bm-column-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-    min-width: 0;
   }
   .bm-column-scroll .bm-column-card {
-    width: auto;
+    width: 44vw;
     min-width: 0;
+    max-width: 220px;
   }
-  /* 2列で幅が狭くなるため余白・文字を詰める */
+  /* 幅が狭くなるため余白・文字を詰める */
   .bm-column-scroll .bm-column-card-body {
-    padding: 12px 12px 14px;
+    padding: 12px 14px 14px;
     gap: 7px;
   }
   .bm-column-scroll .bm-column-card-title { font-size: 14px; line-height: 1.45; }
