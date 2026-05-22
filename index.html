@@ -267,11 +267,13 @@ svg{max-width:100%;height:auto;}
             <span class="s3d-notch" aria-hidden="true"></span>
             <span class="s3d-home-indicator" aria-hidden="true"></span>
           </div>
-          <div class="s3d-screen s3d-screen--video" data-idx="2">
-            <iframe id="s3dVideoIframe" loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=0&enablejsapi=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
-            <span class="s3d-notch" aria-hidden="true"></span>
-            <span class="s3d-home-indicator" aria-hidden="true"></span>
-            <!-- 音声調節UI（スマホ下部にドッキング） -->
+          <div class="s3d-col-video" data-idx="2">
+            <div class="s3d-screen s3d-screen--video">
+              <iframe id="s3dVideoIframe" loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=0&enablejsapi=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
+            </div>
+            <!-- 音声調節UI（スマホの直下に配置） -->
             <div class="s3d-audio-bar" id="s3dAudioBar" data-muted="true">
               <button type="button" class="s3d-audio-mute" id="s3dAudioMute" aria-label="音声をオンにする">
                 <svg class="s3d-audio-ic-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>

@@ -52,10 +52,19 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, var(--s3d-tile-w));
-  grid-template-rows: var(--s3d-tile-h);
+  /* 行高は auto: ボイスコミック列は端末＋音声バーで縦に伸びる */
+  grid-template-rows: auto;
+  align-items: start;
   gap: var(--s3d-gap);
   will-change: transform;
   transform-origin: 50% 50%;
+}
+/* ボイスコミック列: 端末 + 直下の音声調節バー を縦に積む */
+.s3d-col-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 /* 1台のスマホ端末 */
@@ -174,25 +183,32 @@
   inset: 0 !important;
   height: 100% !important;
 }
-/* ボイスコミック 音声調節UI: スマホ最下部にドッキング */
+/* ボイスコミック 音声調節UI: スマホの直下に配置 */
 .s3d-audio-bar {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  z-index: 7;
+  width: var(--s3d-tile-w);
+  max-width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 14px 11px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 30%, rgba(0, 0, 0, 0));
+  gap: 11px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(232, 90, 26, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  /* 端末のフェードイン完了に合わせて表示 */
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
+.s3d-screen--video.is-ready ~ .s3d-audio-bar,
+.s3d-col-video .s3d-screen--video.is-ready + .s3d-audio-bar { opacity: 1; }
 .s3d-audio-mute {
   flex: 0 0 auto;
-  width: 30px; height: 30px;
+  width: 32px; height: 32px;
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: #e85500;
+  background: #e85500;
+  color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -200,7 +216,7 @@
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, transform 0.12s ease;
 }
-.s3d-audio-mute:active { transform: scale(0.92); background: #fff; }
+.s3d-audio-mute:active { transform: scale(0.92); background: #cf4c00; }
 .s3d-audio-mute svg { width: 17px; height: 17px; }
 /* ミュート状態でミュートアイコン、解除でON(波)アイコンを表示 */
 .s3d-audio-bar[data-muted="true"]  .s3d-audio-ic-on    { display: none; }
@@ -360,10 +376,11 @@
   .s3d-label[data-tile="1"] { order: 3; }
   .s3d-screen[data-idx="1"] { order: 4; }
   .s3d-label[data-tile="2"] { order: 5; }
-  .s3d-screen[data-idx="2"] { order: 6; }
+  .s3d-col-video { order: 6; }
   /* 全要素を中央寄せ (Z字をやめて縦に真っ直ぐ並べる) */
   .s3d-label,
-  .s3d-screen {
+  .s3d-screen,
+  .s3d-col-video {
     justify-self: center;
   }
 }

@@ -365,7 +365,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - タイル構成（左→右）:
   - 横読み: `/embed-viewer?manga=ichinohe-home&slides=1&manual=1`（**画面左タップ＝次 / 右タップ＝前**）
   - 縦読み(中央・hero): `/embed-viewer?manga=omatome-ninja-new&manual=1`（指で縦スクロール＋右下の上下矢印）
-  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+**controls=0**）。自動再生は維持し、**音声調節UI`.s3d-audio-bar`（ミュートトグル＋音量スライダー）をタイル最下部に内蔵**
+  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+**controls=0**）。自動再生は維持し、**音声調節UI`.s3d-audio-bar`（ミュートトグル＋音量スライダー）を端末の直下に配置**（端末をラッパー`.s3d-col-video`で囲み、`.s3d-screen`はoverflow/maskで内部閉じ込めのためバーは兄弟要素として外側下に出す。`.s3d-screens`は`grid-template-rows:auto; align-items:start`でこの列だけ縦に伸ばす）
 - **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋下部ドッキングUI**に統一。
   - 横読み=左右タップゾーン`.ev-tap`（端で停止/ループ無し）、縦読み=スクロール＋上下矢印`.ev-nav`、ボイス=`.s3d-audio-bar`で音量調節（YouTube IFrame API `mute`/`unMute`/`setVolume`をpostMessage）
   - ガイド`.ev-guide`は embed-viewer 最下部のバー。横読みは4.2秒でフェード、縦読みは常時表示
