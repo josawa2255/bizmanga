@@ -138,7 +138,7 @@
 | `slides=1` | 1ページずつのスライド表示（横読み向け）。`interval`で自動切替間隔(ms) |
 | `speed=0.5` | 縦/横自動スクロール速度(px/frame) |
 | `hold=1` | 親から`postMessage('s3d-start')`を受けるまで自動再生を保留 |
-| **`manual=1`** ⭐ | **自動再生を止め手動操作にする。矢印ボタン`.ev-nav`＋操作ガイド`.ev-guide`を生成。2026-05-22 追加・ホームs3dで採用**<br>・slides(横読み)=左右矢印＋**指スワイプ(縦横どちらも)＋ホイール/2本指スクロール**でページ送り(誤連打防止500msロック)。ガイドは4.2秒でフェード<br>・縦読み=指スクロール＋ホイール(`overflow-y:auto`ネイティブ)＋上下矢印(複製1セット)。ガイド「スクロールして読めます」は常時表示(`makeGuide(text,true)`) |
+| **`manual=1`** ⭐ | **自動再生を止め手動操作にする。操作ガイド`.ev-guide`はスマホ最下部にドッキングする横長バー。2026-05-22 追加・改訂、ホームs3dで採用**<br>・横読み(slides)=**画面左半分タップ＝次 / 右半分タップ＝前**（右綴じ漫画式、`.ev-tap`左右ゾーン）。端で停止(ループ無し)、端のゾーンは無効。**矢印/スワイプ/ホイールは廃止**。ガイドは4.2秒でフェード<br>・縦読み=指スクロール＋ホイール(`overflow-y:auto`ネイティブ)＋右下の上下矢印`.ev-nav`(複製1セット)。ガイド「スクロールして読めます」は常時表示(`makeGuide(text,true)`) |
 
 ### 2.0 制作事例の2系統URL（重要）
 
@@ -363,13 +363,14 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - 位置: ホームギャラリー（`#newWorks`）の直前
 - 役割: 「さまざまな媒体・形式で制作しています」— カラー漫画 / Webtoon / ボイスコミック の3媒体を3つのiPhone型端末で showcase
 - タイル構成（左→右）:
-  - 横読み: `/embed-viewer?manga=ichinohe-home&slides=1&manual=1`（左右矢印で1ページ送り。自動フェード廃止）
-  - 縦読み(中央・hero): `/embed-viewer?manga=omatome-ninja-new&manual=1`（指で縦スクロール＋上下矢印。自動スクロール廃止）
-  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls。自動再生は維持し操作ガイド`.s3d-video-guide`のみ追加）
-- **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋操作ガイド明示**に統一。
-  - 横読み=左右矢印、縦読み=指スクロール＋上下矢印、ボイス=タップで音声/再生操作（自動再生のみ維持）
-  - 矢印`.ev-nav`・ガイド`.ev-guide`は embed-viewer 内で`manual=1`時のみ生成。ガイドは表示後4.2秒で自動フェード
+  - 横読み: `/embed-viewer?manga=ichinohe-home&slides=1&manual=1`（**画面左タップ＝次 / 右タップ＝前**）
+  - 縦読み(中央・hero): `/embed-viewer?manga=omatome-ninja-new&manual=1`（指で縦スクロール＋右下の上下矢印）
+  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+**controls=0**）。自動再生は維持し、**音声調節UI`.s3d-audio-bar`（ミュートトグル＋音量スライダー）をタイル最下部に内蔵**
+- **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋下部ドッキングUI**に統一。
+  - 横読み=左右タップゾーン`.ev-tap`（端で停止/ループ無し）、縦読み=スクロール＋上下矢印`.ev-nav`、ボイス=`.s3d-audio-bar`で音量調節（YouTube IFrame API `mute`/`unMute`/`setVolume`をpostMessage）
+  - ガイド`.ev-guide`は embed-viewer 最下部のバー。横読みは4.2秒でフェード、縦読みは常時表示
   - 中央hero iframe は手動操作のため `is-settled` 後に `pointer-events: auto`（旧: 自動スクロール専用で `none` 固定だった）
+  - 旧`.s3d-mute-toggle`（SP専用ボタン）は廃止し`.s3d-audio-bar`に統合
 - iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + オレンジ光沢ベゼル
 - ラベル位置: タイル直上(`bottom: 100% + 14px`)
 - CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)

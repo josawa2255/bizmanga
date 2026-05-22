@@ -106,7 +106,8 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ============ 手動操作UI (manual=1): 矢印ボタン + 操作ガイド ============ */
+    /* ============ 手動操作UI (manual=1): 矢印 / タップゾーン / 操作ガイド ============ */
+    /* 縦読み: 上下矢印（最下部ガイドバーの上に配置） */
     .ev-nav {
       position: fixed;
       z-index: 60;
@@ -123,32 +124,45 @@
       transition: background 0.15s ease, transform 0.12s ease;
     }
     .ev-nav svg { width: 22px; height: 22px; }
-    .ev-nav:active { background: #fff; }
+    .ev-nav:active { background: #fff; transform: scale(0.9); }
     .ev-nav[disabled] { opacity: 0.3; pointer-events: none; cursor: default; }
-    /* 横方向(横読み・スライド): 左右中央 */
-    .ev-nav--prev { left: 8px;  top: 50%; transform: translateY(-50%); }
-    .ev-nav--next { right: 8px; top: 50%; transform: translateY(-50%); }
-    .ev-nav--prev:active { transform: translateY(-50%) scale(0.9); }
-    .ev-nav--next:active { transform: translateY(-50%) scale(0.9); }
-    /* 縦方向(縦読み): 右下に上下スタック */
-    .ev-nav--up   { right: 8px; bottom: 58px; }
-    .ev-nav--down { right: 8px; bottom: 12px; }
-    .ev-nav--up:active, .ev-nav--down:active { transform: scale(0.9); }
+    .ev-nav--up   { right: 8px; bottom: 94px; }
+    .ev-nav--down { right: 8px; bottom: 48px; }
 
+    /* 横読み: 画面の左右半分タップでページ送り（左=次 / 右=前） */
+    .ev-tap {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 50%;
+      z-index: 55;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(232, 85, 0, 0.0);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ev-tap--left  { left: 0;  justify-content: flex-start; }
+    .ev-tap--right { right: 0; justify-content: flex-end; }
+    /* タップ位置のヒント chevron（うっすら表示、押下で一瞬濃く） */
+    .ev-tap svg { width: 26px; height: 26px; margin: 0 10px; color: rgba(40,40,40,0.28); }
+    .ev-tap:active svg { color: rgba(232,85,0,0.9); }
+    .ev-tap[disabled] { pointer-events: none; }
+    .ev-tap[disabled] svg { opacity: 0.12; }
+
+    /* 操作ガイド: スマホ最下部にドッキングする横長バー */
     .ev-guide {
       position: fixed;
-      left: 50%; bottom: 14px;
-      transform: translateX(-50%);
+      left: 0; right: 0; bottom: 0;
       z-index: 61;
-      max-width: 86%;
-      background: rgba(20, 20, 20, 0.78);
+      background: rgba(20, 20, 20, 0.74);
       color: #fff;
       font-size: 11px;
-      line-height: 1;
+      line-height: 1.2;
       letter-spacing: 0.04em;
-      padding: 7px 13px;
-      border-radius: 999px;
-      white-space: nowrap;
+      padding: 9px 12px;
       text-align: center;
       pointer-events: none;
       opacity: 1;
@@ -225,6 +239,25 @@
       b.appendChild(svg);
       return b;
     }
+    // 横読み用 左右タップゾーン（side=配置, chevronDir=向きヒント）
+    function makeTapZone(side, chevronDir, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ev-tap ev-tap--' + side;
+      b.setAttribute('aria-label', label);
+      var svg = document.createElementNS(SVGNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2.4');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      var path = document.createElementNS(SVGNS, 'path');
+      path.setAttribute('d', CHEVRON[chevronDir]);
+      svg.appendChild(path);
+      b.appendChild(svg);
+      return b;
+    }
     function makeGuide(text, persist) {
       var g = document.createElement('div');
       g.className = 'ev-guide';
@@ -284,7 +317,7 @@
       waitImages(sSlides, function() { gateStart(startSlides); });
     }
 
-    // 手動スライド: 左右矢印で1ページずつ送る
+    // 手動スライド: 画面の左半分タップ=次 / 右半分タップ=前（右綴じ漫画式）
     var slidesManualDone = false;
     function setupSlidesManual() {
       if (slidesManualDone) return;
@@ -293,8 +326,9 @@
       if (!imgs.length) return;
       var idx = 0;
       var last = imgs.length - 1;
-      var prev = makeNav('prev', 'left', '前のページ');
-      var next = makeNav('next', 'right', '次のページ');
+      // 左ゾーン=次へ進む、右ゾーン=前へ戻る
+      var zoneNext = makeTapZone('left', 'right', '次のページへ');  // 左半分・chevron右向き
+      var zonePrev = makeTapZone('right', 'left', '前のページへ');  // 右半分・chevron左向き
       function show(n) {
         // ループしない: 1ページ目より前 / 最終ページより後ろには進まない
         var clamped = Math.max(0, Math.min(last, n));
@@ -302,43 +336,17 @@
         imgs[idx].classList.remove('is-active');
         idx = clamped;
         imgs[idx].classList.add('is-active');
-        prev.disabled = idx === 0;
-        next.disabled = idx === last;
+        zoneNext.disabled = idx === last; // 最終ページでは「次」無効
+        zonePrev.disabled = idx === 0;     // 1ページ目では「前」無効
       }
-      prev.disabled = true; // 初期は1ページ目なので「前」を無効
-      next.disabled = last === 0;
-      prev.addEventListener('click', function() { show(idx - 1); });
-      next.addEventListener('click', function() { show(idx + 1); });
-      document.body.appendChild(prev);
-      document.body.appendChild(next);
+      zonePrev.disabled = true;            // 初期は1ページ目
+      zoneNext.disabled = last === 0;
+      zoneNext.addEventListener('click', function() { show(idx + 1); });
+      zonePrev.addEventListener('click', function() { show(idx - 1); });
+      document.body.appendChild(zoneNext);
+      document.body.appendChild(zonePrev);
 
-      // 指スワイプ(スマホ): 縦横どちらのスワイプでもページ送り
-      var tx = 0, ty = 0;
-      viewer.addEventListener('touchstart', function(e) {
-        var t = e.changedTouches[0]; tx = t.clientX; ty = t.clientY;
-      }, { passive: true });
-      viewer.addEventListener('touchend', function(e) {
-        var t = e.changedTouches[0];
-        var dx = t.clientX - tx, dy = t.clientY - ty;
-        var ax = Math.abs(dx), ay = Math.abs(dy);
-        if (Math.max(ax, ay) < 30) return; // タップ誤爆防止
-        var d = ax >= ay ? -dx : -dy;      // 左/上スワイプ = 次へ
-        show(d > 0 ? idx + 1 : idx - 1);
-      }, { passive: true });
-
-      // ホイール(PC=2本指スクロール): 縦横どちらの成分でもページ送り
-      var wheelLock = false;
-      viewer.addEventListener('wheel', function(e) {
-        e.preventDefault();
-        if (wheelLock) return;
-        var d = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-        if (Math.abs(d) < 6) return;
-        show(d > 0 ? idx + 1 : idx - 1);
-        wheelLock = true;
-        setTimeout(function() { wheelLock = false; }, 500);
-      }, { passive: false });
-
-      makeGuide('スワイプ / ◀ ▶ でページを送れます');
+      makeGuide('画面左タップ＝次ページ / 右タップ＝前ページ', true);
     }
 
     var slidesStarted = false;

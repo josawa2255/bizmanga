@@ -174,33 +174,44 @@
   inset: 0 !important;
   height: 100% !important;
 }
-/* ボイスコミック操作ガイド: 表示後しばらくして自動フェードアウト */
-.s3d-video-guide {
+/* ボイスコミック 音声調節UI: スマホ最下部にドッキング */
+.s3d-audio-bar {
   position: absolute;
-  left: 50%;
-  bottom: 14px;
-  transform: translateX(-50%);
+  left: 0; right: 0; bottom: 0;
   z-index: 7;
-  max-width: 86%;
-  background: rgba(20, 20, 20, 0.78);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  padding: 7px 13px;
-  border-radius: 999px;
-  white-space: nowrap;
-  text-align: center;
-  pointer-events: none;
-  opacity: 0;
-  animation: s3dGuideFade 6s ease forwards;
-  animation-delay: 1.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px 11px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 30%, rgba(0, 0, 0, 0));
 }
-@keyframes s3dGuideFade {
-  0%   { opacity: 0; }
-  12%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { opacity: 0; }
+.s3d-audio-mute {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #e85500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+.s3d-audio-mute:active { transform: scale(0.92); background: #fff; }
+.s3d-audio-mute svg { width: 17px; height: 17px; }
+/* ミュート状態でミュートアイコン、解除でON(波)アイコンを表示 */
+.s3d-audio-bar[data-muted="true"]  .s3d-audio-ic-on    { display: none; }
+.s3d-audio-bar[data-muted="true"]  .s3d-audio-ic-muted { display: block; }
+.s3d-audio-bar[data-muted="false"] .s3d-audio-ic-on    { display: block; }
+.s3d-audio-bar[data-muted="false"] .s3d-audio-ic-muted { display: none; }
+.s3d-audio-vol {
+  flex: 1 1 auto;
+  height: 4px;
+  accent-color: #e85500;
+  cursor: pointer;
 }
 
 
@@ -350,11 +361,9 @@
   .s3d-screen[data-idx="1"] { order: 4; }
   .s3d-label[data-tile="2"] { order: 5; }
   .s3d-screen[data-idx="2"] { order: 6; }
-  .s3d-mute-toggle { order: 7; }
   /* 全要素を中央寄せ (Z字をやめて縦に真っ直ぐ並べる) */
   .s3d-label,
-  .s3d-screen,
-  .s3d-mute-toggle {
+  .s3d-screen {
     justify-self: center;
   }
 }
@@ -505,38 +514,7 @@
   50% { transform: translateY(10px); opacity: 0.3; }
 }
 
-/* SP用 ボイスコミック 音声ON/OFFボタン (タイル下) */
-.s3d-mute-toggle { display: none; }
 @media (max-width: 768px) {
-  .s3d-mute-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin: 24px auto 8px;
-    padding: 10px 18px;
-    background: #1a1a1a;
-    color: #fff;
-    border: 0;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(232, 90, 26, 0.35);
-    transition: background 0.2s, transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .s3d-mute-toggle:active { transform: scale(0.96); background: #e85500; }
-  .s3d-mute-icon { display: inline-flex; width: 18px; height: 18px; color: currentColor; }
-  .s3d-mute-icon svg { width: 100%; height: 100%; }
-  /* デフォルト(muted=true): 音声ONアイコン(speaker)を表示 → タップで音声ONに */
-  .s3d-mute-icon-off { display: none; }
-  .s3d-mute-toggle[data-muted="true"] .s3d-mute-icon-on { display: block; }
-  .s3d-mute-toggle[data-muted="true"] .s3d-mute-icon-off { display: none; }
-  /* 音声ON時: muteアイコンを表示 → タップで音声OFFに */
-  .s3d-mute-toggle[data-muted="false"] .s3d-mute-icon-on { display: none; }
-  .s3d-mute-toggle[data-muted="false"] .s3d-mute-icon-off { display: block; }
-  /* ボタンを中央寄せ */
   .s3d-screens { margin-bottom: 0; }
   .s3d-screens-wrap { text-align: center; }
 }

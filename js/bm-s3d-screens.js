@@ -100,23 +100,39 @@
       }
     });
 
-    // SP用 ボイスコミック 音声ON/OFFトグル (YouTube IFrame API postMessage)
-    var muteBtn = document.getElementById('s3dMuteToggle');
+    // ボイスコミック 音声調節UI (YouTube IFrame API を postMessage で操作)
     var ytIframe = document.getElementById('s3dVideoIframe');
-    if (muteBtn && ytIframe) {
-      muteBtn.addEventListener('click', function() {
-        var isMuted = muteBtn.getAttribute('data-muted') === 'true';
-        var cmd = isMuted
-          ? '{"event":"command","func":"unMute","args":""}'
-          : '{"event":"command","func":"mute","args":""}';
+    var audioBar = document.getElementById('s3dAudioBar');
+    var muteBtn = document.getElementById('s3dAudioMute');
+    var volSlider = document.getElementById('s3dAudioVol');
+    if (ytIframe && audioBar && muteBtn && volSlider) {
+      function ytCmd(func, args) {
         try {
-          ytIframe.contentWindow.postMessage(cmd, '*');
+          ytIframe.contentWindow.postMessage(
+            JSON.stringify({ event: 'command', func: func, args: args || '' }), '*');
         } catch (e) {}
-        muteBtn.setAttribute('data-muted', isMuted ? 'false' : 'true');
-        var newLabel = isMuted ? 'ボイスコミックの音声をオフにする' : 'ボイスコミックの音声をオンにする';
-        muteBtn.setAttribute('aria-label', newLabel);
-        var textEl = muteBtn.querySelector('.s3d-mute-text');
-        if (textEl) textEl.textContent = newLabel;
+      }
+      function setMuted(muted) {
+        audioBar.setAttribute('data-muted', muted ? 'true' : 'false');
+        muteBtn.setAttribute('aria-label', muted ? '音声をオンにする' : '音声をオフにする');
+        if (muted) {
+          ytCmd('mute');
+        } else {
+          ytCmd('unMute');
+          ytCmd('setVolume', [parseInt(volSlider.value, 10)]);
+        }
+      }
+      muteBtn.addEventListener('click', function() {
+        setMuted(audioBar.getAttribute('data-muted') !== 'true');
+      });
+      volSlider.addEventListener('input', function() {
+        var v = parseInt(volSlider.value, 10);
+        if (v === 0) {
+          setMuted(true);
+        } else {
+          ytCmd('setVolume', [v]);
+          if (audioBar.getAttribute('data-muted') === 'true') setMuted(false);
+        }
       });
     }
   }
