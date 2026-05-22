@@ -302,7 +302,34 @@
       next.addEventListener('click', function() { show(idx + 1); });
       document.body.appendChild(prev);
       document.body.appendChild(next);
-      makeGuide('◀ ▶ ボタンでページを送れます');
+
+      // 指スワイプ(スマホ): 縦横どちらのスワイプでもページ送り
+      var tx = 0, ty = 0;
+      viewer.addEventListener('touchstart', function(e) {
+        var t = e.changedTouches[0]; tx = t.clientX; ty = t.clientY;
+      }, { passive: true });
+      viewer.addEventListener('touchend', function(e) {
+        var t = e.changedTouches[0];
+        var dx = t.clientX - tx, dy = t.clientY - ty;
+        var ax = Math.abs(dx), ay = Math.abs(dy);
+        if (Math.max(ax, ay) < 30) return; // タップ誤爆防止
+        var d = ax >= ay ? -dx : -dy;      // 左/上スワイプ = 次へ
+        show(d > 0 ? idx + 1 : idx - 1);
+      }, { passive: true });
+
+      // ホイール(PC=2本指スクロール): 縦横どちらの成分でもページ送り
+      var wheelLock = false;
+      viewer.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        if (wheelLock) return;
+        var d = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (Math.abs(d) < 6) return;
+        show(d > 0 ? idx + 1 : idx - 1);
+        wheelLock = true;
+        setTimeout(function() { wheelLock = false; }, 500);
+      }, { passive: false });
+
+      makeGuide('スワイプ / ◀ ▶ でページを送れます');
     }
 
     var slidesStarted = false;
