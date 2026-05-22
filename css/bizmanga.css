@@ -1327,9 +1327,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-campaign-link:hover > span { text-decoration: underline; text-underline-offset: 4px; }
 /* 補足キャプション: 大手企業からスタートアップまで幅広くご支援 */
 .bm-client-logos-caption {
-  margin: 8px auto 0;
+  margin: 10px auto 0;
   text-align: center;
-  font-size: clamp(12px, 1.2vw, 14px);
+  font-size: clamp(24px, 2.4vw, 28px);
   letter-spacing: 0.04em;
   color: var(--bm-text-sub, #666);
   font-weight: 600;
