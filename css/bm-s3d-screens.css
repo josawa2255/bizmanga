@@ -157,9 +157,10 @@
   -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 .s3d-screens.is-settled .s3d-screen iframe { pointer-events: auto; }
-/* Webtoonタイルはユーザー操作させない（自動スクロールのみで見せる） */
-.s3d-screen--hero iframe,
-.s3d-screens.is-settled .s3d-screen--hero iframe { pointer-events: none !important; }
+/* 縦読みタイルは手動操作(スクロール+上下矢印)を行うため、settle後は操作可能にする。
+   アニメーション中(settle前)はスクロール奪取を防ぐため none のまま。 */
+.s3d-screen--hero iframe { pointer-events: none; }
+.s3d-screens.is-settled .s3d-screen--hero iframe { pointer-events: auto; }
 /* 動画タイル: .s3d-screen の padding-box が既に黒なので背景上書きしない
    (上書きするとベゼルのオレンジグラデが黒に潰れる) */
 .s3d-screen--video iframe { pointer-events: auto !important; }
@@ -172,6 +173,34 @@
 .s3d-screen--video iframe {
   inset: 0 !important;
   height: 100% !important;
+}
+/* ボイスコミック操作ガイド: 表示後しばらくして自動フェードアウト */
+.s3d-video-guide {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 7;
+  max-width: 86%;
+  background: rgba(20, 20, 20, 0.78);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  padding: 7px 13px;
+  border-radius: 999px;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  animation: s3dGuideFade 6s ease forwards;
+  animation-delay: 1.2s;
+}
+@keyframes s3dGuideFade {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 

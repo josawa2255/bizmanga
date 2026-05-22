@@ -104,6 +104,55 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============ 手動操作UI (manual=1): 矢印ボタン + 操作ガイド ============ */
+    .ev-nav {
+      position: fixed;
+      z-index: 60;
+      width: 40px; height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+      color: #e85500;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+    .ev-nav svg { width: 22px; height: 22px; }
+    .ev-nav:active { background: #fff; }
+    /* 横方向(横読み・スライド): 左右中央 */
+    .ev-nav--prev { left: 8px;  top: 50%; transform: translateY(-50%); }
+    .ev-nav--next { right: 8px; top: 50%; transform: translateY(-50%); }
+    .ev-nav--prev:active { transform: translateY(-50%) scale(0.9); }
+    .ev-nav--next:active { transform: translateY(-50%) scale(0.9); }
+    /* 縦方向(縦読み): 右下に上下スタック */
+    .ev-nav--up   { right: 8px; bottom: 58px; }
+    .ev-nav--down { right: 8px; bottom: 12px; }
+    .ev-nav--up:active, .ev-nav--down:active { transform: scale(0.9); }
+
+    .ev-guide {
+      position: fixed;
+      left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      z-index: 61;
+      max-width: 86%;
+      background: rgba(20, 20, 20, 0.78);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      padding: 7px 13px;
+      border-radius: 999px;
+      white-space: nowrap;
+      text-align: center;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .ev-guide.is-hidden { opacity: 0; }
   </style>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#e85500">
@@ -129,6 +178,8 @@
     // slides=1: 1ページずつフェード遷移する slideshow モード
     var slidesMode = params.get('slides') === '1';
     var slideInterval = parseInt(params.get('interval') || '2000', 10);
+    // manual=1: 自動再生(縦スクロール/スライド)を止め、矢印ボタン + 手動操作にする
+    var manual = params.get('manual') === '1';
     // hold=1: 親から postMessage('s3d-start') を受け取るまで自動再生を保留する
     var holdMode = params.get('hold') === '1';
     var holdReleased = !holdMode;
@@ -146,6 +197,39 @@
     function gateStart(fn) {
       if (holdReleased) fn();
       else pendingStarter = fn;
+    }
+
+    // ============ 手動操作UI: 矢印ボタン + 操作ガイド ============
+    var CHEVRON = {
+      left:  'M15 18l-6-6 6-6', right: 'M9 18l6-6-6-6',
+      up:    'M6 15l6-6 6 6',   down:  'M6 9l6 6 6-6'
+    };
+    var SVGNS = 'http://www.w3.org/2000/svg';
+    function makeNav(modifier, dir, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ev-nav ev-nav--' + modifier;
+      b.setAttribute('aria-label', label);
+      var svg = document.createElementNS(SVGNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2.4');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      var path = document.createElementNS(SVGNS, 'path');
+      path.setAttribute('d', CHEVRON[dir]);
+      svg.appendChild(path);
+      b.appendChild(svg);
+      return b;
+    }
+    function makeGuide(text) {
+      var g = document.createElement('div');
+      g.className = 'ev-guide';
+      g.textContent = text;
+      document.body.appendChild(g);
+      setTimeout(function() { g.classList.add('is-hidden'); }, 4200);
+      return g;
     }
 
     if (!mangaId) {
@@ -193,7 +277,30 @@
         if (i === 0) img.className = 'is-active';
         sSlides.appendChild(img);
       });
+      if (manual) { waitImages(sSlides, setupSlidesManual); return; }
       waitImages(sSlides, function() { gateStart(startSlides); });
+    }
+
+    // 手動スライド: 左右矢印で1ページずつ送る
+    var slidesManualDone = false;
+    function setupSlidesManual() {
+      if (slidesManualDone) return;
+      slidesManualDone = true;
+      var imgs = sSlides.querySelectorAll('img');
+      if (!imgs.length) return;
+      var idx = 0;
+      function show(n) {
+        imgs[idx].classList.remove('is-active');
+        idx = (n + imgs.length) % imgs.length;
+        imgs[idx].classList.add('is-active');
+      }
+      var prev = makeNav('prev', 'left', '前のページ');
+      var next = makeNav('next', 'right', '次のページ');
+      prev.addEventListener('click', function() { show(idx - 1); });
+      next.addEventListener('click', function() { show(idx + 1); });
+      document.body.appendChild(prev);
+      document.body.appendChild(next);
+      makeGuide('◀ ▶ ボタンでページを送れます');
     }
 
     var slidesStarted = false;
@@ -216,7 +323,9 @@
       vStack.style.display = '';
       hStrip.style.display = 'none';
 
-      for (var rep = 0; rep < 2; rep++) {
+      // 自動スクロールは無限ループ用に2セット複製。手動は1セットのみ。
+      var reps = manual ? 1 : 2;
+      for (var rep = 0; rep < reps; rep++) {
         data.gallery.forEach(function(src, i) {
           var img = document.createElement('img');
           img.src = src;
@@ -226,7 +335,25 @@
           vStack.appendChild(img);
         });
       }
+      if (manual) { waitImages(vStack, setupVerticalManual); return; }
       waitImages(vStack, function() { gateStart(startVerticalScroll); });
+    }
+
+    // 手動縦スクロール: 指/ホイールで自由スクロール + 上下矢印で1画面送り
+    var verticalManualDone = false;
+    function setupVerticalManual() {
+      if (verticalManualDone) return;
+      verticalManualDone = true;
+      var up = makeNav('up', 'up', '上へスクロール');
+      var down = makeNav('down', 'down', '下へスクロール');
+      function step(dir) {
+        viewer.scrollBy({ top: dir * Math.round(viewer.clientHeight * 0.85), behavior: 'smooth' });
+      }
+      up.addEventListener('click', function() { step(-1); });
+      down.addEventListener('click', function() { step(1); });
+      document.body.appendChild(up);
+      document.body.appendChild(down);
+      makeGuide('スクロールして読めます');
     }
 
     var vStarted = false;

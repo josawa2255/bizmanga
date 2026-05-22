@@ -128,6 +128,18 @@
 - ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
 - ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
 
+### 2.0b embed-viewer のパラメータ（埋込ビューア）
+
+`embed-viewer.html` は iframe 埋込専用の漫画ビューア。主なクエリ:
+
+| パラメータ | 役割 |
+|---|---|
+| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得） |
+| `slides=1` | 1ページずつのスライド表示（横読み向け）。`interval`で自動切替間隔(ms) |
+| `speed=0.5` | 縦/横自動スクロール速度(px/frame) |
+| `hold=1` | 親から`postMessage('s3d-start')`を受けるまで自動再生を保留 |
+| **`manual=1`** ⭐ | **自動再生を止め手動操作にする。矢印ボタン`.ev-nav`＋操作ガイド`.ev-guide`を生成。slides時=左右矢印でページ送り、縦読み時=指スクロール＋上下矢印（縦は複製を1セットに）。2026-05-22 追加・ホームs3dで採用** |
+
 ### 2.0 制作事例の2系統URL（重要）
 
 BizManga には**目的の異なる2種類の作品URL**が並列で存在する。使い分け必須。
@@ -351,9 +363,13 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - 位置: ホームギャラリー（`#newWorks`）の直前
 - 役割: 「さまざまな媒体・形式で制作しています」— カラー漫画 / Webtoon / ボイスコミック の3媒体を3つのiPhone型端末で showcase
 - タイル構成（左→右）:
-  - カラー: `/embed-viewer?manga=ichinohe-home&slides=1&interval=4000`（4秒ごとに1ページずつフェード遷移）
-  - Webtoon(中央・hero): `/embed-viewer?manga=omatome-ninja-new&speed=0.5`
-  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls）
+  - 横読み: `/embed-viewer?manga=ichinohe-home&slides=1&manual=1`（左右矢印で1ページ送り。自動フェード廃止）
+  - 縦読み(中央・hero): `/embed-viewer?manga=omatome-ninja-new&manual=1`（指で縦スクロール＋上下矢印。自動スクロール廃止）
+  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+controls。自動再生は維持し操作ガイド`.s3d-video-guide`のみ追加）
+- **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋操作ガイド明示**に統一。
+  - 横読み=左右矢印、縦読み=指スクロール＋上下矢印、ボイス=タップで音声/再生操作（自動再生のみ維持）
+  - 矢印`.ev-nav`・ガイド`.ev-guide`は embed-viewer 内で`manual=1`時のみ生成。ガイドは表示後4.2秒で自動フェード
+  - 中央hero iframe は手動操作のため `is-settled` 後に `pointer-events: auto`（旧: 自動スクロール専用で `none` 固定だった）
 - iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + オレンジ光沢ベゼル
 - ラベル位置: タイル直上(`bottom: 100% + 14px`)
 - CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)
