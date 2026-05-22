@@ -257,17 +257,23 @@ svg{max-width:100%;height:auto;}
         </div>
 
         <div class="s3d-screens" id="s3dScreens">
-          <div class="s3d-screen" data-idx="0">
-            <iframe src="/embed-viewer?manga=ichinohe-home&slides=1&manual=1" loading="lazy" title="横読みサンプル（左右ボタンでページ送り）"></iframe>
-            <span class="s3d-notch" aria-hidden="true"></span>
-            <span class="s3d-home-indicator" aria-hidden="true"></span>
+          <div class="s3d-col" data-idx="0">
+            <div class="s3d-screen">
+              <iframe src="/embed-viewer?manga=ichinohe-home&slides=1&manual=1" loading="lazy" title="横読みサンプル（左右タップでページ送り）"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
+            </div>
+            <p class="s3d-tile-guide" data-ja="画面左タップ＝次ページ / 右タップ＝前ページ" data-en="Tap left = next / right = previous">画面左タップ＝次ページ / 右タップ＝前ページ</p>
           </div>
-          <div class="s3d-screen s3d-screen--hero" data-idx="1">
-            <iframe src="/embed-viewer?manga=omatome-ninja-new&manual=1" loading="lazy" title="縦読みサンプル（スクロールで読む）"></iframe>
-            <span class="s3d-notch" aria-hidden="true"></span>
-            <span class="s3d-home-indicator" aria-hidden="true"></span>
+          <div class="s3d-col" data-idx="1">
+            <div class="s3d-screen s3d-screen--hero">
+              <iframe src="/embed-viewer?manga=omatome-ninja-new&manual=1" loading="lazy" title="縦読みサンプル（スクロールで読む）"></iframe>
+              <span class="s3d-notch" aria-hidden="true"></span>
+              <span class="s3d-home-indicator" aria-hidden="true"></span>
+            </div>
+            <p class="s3d-tile-guide" data-ja="スクロールして読めます" data-en="Scroll to read">スクロールして読めます</p>
           </div>
-          <div class="s3d-col-video" data-idx="2">
+          <div class="s3d-col s3d-col-video" data-idx="2">
             <div class="s3d-screen s3d-screen--video">
               <iframe id="s3dVideoIframe" loading="lazy" src="https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&mute=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=0&enablejsapi=1" title="ボイスコミックサンプル" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" frameborder="0"></iframe>
               <span class="s3d-notch" aria-hidden="true"></span>

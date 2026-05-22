@@ -59,13 +59,33 @@
   will-change: transform;
   transform-origin: 50% 50%;
 }
-/* ボイスコミック列: 端末 + 直下の音声調節バー を縦に積む */
-.s3d-col-video {
+/* 各列: 端末 + 直下のガイド/操作UI を縦に積む */
+.s3d-col {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 }
+/* 端末直下の操作ガイド（横読み/縦読み） */
+.s3d-tile-guide {
+  width: var(--s3d-tile-w);
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 7px 14px;
+  border-radius: 100px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(232, 90, 26, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  color: #333;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s3d-screen.is-ready + .s3d-tile-guide { opacity: 1; }
 
 /* 1台のスマホ端末 */
 .s3d-screen {
@@ -372,15 +392,14 @@
   }
   /* 並び順: ラベル → 端末 → ラベル → 端末 ... */
   .s3d-label[data-tile="0"] { order: 1; }
-  .s3d-screen[data-idx="0"] { order: 2; }
+  .s3d-col[data-idx="0"] { order: 2; }
   .s3d-label[data-tile="1"] { order: 3; }
-  .s3d-screen[data-idx="1"] { order: 4; }
+  .s3d-col[data-idx="1"] { order: 4; }
   .s3d-label[data-tile="2"] { order: 5; }
-  .s3d-col-video { order: 6; }
+  .s3d-col[data-idx="2"] { order: 6; }
   /* 全要素を中央寄せ (Z字をやめて縦に真っ直ぐ並べる) */
   .s3d-label,
-  .s3d-screen,
-  .s3d-col-video {
+  .s3d-col {
     justify-self: center;
   }
 }

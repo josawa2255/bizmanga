@@ -152,23 +152,6 @@
     .ev-tap[disabled] { pointer-events: none; }
     .ev-tap[disabled] svg { opacity: 0.12; }
 
-    /* 操作ガイド: スマホ最下部にドッキングする横長バー */
-    .ev-guide {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      z-index: 61;
-      background: rgba(20, 20, 20, 0.74);
-      color: #fff;
-      font-size: 11px;
-      line-height: 1.2;
-      letter-spacing: 0.04em;
-      padding: 9px 12px;
-      text-align: center;
-      pointer-events: none;
-      opacity: 1;
-      transition: opacity 0.5s ease;
-    }
-    .ev-guide.is-hidden { opacity: 0; }
   </style>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#e85500">
@@ -258,15 +241,6 @@
       b.appendChild(svg);
       return b;
     }
-    function makeGuide(text, persist) {
-      var g = document.createElement('div');
-      g.className = 'ev-guide';
-      g.textContent = text;
-      document.body.appendChild(g);
-      // persist=true のガイドは常時表示（自動フェードしない）
-      if (!persist) setTimeout(function() { g.classList.add('is-hidden'); }, 4200);
-      return g;
-    }
 
     if (!mangaId) {
       document.getElementById('loading').textContent = 'NO MANGA ID';
@@ -345,8 +319,7 @@
       zonePrev.addEventListener('click', function() { show(idx - 1); });
       document.body.appendChild(zoneNext);
       document.body.appendChild(zonePrev);
-
-      makeGuide('画面左タップ＝次ページ / 右タップ＝前ページ', true);
+      // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
     var slidesStarted = false;
@@ -399,7 +372,7 @@
       down.addEventListener('click', function() { step(1); });
       document.body.appendChild(up);
       document.body.appendChild(down);
-      makeGuide('スクロールして読めます', true);
+      // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
     var vStarted = false;

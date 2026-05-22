@@ -368,7 +368,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+**controls=0**）。自動再生は維持し、**音声調節UI`.s3d-audio-bar`（ミュートトグル＋音量スライダー）を端末の直下に配置**（端末をラッパー`.s3d-col-video`で囲み、`.s3d-screen`はoverflow/maskで内部閉じ込めのためバーは兄弟要素として外側下に出す。`.s3d-screens`は`grid-template-rows:auto; align-items:start`でこの列だけ縦に伸ばす）
 - **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋下部ドッキングUI**に統一。
   - 横読み=左右タップゾーン`.ev-tap`（端で停止/ループ無し）、縦読み=スクロール＋上下矢印`.ev-nav`、ボイス=`.s3d-audio-bar`で音量調節（YouTube IFrame API `mute`/`unMute`/`setVolume`をpostMessage）
-  - ガイド`.ev-guide`は embed-viewer 最下部のバー。横読みは4.2秒でフェード、縦読みは常時表示
+  - **操作ガイドは端末の直下に表示**（親ページ`index.html`の`.s3d-tile-guide`、白ピル）。iframe内には出さない。3端末ともラッパー`.s3d-col`で囲み、端末の兄弟要素として直下にガイド/音声バーを配置
   - 中央hero iframe は手動操作のため `is-settled` 後に `pointer-events: auto`（旧: 自動スクロール専用で `none` 固定だった）
   - 旧`.s3d-mute-toggle`（SP専用ボタン）は廃止し`.s3d-audio-bar`に統合
 - iPhone UI 要素: 角丸44px + Dynamic Island(`.s3d-notch`) + ホームインジケータ(`.s3d-home-indicator`) + オレンジ光沢ベゼル
