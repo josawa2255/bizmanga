@@ -123,6 +123,11 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+  /* ロゴ横潰れ防止のため狭幅では間隔を詰める（お問い合わせ非表示は下部の
+     @media 768 ブロックで実施）。ロゴ高さも少し下げて 320px 端末でも収める */
+  .bm-header-inner { gap: 10px; padding: 0 14px; }
+  .bm-header-right { gap: 6px; }
+  .bm-header-inner .bm-logo-img { height: 33px; }
 }
 .bm-header.scrolled {
   box-shadow: 0 2px 20px rgba(0,0,0,0.08);
@@ -134,7 +139,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   height: 100%;
   min-width: 0; /* flex overflow 防止 */
 }
-.bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; flex-shrink: 0; aspect-ratio: 1316 / 370; }
+/* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
+.bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
+.bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; max-width: none; flex-shrink: 0; aspect-ratio: 1316 / 370; }
 .bm-nav {
   display: flex; align-items: center; gap: 24px;
   min-width: 0; flex-shrink: 1;
@@ -5171,14 +5178,11 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   body.bm-nav-locked {
     overflow: hidden;
   }
-  /* モバイル: お問い合わせ(プライマリ)は常時可視、LINEはハンバーガー内へ */
-  .bm-header-right .bm-nav-cta--line { display: none; }
-  .bm-header-right .bm-nav-cta:not(.bm-nav-cta--line) {
-    display: inline-flex;
-    padding: 10px 18px;
-    font-size: 13px;
-    min-height: 40px;
-  }
+  /* モバイル: お問い合わせ(.bm-nav-cta)はヘッダーから省く。
+     ロゴを正しい比率で表示すると横幅があふれるため。
+     お問い合わせは画面下部の追従CTA(.bm-fab)で全ページ常時到達できる。
+     ヘッダー右は「言語切替 + ハンバーガー」のみ。 */
+  .bm-header-right .bm-nav-cta { display: none; }
   .bm-header-right .bm-lang-switch { order: -1; }
 
   /* モバイル: ヘッダーの丸アイコンCTA(LINE/電話)は丸ごと非表示
