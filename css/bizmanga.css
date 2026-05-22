@@ -1316,6 +1316,24 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   flex: 0 0 auto;
   text-align: center;
 }
+/* シナリオ制作無料キャンペーン: クリックでお問い合わせへ */
+.bm-campaign-link {
+  text-decoration: none;
+  color: var(--bm-accent);
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.bm-campaign-link:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.bm-campaign-link:hover > span { text-decoration: underline; text-underline-offset: 4px; }
+/* 補足キャプション: 大手企業からスタートアップまで幅広くご支援 */
+.bm-client-logos-caption {
+  margin: 8px auto 0;
+  text-align: center;
+  font-size: clamp(12px, 1.2vw, 14px);
+  letter-spacing: 0.04em;
+  color: var(--bm-text-sub, #666);
+  font-weight: 600;
+}
 .bm-client-laurel {
   width: clamp(24px, 2.2vw, 36px);
   height: clamp(44px, 4vw, 64px);
