@@ -124,6 +124,7 @@
     }
     .ev-nav svg { width: 22px; height: 22px; }
     .ev-nav:active { background: #fff; }
+    .ev-nav[disabled] { opacity: 0.3; pointer-events: none; cursor: default; }
     /* 横方向(横読み・スライド): 左右中央 */
     .ev-nav--prev { left: 8px;  top: 50%; transform: translateY(-50%); }
     .ev-nav--next { right: 8px; top: 50%; transform: translateY(-50%); }
@@ -291,13 +292,21 @@
       var imgs = sSlides.querySelectorAll('img');
       if (!imgs.length) return;
       var idx = 0;
-      function show(n) {
-        imgs[idx].classList.remove('is-active');
-        idx = (n + imgs.length) % imgs.length;
-        imgs[idx].classList.add('is-active');
-      }
+      var last = imgs.length - 1;
       var prev = makeNav('prev', 'left', '前のページ');
       var next = makeNav('next', 'right', '次のページ');
+      function show(n) {
+        // ループしない: 1ページ目より前 / 最終ページより後ろには進まない
+        var clamped = Math.max(0, Math.min(last, n));
+        if (clamped === idx) return;
+        imgs[idx].classList.remove('is-active');
+        idx = clamped;
+        imgs[idx].classList.add('is-active');
+        prev.disabled = idx === 0;
+        next.disabled = idx === last;
+      }
+      prev.disabled = true; // 初期は1ページ目なので「前」を無効
+      next.disabled = last === 0;
       prev.addEventListener('click', function() { show(idx - 1); });
       next.addEventListener('click', function() { show(idx + 1); });
       document.body.appendChild(prev);
