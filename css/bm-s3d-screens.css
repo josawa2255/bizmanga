@@ -425,30 +425,6 @@
   .s3d-heading-cta { padding: 8px 18px; font-size: 12px; }
 }
 
-/* タイル下: ボタンではなくシンプルなテキストリンク */
-.s3d-bottom-link {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 26px);
-  transform: translateX(-50%);
-  z-index: 5;
-  color: #000;
-  font-size: clamp(12px, 1.05vw, 14px);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  white-space: nowrap;
-  opacity: 0.85;
-  transition: opacity 0.25s ease, color 0.25s ease, transform 0.25s ease;
-}
-.s3d-bottom-link:hover {
-  opacity: 1;
-  color: var(--bm-accent);
-  transform: translateX(-50%) translateY(2px);
-}
-@media (max-width: 768px) {
-  .s3d-bottom-link { top: calc(100% + 16px); font-size: 11px; }
-}
 .s3d-label {
   text-align: center;
   padding: 0 8px;
