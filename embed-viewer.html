@@ -52,10 +52,11 @@
     .s-slides img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      /* contain だと縦長スマホ枠で上下に白余白が出るため cover にし、
-         object-position: top で表紙タイトル側を優先表示 */
-      object-fit: cover;
-      object-position: top center;
+      /* 漫画ページ全体を見切れなく表示する。cover だと縦長スマホ枠で
+         左右(または上下)がトリミングされ漫画が切れるため contain。
+         余白は #fff 背景に馴染ませる */
+      object-fit: contain;
+      object-position: center;
       background: #fff;
       opacity: 0;
       transition: opacity 0.45s ease;
