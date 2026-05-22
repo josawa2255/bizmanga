@@ -224,12 +224,13 @@
       b.appendChild(svg);
       return b;
     }
-    function makeGuide(text) {
+    function makeGuide(text, persist) {
       var g = document.createElement('div');
       g.className = 'ev-guide';
       g.textContent = text;
       document.body.appendChild(g);
-      setTimeout(function() { g.classList.add('is-hidden'); }, 4200);
+      // persist=true のガイドは常時表示（自動フェードしない）
+      if (!persist) setTimeout(function() { g.classList.add('is-hidden'); }, 4200);
       return g;
     }
 
@@ -354,7 +355,7 @@
       down.addEventListener('click', function() { step(1); });
       document.body.appendChild(up);
       document.body.appendChild(down);
-      makeGuide('スクロールして読めます');
+      makeGuide('スクロールして読めます', true);
     }
 
     var vStarted = false;
