@@ -450,6 +450,14 @@
         { tag: 'polyline', attrs: { points: '22,6 12,13 2,6' } }
       ]
     }));
+    fab.appendChild(buildFabBtn({
+      cls: 'bm-fab__btn--tel',
+      href: 'tel:03-6261-0764',
+      labelJa: '電話で相談',
+      labelEn: 'Call us',
+      iconFill: true,
+      paths: [{ tag: 'path', attrs: { d: 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z' } }]
+    }));
     document.body.appendChild(fab);
     if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en' && window.i18n.translateAll) {
       window.i18n.translateAll();

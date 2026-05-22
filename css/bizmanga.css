@@ -507,6 +507,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 .bm-fab__btn--line:hover { background: #05a847; }
 .bm-fab__btn--contact { background: var(--bm-accent); }
 .bm-fab__btn--contact:hover { background: var(--bm-accent-hover); }
+.bm-fab__btn--tel { background: #2d3340; }
+.bm-fab__btn--tel:hover { background: #1c212b; }
 
 /* Tooltip (PCホバー時に左側へ表示) */
 .bm-fab__btn::before,
