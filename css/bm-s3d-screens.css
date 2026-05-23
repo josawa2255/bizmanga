@@ -59,10 +59,11 @@
   will-change: transform;
   transform-origin: 50% 50%;
 }
-/* 各列: 端末 + 直下のガイド/操作UI を縦に積む */
+/* 各列: 端末 + ガイド/操作UI を縦に積む。
+   column-reverse で操作UI(ガイド/音声バー)を端末の「上」に表示（DOM順は端末→UIのまま） */
 .s3d-col {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 12px;
 }
