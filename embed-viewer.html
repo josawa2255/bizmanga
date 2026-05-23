@@ -434,6 +434,24 @@
       // スクロールできるよう viewer をフォーカス可能に
       viewer.setAttribute('tabindex', '0');
       viewer.style.outline = 'none';
+
+      // 入れ子iframe＋角丸mask環境ではネイティブの縦スクロールが効かないことがあるため、
+      // ドラッグ/ホイールで scrollTop を直接動かして確実にページ送りできるようにする
+      var lastY = 0;
+      viewer.addEventListener('touchstart', function(e) {
+        lastY = e.touches[0].clientY;
+      }, { passive: true });
+      viewer.addEventListener('touchmove', function(e) {
+        var y = e.touches[0].clientY;
+        viewer.scrollTop -= (y - lastY);
+        lastY = y;
+        e.preventDefault(); // ネイティブと二重に動かさない
+      }, { passive: false });
+      viewer.addEventListener('wheel', function(e) {
+        viewer.scrollTop += e.deltaY;
+        e.preventDefault();
+      }, { passive: false });
+
       addReadOverlay();
       // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
