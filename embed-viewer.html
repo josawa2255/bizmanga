@@ -353,6 +353,8 @@
       zonePrev.addEventListener('click', function() { show(idx - 1); });
       document.body.appendChild(zoneNext);
       document.body.appendChild(zonePrev);
+      // 漫画の上に「漫画を読む」開始ボタン。タップ後に左右タップゾーンで操作開始
+      addReadOverlay();
       // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
@@ -392,16 +394,9 @@
       waitImages(vStack, function() { gateStart(startVerticalScroll); });
     }
 
-    // 手動縦スクロール: 指/ホイールで自由スクロール + 上下矢印で1画面送り
-    var verticalManualDone = false;
-    function setupVerticalManual() {
-      if (verticalManualDone) return;
-      verticalManualDone = true;
-      // スクロールできるよう viewer をフォーカス可能に
-      viewer.setAttribute('tabindex', '0');
-      viewer.style.outline = 'none';
-
-      // 漫画の上に「漫画を読む」開始ボタンを表示。タップで読了開始（オーバーレイ除去）
+    // 漫画の上に「漫画を読む」開始ボタンを表示。タップでオーバーレイ除去＋onStart実行。
+    // 縦読み・横読み共通（タップという明確なジェスチャーを起点に操作可能化する）
+    function addReadOverlay(onStart) {
       var overlay = document.createElement('button');
       overlay.type = 'button';
       overlay.className = 'ev-read-overlay';
@@ -426,8 +421,20 @@
       overlay.addEventListener('click', function() {
         overlay.remove();
         try { viewer.focus({ preventScroll: true }); } catch (e) { try { viewer.focus(); } catch (e2) {} }
+        if (typeof onStart === 'function') onStart();
       });
       document.body.appendChild(overlay);
+    }
+
+    // 手動縦スクロール: 「漫画を読む」タップ後、指/ホイールで自由スクロール
+    var verticalManualDone = false;
+    function setupVerticalManual() {
+      if (verticalManualDone) return;
+      verticalManualDone = true;
+      // スクロールできるよう viewer をフォーカス可能に
+      viewer.setAttribute('tabindex', '0');
+      viewer.style.outline = 'none';
+      addReadOverlay();
       // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
