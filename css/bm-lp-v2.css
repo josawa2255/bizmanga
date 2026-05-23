@@ -832,6 +832,14 @@
 .lpv2-merit-card { height: 100%; }
 /* 展開したカードだけ自然な高さ (隣カードに追従させない) */
 .lpv2-merit-card.is-open { align-self: start; height: auto; }
+/* どれか1枚でも開いたら行の高さ追従(1fr/stretch)をやめ、
+   各カードを内容なりの高さに。これをしないと同じ行の隣カードが
+   伸びた行トラックに合わせて白く間延びする (SP=上下隣 / PC=左右隣) */
+.lpv2-merit-grid:has(.lpv2-merit-card.is-open) {
+  grid-auto-rows: auto;
+  align-items: start;
+}
+.lpv2-merit-grid:has(.lpv2-merit-card.is-open) .lpv2-merit-card { height: auto; }
 @media (max-width: 720px) { .lpv2-merit-grid { grid-template-columns: 1fr; gap: 22px; } }
 
 .lpv2-merit-card {
