@@ -393,8 +393,11 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, var(--s3d-tile-w));
-  grid-template-rows: auto auto;
-  gap: var(--s3d-gap);
+  /* 1行のみ。以前は auto auto で空の2行目との間に --s3d-gap(最大220px)の
+     行間が入り、ラベルとUIが離れていた。横方向の間隔は column-gap で確保 */
+  grid-template-rows: auto;
+  column-gap: var(--s3d-gap);
+  row-gap: 0;
   width: calc(var(--s3d-tile-w) * 3 + var(--s3d-gap) * 2);
   z-index: 5;
   align-items: end;
