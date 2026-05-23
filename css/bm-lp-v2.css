@@ -644,7 +644,10 @@
   align-items: start; /* 片方を展開してももう片方が引っ張られない */
   transition: transform 0.2s ease;
 }
-.lpv2-pain__illust { align-self: start; }
+/* PC: 画像を body(row1) と detail(row2) の2行にまたがせる。
+   こうしないと縦長画像が row1 を高くし、row2 の詳細が画像の高さ分
+   下に押し出されて本文との間に大きな空白ができる (#034) */
+.lpv2-pain__illust { align-self: start; grid-row: 1 / span 2; }
 .lpv2-pain:hover { transform: none; box-shadow: none; }
 /* 偶数番目はイラスト ↔ テキストを左右逆転 (Z字) */
 .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 2; }
@@ -655,7 +658,7 @@
   /* SP順序: body → detail (詳しく読む展開) → illust (写真) */
   .lpv2-pain .lpv2-pain__body { order: 1; }
   .lpv2-pain .lpv2-pain__detail { order: 2; }
-  .lpv2-pain .lpv2-pain__illust { order: 3; }
+  .lpv2-pain .lpv2-pain__illust { order: 3; grid-row: auto; }
   .lpv2-pain:nth-child(even) .lpv2-pain__body { order: 1; }
   .lpv2-pain:nth-child(even) .lpv2-pain__illust { order: 3; }
 }
