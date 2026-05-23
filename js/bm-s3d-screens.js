@@ -12,6 +12,34 @@
       setTimeout(function() { s.classList.add('is-ready'); }, 150 + i * 120);
     });
 
+    // ボイスコミック: セクション表示時に音声ON（初期から音ありで体験させる）。
+    // 自動再生はブラウザ仕様上ミュート必須のため、画面に入った瞬間に unMute する。
+    function unmuteVoice() {
+      var yt = document.getElementById('s3dVideoIframe');
+      if (!yt) return;
+      var bar = document.getElementById('s3dAudioBar');
+      var vol = document.getElementById('s3dAudioVol');
+      var v = vol ? parseInt(vol.value, 10) : 70;
+      function cmd(func, args) {
+        try {
+          yt.contentWindow.postMessage(
+            JSON.stringify({ event: 'command', func: func, args: args || '' }), '*');
+        } catch (e) {}
+      }
+      if (bar) bar.setAttribute('data-muted', 'false');
+      var mb = document.getElementById('s3dAudioMute');
+      if (mb) mb.setAttribute('aria-label', '音声をオフにする');
+      // プレイヤー準備タイミングがまちまちなので数回リトライ。
+      // ただしユーザーが手動でミュートしたら（data-muted=true）上書きしない
+      [0, 400, 900, 1600].forEach(function(d) {
+        setTimeout(function() {
+          if (bar && bar.getAttribute('data-muted') === 'true') return;
+          cmd('unMute');
+          cmd('setVolume', [vol ? parseInt(vol.value, 10) : v]);
+        }, d);
+      });
+    }
+
     // セクションが画面に入ったら、保留中の embed-viewer iframe に開始合図を送る
     var iframeStartFired = false;
     function startEmbedIframes() {
@@ -21,6 +49,7 @@
       iframes.forEach(function(f) {
         try { f.contentWindow && f.contentWindow.postMessage('s3d-start', '*'); } catch (e) {}
       });
+      unmuteVoice();
     }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function(entries) {
