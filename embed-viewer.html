@@ -146,9 +146,8 @@
     }
     .ev-tap--left  { left: 0;  justify-content: flex-start; }
     .ev-tap--right { right: 0; justify-content: flex-end; }
-    /* タップ位置のヒント chevron（うっすら表示、押下で一瞬濃く） */
-    .ev-tap svg { width: 26px; height: 26px; margin: 0 10px; color: rgba(40,40,40,0.28); }
-    .ev-tap:active svg { color: rgba(232,85,0,0.9); }
+    /* chevronヒントは非表示（タップゾーンの機能は維持） */
+    .ev-tap svg { display: none; }
     .ev-tap[disabled] { pointer-events: none; }
     .ev-tap[disabled] svg { opacity: 0.12; }
 
