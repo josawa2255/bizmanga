@@ -1119,27 +1119,76 @@
  * 13. Flow (storyboard)
  * ------------------------------------------------------------------ */
 .lpv2-flow { background: var(--lpv2-paper); }
+/* 連結グリッド: gap(3px)に黒背景を覗かせて「罫線共有」を表現。
+   隙間=罫線なので二重線にならず note.com 参考のように全カードがくっつく */
 .lpv2-flow-grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: var(--lpv2-border-w);
+  background: var(--lpv2-ink);
+  border: var(--lpv2-border-w) solid var(--lpv2-ink);
   max-width: 1180px; margin: 0 auto;
 }
 @media (max-width: 1000px) { .lpv2-flow-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .lpv2-flow-grid { grid-template-columns: 1fr; gap: 16px; } }
+@media (max-width: 560px)  { .lpv2-flow-grid { grid-template-columns: 1fr; } }
 
+/* セル = フリップのパースペクティブ枠。通常はフラット(影なし) */
 .lpv2-flow-step {
   position: relative;
-  background: #fff;
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  padding: 28px 22px 24px;
-  box-shadow: var(--lpv2-shadow-panel-sm);
-  text-align: left;
+  height: 200px;
+  margin: 0; padding: 0; border: 0;
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  display: flex; flex-direction: column; gap: 10px;
   font-family: inherit;
+  text-align: left;
+  -webkit-appearance: none; appearance: none;
+  perspective: 1200px;
 }
-.lpv2-flow-step:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--lpv2-rule); }
+@media (max-width: 1000px) { .lpv2-flow-step { height: 190px; } }
+@media (max-width: 560px)  { .lpv2-flow-step { height: 168px; } }
+
+/* 回転する本体 */
+.lpv2-flow-step__inner {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+  z-index: 1;
+}
+/* ホバー: そのカードだけ浮かせて黒のオフセット影で立体化 */
+.lpv2-flow-step:hover { z-index: 4; }
+.lpv2-flow-step:hover .lpv2-flow-step__inner {
+  transform: translate(-4px, -4px);
+  box-shadow: 9px 9px 0 var(--lpv2-rule);
+}
+/* クリックで裏返る (シャッフルのように回転) */
+.lpv2-flow-step.is-flipped { z-index: 5; }
+.lpv2-flow-step.is-flipped .lpv2-flow-step__inner {
+  transform: rotateY(180deg);
+  box-shadow: 9px 9px 0 var(--lpv2-rule);
+}
+.lpv2-flow-step:focus-visible { outline: none; }
+.lpv2-flow-step:focus-visible .lpv2-flow-step__inner {
+  box-shadow: 0 0 0 3px var(--lpv2-accent);
+}
+
+/* 表裏フェイス */
+.lpv2-flow-step__face {
+  position: absolute; inset: 0;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  display: flex; flex-direction: column;
+  padding: 22px 20px 18px;
+  overflow: hidden;
+}
+.lpv2-flow-step__front {
+  background: #fff;
+  justify-content: flex-start;
+}
+.lpv2-flow-step__back {
+  background: var(--lpv2-cream);
+  border: 2px solid var(--lpv2-accent);
+  transform: rotateY(180deg);
+  justify-content: flex-start; gap: 8px;
+}
+
 .lpv2-flow-step__num {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
@@ -1147,7 +1196,7 @@
   line-height: 0.9;
   color: var(--lpv2-accent-soft);
   -webkit-text-stroke: 1.5px var(--lpv2-accent);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   letter-spacing: -0.04em;
 }
 .lpv2-flow-step__name {
@@ -1158,10 +1207,29 @@
   color: var(--lpv2-ink);
   letter-spacing: 0.02em;
 }
+/* 表面下部の「詳細を見る +」ヒント */
+.lpv2-flow-step__hint {
+  margin-top: auto;
+  font-family: var(--lpv2-font-mono);
+  font-size: 11px; font-weight: 900;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--lpv2-accent);
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.lpv2-flow-step__hint::after { content: "+"; font-size: 15px; line-height: 1; }
+.lpv2-flow-step.is-flipped .lpv2-flow-step__hint::after { content: "−"; }
+/* 裏面 */
+.lpv2-flow-step__back-name {
+  font-family: var(--lpv2-font-mono);
+  font-size: 12px; font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--lpv2-accent);
+}
 .lpv2-flow-step__desc {
-  font-size: 13px; line-height: 1.9;
+  font-size: 12.5px; line-height: 1.8;
   color: var(--lpv2-ink-soft);
   margin: 0;
+  overflow: auto;
 }
 
 /* ------------------------------------------------------------------
@@ -1367,7 +1435,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lpv2-reveal { opacity: 1; transform: none; transition: none; }
-  .lpv2-btn, .lpv2-pain, .lpv2-merit-card, .lpv2-case, .lpv2-format, .lpv2-flow-step, .lpv2-faq-item, .lpv2-related-card {
+  .lpv2-btn, .lpv2-pain, .lpv2-merit-card, .lpv2-case, .lpv2-format, .lpv2-flow-step, .lpv2-flow-step__inner, .lpv2-faq-item, .lpv2-related-card {
     transition: none;
   }
 }

@@ -119,10 +119,24 @@
     });
   }
 
+  /* -------------------------------------------------------------- */
+  /* 4. Flow step flip — click flips the card to reveal the detail   */
+  /* -------------------------------------------------------------- */
+  function bindFlowFlip() {
+    var steps = document.querySelectorAll('.lpv2-flow-step');
+    steps.forEach(function (step) {
+      step.addEventListener('click', function () {
+        var flipped = step.classList.toggle('is-flipped');
+        step.setAttribute('aria-expanded', flipped ? 'true' : 'false');
+      });
+    });
+  }
+
   function init() {
     bindPanelToggles();
     bindScrollspy();
     bindReveal();
+    bindFlowFlip();
   }
 
   if (document.readyState === 'loading') {

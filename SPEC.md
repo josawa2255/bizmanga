@@ -98,7 +98,7 @@
 | 03 | FORMATS（4カラム媒体カード） | `.lpv2-formats` | `#chapter-03-formats` |
 | 04 | CASE STUDY（WP API、`tools/build-lp-cases.py` v2マークアップ対応） | `.lpv2-cases` | `#chapter-04-cases` |
 | 05 | LIBRARY（ビズ書庫埋込、ブラックBG） | `.lpv2-library` | `#chapter-05-library` |
-| 06 | PRODUCTION FLOW（8パネル、巨大番号アウトライン） | `.lpv2-flow` | `#chapter-06-flow` |
+| 06 | PRODUCTION FLOW（8パネル、巨大番号アウトライン、**フリップカード**） | `.lpv2-flow` | `#chapter-06-flow` |
 | 07 | FAQ（Q/Aセリフバッジ、`<details>`） | `.lpv2-faq` | `#chapter-07-faq` |
 | Related | NEXT ISSUE（他7LPカード） | `.lpv2-related` | — |
 | End | TO BE CONTINUED + CTA2本 | `.lpv2-end` | — |
@@ -115,6 +115,13 @@
 - `tools/build-lp-cases.py` は HTML 内の `LP-DESIGN:v2` マーカーを検出して `pm-*` / `lpv2-*` のどちらでも出力できる
 - 旧 `bm-lp-template.css` は v2 が全LPに展開完了するまで削除しない
 - **2026-05-19 追記**: `tools/build-lp-cases.py` は実装上まだ `pm-cases-grid` / `pm-case-card` を出力するため、recruit-manga.html では `pm-case-*` が未スタイル状態になっていた。`bm-lp-v2.css` 末尾（セクション19）に `pm-case-*` を v2 トークン整合で再定義し、**CASE STUDYカードを横並び**（`grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))`、SPは160px）に修正。`bm-lp-v2.css` は recruit-manga.html のみが読込むため他7LPには影響しない
+- **2026-05-24 追記（PRODUCTION FLOW フリップカード化）**: 制作フロー8パネル(`.lpv2-flow-step`)を以下のインタラクションに刷新。
+  - **連結グリッド**: `.lpv2-flow-grid` を `gap: 3px` + `background: ink` にし、隙間に黒を覗かせて全カードがくっついた「罫線共有」表現（二重線にならない）。通常時は影なしフラット
+  - **ホバー時のみ立体**: `.lpv2-flow-step__inner` を `translate(-4px,-4px)` + `box-shadow: 9px 9px 0 ink` で浮かせる（従来の常時影を廃止し、立体感はホバー時だけ）
+  - **クリックでフリップ**: `<button>` 化し、JS(`bindFlowFlip` in `bm-lp-v2.js`)が `.is-flipped` をトグル。`__inner` を `rotateY(180deg)` で裏返し、表(`__front`=番号+名前+「詳細を見る +」)→裏(`__back`=詳細文、**オレンジ枠**)を表示。`preserve-3d` + `backface-visibility:hidden` + `perspective:1200px`
+  - **HTML構造**: `button.lpv2-flow-step > span.__inner > (span.__face.__front / span.__face.__back)`。フェイスは絶対配置のためセル高さ固定（PC200px / ≤1000px 190px / ≤560px 168px）
+  - `aria-expanded` を同期、`prefers-reduced-motion` で `__inner` のtransition無効化（フリップは即時・機能維持）
+  - 影響範囲: `bm-lp-v2.css`を読むrecruit-manga.htmlのみ。フロー区画は他LP未導入
 
 ## 2. URL パラメータ・特殊モード
 
@@ -292,6 +299,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `cx_cta_label_en` — ⭐ ビズ書庫最終ページCTAラベル（英語、空欄＝デフォルト「Visit Official Site →」）
 - `cx_cta_enabled` — ⭐ ビズ書庫最終ページCTA表示ON/OFFチェックボックス（**唯一の表示制御**）
 - 表示順の運用ルール: N番に新作を挿入するとき、元のN番以降を `+1` ずつずらす（下から順に変更）
+- **クイック編集対応**: 漫画事例一覧の「サブタイトル」列＋クイック編集から `cx_subtitle_ja` / `cx_subtitle_en` を直接編集可（contentsx-cms.php `quick_edit_custom_box` + inline-save 専用保存）
 
 ### WP 表示先・順序制御（4系統が独立フラグ）⭐
 
