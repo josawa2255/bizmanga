@@ -118,8 +118,9 @@
 - **2026-05-24 追記（PRODUCTION FLOW フリップカード化）**: 制作フロー8パネル(`.lpv2-flow-step`)を以下のインタラクションに刷新。
   - **連結グリッド**: `.lpv2-flow-grid` を `gap: 3px` + `background: ink` にし、隙間に黒を覗かせて全カードがくっついた「罫線共有」表現（二重線にならない）。通常時は影なしフラット
   - **ホバー時のみ立体**: `.lpv2-flow-step__inner` を `translate(-4px,-4px)` + `box-shadow: 9px 9px 0 ink` で浮かせる（従来の常時影を廃止し、立体感はホバー時だけ）
-  - **クリックでフリップ**: `<button>` 化し、JS(`bindFlowFlip` in `bm-lp-v2.js`)が `.is-flipped` をトグル。`__inner` を `rotateY(180deg)` で裏返し、表(`__front`=番号+名前+「詳細を見る +」)→裏(`__back`=詳細文、**オレンジ枠**)を表示。`preserve-3d` + `backface-visibility:hidden` + `perspective:1200px`
-  - **HTML構造**: `button.lpv2-flow-step > span.__inner > (span.__face.__front / span.__face.__back)`。フェイスは絶対配置のためセル高さ固定（PC200px / ≤1000px 190px / ≤560px 168px）
+  - **クリックでフリップ**: `<button>` 化し、JS(`bindFlowFlip` in `bm-lp-v2.js`)が `.is-flipped` をトグル。`__inner` を `rotateY(180deg)` で裏返し、表(`__front`=番号+名前+**説明文**+「イメージを見る +」)→裏(`__back`=**作例画像のみ**、`__pic`を全面cover、**オレンジ3px枠**)を表示。`preserve-3d` + `backface-visibility:hidden` + `perspective:1200px`
+  - **裏面画像**: フロー専用画像は未作成のため、recruitと同じ水彩タッチの他LP作例を流用（01-04=`/images/company-manga/merit-0X`、05-08=`/images/sales-manga/merit-0X`）。product-mangaはオレンジ線画で作風が異なるため不採用。これら他LP画像を削除すると裏面が壊れる点に注意
+  - **HTML構造**: `button.lpv2-flow-step > span.__inner > (span.__face.__front[num/name/desc/hint] / span.__face.__back[picture.__pic])`。フェイスは絶対配置のためセル高さ固定（説明文を載せる分やや高め: PC268px / ≤1000px 230px / ≤560px 210px）
   - `aria-expanded` を同期、`prefers-reduced-motion` で `__inner` のtransition無効化（フリップは即時・機能維持）
   - 影響範囲: `bm-lp-v2.css`を読むrecruit-manga.htmlのみ。フロー区画は他LP未導入
 
