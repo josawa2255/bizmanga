@@ -446,7 +446,8 @@
   .s3d-heading-row {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
+    padding: 4px 0 14px;
   }
 }
 
@@ -494,7 +495,7 @@
 }
 .s3d-heading-cta:hover::before { width: 260%; }
 @media (max-width: 768px) {
-  .s3d-heading-cta { padding: 8px 18px; font-size: 12px; }
+  .s3d-heading-cta { padding: 11px 24px; font-size: 12px; }
 }
 
 .s3d-label {

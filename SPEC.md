@@ -424,6 +424,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
+- キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「6月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ

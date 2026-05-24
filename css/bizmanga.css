@@ -1392,14 +1392,20 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   .bm-client-logo-item { width: 140px; height: 52px; }
   .bm-client-logo-text { font-size: 15px; }
   .bm-client-logos-subtitle {
-    font-size: 13px;
+    font-size: 20px;
     letter-spacing: 0.02em;
-    gap: 6px;
+    gap: 8px;
     padding: 0 8px;
+    flex-wrap: nowrap;
+  }
+  .bm-client-logos-subtitle > span {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.4;
   }
   .bm-client-laurel {
-    width: 18px;
-    height: 32px;
+    width: 22px;
+    height: 40px;
   }
 }
 
