@@ -1325,6 +1325,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
 }
 .bm-campaign-link:hover { transform: translateY(-1px); filter: brightness(1.05); }
 .bm-campaign-link:hover > span { text-decoration: underline; text-underline-offset: 4px; }
+/* キャンペーン文言: PCは1行、SPのみ「無料」と「キャンペーン」の間で改行 */
+.bm-campaign-br { display: none; }
 /* 補足キャプション: 大手企業からスタートアップまで幅広くご支援 */
 .bm-client-logos-caption {
   margin: 10px auto 0;
@@ -1403,6 +1405,7 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
     min-width: 0;
     line-height: 1.4;
   }
+  .bm-campaign-br { display: inline; }
   .bm-client-laurel {
     width: 22px;
     height: 40px;
