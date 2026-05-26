@@ -1881,10 +1881,11 @@
 .mpc-hero-v3 {
   position: relative;
   background-color: #ffffff;
-  background-image: url("/material/images/mpc/hero-bg-sketch.webp");
+  /* PC: 縦長素材の中央スケッチ帯を切り出した横長背景。左右にスケッチが見える */
+  background-image: url("/material/images/mpc/hero-bg-sketch-pc.webp");
   background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
+  background-position: center;
+  background-size: 100% auto;
   padding: 96px 20px 64px;
   text-align: center;
   border-top: 0;
@@ -2087,7 +2088,13 @@
 .mpc-hero-v3-altlink:hover { color: #FF6A00; }
 
 @media (max-width: 640px) {
-  .mpc-hero-v3 { padding: 84px 16px 48px; }
+  /* スマホ: 縦長素材をそのまま上部から全幅表示(スケッチが見えるように) */
+  .mpc-hero-v3 {
+    padding: 84px 16px 48px;
+    background-image: url("/material/images/mpc/hero-bg-sketch.webp");
+    background-position: center top;
+    background-size: 100% auto;
+  }
   .mpc-hero-v3-point { grid-template-columns: 46px 1fr auto; gap: 13px; padding: 14px 16px; }
   .mpc-hero-v3-point-ic { width: 46px; height: 46px; }
   .mpc-hero-v3-point-ic svg { width: 23px; height: 23px; }
