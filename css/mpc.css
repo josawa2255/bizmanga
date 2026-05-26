@@ -1880,7 +1880,11 @@
    ===================================================================== */
 .mpc-hero-v3 {
   position: relative;
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image: url("/material/images/mpc/hero-bg-sketch.webp");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
   padding: 96px 20px 64px;
   text-align: center;
   border-top: 0;
