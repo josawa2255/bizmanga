@@ -1910,6 +1910,20 @@
   letter-spacing: 0.02em;
   color: #111111;
   margin: 0 0 18px;
+  /* PCは1行。bizmanga.css の overflow-wrap:anywhere を打ち消して折り返しを禁止 */
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+/* PCではH1を1行に(改行を無効化)。スマホは下のメディアクエリで2行に戻す */
+.mpc-hero-v3-h1 br { display: none; }
+/* bizmanga.css の `:lang(ja) h1`/`html[lang=ja] h1`(overflow-wrap:break-word, text-wrap:balance)が
+   .mpc-hero-v3-h1 より詳細度が高く折り返しを許してしまうため、詳細度を上げて1行を強制 */
+.mpc-hero-v3 .mpc-hero-v3-h1 {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  text-wrap: nowrap;
 }
 .mpc-hero-v3-lead {
   font-size: clamp(15px, 2.4vw, 18px);
@@ -2095,6 +2109,9 @@
     background-position: center top;
     background-size: 100% auto;
   }
+  /* スマホはH1を2行(漫画制作会社/比較ガイド)に戻す(PC override より高詳細度＋後勝ち) */
+  .mpc-hero-v3 .mpc-hero-v3-h1 { white-space: normal; text-wrap: balance; }
+  .mpc-hero-v3-h1 br { display: inline; }
   .mpc-hero-v3-point { grid-template-columns: 46px 1fr auto; gap: 13px; padding: 14px 16px; }
   .mpc-hero-v3-point-ic { width: 46px; height: 46px; }
   .mpc-hero-v3-point-ic svg { width: 23px; height: 23px; }
