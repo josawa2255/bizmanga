@@ -1933,8 +1933,8 @@
   -webkit-user-drag: none;
 }
 .scale-stand    { left: 32.143%; top: 15.789%; width: 35.714%; z-index: 1; }
-.scale-pan-left { left: 11.786%; top: 38.553%; width: 25.000%; z-index: 2; }
-.scale-pan-right{ left: 63.333%; top: 38.684%; width: 24.643%; z-index: 2; }
+.scale-pan-left { left: 10.820%; top: 38.553%; width: 25.000%; z-index: 2; }
+.scale-pan-right{ left: 64.169%; top: 38.684%; width: 24.643%; z-index: 2; }
 .scale-beam     { left: 22.024%; top: 12.632%; width: 55.952%; z-index: 3; }
 
 /* タップ/ホバー判定エリア (左右半分ずつ) */
