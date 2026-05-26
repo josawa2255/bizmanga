@@ -205,107 +205,77 @@
 
   <main id="main">
 
-    <!-- ===== 1. ヒーロー (2026-05-13 リデザイン v2) ===== -->
-    <section class="mpc-hero-v2" aria-label="漫画制作会社・マンガ制作会社 比較ガイド">
-      <!-- 背景イラスト（PC: 横長 / SP: 縦長正方形に切替） -->
-      <div class="mpc-hero-v2-bg" aria-hidden="true">
-        <picture>
-          <source srcset="/material/images/mpc/hero-bg-sp.webp" media="(max-width: 640px)" type="image/webp">
-          <img src="/material/images/mpc/hero-bg-pc.webp" alt="" loading="eager" fetchpriority="high" width="1672" height="941">
-        </picture>
-      </div>
+    <!-- ===== 1. ヒーロー (2026-05-26 リデザイン v3 / editorial + インタラクティブ天秤) ===== -->
+    <section class="mpc-hero-v3" aria-label="漫画制作会社 比較ガイド">
+      <div class="mpc-hero-v3-inner">
+        <p class="mpc-hero-v3-eyebrow" data-ja="比較ガイド" data-en="Comparison Guide">比較ガイド</p>
+        <h1 class="mpc-hero-v3-h1" data-ja="漫画制作会社 比較ガイド" data-en="Manga Production Company Comparison Guide">漫画制作会社<br>比較ガイド</h1>
+        <p class="mpc-hero-v3-lead" data-ja="価格・納期・編集力を比較して、あなたに最適なパートナーが見つかる。" data-en="Compare price, lead time and editorial skill — and find the partner that fits you best.">
+          価格・納期・編集力を比較して、<br>あなたに<em>最適なパートナー</em>が見つかる。
+        </p>
 
-      <div class="mpc-hero-v2-inner">
-        <!-- 左カラム: 主訴求 -->
-        <div class="mpc-hero-v2-main">
-          <span class="mpc-hero-v2-eyebrow">PRODUCTION COMPANY GUIDE</span>
-          <h1 class="mpc-hero-v2-h1">
-            <span class="mpc-hero-v2-h1-pre">他社と比べて見える</span>
-            <em class="mpc-hero-v2-h1-em">ビズマンガの安心感</em>
-          </h1>
-          <p class="mpc-hero-v2-lead">
-            単なるマンガ制作ではなく、成果につながる<br>ビジネスパートナーとして伴走します。
-          </p>
-          <ul class="mpc-hero-v2-checks">
-            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
-            </span>業界特化の構成・ストーリー設計</li>
-            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
-            </span>伝わるマンガで、問い合わせ・成約を後押し</li>
-            <li><span class="mpc-hero-v2-check-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="11" fill="currentColor" stroke="none"/><path d="M7 12l3.5 3.5L17 9" stroke="#fff"/></svg>
-            </span>はじめての方も安心のサポート体制</li>
-          </ul>
+        <!-- ===== インタラクティブ天秤 (画像レイヤー分離: stand固定 / beam回転 / pan上下) ===== -->
+        <div class="comparison-scale" id="comparisonScale" aria-label="料金と納期を比較する天秤">
+          <button class="scale-hit scale-hit-left" type="button" aria-label="料金側に傾ける"></button>
+          <button class="scale-hit scale-hit-right" type="button" aria-label="納期側に傾ける"></button>
+          <span class="scale-shadow scale-shadow-left" aria-hidden="true"></span>
+          <span class="scale-shadow scale-shadow-right" aria-hidden="true"></span>
+          <img class="scale-layer scale-stand" src="/material/images/mpc/scale-stand-crop.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
+          <img class="scale-layer scale-pan scale-pan-left" src="/material/images/mpc/scale-pan-yen-crop.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
+          <img class="scale-layer scale-pan scale-pan-right" src="/material/images/mpc/scale-pan-clock-crop.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
+          <img class="scale-layer scale-beam" src="/material/images/mpc/scale-beam-crop.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
         </div>
 
-        <!-- 中央カラム: 選ばれる理由 4カード -->
-        <div class="mpc-hero-v2-reasons">
-          <p class="mpc-hero-v2-reasons-title">
-            <span class="mpc-hero-v2-reasons-slash" aria-hidden="true">＼</span>
-            ビズマンガが選ばれる理由
-            <span class="mpc-hero-v2-reasons-slash" aria-hidden="true">／</span>
-          </p>
-          <div class="mpc-hero-v2-cards">
-            <a href="#comparison" class="mpc-hero-v2-card" data-reason="price">
-              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="24" cy="24" r="20"/>
-                  <path d="M16 16 L24 24 L32 16 M16 24 L32 24 M16 30 L32 30 M24 24 V36"/>
-                </svg>
-              </span>
-              <div class="mpc-hero-v2-card-body">
-                <h3 class="mpc-hero-v2-card-title">業界最安値</h3>
-                <p class="mpc-hero-v2-card-desc">1 ページ 16,600 円〜。<br>業界相場の約 1/5 を公式公開。</p>
-              </div>
-              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
-            </a>
-            <a href="#comparison" class="mpc-hero-v2-card" data-reason="speed">
-              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M26 4 L12 28 H24 L22 44 L36 20 H24 Z"/>
-                </svg>
-              </span>
-              <div class="mpc-hero-v2-card-body">
-                <h3 class="mpc-hero-v2-card-title">業界最速の納期</h3>
-                <p class="mpc-hero-v2-card-desc">最短 2 週間。業界平均 4〜8 週間の<br>半分以下。</p>
-              </div>
-              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
-            </a>
-            <a href="#comparison" class="mpc-hero-v2-card" data-reason="usecase">
-              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="6"  y="6"  width="10" height="10" rx="2"/>
-                  <rect x="19" y="6"  width="10" height="10" rx="2"/>
-                  <rect x="32" y="6"  width="10" height="10" rx="2"/>
-                  <rect x="6"  y="19" width="10" height="10" rx="2"/>
-                  <rect x="19" y="19" width="10" height="10" rx="2"/>
-                  <rect x="32" y="19" width="10" height="10" rx="2"/>
-                  <rect x="6"  y="32" width="10" height="10" rx="2"/>
-                  <rect x="19" y="32" width="10" height="10" rx="2"/>
-                </svg>
-              </span>
-              <div class="mpc-hero-v2-card-body">
-                <h3 class="mpc-hero-v2-card-title">8 用途の専門編集</h3>
-                <p class="mpc-hero-v2-card-desc">採用 / IR / 研修 / 商品紹介 …<br>用途別の専属編集者がアサイン。</p>
-              </div>
-              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
-            </a>
-            <a href="#comparison" class="mpc-hero-v2-card" data-reason="transparency">
-              <span class="mpc-hero-v2-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 24 C 8 14, 16 8, 24 8 S 40 14, 44 24 C 40 34, 32 40, 24 40 S 8 34, 4 24 Z"/>
-                  <circle cx="24" cy="24" r="6"/>
-                </svg>
-              </span>
-              <div class="mpc-hero-v2-card-body">
-                <h3 class="mpc-hero-v2-card-title">料金の透明性</h3>
-                <p class="mpc-hero-v2-card-desc">追加費用ゼロ。料金表と修正回数も<br>事前にすべて公開。</p>
-              </div>
-              <span class="mpc-hero-v2-card-link" aria-hidden="true">比較する <span class="mpc-hero-v2-arrow">→</span></span>
-            </a>
-          </div>
+        <!-- 4つの比較ポイント -->
+        <div class="mpc-hero-v3-points">
+          <a href="#comparison" class="mpc-hero-v3-point mpc-hero-v3-point--primary">
+            <span class="mpc-hero-v3-point-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5 L12 12 L15.5 8.5 M8.5 12 H15.5 M8.5 15 H15.5 M12 12 V17"/></svg>
+            </span>
+            <span class="mpc-hero-v3-point-txt">
+              <span class="mpc-hero-v3-point-title" data-ja="業界最安値クラス" data-en="Among the lowest prices">業界最安値クラス</span>
+              <span class="mpc-hero-v3-point-desc" data-ja="1ページ 16,600円〜" data-en="From 16,600 yen / page">1ページ 16,600円〜</span>
+            </span>
+            <span class="mpc-hero-v3-point-arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="#comparison" class="mpc-hero-v3-point">
+            <span class="mpc-hero-v3-point-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L6 14 H12 L11 22 L18 10 H12 Z"/></svg>
+            </span>
+            <span class="mpc-hero-v3-point-txt">
+              <span class="mpc-hero-v3-point-title" data-ja="最短2週間納品" data-en="Delivery in as little as 2 weeks">最短2週間納品</span>
+              <span class="mpc-hero-v3-point-desc" data-ja="業界平均4〜8週間の半分以下" data-en="Less than half the 4–8 week average">業界平均4〜8週間の半分以下</span>
+            </span>
+            <span class="mpc-hero-v3-point-arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="#comparison" class="mpc-hero-v3-point">
+            <span class="mpc-hero-v3-point-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            </span>
+            <span class="mpc-hero-v3-point-txt">
+              <span class="mpc-hero-v3-point-title" data-ja="8用途の専門編集" data-en="Specialist editing for 8 use cases">8用途の専門編集</span>
+              <span class="mpc-hero-v3-point-desc" data-ja="採用 / IR / 研修 / 商品紹介 など" data-en="Recruiting / IR / training / product, etc.">採用 / IR / 研修 / 商品紹介 など</span>
+            </span>
+            <span class="mpc-hero-v3-point-arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="#comparison" class="mpc-hero-v3-point">
+            <span class="mpc-hero-v3-point-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 C5 6.5 8.5 4 12 4 S19 6.5 22 12 C19 17.5 15.5 20 12 20 S5 17.5 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </span>
+            <span class="mpc-hero-v3-point-txt">
+              <span class="mpc-hero-v3-point-title" data-ja="料金の透明性" data-en="Transparent pricing">料金の透明性</span>
+              <span class="mpc-hero-v3-point-desc" data-ja="追加費用ゼロ。料金表も事前公開" data-en="No hidden fees. Pricing disclosed upfront">追加費用ゼロ。料金表も事前公開</span>
+            </span>
+            <span class="mpc-hero-v3-point-arrow" aria-hidden="true">→</span>
+          </a>
         </div>
+
+        <!-- CTA -->
+        <a href="/contact" class="mpc-hero-v3-cta">
+          <span data-ja="無料で比較してみる" data-en="Compare for free">無料で比較してみる</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#comparison" class="mpc-hero-v3-altlink" data-ja="比較のポイントを詳しく見る →" data-en="See the comparison points in detail →">比較のポイントを詳しく見る →</a>
       </div>
     </section>
 
@@ -937,6 +907,7 @@
   <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-kinsoku.js" defer></script>
   <script src="js/mpc.js" defer></script>
+  <script src="js/mpc-scale.js" defer></script>
   <script src="js/bm-fuwa.js" defer></script>
   <script src="js/data/client-logos.js" defer></script>
   <script src="js/client-logos.js" defer></script>
