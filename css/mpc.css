@@ -1926,9 +1926,10 @@
   text-wrap: nowrap;
 }
 .mpc-hero-v3-lead {
-  font-size: clamp(15px, 2.4vw, 18px);
-  line-height: 1.9;
-  color: #444444;
+  font-size: clamp(16px, 2.8vw, 21px);
+  line-height: 1.85;
+  color: #111111;
+  font-weight: 500;
   margin: 0 0 6px;
 }
 .mpc-hero-v3-lead em { font-style: normal; color: #FF6A00; font-weight: 700; }
