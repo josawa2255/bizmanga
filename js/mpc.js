@@ -133,8 +133,29 @@
     }
   }
 
+  // ---------- 付箋チェックリスト: カードが画面中央付近に来たら順にチェックが入る ----------
+  function initChecklist() {
+    var items = document.querySelectorAll('.mpc-choose-item');
+    if (!items.length) return;
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('is-checked'); });
+      return;
+    }
+    // 上45%〜下40% の薄い帯にカードが入った時点でチェック → スクロールで1枚ずつ点く
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-checked');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '-45% 0px -40% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  }
+
   function init() {
     initFadeUp();
+    initChecklist();
     initCounters();
     initFixBtn();
     initStickyTable();
