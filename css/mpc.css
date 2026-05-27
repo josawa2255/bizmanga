@@ -755,21 +755,28 @@
 .mpc-choose-body { min-width: 0; }
 .mpc-choose-q {
   font-family: "Noto Serif JP", serif;
-  font-size: clamp(18px, 2.4vw, 22px);
+  font-size: clamp(20px, 2.6vw, 24px);
   font-weight: 700;
   line-height: 1.55;
   letter-spacing: 0.02em;
   color: var(--mpc-ink);
-  margin: 0 0 12px;
+  margin: 0 0 13px;
+  /* 日本語を文節（意味の区切り）で改行 */
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
 }
 .mpc-choose-body > p {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 2.0;
   letter-spacing: 0.02em;
-  color: var(--mpc-ink-soft);
+  color: #161616;
   margin: 0;
   max-width: 64ch;
   overflow-wrap: anywhere;
+  /* 日本語を文節（意味の区切り）で改行 */
+  word-break: auto-phrase;
+  line-break: strict;
   text-wrap: pretty;
 }
 .mpc-choose-body > p strong {
@@ -788,14 +795,15 @@
   background: #fff;
   border: 1px solid var(--mpc-line);
   border-left: 3px solid var(--mpc-accent);
-  font-size: 14px !important;
+  font-size: 15px !important;
   line-height: 1.7 !important;
-  color: var(--mpc-ink) !important;
+  color: #161616 !important;
+  word-break: auto-phrase;
 }
 .mpc-choose-check-label {
   flex: none;
   font-family: "Noto Serif JP", serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--mpc-gold);
@@ -822,14 +830,14 @@
 /* ワイド画面: コンテナ幅・文字・余白を画面幅連動(clamp+vw)で拡大し、左右の空白を圧縮（単一列・チェック演出は維持） */
 @media (min-width: 881px) {
   .mpc-choose .mpc-container--narrow { max-width: clamp(880px, 76vw, 1440px); }
-  .mpc-choose .mpc-section-lead { max-width: 70ch; }
+  .mpc-choose .mpc-section-lead { max-width: 72ch; font-size: clamp(16.5px, 1.15vw, 19px); }
   .mpc-choose-item {
     padding: clamp(26px, 2.2vw, 40px) clamp(30px, 3vw, 56px);
     gap: 6px clamp(22px, 2.4vw, 42px);
   }
-  .mpc-choose-q { font-size: clamp(20px, 1.5vw, 26px); }
-  .mpc-choose-body > p { font-size: clamp(15px, 1.02vw, 17.5px); max-width: 74ch; }
-  .mpc-choose-check { font-size: clamp(14px, 0.95vw, 16px) !important; }
+  .mpc-choose-q { font-size: clamp(22px, 1.7vw, 28px); }
+  .mpc-choose-body > p { font-size: clamp(16px, 1.15vw, 19px); max-width: 74ch; }
+  .mpc-choose-check { font-size: clamp(15px, 1.05vw, 17.5px) !important; }
 }
 @media (max-width: 600px) {
   .mpc-choose-item {
