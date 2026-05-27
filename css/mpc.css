@@ -781,9 +781,7 @@
 }
 .mpc-choose-body > p strong {
   font-weight: 700;
-  color: var(--mpc-ink);
-  border-bottom: 1px solid rgba(232, 85, 0, 0.55);
-  padding-bottom: 1px;
+  color: var(--mpc-accent);
 }
 .mpc-choose-check {
   margin-top: 16px !important;
