@@ -851,6 +851,23 @@
   .mpc-choose-item { transition: none; opacity: 1; transform: none; }
 }
 
+/* ========== OUR ANSWER (ビズマンガはどうなのか / ビズちゃん+参考画像で6基準に答える) ========== */
+/* bm-reasons コンポーネントを流用。背景は白固定に上書き＋各カードに「見極め基準｜◯◯」kickerを追加 */
+.mpc-bizanswer { background: #fff; }
+.mpc-bizanswer .bm-reasons-header { margin-bottom: clamp(36px, 4vw, 56px); }
+.mpc-bizanswer .bm-reasons-header .mpc-section-lead { margin-bottom: 0; }
+/* 大きな番号は kicker+見出し+本文の3行をまたいで配置 */
+.mpc-bizanswer .bm-reason-num { grid-row: 1 / span 3; }
+.mpc-bizanswer .bm-reason-kicker {
+  grid-column: 2;
+  font-family: "Noto Serif JP", serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--mpc-gold);
+  margin: 0;
+}
+
 /* ========== COMPARISON TABLE ========== */
 .mpc-comparison .mpc-container {
   max-width: 1280px;
