@@ -376,9 +376,9 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - タイル構成（左→右）:
   - 横読み: `/embed-viewer?manga=ichinohe-home&slides=1&manual=1`（**画面左タップ＝次 / 右タップ＝前**）
   - 縦読み(中央・hero): `/embed-viewer?manga=omatome-ninja-new&manual=1`（漫画の上に出る「漫画を読む」ボタン`.ev-read-overlay`をタップ→オーバーレイ除去＋iframeにフォーカスして縦スクロールで読了。**上下矢印は廃止**。スクロールが初回ジェスチャー無しでは効かない問題の対策）
-  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（autoplay+mute+loop+**controls=0**）。自動再生は維持し、**音声調節UI`.s3d-audio-bar`（ミュートトグル＋音量スライダー）を端末の直下に配置**（端末をラッパー`.s3d-col-video`で囲み、`.s3d-screen`はoverflow/maskで内部閉じ込めのためバーは兄弟要素として外側下に出す。`.s3d-screens`は`grid-template-rows:auto; align-items:start`でこの列だけ縦に伸ばす）
-- **操作仕様（2026-05-22 改訂）**: 3媒体とも自動演出から**手動操作＋下部ドッキングUI**に統一。
-  - 横読み=左右タップゾーン`.ev-tap`（端で停止/ループ無し）、縦読み=「漫画を読む」開始ボタン`.ev-read-overlay`タップ後にスクロール（上下矢印は廃止）、ボイス=`.s3d-audio-bar`で音量調節（YouTube IFrame API `mute`/`unMute`/`setVolume`をpostMessage）
+  - ボイスコミック: YouTube 埋込 `yLwkUfi6KfQ`（**ファサード方式・ユーザー主導再生**）。**初期はサムネ画像(`https://i.ytimg.com/vi/{id}/maxresdefault.jpg`) ＋ 「動画を見る」ボタン`#s3dVideoPlay`のファサード`#s3dVideoFacade`を表示**し、iframeはページ読込時に挿入しない。ボタン or ポスターどこかをタップした時点で `bm-s3d-screens.js#loadVoiceComic()` が iframe を動的生成（`autoplay=1&loop=1&playlist={id}&controls=0&modestbranding=1&playsinline=1&enablejsapi=1`、**mute=0でユーザージェスチャー由来の音ありautoplay**）して`.s3d-screen--video`に挿入し、ファサードはfade-out→DOM除去、`.s3d-audio-bar`(`hidden`属性で初期非表示)が現れる
+- **操作仕様（2026-05-28 改訂）**: 3媒体とも**ユーザー主導の明示クリック開始**に統一。
+  - 横読み=左右タップゾーン`.ev-tap`（端で停止/ループ無し）、縦読み=「漫画を読む」開始ボタン`.ev-read-overlay`タップ後にスクロール（上下矢印は廃止）、ボイス=「動画を見る」ボタン`#s3dVideoPlay`タップで iframe 挿入＋再生開始 → `.s3d-audio-bar`で音量調節（YouTube IFrame API `mute`/`unMute`/`setVolume`をpostMessage）
   - **操作ガイドは端末の直下に表示**（親ページ`index.html`の`.s3d-tile-guide`、白ピル）。iframe内には出さない。3端末ともラッパー`.s3d-col`で囲み、端末の兄弟要素として直下にガイド/音声バーを配置
   - 中央hero iframe は手動操作のため `is-settled` 後に `pointer-events: auto`（旧: 自動スクロール専用で `none` 固定だった）
   - 旧`.s3d-mute-toggle`（SP専用ボタン）は廃止し`.s3d-audio-bar`に統合

@@ -12,35 +12,9 @@
       setTimeout(function() { s.classList.add('is-ready'); }, 150 + i * 120);
     });
 
-    // ボイスコミック: セクション表示時に音声ON（初期から音ありで体験させる）。
-    // 自動再生はブラウザ仕様上ミュート必須のため、画面に入った瞬間に unMute する。
-    function unmuteVoice() {
-      var yt = document.getElementById('s3dVideoIframe');
-      if (!yt) return;
-      var bar = document.getElementById('s3dAudioBar');
-      var vol = document.getElementById('s3dAudioVol');
-      var v = vol ? parseInt(vol.value, 10) : 70;
-      function cmd(func, args) {
-        try {
-          yt.contentWindow.postMessage(
-            JSON.stringify({ event: 'command', func: func, args: args || '' }), '*');
-        } catch (e) {}
-      }
-      if (bar) bar.setAttribute('data-muted', 'false');
-      var mb = document.getElementById('s3dAudioMute');
-      if (mb) mb.setAttribute('aria-label', '音声をオフにする');
-      // プレイヤー準備タイミングがまちまちなので数回リトライ。
-      // ただしユーザーが手動でミュートしたら（data-muted=true）上書きしない
-      [0, 400, 900, 1600].forEach(function(d) {
-        setTimeout(function() {
-          if (bar && bar.getAttribute('data-muted') === 'true') return;
-          cmd('unMute');
-          cmd('setVolume', [vol ? parseInt(vol.value, 10) : v]);
-        }, d);
-      });
-    }
-
     // セクションが画面に入ったら、保留中の embed-viewer iframe に開始合図を送る
+    // (ボイスコミックは自動再生せず、ユーザーが「動画を見る」ボタンを押した時に
+    //  loadVoiceComic() で iframe を挿入する → そちらでバインドする)
     var iframeStartFired = false;
     function startEmbedIframes() {
       if (iframeStartFired) return;
@@ -49,7 +23,6 @@
       iframes.forEach(function(f) {
         try { f.contentWindow && f.contentWindow.postMessage('s3d-start', '*'); } catch (e) {}
       });
-      unmuteVoice();
     }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function(entries) {
@@ -129,12 +102,45 @@
       }
     });
 
+    // ボイスコミック: 「動画を見る」ボタンが押された時に iframe を挿入して再生開始
+    // ユーザー主導なのでブラウザは音ありautoplayを許可する → mute=0 で開始
+    var facade = document.getElementById('s3dVideoFacade');
+    var playBtn = document.getElementById('s3dVideoPlay');
+    if (facade && playBtn) {
+      var loaded = false;
+      function loadVoiceComic() {
+        if (loaded) return;
+        loaded = true;
+        var screenEl = facade.closest('.s3d-screen--video');
+        if (!screenEl) return;
+        var iframe = document.createElement('iframe');
+        iframe.id = 's3dVideoIframe';
+        iframe.title = 'ボイスコミックサンプル';
+        iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+        iframe.setAttribute('frameborder', '0');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/yLwkUfi6KfQ?autoplay=1&loop=1&playlist=yLwkUfi6KfQ&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&fs=0&enablejsapi=1';
+        screenEl.appendChild(iframe);
+        facade.classList.add('is-hidden');
+        setTimeout(function() { if (facade && facade.parentNode) facade.parentNode.removeChild(facade); }, 350);
+        var bar = document.getElementById('s3dAudioBar');
+        if (bar) {
+          bar.removeAttribute('hidden');
+          bar.setAttribute('data-muted', 'false');
+        }
+        bindVoiceControls(iframe);
+      }
+      playBtn.addEventListener('click', loadVoiceComic);
+      // ポスター画像のどこをタップしても再生開始
+      facade.addEventListener('click', loadVoiceComic);
+    }
+
     // ボイスコミック 音声調節UI (YouTube IFrame API を postMessage で操作)
-    var ytIframe = document.getElementById('s3dVideoIframe');
-    var audioBar = document.getElementById('s3dAudioBar');
-    var muteBtn = document.getElementById('s3dAudioMute');
-    var volSlider = document.getElementById('s3dAudioVol');
-    if (ytIframe && audioBar && muteBtn && volSlider) {
+    // iframe 挿入後に呼び出される
+    function bindVoiceControls(ytIframe) {
+      var audioBar = document.getElementById('s3dAudioBar');
+      var muteBtn = document.getElementById('s3dAudioMute');
+      var volSlider = document.getElementById('s3dAudioVol');
+      if (!ytIframe || !audioBar || !muteBtn || !volSlider) return;
       function ytCmd(func, args) {
         try {
           ytIframe.contentWindow.postMessage(
@@ -151,6 +157,17 @@
           ytCmd('setVolume', [parseInt(volSlider.value, 10)]);
         }
       }
+      // 初期音量を反映（iframeのloadタイミングがバラつくため数回試行）
+      function applyInitialVolume() {
+        ytCmd('unMute');
+        ytCmd('setVolume', [parseInt(volSlider.value, 10)]);
+      }
+      [400, 1000, 1800].forEach(function(d) {
+        setTimeout(function() {
+          if (audioBar.getAttribute('data-muted') === 'true') return;
+          applyInitialVolume();
+        }, d);
+      });
       muteBtn.addEventListener('click', function() {
         setMuted(audioBar.getAttribute('data-muted') !== 'true');
       });
