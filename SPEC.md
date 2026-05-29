@@ -224,6 +224,7 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
+- **最終ページCTAの再適用（2026-05-29 修正 / BUGS #037）**: フォールバックデータ `FALLBACK_WORKS` に載っている作品をダイレクトモードで開くと、CTA情報を持たない静的データで即オープンされる。その後 `/library` API がCTA付きデータに差し替えるため、`fetchLibraryFromAPI` のダイレクトモード分岐で **表示モード不変時も `setupMangaCta(mangaData[autoOpen])` を再実行**してCTA設定を反映する（これが無いと `?manga=seko` 等でCTAが出ない）
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
   - mangaData に無い場合、`fetch(api + '/manga/' + id)` で取得

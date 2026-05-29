@@ -316,6 +316,11 @@ if (getBmLang() === 'en') {
           mangaModal.classList.remove('open');
           document.body.style.overflow = '';
           setTimeout(function() { openManga(autoOpen); }, 50);
+        } else {
+          // 表示モードは変わらない → 再オープン不要だが、CTA等の最新データを再適用する。
+          // ダイレクトモードでフォールバックデータ（CTA情報なし）で先に開いた作品は、
+          // ここで setupMangaCta を呼ばないと最終ページCTAが出ないままになる（BUGS #037）。
+          setupMangaCta(mangaData[autoOpen]);
         }
       }
       // ダイレクトモードでまだモーダルが開いていない場合（mangaDataに無かった）
