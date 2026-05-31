@@ -85,6 +85,7 @@
 - ハーフトーンドット（`radial-gradient` SVG）、雑誌の刷り感
 - Hero: 黒ベース全面写真 + マグ誌風メタ帯（VOL/ISSUE）+ ハーフトーンオーバーレイ + 写真フレーム
 - Hero eyebrow（`.lpv2-hero-eyebrow`）: 2026-05-31 改修。JPキーワードを黒地白文字バッジ（`.lpv2-hero-eyebrow-ja`、コマ枠オレンジ影 `4px 4px 0 accent`）、その下にENを `.lpv2-hero-eyebrow-en`（mono・アクセント色・letter-spacing 0.34em）で縦積み。recruit-manga は「採用マンガ／RECRUIT MANGA」。旧 `::before` 横線＋middot一行型は廃止。SPでは従来通り非表示（`display:none`）
+- Hero SP調整（2026-05-31 recruit-manga）: CTA行はスマホで必ず縦並び（`flex-direction:column`）＋内容幅・左寄せ（全幅にしない）。リード文・H1の改行は `<br class="sp-br">` でSP専用に制御。キャラ画像はSPで `.lpv2-hero-bg img { height:135%; margin-top:11% }` で下げ、顔・目が見出しに被らないようにする
 - 全章に章番号（CHAPTER 01..07）を導入し、雑誌のような章立てに
 
 ### v2 章立て
