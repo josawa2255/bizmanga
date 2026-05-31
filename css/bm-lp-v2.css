@@ -282,7 +282,7 @@
     object-fit: cover;
     object-position: center top;
     height: 135%;
-    margin-top: 11%;
+    margin-top: 0;
   }
   .lpv2-hero-stage { min-height: clamp(720px, 140vw, 980px); }
   .lpv2-hero-inner {
