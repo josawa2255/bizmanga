@@ -355,9 +355,9 @@
       0 0 10px rgba(255, 248, 237, 0.85),
       0 0 16px rgba(255, 248, 237, 0.6);
   }
-  /* Compact CTAs on mobile */
-  .lpv2-hero-cta-row { gap: 10px; }
-  .lpv2-hero-cta-row .lpv2-btn { padding: 13px 20px; font-size: 13.5px; }
+  /* Compact CTAs on mobile — 必ず縦並び（横並び禁止） */
+  .lpv2-hero-cta-row { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 10px; }
+  .lpv2-hero-cta-row .lpv2-btn { width: 100%; padding: 13px 20px; font-size: 13.5px; }
   .lpv2-hero-cta-row .lpv2-btn--lg { padding: 14px 22px; font-size: 14px; }
 }
 
