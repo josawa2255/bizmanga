@@ -209,14 +209,26 @@
 }
 
 .lpv2-hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 14px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 13px; font-weight: 900;
-  letter-spacing: 0.36em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  margin: 0 0 28px;
+  display: inline-flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  margin: 0 0 30px;
 }
-.lpv2-hero-eyebrow::before { content: ""; width: 44px; height: 2px; background: var(--lpv2-accent); display: inline-block; }
+/* JP keyword = manga-magazine masthead badge (black box + comic-panel orange shadow) */
+.lpv2-hero-eyebrow-ja {
+  font-family: var(--lpv2-font-sans);
+  font-size: 19px; font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #fff;
+  background: var(--lpv2-ink);
+  padding: 10px 20px;
+  box-shadow: 4px 4px 0 var(--lpv2-accent);
+}
+.lpv2-hero-eyebrow-en {
+  font-family: var(--lpv2-font-mono);
+  font-size: 14px; font-weight: 900;
+  letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--lpv2-accent);
+  padding-left: 2px;
+}
 
 .lpv2-hero-title {
   font-family: var(--lpv2-font-display);
