@@ -2292,23 +2292,18 @@
   transition: max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
   background: #FFFBF7;
 }
-.mpc-hero-v3-panel.is-open { max-height: 520px; }
+.mpc-hero-v3-panel.is-open { max-height: 460px; }
 .mpc-hero-v3-panel-in { padding: 4px 20px 20px 88px; }
-/* 8用途の専用LPリンク(チップ) */
-.mpc-hero-v3-panel-uses { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
-.mpc-hero-v3-panel-uses a {
-  display: inline-block;
-  font-size: 12.5px;
-  font-weight: 700;
+/* 8用途の文中インラインリンク(文字を押すと各専用LPへ) */
+.mpc-hero-v3-inlink {
   color: #111111;
+  font-weight: 700;
   text-decoration: none;
-  background: #FFF1E6;
-  border: 1px solid #FFD9BE;
-  border-radius: 999px;
-  padding: 6px 13px;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border-bottom: 1.5px solid #FF6A00;
+  padding-bottom: 0.5px;
+  transition: color 0.15s ease;
 }
-.mpc-hero-v3-panel-uses a:hover { background: #FF6A00; border-color: #FF6A00; color: #ffffff; }
+.mpc-hero-v3-inlink:hover { color: #FF6A00; }
 .mpc-hero-v3-panel-q {
   margin: 0 0 6px;
   font-size: 13.5px;
@@ -2383,6 +2378,6 @@
   .mpc-hero-v3-point-title { font-size: 15px; }
   .mpc-hero-v3-point-desc { font-size: 11.5px; }
   .mpc-hero-v3-panel-in { padding: 2px 16px 18px 16px; }
-  .mpc-hero-v3-panel.is-open { max-height: 680px; }
+  .mpc-hero-v3-panel.is-open { max-height: 560px; }
   .mpc-hero-v3-cta { font-size: 16px; padding: 16px 20px; }
 }
