@@ -2070,7 +2070,9 @@
   /* PC: 縦長素材の中央スケッチ帯を切り出した横長背景。左右にスケッチが見える */
   background-image: url("/material/images/mpc/hero-bg-sketch-pc.webp");
   background-repeat: no-repeat;
-  background-position: center;
+  /* center top で上端基準に固定。カード展開でヒーローが縦に伸びても
+     背景がセンタリングし直されてズレない（中央基準だと展開時に下へ動く） */
+  background-position: center top;
   background-size: 100% auto;
   padding: 96px 20px 64px;
   text-align: center;
