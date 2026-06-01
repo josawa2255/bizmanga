@@ -153,12 +153,42 @@
     items.forEach(function (el) { io.observe(el); });
   }
 
+  // Hero ポイントの Q&A アコーディオン (各カード下に回答を展開)
+  function initHeroPoints() {
+    var root = document.querySelector('[data-mpc-accordion]');
+    if (!root) return;
+    var buttons = root.querySelectorAll('.mpc-hero-v3-point');
+    buttons.forEach(function (btn) {
+      var panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (!panel) return;
+      btn.addEventListener('click', function () {
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          btn.setAttribute('aria-expanded', 'false');
+          panel.classList.remove('is-open');
+          // トランジション後に hidden を戻す
+          window.setTimeout(function () {
+            if (btn.getAttribute('aria-expanded') === 'false') panel.hidden = true;
+          }, 320);
+        } else {
+          panel.hidden = false;
+          // hidden 解除を反映させてから開く (トランジション発火)
+          window.requestAnimationFrame(function () {
+            btn.setAttribute('aria-expanded', 'true');
+            panel.classList.add('is-open');
+          });
+        }
+      });
+    });
+  }
+
   function init() {
     initFadeUp();
     initChecklist();
     initCounters();
     initFixBtn();
     initStickyTable();
+    initHeroPoints();
   }
 
   if (document.readyState === 'loading') {

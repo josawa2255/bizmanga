@@ -2258,6 +2258,67 @@
 .mpc-hero-v3-point-desc { display: block; font-size: 12.5px; color: #666666; margin-top: 2px; }
 .mpc-hero-v3-point-arrow { color: #FF6A00; font-size: 18px; font-weight: 700; }
 
+/* ---------- Hero ポイント アコーディオン (Q&A 展開) ---------- */
+.mpc-hero-v3-item { border-top: 1px solid #F1EBE2; }
+.mpc-hero-v3-item:first-child { border-top: 0; }
+/* 行をボタン化: ネイティブbuttonのスタイルをリセットしてリンク行と同じ見た目に */
+.mpc-hero-v3-item > .mpc-hero-v3-point {
+  width: 100%;
+  border-top: 0;
+  margin: 0;
+  background: #ffffff;
+  border-left: 0; border-right: 0; border-bottom: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.mpc-hero-v3-point-toggle {
+  color: #FF6A00;
+  display: grid;
+  place-items: center;
+  transition: transform 0.25s ease;
+}
+.mpc-hero-v3-point-toggle svg { width: 20px; height: 20px; }
+.mpc-hero-v3-point[aria-expanded="true"] .mpc-hero-v3-point-toggle { transform: rotate(180deg); }
+.mpc-hero-v3-point[aria-expanded="true"] { background: #FFF8F2; }
+
+.mpc-hero-v3-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  background: #FFFBF7;
+}
+.mpc-hero-v3-panel.is-open { max-height: 420px; }
+.mpc-hero-v3-panel-in { padding: 4px 20px 20px 88px; }
+.mpc-hero-v3-panel-q {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #FF6A00;
+}
+.mpc-hero-v3-panel-a {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #3a342e;
+}
+.mpc-hero-v3-panel-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111111;
+  text-decoration: none;
+  border-bottom: 2px solid #FF6A00;
+  padding-bottom: 1px;
+}
+.mpc-hero-v3-panel-link:hover { color: #FF6A00; }
+@media (prefers-reduced-motion: reduce) {
+  .mpc-hero-v3-panel { transition: none; }
+  .mpc-hero-v3-point-toggle { transition: none; }
+}
+
 /* ---------- CTA ---------- */
 .mpc-hero-v3-cta {
   display: flex;
@@ -2304,5 +2365,7 @@
   .mpc-hero-v3-point-ic svg { width: 23px; height: 23px; }
   .mpc-hero-v3-point-title { font-size: 15px; }
   .mpc-hero-v3-point-desc { font-size: 11.5px; }
+  .mpc-hero-v3-panel-in { padding: 2px 16px 18px 16px; }
+  .mpc-hero-v3-panel.is-open { max-height: 520px; }
   .mpc-hero-v3-cta { font-size: 16px; padding: 16px 20px; }
 }
