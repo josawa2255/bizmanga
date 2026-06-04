@@ -2264,6 +2264,10 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-column-featured-title {
     font-size: 22px;
   }
+  /* スマホでは特集記事を非表示（JSの表示切替より優先） */
+  .bm-column-featured {
+    display: none !important;
+  }
 }
 
 /* ============================================
