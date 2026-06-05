@@ -4136,6 +4136,29 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   text-shadow: 0 1px 6px rgba(0,0,0,0.5);
 }
 
+/* 料金ページ: カード用4:3イラストを切らずに全体表示するヒーロー */
+.bm-img-hero--contain {
+  height: clamp(300px, 42vw, 540px);
+  background: linear-gradient(180deg, #fbf8f4 0%, #f3ece2 100%);
+}
+.bm-img-hero--contain img {
+  object-fit: contain;
+  object-position: center center;
+}
+.bm-img-hero--contain::after {
+  /* 明るいイラストを暗くしないよう全面オーバーレイは外し、文字の足元だけクリームで起こす */
+  background: linear-gradient(to bottom, rgba(251,248,244,0) 48%, rgba(248,242,234,0.7) 74%, rgba(244,237,226,0.96) 100%);
+}
+.bm-img-hero--contain .bm-img-hero-text h1 {
+  color: #1a1a1a;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.85);
+}
+.bm-img-hero--contain .bm-img-hero-text p {
+  color: #3a3a3a;
+  opacity: 1;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.85);
+}
+
 /* ============================================
    制作事例モーダル (ContentsX同様 2カラム)
    ============================================ */
