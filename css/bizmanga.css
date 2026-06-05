@@ -4147,9 +4147,8 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 2880 / 1198;   /* 添付の横長帯（元画像の上側のみ使用） */
+  aspect-ratio: 2560 / 1440;   /* ワイド版16:9をそのまま全幅表示 */
   object-fit: cover;
-  object-position: center top;
 }
 .bm-img-hero--fill::after {
   display: none;
