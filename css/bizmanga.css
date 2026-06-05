@@ -4136,11 +4136,10 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   text-shadow: 0 1px 6px rgba(0,0,0,0.5);
 }
 
-/* 料金ページ: カード用イラストを横幅フルで切らずに全体表示し、見出しは画像下に配置 */
+/* 料金ページ: イラストを横長帯で全幅表示し、見出し+リードは画像内下部にオーバーレイ */
 .bm-img-hero--fill {
   height: auto;
   display: block;
-  background: #fff;
 }
 .bm-img-hero--fill img {
   position: static;
@@ -4152,21 +4151,24 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   object-position: center top;
 }
 .bm-img-hero--fill::after {
-  display: none;
+  /* 上部は明るいまま、見出しが乗る下部だけ暗くして白文字を読ませる */
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 38%, rgba(0,0,0,0.4) 66%, rgba(0,0,0,0.8) 100%);
 }
 .bm-img-hero--fill .bm-img-hero-text {
-  position: static;
-  text-align: center;
-  padding: 28px 24px 4px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 24px 30px;
 }
 .bm-img-hero--fill .bm-img-hero-text h1 {
-  color: #1a1a1a;
-  text-shadow: none;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 .bm-img-hero--fill .bm-img-hero-text p {
-  color: #555;
-  opacity: 1;
-  text-shadow: none;
+  color: #fff;
+  opacity: 0.95;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
 }
 
 /* ============================================
@@ -4889,6 +4891,21 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-img-hero--fill {
     height: auto;
+  }
+  .bm-img-hero--fill img {
+    aspect-ratio: 4 / 3;   /* モバイルは帯を高めにして見出しオーバーレイの余白を確保 */
+    object-position: center top;
+  }
+  .bm-img-hero--fill .bm-img-hero-text {
+    padding: 0 18px 18px;
+  }
+  .bm-img-hero--fill .bm-img-hero-text h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .bm-img-hero--fill .bm-img-hero-text p {
+    font-size: 12px;
+    line-height: 1.5;
   }
 
   /* モーダル: スマホは縦並び — 漫画+詳細が一体でスクロール */
