@@ -4312,7 +4312,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
    Pricing Quiz (bm-pricing-quiz.js)
    ============================================ */
 .bm-quiz-section {
-  background: var(--bm-bg-light);
+  background: #fff;
   padding: 80px 0 72px;
   border-bottom: 1px solid var(--bm-border);
 }
