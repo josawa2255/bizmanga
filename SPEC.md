@@ -489,10 +489,13 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 ## 12. セキュリティ対策
 
-- [js/bm-sanitize.js](js/bm-sanitize.js):
-  - `escapeHtml()` — XSS対策
-  - `sanitizeUrl()` — 許可ドメインのみ（contentsx.jp / bizmanga.contentsx.jp / cms.contentsx.jp）
-- **innerHTML代入前に必ず escape**
+- [js/bm-sanitize.js](js/bm-sanitize.js) `window.bmSanitize`:
+  - `html(s)` — HTMLエスケープ（テキスト・属性値用）
+  - `url(s)` — URL検証。スキーム有無で分岐し、制御文字/空白/プロトコル相対(`//host`)を拒否、`http(s)` かつ `contentsx.jp` 系ドメインのみ通過。`javascript:`/`data:`/`vbscript:` は除去
+  - `rich(s)` / `richHTML(s)`（同一・エイリアス） — WPリッチ本文用。script/iframe/style/form等の危険タグと on*属性・`javascript:`/`data:text/html` URIを除去
+- **WP API由来の文字列を `innerHTML` に入れるときは必ず `html()`（テキスト/属性）か `rich()`（本文HTML）を通す**。素の `+ item.xxx +` 連結は禁止（2026-06-10 BUGS #039）
+  - URLは `url()`、CSSの object-position 等は許可文字チェック（`/^[a-zA-Z0-9% .-]+$/`）、`href`に入れるIDは `encodeURIComponent`
+- カード描画系（bm-wp-api.js / works.js 等）は `DocumentFragment` でバッチ追加し、scrollリスナーは `{passive:true}`
 
 ## 13. 既知の注意点
 
@@ -764,9 +767,9 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 
 | # | 場所 | リスク | 対応方針 |
 |---|------|--------|---------|
-| S1 | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでテンプレ流入 → script注入で全コラムページXSS | `bleach` 等でallowlistサニタイズ（GitHub Actions に `pip install bleach` 追加必要） |
+| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用 |
 | S2 | [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl):80-87 / [work-detail.html.tpl](tools/templates/work-detail.html.tpl):60-86 | `{{title_ja}}` 等が `html.escape(quote=True)` 経由でJSON-LD内に挿入。`\` や `\n` が含まれるとJSON構文破壊リスク | JSON-LD自体を build側で `json.dumps` してテンプレに `{{json_ld}}` で1ブロック差し込む設計に変更 |
-| S3 | [js/bm-wp-api.js](js/bm-wp-api.js):167-174 `loadColumns()` | WP由来の `title_ja / category / thumbnail` を未エスケープで `innerHTML` 連結 | 既存 `window.bmSanitize.html()` を使う |
+| ~~S3~~ | ランタイムJS全般（bm-wp-api.js / works.js / bm-testimonials*.js / bm-works-page.js / column-detail.html / testimonial-detail.html） | WP由来文字列を未エスケープで `innerHTML` 連結。`column-detail.html` は `richHTML` typoで本文サニタイズ自体が無効だった | ✅ **解消(2026-06-10 BUGS #039)** 全描画を `bmSanitize.html()`/`rich()`/`url()`＋`safePos` 経由に統一、Playwrightでペイロード注入検証済み |
 | S4 | 全HTMLヘッダー | CSP / HSTS / Permissions-Policy ヘッダなし（GitHub Pages制約） | `<meta http-equiv="Content-Security-Policy">` で許容範囲のCSPを meta タグで追加 |
 
 ### 既に対応済み（2026-04-21）

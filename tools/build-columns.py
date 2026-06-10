@@ -25,6 +25,7 @@ import sys
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
+from html.parser import HTMLParser
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
 DESC_OVERRIDES = {
@@ -63,6 +64,120 @@ def make_slug(column):
 
 def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
+
+
+# ── WP本文HTMLのallowlistサニタイズ（標準ライブラリのみ。bleach等の追加依存なし）──
+# WP管理画面が侵害された場合の持続的XSS（SPEC §15.1 S1）対策。
+# 許可タグ・許可属性以外は除去し、危険なタグは中身ごと捨てる。
+_ALLOWED_TAGS = {
+    "p", "br", "hr", "h2", "h3", "h4", "h5", "blockquote",
+    "ul", "ol", "li", "strong", "b", "em", "i", "u", "s", "small", "mark", "sub", "sup",
+    "a", "img", "figure", "figcaption", "span", "div",
+    "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption",
+    "code", "pre",
+}
+# 中身ごと完全に破棄するタグ
+_VOID_DROP_TAGS = {"script", "style", "iframe", "object", "embed", "form", "noscript",
+                   "template", "svg", "math", "link", "meta", "base"}
+_SELF_CLOSING = {"br", "hr", "img"}
+_ALLOWED_ATTRS = {
+    "a": {"href", "title", "target", "rel"},
+    "img": {"src", "alt", "width", "height", "loading", "decoding", "srcset", "sizes"},
+    "td": {"colspan", "rowspan", "data-align"},
+    "th": {"colspan", "rowspan", "data-align", "scope"},
+    "*": {"class", "id"},
+}
+
+
+def _safe_url(value):
+    """javascript:/vbscript:/data:(画像以外) を弾く。相対・http(s)・data:image は許可。"""
+    v = (value or "").strip()
+    low = re.sub(r"[\s]", "", v).lower()
+    if low.startswith(("javascript:", "vbscript:", "data:text", "data:application")):
+        return None
+    return v
+
+
+def _safe_srcset(value):
+    """srcset の各URLを検証。1つでも危険ならsrcset全体を捨てる。"""
+    if not value:
+        return None
+    parts = []
+    for chunk in value.split(","):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        url = chunk.split()[0]
+        if _safe_url(url) is None:
+            return None
+        parts.append(chunk)
+    return ", ".join(parts) if parts else None
+
+
+class _Sanitizer(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out = []
+        self._skip_depth = 0  # script等のネスト深さ
+
+    def handle_starttag(self, tag, attrs):
+        if tag in _VOID_DROP_TAGS:
+            if tag not in _SELF_CLOSING:
+                self._skip_depth += 1
+            return
+        if self._skip_depth:
+            return
+        if tag not in _ALLOWED_TAGS:
+            return  # 不許可タグは要素を落とす（中身テキストは残る）
+        allowed = _ALLOWED_ATTRS.get(tag, set()) | _ALLOWED_ATTRS["*"]
+        kept = []
+        for name, value in attrs:
+            name = (name or "").lower()
+            if name.startswith("on"):  # onclick 等のイベントハンドラ
+                continue
+            if name not in allowed:
+                continue
+            if name in ("href", "src"):
+                value = _safe_url(value)
+                if value is None:
+                    continue
+            elif name == "srcset":
+                value = _safe_srcset(value)
+                if value is None:
+                    continue
+            kept.append((name, value or ""))
+        attr_str = "".join(
+            f' {n}="{html.escape(val, quote=True)}"' for n, val in kept
+        )
+        if tag == "a" and not any(n == "rel" for n, _ in kept):
+            attr_str += ' rel="noopener"'
+        slash = "/" if tag in _SELF_CLOSING else ""
+        self.out.append(f"<{tag}{attr_str}{slash}>")
+
+    def handle_endtag(self, tag):
+        if tag in _VOID_DROP_TAGS and tag not in _SELF_CLOSING:
+            if self._skip_depth:
+                self._skip_depth -= 1
+            return
+        if self._skip_depth:
+            return
+        if tag in _ALLOWED_TAGS and tag not in _SELF_CLOSING:
+            self.out.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        if self._skip_depth:
+            return
+        self.out.append(html.escape(data, quote=False))
+
+
+def sanitize_content_html(raw):
+    """WP本文HTMLをallowlistでサニタイズして返す。"""
+    if not raw:
+        return ""
+    p = _Sanitizer()
+    p.feed(raw)
+    p.close()
+    return "".join(p.out)
 
 
 def fetch_json(url):
@@ -291,7 +406,8 @@ def build_detail_page(col, detail_data, template):
     else:
         modified_ymd = date_ymd
     excerpt = col.get("excerpt_ja") or ""
-    content = detail_data.get("content") or ""
+    # WP本文はXSS対策でallowlistサニタイズ（SPEC §15.1 S1）
+    content = sanitize_content_html(detail_data.get("content") or "")
 
     override = DESC_OVERRIDES.get(slug)
     if override:

@@ -410,6 +410,12 @@ p{margin:0 0 16px;}
 
   <script>
     (async function() {
+      /* XSS対策: HTML連結に使う文字列は必ず esc() を通す */
+      const esc = (s) => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      const safePos = (s) => /^[a-zA-Z0-9% .-]+$/.test(String(s || 'center')) ? String(s || 'center') : 'center';
+
       const params = new URLSearchParams(location.search);
       const id = params.get('id');
 
@@ -496,8 +502,9 @@ p{margin:0 0 16px;}
 
         // Render
         if (thumb) {
+          /* esc()/safePos() でサニタイズ済み（XSS対策） */
           document.getElementById('tmDetailHero').innerHTML =
-            '<img src="' + thumb + '" alt="' + title + '" style="object-position:' + (data.img_position || 'center') + ';">';
+            '<img src="' + esc(thumb) + '" alt="' + esc(title) + '" style="object-position:' + safePos(data.img_position) + ';">';
         }
         if (tag) {
           const tagEl = document.getElementById('tmDetailTag');
@@ -541,11 +548,12 @@ p{margin:0 0 16px;}
           const related = all.filter(x => x.id !== parseInt(id, 10) && x.tag === tag).slice(0, 3);
           if (related.length > 0) {
             const grid = document.getElementById('tmDetailRelatedGrid');
+            /* 全フィールド esc() 済み（XSS対策） */
             grid.innerHTML = related.map(r =>
-              '<a class="tm-detail-related-card" href="testimonial-detail?id=' + r.id + '">' +
-              (r.thumbnail ? '<img src="' + r.thumbnail + '" alt="" loading="lazy">' : '') +
-              (r.tag ? '<span class="tag">' + r.tag + '</span>' : '') +
-              '<span class="t">' + (r.heading || '') + '</span>' +
+              '<a class="tm-detail-related-card" href="testimonial-detail?id=' + encodeURIComponent(r.id) + '">' +
+              (r.thumbnail ? '<img src="' + esc(r.thumbnail) + '" alt="" loading="lazy">' : '') +
+              (r.tag ? '<span class="tag">' + esc(r.tag) + '</span>' : '') +
+              '<span class="t">' + esc(r.heading) + '</span>' +
               '</a>'
             ).join('');
             document.getElementById('tmDetailRelated').style.display = '';

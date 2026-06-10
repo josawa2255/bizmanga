@@ -412,7 +412,9 @@ p{margin:0 0 16px;}
         var lang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : (localStorage.getItem('bm-lang') || 'ja');
         var titleText = (lang === 'en' && data.title_en) ? data.title_en : data.title_ja;
         var contentHtml = (lang === 'en' && data.content_en) ? data.content_en : data.content;
-        var sanitize = window.bmSanitize && window.bmSanitize.richHTML;
+        /* 注意: エクスポート名は rich（richHTMLはエイリアス）。
+           以前 richHTML 参照で undefined になりサニタイズが素通りしていた */
+        var sanitize = window.bmSanitize && window.bmSanitize.rich;
 
         document.getElementById('colDate').textContent = data.date || '';
         var catEl = document.getElementById('colCat');
@@ -522,18 +524,22 @@ p{margin:0 0 16px;}
         var section = document.getElementById('colRelated');
         if (!grid || !section) return;
         grid.innerHTML = '';
+        var esc = (window.bmSanitize && window.bmSanitize.html) || function(s) {
+          return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        };
         related.forEach(function(item) {
           var card = document.createElement('a');
           card.className = 'bm-column-card';
-          card.href = 'column-detail?id=' + item.id;
+          card.href = 'column-detail?id=' + encodeURIComponent(item.id);
           var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
-          var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
+          var catHtml = item.category ? '<span class="bm-column-card-cat">' + esc(item.category) + '</span>' : '';
+          /* 全フィールドを esc() でエスケープしてから挿入（XSS対策） */
           card.innerHTML =
-            '<div class="bm-column-card-img"><img src="' + thumb + '" alt="' + (item.title_ja || '') + '" loading="lazy" width="400" height="225"></div>' +
+            '<div class="bm-column-card-img"><img src="' + esc(thumb) + '" alt="' + esc(item.title_ja) + '" loading="lazy" width="400" height="225"></div>' +
             '<div class="bm-column-card-body">' + catHtml +
-            '<h3 class="bm-column-card-title">' + (item.title_ja || '') + '</h3>' +
-            '<p class="bm-column-card-excerpt">' + (item.excerpt_ja || '') + '</p>' +
-            '<time class="bm-column-card-date">' + (item.date || '') + '</time></div>';
+            '<h3 class="bm-column-card-title">' + esc(item.title_ja) + '</h3>' +
+            '<p class="bm-column-card-excerpt">' + esc(item.excerpt_ja) + '</p>' +
+            '<time class="bm-column-card-date">' + esc(item.date) + '</time></div>';
           grid.appendChild(card);
         });
         section.style.display = '';

@@ -10,6 +10,21 @@
   var grid = document.getElementById('bmTestimonialsGrid');
   if (!grid) return;
 
+  /* XSS対策ヘルパー */
+  function esc(s) {
+    if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function rich(s) {
+    return (window.bmSanitize && window.bmSanitize.rich) ? window.bmSanitize.rich(s) : '<p>' + esc(String(s || '').replace(/<[^>]*>/g, '')) + '</p>';
+  }
+  /* object-position 値は英数字・%・スペース等のみ許可 */
+  function safePos(s) {
+    s = String(s || 'center');
+    return /^[a-zA-Z0-9% .-]+$/.test(s) ? s : 'center';
+  }
+
   /* ---------- フォールバックデータ ---------- */
   var FALLBACK = [
     {
@@ -73,16 +88,17 @@
 
       var tagEn = item.tag_en || TAG_EN[item.tag] || item.tag || '';
       var tagHtml = item.tag
-        ? '<span class="bm-testimonial-tag" data-ja="' + item.tag + '" data-en="' + tagEn + '">' + item.tag + '</span>'
+        ? '<span class="bm-testimonial-tag" data-ja="' + esc(item.tag) + '" data-en="' + esc(tagEn) + '">' + esc(item.tag) + '</span>'
         : '';
 
+      /* 全フィールド esc()/safePos() 済み（XSS対策） */
       card.innerHTML =
         '<div class="bm-testimonial-cover" style="' + (item.img_position ? 'overflow:hidden;' : '') + '">' +
-          (item.thumbnail ? '<img src="' + item.thumbnail + '" alt="" loading="lazy" style="object-position:' + (item.img_position || 'center') + ';">' : '') +
+          (item.thumbnail ? '<img src="' + esc(item.thumbnail) + '" alt="" loading="lazy" style="object-position:' + safePos(item.img_position) + ';">' : '') +
         '</div>' +
         tagHtml +
-        '<h3 class="bm-testimonial-title" data-ja="' + (item.heading || '') + '" data-en="' + (item.heading_en || '') + '">' + (item.heading || '') + '</h3>' +
-        '<p class="bm-testimonial-text" data-ja="' + (item.excerpt || '') + '" data-en="' + (item.excerpt_en || '') + '">' + (item.excerpt || '') + '</p>';
+        '<h3 class="bm-testimonial-title" data-ja="' + esc(item.heading) + '" data-en="' + esc(item.heading_en) + '">' + esc(item.heading) + '</h3>' +
+        '<p class="bm-testimonial-text" data-ja="' + esc(item.excerpt) + '" data-en="' + esc(item.excerpt_en) + '">' + esc(item.excerpt) + '</p>';
 
       // クリックで詳細ページへ遷移（API IDがある場合のみ）
       if (item.id > 0) {
@@ -150,20 +166,21 @@
     fetch(apiBase + '/testimonials/' + id)
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var tagHtml = item.tag ? '<span class="bm-tm-tag">' + item.tag + '</span>' : '';
+        var tagHtml = item.tag ? '<span class="bm-tm-tag">' + esc(item.tag) + '</span>' : '';
+        /* 本文はWPリッチHTMLなので rich() でサニタイズ、他は esc() */
         body.innerHTML =
-          (item.thumbnail ? '<div class="bm-tm-hero"><img src="' + item.thumbnail + '" alt="" style="object-position:' + (item.img_position || 'center') + ';"></div>' : '') +
+          (item.thumbnail ? '<div class="bm-tm-hero"><img src="' + esc(item.thumbnail) + '" alt="" style="object-position:' + safePos(item.img_position) + ';"></div>' : '') +
           '<div class="bm-tm-inner">' +
             tagHtml +
-            '<h2 class="bm-tm-heading">' + (data.heading || item.heading) + '</h2>' +
-            '<div class="bm-tm-content">' + (data.content || '<p>' + (item.excerpt || '') + '</p>') + '</div>' +
+            '<h2 class="bm-tm-heading">' + esc(data.heading || item.heading) + '</h2>' +
+            '<div class="bm-tm-content">' + (data.content ? rich(data.content) : '<p>' + esc(item.excerpt) + '</p>') + '</div>' +
           '</div>';
       })
       .catch(function () {
         body.innerHTML =
           '<div class="bm-tm-inner">' +
-            '<h2 class="bm-tm-heading">' + (item.heading || '') + '</h2>' +
-            '<p>' + (item.excerpt || '') + '</p>' +
+            '<h2 class="bm-tm-heading">' + esc(item.heading) + '</h2>' +
+            '<p>' + esc(item.excerpt) + '</p>' +
           '</div>';
       });
   }

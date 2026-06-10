@@ -24,21 +24,25 @@
   function sanitizeUrl(url) {
     if (!url) return '';
     var s = String(url).trim();
-    // 相対URL
-    if (s.startsWith('/') || s.startsWith('./') || s.startsWith('../') || !s.includes('://')) {
-      return s;
+    // 制御文字・空白の混入（"java\tscript:" 等のスキーム偽装）は拒否
+    if (/[\u0000-\u0020\u007f]/.test(s)) return '';
+    // プロトコル相対URL (//evil.com) は外部ドメインに化けるので拒否
+    if (s.startsWith('//')) return '';
+    // スキーム付き (javascript:, data:, vbscript: 等を含む) は http/https のみ許可ドメインで通す
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s)) {
+      var allowed = ['contentsx.jp'];
+      try {
+        var parsed = new URL(s);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+        var host = parsed.hostname;
+        for (var i = 0; i < allowed.length; i++) {
+          if (host === allowed[i] || host.endsWith('.' + allowed[i])) return s;
+        }
+      } catch (e) { /* invalid URL */ }
+      return '';
     }
-    // 許可ドメイン
-    var allowed = ['contentsx.jp', 'bizmanga.contentsx.jp', 'cms.contentsx.jp'];
-    try {
-      var parsed = new URL(s);
-      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
-      var host = parsed.hostname;
-      for (var i = 0; i < allowed.length; i++) {
-        if (host === allowed[i] || host.endsWith('.' + allowed[i])) return s;
-      }
-    } catch (e) { /* invalid URL */ }
-    return '';
+    // スキーム無し = 相対URL（/path, ./path, path, #hash, ?query）
+    return s;
   }
 
   /**
@@ -63,6 +67,7 @@
   window.bmSanitize = {
     html: escapeHtml,
     url: sanitizeUrl,
-    rich: sanitizeRichHTML
+    rich: sanitizeRichHTML,
+    richHTML: sanitizeRichHTML // 旧呼び名エイリアス（呼び間違い事故防止）
   };
 })();

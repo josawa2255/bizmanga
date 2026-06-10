@@ -9,6 +9,20 @@
   var grid = document.getElementById('bmTmListGrid');
   if (!grid) return;
 
+  /* XSS対策ヘルパー */
+  function esc(s) {
+    if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function rich(s) {
+    return (window.bmSanitize && window.bmSanitize.rich) ? window.bmSanitize.rich(s) : '<p>' + esc(String(s || '').replace(/<[^>]*>/g, '')) + '</p>';
+  }
+  function safePos(s) {
+    s = String(s || 'center');
+    return /^[a-zA-Z0-9% .-]+$/.test(s) ? s : 'center';
+  }
+
   /* ---------- フォールバックデータ ---------- */
   var FALLBACK = [
     {
@@ -63,17 +77,18 @@
       card.className = 'bm-tm-list-card';
 
       var tagHtml = item.tag
-        ? '<span class="bm-tm-list-tag" data-ja="' + item.tag + '">' + item.tag + '</span>'
+        ? '<span class="bm-tm-list-tag" data-ja="' + esc(item.tag) + '">' + esc(item.tag) + '</span>'
         : '';
 
+      /* 全フィールド esc()/safePos() でサニタイズ済み（XSS対策） */
       card.innerHTML =
         '<div class="bm-tm-list-cover">' +
-          (item.thumbnail ? '<img src="' + item.thumbnail + '" alt="" loading="lazy" style="object-position:' + (item.img_position || 'center') + ';">' : '') +
+          (item.thumbnail ? '<img src="' + esc(item.thumbnail) + '" alt="" loading="lazy" style="object-position:' + safePos(item.img_position) + ';">' : '') +
         '</div>' +
         '<div class="bm-tm-list-body">' +
           tagHtml +
-          '<h3 class="bm-tm-list-title" data-ja="' + (item.heading || '') + '" data-en="' + (item.heading_en || '') + '">' + (item.heading || '') + '</h3>' +
-          '<p class="bm-tm-list-text" data-ja="' + (item.excerpt || '') + '" data-en="' + (item.excerpt_en || '') + '">' + (item.excerpt || '') + '</p>' +
+          '<h3 class="bm-tm-list-title" data-ja="' + esc(item.heading) + '" data-en="' + esc(item.heading_en) + '">' + esc(item.heading) + '</h3>' +
+          '<p class="bm-tm-list-text" data-ja="' + esc(item.excerpt) + '" data-en="' + esc(item.excerpt_en) + '">' + esc(item.excerpt) + '</p>' +
         '</div>';
 
       // クリックで詳細ページへ遷移
@@ -142,10 +157,11 @@
 
   /* ---------- モーダル本文描画 (シェア / CTA / 関連事例) ---------- */
   function renderModalContent(body, data, item) {
-    var tagHtml = item.tag ? '<span class="bm-tm-tag">' + item.tag + '</span>' : '';
-    var shareUrl = location.origin + location.pathname + '#id=' + (data.id || item.id);
+    /* 全フィールド esc()/safePos()/rich() でサニタイズ（XSS対策） */
+    var tagHtml = item.tag ? '<span class="bm-tm-tag">' + esc(item.tag) + '</span>' : '';
+    var shareUrl = location.origin + location.pathname + '#id=' + encodeURIComponent(data.id || item.id);
     var shareText = encodeURIComponent((data.heading || item.heading || '') + ' - BizManga 導入事例');
-    var heroImg = item.thumbnail ? '<div class="bm-tm-hero"><img src="' + item.thumbnail + '" alt="' + (data.heading || item.heading || '') + '" style="object-position:' + (item.img_position || 'center') + ';"></div>' : '';
+    var heroImg = item.thumbnail ? '<div class="bm-tm-hero"><img src="' + esc(item.thumbnail) + '" alt="' + esc(data.heading || item.heading) + '" style="object-position:' + safePos(item.img_position) + ';"></div>' : '';
 
     /* 関連事例 (同じタグ ≠ 自分) */
     var related = currentItems
@@ -158,9 +174,9 @@
           '<h3 class="bm-tm-related-title">関連事例</h3>' +
           '<div class="bm-tm-related-grid">' +
             related.map(function(r) {
-              return '<a class="bm-tm-related-card" href="#id=' + r.id + '" data-id="' + r.id + '">' +
-                (r.thumbnail ? '<img src="' + r.thumbnail + '" alt="" loading="lazy">' : '') +
-                '<span>' + (r.heading || '') + '</span>' +
+              return '<a class="bm-tm-related-card" href="#id=' + encodeURIComponent(r.id) + '" data-id="' + esc(r.id) + '">' +
+                (r.thumbnail ? '<img src="' + esc(r.thumbnail) + '" alt="" loading="lazy">' : '') +
+                '<span>' + esc(r.heading) + '</span>' +
               '</a>';
             }).join('') +
           '</div>' +
@@ -171,8 +187,8 @@
       heroImg +
       '<div class="bm-tm-inner">' +
         tagHtml +
-        '<h2 class="bm-tm-heading">' + (data.heading || item.heading || '') + '</h2>' +
-        '<div class="bm-tm-content">' + (data.content || '<p>' + (item.excerpt || '') + '</p>') + '</div>' +
+        '<h2 class="bm-tm-heading">' + esc(data.heading || item.heading) + '</h2>' +
+        '<div class="bm-tm-content">' + (data.content ? rich(data.content) : '<p>' + esc(item.excerpt) + '</p>') + '</div>' +
         '<div class="bm-tm-cta">' +
           '<a href="/contact" class="bm-tm-cta-btn">無料相談する</a>' +
           '<a href="/works" class="bm-tm-cta-btn bm-tm-cta-btn--ghost">他の事例を見る</a>' +

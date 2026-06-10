@@ -21,6 +21,17 @@
   var CACHE_TTL = BM_WP_CONFIG.cacheTTL || 300000;
   var cache = {};
 
+  /* XSS対策ヘルパー（bm-sanitize.js 未ロード時も最低限エスケープ） */
+  function esc(s) {
+    if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function safeUrl(s) {
+    if (window.bmSanitize && window.bmSanitize.url) return window.bmSanitize.url(s);
+    return /^javascript:|^data:|^vbscript:/i.test(String(s || '').trim()) ? '' : (s || '');
+  }
+
   async function apiFetch(endpoint) {
     var url = API + endpoint;
     var now = Date.now();
@@ -100,18 +111,18 @@
 
       var hasLink = item.url || (item.has_detail && item.id);
       var rawUrl = hasLink ? (item.url || ('news-detail?id=' + item.id)) : '';
-      var safeUrl = hasLink && window.bmSanitize && window.bmSanitize.url ? window.bmSanitize.url(rawUrl) : rawUrl;
+      var linkUrl = hasLink ? safeUrl(rawUrl) : '';
 
       /* サムネイル（左） */
       var thumbWrap;
       if (hasLink) {
         thumbWrap = document.createElement('a');
-        thumbWrap.href = safeUrl;
+        thumbWrap.href = linkUrl;
       } else {
         thumbWrap = document.createElement('div');
       }
       thumbWrap.className = 'bm-news-thumb';
-      var src = item.thumbnail || FALLBACK_THUMB;
+      var src = safeUrl(item.thumbnail) || FALLBACK_THUMB;
       var mode = item.image_mode_top || item.image_mode || 'contain';
       if (mode === 'crop' && item.thumbnail) {
         // crop: 親枠 (aspect-ratio:5/3) を cover で埋め、クロップ中心を背景中央に置く
@@ -125,7 +136,7 @@
         cropEl.className = 'bm-news-thumb-crop';
         cropEl.setAttribute('role', 'img');
         cropEl.setAttribute('aria-label', item.title_ja || '');
-        cropEl.style.backgroundImage = 'url(' + src + ')';
+        cropEl.style.backgroundImage = 'url("' + src.replace(/["\\)]/g, '') + '")';
         cropEl.style.backgroundPosition = cropCenterX.toFixed(2) + '% ' + cropCenterY.toFixed(2) + '%';
         thumbWrap.appendChild(cropEl);
       } else {
@@ -164,7 +175,7 @@
       if (hasLink) {
         titleEl = document.createElement('a');
         titleEl.className = 'bm-news-link';
-        titleEl.href = safeUrl;
+        titleEl.href = linkUrl;
       } else {
         titleEl = document.createElement('span');
         titleEl.className = 'bm-news-link bm-news-link--plain';
@@ -199,27 +210,30 @@
     var displayData = isHome ? data.slice(0, COLUMN_HOME_LIMIT) : data;
 
     grid.innerHTML = '';
+    var colFrag = document.createDocumentFragment();
     displayData.forEach(function(item) {
       var card = document.createElement('a');
       card.className = 'bm-column-card';
       var slug = item.slug || String(item.id);
-      if (!slug.match(/^[a-z0-9-]+$/)) slug = 'column-detail?id=' + item.id;
+      if (!slug.match(/^[a-z0-9-]+$/)) slug = 'column-detail?id=' + encodeURIComponent(item.id);
       else slug = 'column/' + slug;
       card.href = slug;
 
-      var thumb = item.thumbnail || 'https://contentsx.jp/material/images/og/og-index.webp';
-      var catHtml = item.category ? '<span class="bm-column-card-cat">' + item.category + '</span>' : '';
+      var thumb = safeUrl(item.thumbnail) || 'https://contentsx.jp/material/images/og/og-index.webp';
+      var catHtml = item.category ? '<span class="bm-column-card-cat">' + esc(item.category) + '</span>' : '';
 
+      /* 全フィールド esc() 済み（XSS対策） */
       card.innerHTML =
-        '<div class="bm-column-card-img"><img src="' + thumb + '" alt="' + (item.title_ja || '') + '" loading="lazy" width="400" height="225"></div>' +
+        '<div class="bm-column-card-img"><img src="' + esc(thumb) + '" alt="' + esc(item.title_ja) + '" loading="lazy" width="400" height="225"></div>' +
         '<div class="bm-column-card-body">' +
           catHtml +
-          '<h3 class="bm-column-card-title" data-ja="' + (item.title_ja || '') + '" data-en="' + (item.title_en || item.title_ja || '') + '">' + (item.title_ja || '') + '</h3>' +
-          '<p class="bm-column-card-excerpt" data-ja="' + (item.excerpt_ja || '') + '" data-en="' + (item.excerpt_en || item.excerpt_ja || '') + '">' + (item.excerpt_ja || '') + '</p>' +
-          '<time class="bm-column-card-date">' + (item.date || '') + '</time>' +
+          '<h3 class="bm-column-card-title" data-ja="' + esc(item.title_ja) + '" data-en="' + esc(item.title_en || item.title_ja) + '">' + esc(item.title_ja) + '</h3>' +
+          '<p class="bm-column-card-excerpt" data-ja="' + esc(item.excerpt_ja) + '" data-en="' + esc(item.excerpt_en || item.excerpt_ja) + '">' + esc(item.excerpt_ja) + '</p>' +
+          '<time class="bm-column-card-date">' + esc(item.date) + '</time>' +
         '</div>';
-      grid.appendChild(card);
+      colFrag.appendChild(card);
     });
+    grid.appendChild(colFrag);
 
     if (isHome && data.length > COLUMN_HOME_LIMIT) {
       var more = document.getElementById('bmColumnMore');

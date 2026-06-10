@@ -35,7 +35,14 @@ const header = document.getElementById('header');
 if (header) {
   window.addEventListener('scroll', () => {
     header.classList.toggle('scrolled', window.scrollY > 10);
-  });
+  }, { passive: true });
+}
+
+// ===== XSS対策ヘルパー（WP API由来の文字列をHTML連結する前に必ず通す） =====
+function escHtml(s) {
+  if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
+  if (s == null) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 // ===== Manga data registry =====
@@ -122,8 +129,9 @@ function buildFilterButtons() {
     btn.className = 'filter-btn' + (cat === 'すべて' ? ' active' : '');
     btn.dataset.cat = cat;
     const catEn = CATEGORY_EN_MAP[cat] || cat;
-    const labelJa = cat;
-    const labelEn = catEn;
+    /* escHtml() 済み（XSS対策） */
+    const labelJa = escHtml(cat);
+    const labelEn = escHtml(catEn);
     btn.innerHTML = `<span data-ja="${labelJa}" data-en="${labelEn}">${isEn ? labelEn : labelJa}</span> <span class="filter-count">${catCount[cat]}</span>`;
     btn.addEventListener('click', () => filterWorks(cat, btn));
     worksFilter.appendChild(btn);
@@ -153,6 +161,7 @@ const worksGrid = document.getElementById('worksGrid');
 function buildWorkCards() {
   worksGrid.innerHTML = '';
   const isEn = getBmLang() === 'en';
+  const cardsFrag = document.createDocumentFragment();
   Object.entries(mangaData).forEach(([key, data]) => {
     // 制作過程（赤ペン・ネーム専用）エントリはカードに出さない
     if (data._isPreProduction) return;
@@ -160,25 +169,29 @@ function buildWorkCards() {
     card.className = 'work-card';
     card.setAttribute('data-manga', key);
     card.setAttribute('data-category', data.category);
-    const coverSrc = data.thumbnail || getImageSrc(data, 0);
+    /* 以降の変数は全て escHtml() 済み（XSS対策） */
+    const coverSrc = escHtml(data.thumbnail || getImageSrc(data, 0));
     const tallClass = data.tallCover ? ' tall-cover' : '';
-    const titleEn = data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title);
-    const catEn = CATEGORY_EN_MAP[data.category] || data.category || '';
+    const title = escHtml(data.title);
+    const titleEn = escHtml(data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
+    const cat = escHtml(data.category);
+    const catEn = escHtml(CATEGORY_EN_MAP[data.category] || data.category || '');
     card.innerHTML = `
       <div class="work-card-img-wrapper${tallClass}">
-        <img class="work-card-img" src="${coverSrc}" alt="${data.title}" loading="lazy">
-        ${data.category ? `<span class="work-card-category" data-ja="${data.category}" data-en="${catEn}">${isEn ? catEn : data.category}</span>` : ''}
-        <span class="work-card-page-count">${data.pages}P</span>
+        <img class="work-card-img" src="${coverSrc}" alt="${title}" loading="lazy">
+        ${data.category ? `<span class="work-card-category" data-ja="${cat}" data-en="${catEn}">${isEn ? catEn : cat}</span>` : ''}
+        <span class="work-card-page-count">${parseInt(data.pages, 10) || 0}P</span>
       </div>
       <div class="work-card-body">
-        <div class="work-card-title" data-ja="${data.title}" data-en="${titleEn}">${isEn ? titleEn : data.title}</div>
+        <div class="work-card-title" data-ja="${title}" data-en="${titleEn}">${isEn ? titleEn : title}</div>
         <div class="work-card-footer">
           <div class="work-card-arrow">→</div>
         </div>
       </div>
     `;
-    worksGrid.appendChild(card);
+    cardsFrag.appendChild(card);
   });
+  worksGrid.appendChild(cardsFrag);
 }
 
 // ===== UI構築（フォールバック → API上書き） =====

@@ -361,18 +361,22 @@
       wdCategory.setAttribute('data-en', catEn);
       wdCategory.textContent = isEn ? catEn : catJa;
     }
+    /* 全フィールド escM() 済み（XSS対策） */
+    var escM = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
     if (wdMedia) {
       wdMedia.innerHTML = (work.media || []).map(function(m) {
         var mEn = MEDIA_EN[m] || m;
-        return '<li data-ja="' + m + '" data-en="' + mEn + '">' + (isEn ? mEn : m) + '</li>';
+        return '<li data-ja="' + escM(m) + '" data-en="' + escM(mEn) + '">' + escM(isEn ? mEn : m) + '</li>';
       }).join('');
     }
     if (wdSpec) {
       var spec = work.spec || {};
-      var periodEn = spec.period_en || spec.period || '—';
+      var pagesV = escM(spec.pages || '—');
+      var periodV = escM(spec.period || '—');
+      var periodEn = escM(spec.period_en || spec.period || '—');
       wdSpec.innerHTML =
-        '<li data-ja="ページ数：' + (spec.pages || '—') + '" data-en="Pages: ' + (spec.pages || '—') + '">' + (isEn ? 'Pages: ' : 'ページ数：') + (spec.pages || '—') + '</li>' +
-        '<li data-ja="納期：' + (spec.period || '—') + '" data-en="Delivery: ' + periodEn + '">' + (isEn ? 'Delivery: ' + periodEn : '納期：' + (spec.period || '—')) + '</li>';
+        '<li data-ja="ページ数：' + pagesV + '" data-en="Pages: ' + pagesV + '">' + (isEn ? 'Pages: ' : 'ページ数：') + pagesV + '</li>' +
+        '<li data-ja="納期：' + periodV + '" data-en="Delivery: ' + periodEn + '">' + (isEn ? 'Delivery: ' + periodEn : '納期：' + periodV) + '</li>';
     }
     if (wdPoint) {
       var pointEn = work.point_en || work.point || '';
