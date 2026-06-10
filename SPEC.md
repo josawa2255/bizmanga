@@ -496,6 +496,8 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - **WP API由来の文字列を `innerHTML` に入れるときは必ず `html()`（テキスト/属性）か `rich()`（本文HTML）を通す**。素の `+ item.xxx +` 連結は禁止（2026-06-10 BUGS #039）
   - URLは `url()`、CSSの object-position 等は許可文字チェック（`/^[a-zA-Z0-9% .-]+$/`）、`href`に入れるIDは `encodeURIComponent`
 - カード描画系（bm-wp-api.js / works.js 等）は `DocumentFragment` でバッチ追加し、scrollリスナーは `{passive:true}`
+- **外部CDN（GSAP, index.html）は SRI で完全性検証**: `integrity`(sha384)＋`crossorigin="anonymous"`＋`referrerpolicy="no-referrer"`。cdnjs侵害時の任意JS実行を防止。**バージョン更新時はSRI再計算必須**（ハッシュ取得・残存リスク全体は [docs/operations/SECURITY.md](../docs/operations/SECURITY.md)）
+- 🔐 **セキュリティの脅威モデル・残存リスク・運用チェックリストの正は [docs/operations/SECURITY.md](../docs/operations/SECURITY.md)**
 
 ## 13. 既知の注意点
 
