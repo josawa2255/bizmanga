@@ -296,6 +296,10 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - `/columns?site=bizmanga&per_page=50` — コラム一覧
 - `/columns/{id}` — コラム個別（本文含む）
 
+### WP 管理画面メニュー（2026-06-12 再編）
+- B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層
+- 新サービスのWP取り込み・メニュー追加はルートの wp-service-onboard スキル（`.claude/skills/wp-service-onboard/`）で実施
+
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
