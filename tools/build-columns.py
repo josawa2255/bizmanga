@@ -170,14 +170,40 @@ class _Sanitizer(HTMLParser):
         self.out.append(html.escape(data, quote=False))
 
 
+def normalize_brand_text(text):
+    """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
+    - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
+      （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
+    - 旧ページ単価 14,700円 → 16,600円（料金マスター pricing.html 準拠。BUGS #038系）
+    WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
+    """
+    if not text:
+        return text
+    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX]AI3割」の体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX]AI3割」', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX]AI3割の体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = text.replace('14,700', '16,600').replace('14700', '16,600')
+    return text
+
+
 def sanitize_content_html(raw):
-    """WP本文HTMLをallowlistでサニタイズして返す。"""
+    """WP本文HTMLをallowlistでサニタイズし、ブランド方針で正規化して返す。"""
     if not raw:
         return ""
     p = _Sanitizer()
     p.feed(raw)
     p.close()
-    return "".join(p.out)
+    return normalize_brand_text("".join(p.out))
 
 
 def fetch_json(url):
@@ -277,7 +303,7 @@ def build_card(c):
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = c.get("title_ja", "")
     category = c.get("category") or "その他"
-    excerpt = c.get("excerpt_ja", "")
+    excerpt = normalize_brand_text(c.get("excerpt_ja", ""))
     date = c.get("date", "")
     readtime = c.get("_readtime", 5)
     detail_url = f"/column/{slug}"
@@ -405,8 +431,8 @@ def build_detail_page(col, detail_data, template):
         modified_ymd = wp_modified
     else:
         modified_ymd = date_ymd
-    excerpt = col.get("excerpt_ja") or ""
-    # WP本文はXSS対策でallowlistサニタイズ（SPEC §15.1 S1）
+    excerpt = normalize_brand_text(col.get("excerpt_ja") or "")
+    # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
 
     override = DESC_OVERRIDES.get(slug)

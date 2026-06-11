@@ -769,7 +769,7 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 
 | # | 場所 | リスク | 対応方針 |
 |---|------|--------|---------|
-| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用 |
+| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用。さらに同経路に `normalize_brand_text()`（冪等）を組込み、禁止コピー「人間7割×AI3割」系→「独自の制作メソッド」・旧料金14,700→16,600 をビルド時に自動正規化（BUGS #040。WP本文がマスターのままでも公開HTMLを方針準拠に保つ防壁） |
 | S2 | [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl):80-87 / [work-detail.html.tpl](tools/templates/work-detail.html.tpl):60-86 | `{{title_ja}}` 等が `html.escape(quote=True)` 経由でJSON-LD内に挿入。`\` や `\n` が含まれるとJSON構文破壊リスク | JSON-LD自体を build側で `json.dumps` してテンプレに `{{json_ld}}` で1ブロック差し込む設計に変更 |
 | ~~S3~~ | ランタイムJS全般（bm-wp-api.js / works.js / bm-testimonials*.js / bm-works-page.js / column-detail.html / testimonial-detail.html） | WP由来文字列を未エスケープで `innerHTML` 連結。`column-detail.html` は `richHTML` typoで本文サニタイズ自体が無効だった | ✅ **解消(2026-06-10 BUGS #039)** 全描画を `bmSanitize.html()`/`rich()`/`url()`＋`safePos` 経由に統一、Playwrightでペイロード注入検証済み |
 | S4 | 全HTMLヘッダー | CSP / HSTS / Permissions-Policy ヘッダなし（GitHub Pages制約） | `<meta http-equiv="Content-Security-Policy">` で許容範囲のCSPを meta タグで追加 |
