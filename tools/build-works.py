@@ -662,7 +662,9 @@ def generate_category_pages(works):
             "{{itemlist_jsonld}}": itemlist_jsonld,
             "{{og_image}}": og_image,
             "{{url}}": f"{SITE}/works/category/{slug}",
-            "{{last_modified}}": date.today().isoformat() + "T03:00:00+09:00",
+            # ビルド日ではなく所属作品の実更新日の最大値を使う（毎日変わる嘘の更新日を防ぐ。
+            # APIにmodified_ymdが無い間は従来通りビルド日にフォールバック） 2026-06-12
+            "{{last_modified}}": (max((w.get("modified_ymd") or "" for w in matched), default="") or date.today().isoformat()) + "T03:00:00+09:00",
         }
         out = template
         for k, v in replacements.items():
@@ -718,10 +720,14 @@ def update_sitemap(works):
 
     entries = []
     for w in works:
+        # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
+        # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
+        modified = w.get("modified_ymd") or ""
+        lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/works/{w['id']}</loc>\n"
-            f"    <lastmod>{date.today().isoformat()}</lastmod>\n"
+            f"{lastmod_line}"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>0.6</priority>\n"
             "  </url>"
@@ -739,10 +745,13 @@ def update_sitemap(works):
         matched = [w for w in works if w.get("category") in cfg["data_categories"]]
         if not matched:
             continue
+        # カテゴリページの lastmod = 所属作品の実更新日の最大値（無ければ省略）
+        cat_modified = max((w.get("modified_ymd") or "" for w in matched), default="")
+        cat_lastmod_line = f"    <lastmod>{cat_modified}</lastmod>\n" if cat_modified else ""
         cat_entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/works/category/{slug}</loc>\n"
-            f"    <lastmod>{date.today().isoformat()}</lastmod>\n"
+            f"{cat_lastmod_line}"
             "    <changefreq>weekly</changefreq>\n"
             "    <priority>0.8</priority>\n"
             "  </url>"

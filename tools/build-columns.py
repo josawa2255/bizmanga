@@ -534,10 +534,14 @@ def update_sitemap(columns):
     entries = []
     for c in columns:
         slug = make_slug(c)
+        # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
+        # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
+        modified = c.get("modified_ymd") or c.get("date_ymd") or ""
+        lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
             "  <url>\n"
             f"    <loc>{SITE}/column/{slug}</loc>\n"
-            f"    <lastmod>{_date.today().isoformat()}</lastmod>\n"
+            f"{lastmod_line}"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>0.6</priority>\n"
             "  </url>"
