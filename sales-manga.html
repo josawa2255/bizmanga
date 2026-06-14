@@ -2,18 +2,20 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-06-14T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
   </script>
+  <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
   window.addEventListener('load', function() {
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
@@ -25,6 +27,7 @@
   <link rel="canonical" href="https://bizmanga.contentsx.jp/sales-manga">
   <link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/sales-manga">
   <link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/sales-manga">
+  <!-- OG Tags -->
   <meta property="og:title" content="営業資料マンガ・営業資料漫画制作｜提案書・商談で決裁者に響く｜ビズマンガ">
   <meta property="og:description" content="営業資料マンガ・提案書漫画の制作。担当者から決裁者へ、機能比較ではなく「導入後の物語」で伝える営業ツール。受注率向上・営業資料効率化・客単価改善に貢献。125項目品質チェックの高品質。">
   <meta property="og:type" content="website">
@@ -35,6 +38,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="営業資料マンガ・営業資料漫画 制作 - 提案書・商談で決裁者に響く">
   <meta property="og:locale" content="ja_JP">
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:creator" content="@Bizmanga_">
@@ -46,6 +50,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#e85500">
   <link rel="alternate" type="application/rss+xml" title="ビズマンガ RSS" href="https://bizmanga.contentsx.jp/feed.xml">
+  <!-- JSON-LD: WebPage + Service -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -56,7 +61,7 @@
     "url": "https://bizmanga.contentsx.jp/sales-manga",
     "inLanguage": "ja-JP",
     "datePublished": "2026-04-26",
-    "dateModified": "2026-04-28",
+    "dateModified": "2026-06-14",
     "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
     "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
     "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/sales-manga#breadcrumb" },
@@ -131,13 +136,15 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="/css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/bm-lp-template.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
 </head>
-<body class="pm-page" data-fuwa-auto>
+<!-- LP-DESIGN:v2 — migrated to the v2 design system (2026-06-14, pilot: recruit-manga). -->
+<body class="lpv2-page" data-lp-v2>
+  <!-- ===== ヘッダー（共通nav.jsで生成） ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
       <a href="/" class="bm-logo">
@@ -169,241 +176,249 @@
 
   <main id="main">
 
-    <section class="pm-hero-strip" aria-label="営業資料マンガ">
-      <picture>
-        <source type="image/avif" srcset="material/images/lp/hero_LP.avif">
-        <img src="material/images/lp/hero_LP.webp" alt="営業資料マンガ・営業資料漫画を商談で活用するイメージ — ビズマンガ" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="pm-hero-overlay">
-        <p class="pm-hero-eyebrow"><span data-ja="営業資料マンガ（営業資料漫画）" data-en="Sales Manga">営業資料マンガ（営業資料漫画）</span> · SALES MANGA</p>
-        <h1 class="pm-hero-title">
-          <span data-ja="提案を、" data-en="Turn pitches">提案を、</span><br>
-          <span data-ja="決裁者の物語に" data-en="into stories that close">決裁者の物語に</span>
-        </h1>
-        <div class="pm-hero-divider" aria-hidden="true"></div>
+    <!-- ===== 1. HERO — full-bleed bg (既存 hero_LP を流用) + 左コピー ===== -->
+    <section class="lpv2-hero" aria-label="営業資料マンガ">
+      <div class="lpv2-hero-stage">
+        <div class="lpv2-hero-bg" aria-hidden="true">
+          <picture>
+            <source type="image/avif" srcset="/material/images/lp/hero_LP.avif">
+            <img src="/material/images/lp/hero_LP.webp" alt="" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+        </div>
+        <div class="lpv2-hero-inner">
+          <div class="lpv2-hero-text">
+            <p class="lpv2-hero-eyebrow"><span class="lpv2-hero-eyebrow-ja" data-ja="営業資料マンガ" data-en="Sales Manga">営業資料マンガ</span><span class="lpv2-hero-eyebrow-en">SALES MANGA</span></p>
+            <h1 class="lpv2-hero-title">
+              <span data-ja="提案を、" data-en="Turn pitches">提案を、</span><br>
+              <em data-ja="決裁者の" data-en="into stories">決裁者の</em><br class="sp-br"><span data-ja="物語に。" data-en="that close.">物語に。</span>
+            </h1>
+            <p class="lpv2-hero-sub" data-i18n-html data-ja="スペック比較ではなく、<br class='sp-br'>導入後の物語で。<br class='sp-br'>担当者から決裁者へ、<br class='sp-br'>誰の手に渡っても同じ熱量で伝わる<br class='sp-br'>営業資料マンガを制作します。" data-en="Not a spec sheet, but a story of life after adoption. From the contact to the decision-maker, sales manga that carries the same heat no matter whose hands it lands in.">スペック比較ではなく、<br class="sp-br">導入後の物語で。<br class="sp-br">担当者から決裁者へ、<br class="sp-br">誰の手に渡っても同じ熱量で伝わる<br class="sp-br">営業資料マンガを制作します。</p>
+            <div class="lpv2-hero-cta-row">
+              <a href="/contact" class="lpv2-btn lpv2-btn--pill lpv2-btn--lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
+              </a>
+              <a href="#chapter-05-library" class="lpv2-btn lpv2-btn--pill lpv2-btn--ghost lpv2-btn--lg">
+                <span data-ja="事例を見る" data-en="See case studies">事例を見る</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="pm-shell">
-
-      <aside class="pm-rail pm-rail--left" aria-label="編集者ノート">
-        <div class="pm-rail-character-frame">
-          <div class="pm-rail-character" id="pmCharacter" data-mood="confident">
-            <img src="images/product-manga/hero_confident.png" alt="" loading="lazy" decoding="async">
-          </div>
-        </div>
-        <p class="pm-rail-caption" id="pmCaption">EDITOR&rsquo;S DESK</p>
-        <div class="pm-rail-content" id="pmRailContent">
-          <div class="pm-rail-hint" id="pmHint">
-            <span class="pm-rail-hint-eyebrow">EDITOR&rsquo;S NOTE</span>
-            <h3 class="pm-rail-hint-title">決裁者は、機能ではなく<br>「物語」で動く。</h3>
-            <p class="pm-rail-hint-text">担当者から決裁者へ伝わる過程で、提案書の核は失われがちです。営業資料マンガは、現場の課題と導入後の変化を物語化することで、誰の手に渡っても同じ熱量で伝わる営業ツールです。各セクションを<strong>クリック／タップ</strong>で詳細表示。</p>
-            <p class="pm-rail-hint-tip">編集担当からのひとこと —<br>「比較表で勝てない時、営業資料漫画（営業資料マンガ）の物語の解像度が勝負を決めます」</p>
-          </div>
-          <div class="pm-rail-detail" id="pmDetail" hidden>
-            <button class="pm-rail-back" id="pmDetailBack" type="button">一覧に戻る</button>
-            <h3 class="pm-rail-detail-title" id="pmDetailTitle"></h3>
-            <div class="pm-rail-detail-body" id="pmDetailBody"></div>
-          </div>
-        </div>
-      </aside>
-
-      <div class="pm-main-col">
-
-    <header class="pm-masthead">
-      <div class="pm-masthead-inner">
-        <p class="pm-lead">スペック比較ではなく、導入後の物語で。<br>決裁者の心を動かす営業資料マンガ（営業資料漫画）を制作します。</p>
-        <p class="pm-formats-caption">商談・提案・社内稟議で活躍。</p>
-        <ul class="pm-formats pm-formats--illustrated" aria-label="活用フォーマット">
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-proposal" data-detail-title="提案書・企画書">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/sales-manga/format-proposal.webp">
-              <img src="images/sales-manga/format-proposal.png" alt="" loading="lazy" decoding="async" width="526" height="366">
-            </picture>
-            <h3 class="pm-format-name">提案書</h3>
-            <span class="pm-format-en">Proposal</span>
-            <p class="pm-format-use">受注率を引き上げる</p>
-            <div class="pm-format-detail">
-              <p>提案書の冒頭に「導入前後のビフォーアフター」を営業資料漫画（営業資料マンガ）として1〜2ページ入れるだけで、現場担当者の業務イメージが先方の意思決定者にも伝わりやすくなります。機能比較ではなく「使った後の世界」で勝負できる提案資料に仕上がります。</p>
-              <p>商談後にそのまま稟議資料として使えるため、担当者→決裁者への情報伝達ロスを最小化できます。</p>
+    <!-- ===== 1b. FORMATS ===== -->
+    <section class="lpv2-section lpv2-formats" id="chapter-03-formats" aria-label="営業資料マンガの活用フォーマット">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">03</span>
+          <span class="lpv2-chapter-mark">CHAPTER 03 &middot; FORMATS</span>
+          <h2 class="lpv2-h2">提案と商談の<em>あらゆる場面</em>に</h2>
+          <p class="lpv2-lead lpv2-lead--center">提案書・商談ツール・事例集・稟議資料——<br>商談・提案・社内稟議で活躍する営業マンガを、用途別にご提案します</p>
+        </header>
+        <div class="lpv2-formats-grid">
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/sales-manga/format-proposal.webp">
+                <img src="/images/sales-manga/format-proposal.png" alt="提案書・企画書" loading="lazy" decoding="async" width="526" height="366">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-sales-tool" data-detail-title="商談ツール（iPad・Web）">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/sales-manga/format-sales-tool.webp">
-              <img src="images/sales-manga/format-sales-tool.png" alt="" loading="lazy" decoding="async" width="394" height="352">
-            </picture>
-            <h3 class="pm-format-name">商談ツール</h3>
-            <span class="pm-format-en">Pitch Deck</span>
-            <p class="pm-format-use">対面商談で見せる</p>
-            <div class="pm-format-detail">
-              <p>iPad・PCで見せる商談用デッキに漫画を組み込むと、商談序盤の「アイスブレイク兼導入動機の共有」が一気に進みます。営業の説明スキル差を補い、組織全体の商談品質を均一化できます。</p>
-              <p>顧客側も「とりあえず話を聞こう」モードから「これは自分たちのことだ」モードに切り替わるため、商談の温度感が大きく変わります。</p>
+            <p class="lpv2-format__num">01 &middot; Proposal</p>
+            <h3 class="lpv2-format__name">提案書</h3>
+            <p class="lpv2-format__use">受注率を引き上げる</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/sales-manga/format-sales-tool.webp">
+                <img src="/images/sales-manga/format-sales-tool.png" alt="商談ツール（iPad・Web）" loading="lazy" decoding="async" width="394" height="352">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-case-study" data-detail-title="事例集・導入事例">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/sales-manga/format-case-study.webp">
-              <img src="images/sales-manga/format-case-study.png" alt="" loading="lazy" decoding="async" width="378" height="338">
-            </picture>
-            <h3 class="pm-format-name">事例集</h3>
-            <span class="pm-format-en">Case Study</span>
-            <p class="pm-format-use">類似業種に「自分ごと化」させる</p>
-            <div class="pm-format-detail">
-              <p>導入事例を漫画化すると、「機能と数字」だけのテキスト事例集よりも遥かに記憶に残ります。類似業種の見込み顧客に渡したとき「うちと同じ状況だ」と感じてもらえる確率が高くなります。</p>
-              <p>業界別の漫画事例を3〜5本ストックすると、商談相手の業種に応じた「最適な事例」を即座に出せる営業武器になります。</p>
+            <p class="lpv2-format__num">02 &middot; Pitch Deck</p>
+            <h3 class="lpv2-format__name">商談ツール</h3>
+            <p class="lpv2-format__use">対面商談で見せる</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/sales-manga/format-case-study.webp">
+                <img src="/images/sales-manga/format-case-study.png" alt="事例集・導入事例" loading="lazy" decoding="async" width="378" height="338">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-ringi" data-detail-title="稟議資料・社内説明">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/sales-manga/format-ringi.webp">
-              <img src="images/sales-manga/format-ringi.png" alt="" loading="lazy" decoding="async" width="436" height="372">
-            </picture>
-            <h3 class="pm-format-name">稟議資料</h3>
-            <span class="pm-format-en">Internal Memo</span>
-            <p class="pm-format-use">担当者→決裁者で熱が落ちない</p>
-            <div class="pm-format-detail">
-              <p>商談で熱が伝わったはずの提案が、社内稟議に回る過程で「冷えた要約」になってしまう問題は、BtoB営業の最大の壁の一つです。漫画は読み手のスキル・関心に依存せず、誰の手に渡っても同じ熱量で読まれます。</p>
-              <p>担当者から決裁者・関係部門へ「そのまま渡せる稟議補助資料」として機能するため、商談から契約までのリードタイムを大幅に短縮できます。</p>
+            <p class="lpv2-format__num">03 &middot; Case Study</p>
+            <h3 class="lpv2-format__name">事例集</h3>
+            <p class="lpv2-format__use">類似業種に「自分ごと化」させる</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/sales-manga/format-ringi.webp">
+                <img src="/images/sales-manga/format-ringi.png" alt="稟議資料・社内説明" loading="lazy" decoding="async" width="436" height="372">
+              </picture>
             </div>
-          </li>
-        </ul>
-        <div class="pm-masthead-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="無料相談・お見積もり">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-          <a href="#library" class="pm-btn pm-btn--ghost">事例を見る</a>
+            <p class="lpv2-format__num">04 &middot; Internal Memo</p>
+            <h3 class="lpv2-format__name">稟議資料</h3>
+            <p class="lpv2-format__use">担当者→決裁者で熱が落ちない</p>
+          </article>
         </div>
       </div>
-    </header>
+    </section>
 
-    <section class="pm-section pm-section--alt pm-section--first">
-      <div class="pm-container">
-        <div style="text-align:center; margin-bottom:56px;">
-          <span class="pm-eyebrow">PROBLEM</span>
-          <h2 class="pm-h2">営業現場の、こんな<em>お悩み</em>。</h2>
-        </div>
-        <ul class="pm-pain-list pm-pain-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-01" data-detail-title="担当者の熱が決裁者まで伝わらない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/sales-manga/pain-01.webp">
-              <img src="images/sales-manga/pain-01.png" alt="" loading="lazy" decoding="async" width="606" height="214">
+    <!-- ===== 2. CHAPTER 01 — PROBLEM ===== -->
+    <section class="lpv2-section lpv2-problem" id="chapter-01-problem" aria-label="営業現場のお悩み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">01</span>
+          <span class="lpv2-chapter-mark">CHAPTER 01 &middot; PROBLEM</span>
+          <h2 class="lpv2-h2">営業現場の、こんな<em>お悩み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">商談では手応えを感じても、社内稟議に回る過程で熱が冷め失注する——BtoB営業の壁は提案書の伝わり方にあります</p>
+        </header>
+        <div class="lpv2-problem-grid">
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">1</span>
+              <h3 class="lpv2-pain__title">担当者の熱が、<em>決裁者まで届かない</em>。</h3>
+              <p class="lpv2-pain__text">商談ではお互い手応えを感じたのに、社内稟議で熱が冷め失注する。「担当者は気に入ってくれたが上が動かなかった」が常態化している。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/sales-manga/pain-01.webp">
+              <img src="/images/sales-manga/pain-01.png" alt="担当者の熱が決裁者まで伝わらない" loading="lazy" decoding="async" width="606" height="214">
             </picture>
-            <span class="pm-pain-num">01</span>
-            <p class="pm-pain-title">担当者の熱が、<em>決裁者まで届かない</em>。</p>
-            <p class="pm-pain-text">商談ではお互い手応えを感じたのに、社内稟議で熱が冷め失注する。「担当者は気に入ってくれたが上が動かなかった」が常態化している。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>BtoB営業の失注理由として最も多いのが「担当者は前向きだったが、社内稟議が通らなかった」というパターンです。商談で得られた共感や熱量は、PDF提案書に翻訳された瞬間に大半が抜け落ちます。決裁者の視点では「機能と価格の比較表」しか残らず、結果的に「もう少し検討します」で終わります。</p>
               <p>営業資料マンガを提案書冒頭に挟むと、担当者が感じた「これは自分たちの課題だ」という体験が、決裁者の手元でも追体験されます。比較表では伝わらない「現場の課題感」と「導入後の世界観」が、誰の手に渡っても同じ温度で届きます。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-02" data-detail-title="提案書のフォーマットが他社と差別化できない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/sales-manga/pain-02.webp">
-              <img src="images/sales-manga/pain-02.png" alt="" loading="lazy" decoding="async" width="604" height="202">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">2</span>
+              <h3 class="lpv2-pain__title">提案書のフォーマットが、<em>他社と全部同じ</em>。</h3>
+              <p class="lpv2-pain__text">表紙・目次・課題分析・解決策・スケジュール・予算。どの会社の提案書も同じ構成で、内容の良し悪しが伝わる前にその他大勢に紛れる。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/sales-manga/pain-02.webp">
+              <img src="/images/sales-manga/pain-02.png" alt="提案書のフォーマットが他社と差別化できない" loading="lazy" decoding="async" width="604" height="202">
             </picture>
-            <span class="pm-pain-num">02</span>
-            <p class="pm-pain-title">提案書のフォーマットが、<em>他社と全部同じ</em>。</p>
-            <p class="pm-pain-text">表紙・目次・課題分析・解決策・スケジュール・予算。どの会社の提案書も同じ構成で、内容の良し悪しが伝わる前にその他大勢に紛れる。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>BtoB提案書は「型」に従うほど評価されやすい構造があります。一方で、その「型」を全社が踏襲した結果、提案書同士の見た目の差別化が消失し、最終的には「価格と相性」で決まる消耗戦になりがちです。</p>
               <p>提案書冒頭の漫画は、その「型の壁」を一瞬で破壊します。決裁者が「この会社、他とは違う」と感じる視覚的差別化は、競合比較の段階で大きなアドバンテージになります。提案書ではなく「読み物」として手に取られるため、競合より長く・深く検討してもらえます。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-03" data-detail-title="営業1人ひとりの説明品質にばらつき">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/sales-manga/pain-03.webp">
-              <img src="images/sales-manga/pain-03.png" alt="" loading="lazy" decoding="async" width="606" height="270">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">3</span>
+              <h3 class="lpv2-pain__title">営業1人ひとりの<em>説明品質</em>に、ばらつきが大きい。</h3>
+              <p class="lpv2-pain__text">エースは説明が上手いが、新人や中途は同じ商談スクリプトを使っても受注率が違う。営業組織のスキル平準化が長年の課題になっている。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/sales-manga/pain-03.webp">
+              <img src="/images/sales-manga/pain-03.png" alt="営業1人ひとりの説明品質にばらつき" loading="lazy" decoding="async" width="606" height="270">
             </picture>
-            <span class="pm-pain-num">03</span>
-            <p class="pm-pain-title">営業1人ひとりの<em>説明品質</em>に、ばらつきが大きい。</p>
-            <p class="pm-pain-text">エースは説明が上手いが、新人や中途は同じ商談スクリプトを使っても受注率が違う。営業組織のスキル平準化が長年の課題になっている。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>営業組織のスケールアップで必ず直面するのが「エース依存」の問題です。トップ営業の言語化能力・ストーリーテリングは属人化しており、研修やマニュアルでは再現困難です。新人・中途が同じ商談シーンを再現できないため、組織全体の受注率がエースに引き下げられる構造になります。</p>
               <p>営業資料マンガは、エースが商談で語る「ストーリー」を可視化・固定化したものです。経験の浅い営業でも、漫画ページをめくりながら商談を進めるだけで、エースと同じ流れで顧客の感情を動かせます。営業組織の戦力均一化に直接効きます。</p>
             </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="pm-bridge">
-      <div class="pm-container pm-container--narrow">
-        <p class="pm-bridge-line">その悩みは、<br><em>「営業資料マンガ」</em>で解決できます。</p>
-      </div>
-    </section>
-
-    <section class="pm-section">
-      <div class="pm-container pm-container--narrow">
-        <div style="text-align:center; margin-bottom:48px;">
-          <span class="pm-eyebrow">MERIT</span>
-          <h2 class="pm-h2">営業資料マンガの、4つの強み。</h2>
+          </article>
         </div>
-        <p class="pm-section-lead" style="text-align:center; max-width:680px; margin:0 auto 32px; font-size:13px; color:#7a7770;">※ 本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します。</p>
-        <ol class="pm-merit-list pm-merit-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-01" data-detail-title="ビフォーアフターを物語で伝える">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/sales-manga/merit-01.webp">
-              <img src="images/sales-manga/merit-01.png" alt="" loading="lazy" decoding="async" width="602" height="306">
+      </div>
+    </section>
+
+    <!-- ===== 3. BRIDGE ===== -->
+    <section class="lpv2-bridge" aria-label="解決策">
+      <div class="lpv2-bridge-inner">
+        <p class="lpv2-bridge-eyebrow">SOLUTION</p>
+        <p class="lpv2-bridge-statement">その悩みは、<br><em>営業資料マンガ</em>で解決できる！</p>
+      </div>
+    </section>
+
+    <!-- ===== 4. CHAPTER 02 — MERIT ===== -->
+    <section class="lpv2-section lpv2-merit" id="chapter-02-merit" aria-label="営業資料マンガの強み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">02</span>
+          <span class="lpv2-chapter-mark">CHAPTER 02 &middot; STRENGTH</span>
+          <h2 class="lpv2-h2">営業資料マンガの、<em>4つの強み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します</p>
+        </header>
+        <div class="lpv2-merit-grid">
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">01</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/sales-manga/merit-01.webp">
+              <img src="/images/sales-manga/merit-01.png" alt="ビフォーアフターを物語で伝える" loading="lazy" decoding="async" width="602" height="306">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">ビフォーアフターを<em>物語で伝える</em>。</h3>
-            <p class="pm-merit-text">「導入前の現場」「使った瞬間」「導入後の変化」を三幕構成で描きます。決裁者は登場人物に自社を重ね、機能比較ではなく価値の追体験で意思決定できます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">ビフォーアフターを<em>物語で伝える</em>。</h3>
+              <p class="lpv2-merit-card__text">「導入前の現場」「使った瞬間」「導入後の変化」を三幕構成で描きます。決裁者は登場人物に自社を重ね、機能比較ではなく価値の追体験で意思決定できます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>BtoBの意思決定は「機能比較」ではなく「導入後の世界観の解像度」で決まります。スペック表で勝てない時、勝負を分けるのは「自社が使っている姿を、決裁者がどれだけ具体的に想像できるか」です。</p>
               <p>営業資料マンガでは、想定顧客と同じ業種・規模・職種の主人公が、課題に直面し、製品を導入し、変化を実感する三幕構成で物語が進みます。決裁者は無意識に主人公に自社を重ね、「導入後の自分たち」を視覚的にシミュレーションできます。これが受注率を底上げする本質的なメカニズムです。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-02" data-detail-title="担当者→決裁者の伝言ゲームに強い">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/sales-manga/merit-02.webp">
-              <img src="images/sales-manga/merit-02.png" alt="" loading="lazy" decoding="async" width="478" height="304">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">02</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/sales-manga/merit-02.webp">
+              <img src="/images/sales-manga/merit-02.png" alt="担当者→決裁者の伝言ゲームに強い" loading="lazy" decoding="async" width="478" height="304">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">担当者→決裁者の<em>「伝言ゲーム」</em>に強い。</h3>
-            <p class="pm-merit-text">商談での熱量を、稟議資料に翻訳する過程で失わない構造です。担当者が見せた漫画を決裁者がそのまま読めるため、情報伝達ロスがゼロになります。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">担当者→決裁者の<em>「伝言ゲーム」</em>に強い。</h3>
+              <p class="lpv2-merit-card__text">商談での熱量を、稟議資料に翻訳する過程で失わない構造です。担当者が見せた漫画を決裁者がそのまま読めるため、情報伝達ロスがゼロになります。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>商談で得られた共感や熱量を、社内稟議でどう保つかは、BtoB営業最大の難所です。担当者がパワポ資料に翻訳した瞬間、現場感も登場人物の表情も全て抜け落ち、決裁者の机に届くのは「機能と数字の比較表」だけになります。</p>
               <p>漫画は誰の手に渡っても同じ温度で読まれる「翻訳不要のフォーマット」です。担当者が商談で読んでもらった漫画ページを、そのまま稟議添付資料として回せば、決裁者も同じ感情曲線で読み進めます。商談の熱量を、契約締結まで保ち続けられます。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-03" data-detail-title="営業の説明品質を均一化">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/sales-manga/merit-03.webp">
-              <img src="images/sales-manga/merit-03.png" alt="" loading="lazy" decoding="async" width="484" height="284">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">03</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/sales-manga/merit-03.webp">
+              <img src="/images/sales-manga/merit-03.png" alt="営業の説明品質を均一化" loading="lazy" decoding="async" width="484" height="284">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">営業組織の<em>説明品質を均一化</em>できる。</h3>
-            <p class="pm-merit-text">エース営業のストーリーテリングが漫画として固定化されます。新人・中途も漫画をめくりながら商談を進めるだけで、組織全体の受注率が底上げされます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">営業組織の<em>説明品質を均一化</em>できる。</h3>
+              <p class="lpv2-merit-card__text">エース営業のストーリーテリングが漫画として固定化されます。新人・中途も漫画をめくりながら商談を進めるだけで、組織全体の受注率が底上げされます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>「営業マニュアル」「ロールプレイ」「OJT」では、エース営業の言語化能力を完全に再現するのは困難です。エースの強みは、商品知識ではなく「課題の引き出し方」と「導入後の物語の語り方」にあるためです。</p>
               <p>営業資料マンガは、その「物語の語り方」をビジュアル化した教材です。新人や中途営業は、漫画をめくりながら商談を進めるだけで、エースと同じ流れで顧客の感情を動かせます。営業組織のスケール時に最も効く投資と言えます。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-04" data-detail-title="商談後も繰り返し読まれる資料になる">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/sales-manga/merit-04.webp">
-              <img src="images/sales-manga/merit-04.png" alt="" loading="lazy" decoding="async" width="398" height="334">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">04</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/sales-manga/merit-04.webp">
+              <img src="/images/sales-manga/merit-04.png" alt="商談後も繰り返し読まれる資料になる" loading="lazy" decoding="async" width="398" height="334">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">商談後も<em>繰り返し読まれる</em>資料になる。</h3>
-            <p class="pm-merit-text">通常の提案書は商談後に死蔵されますが、漫画は社内回覧で再読されます。「もう一度読み返したい」と思わせる提案資料は競合差別化の決定打です。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">商談後も<em>繰り返し読まれる</em>資料になる。</h3>
+              <p class="lpv2-merit-card__text">通常の提案書は商談後に死蔵されますが、漫画は社内回覧で再読されます。「もう一度読み返したい」と思わせる提案資料は競合差別化の決定打です。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>BtoB提案書の99%は、商談直後に決裁者の机からファイルキャビネットに移動し、二度と読まれません。これは検討期間が長期化するBtoB商材において、最大の機会損失です。</p>
               <p>漫画形式の提案書は、社内会議で他部門に紹介されたり、検討期間中に「もう一度読み返したい」と手に取られたりします。検討期間を競合と争うのではなく、社内浸透の段階で先行できる構造的な優位性が生まれます。</p>
             </div>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
+
+    <!-- ===== 5. CHAPTER 04 — CASES (auto-built) ===== -->
     <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->
     <section class="pm-section pm-cases-static" aria-label="営業資料マンガの制作事例">
       <div class="pm-container pm-container--narrow">
@@ -464,296 +479,315 @@
     </section>
     <!-- BUILD:LP-CASES:END -->
 
-
-
-
-
-
-
-
-
-
-
-    <section class="pm-section pm-library" id="library" data-bm-lp-library data-category="営業資料">
-      <div class="pm-container">
-        <div class="pm-library-head">
-          <span class="pm-eyebrow">FROM BIZ LIBRARY</span>
-          <h2 class="pm-h2">営業資料マンガを、実際に読んでみる。</h2>
-          <p class="pm-library-note">クライアント企業向けに制作した営業資料マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます。</p>
-        </div>
-        <div class="pm-lp-lib-grid" data-bm-lp-library-grid>
+    <!-- ===== 6. CHAPTER 05 — LIBRARY (Biz Library embed) ===== -->
+    <section class="lpv2-section lpv2-library" id="chapter-05-library" data-bm-lp-library data-category="営業資料" aria-label="ビズ書庫から営業資料マンガを読む">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">05</span>
+          <span class="lpv2-chapter-mark">CHAPTER 05 &middot; FROM BIZ LIBRARY</span>
+          <h2 class="lpv2-h2">営業資料マンガを、<em>実際に読んでみる</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">クライアント企業向けに制作した営業資料マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます</p>
+        </header>
+        <div class="lpv2-library-grid" data-bm-lp-library-grid>
           <p class="bm-lp-lib-loading">読み込み中…</p>
         </div>
-        <div class="pm-library-cta">
-          <a href="/biz-library" class="pm-btn pm-btn--ghost">ビズ書庫で全作品を見る</a>
+        <div class="lpv2-library-cta">
+          <a href="/biz-library" class="lpv2-btn lpv2-btn--accent-on-dark">ビズ書庫で全作品を見る</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 制作フロー（クリックで左ペインに画像と詳細） ===== -->
-    <section class="pm-section pm-flow-section" id="productionFlow" aria-label="制作フロー">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
-        <h2 class="pm-section-title">営業資料マンガの制作フロー</h2>
-        <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで進行します。各ステップをクリックすると、左の編集者ノートに参考画像と詳しい解説が表示されます。</p>
-        <div class="pm-flow-list-v">
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="1"
-                    data-pm-flow-slug="step1_hearing"
-                    data-pm-flow-name="ヒアリング"
-                    data-pm-flow-desc="営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フロー・顧客ペルソナを把握し、漫画資料の組み込みポイントを設計。BANT/SPINとの接続も整理します。">
-              <span class="flow-step-num">1</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="ヒアリング">ヒアリング</span>
-                <span class="pm-flow-step-desc" data-ja="営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フロー・顧客ペルソナを把握し、漫画資料の組み込みポイントを設計。" data-en="">営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フロー・顧客ペルソナを把握し、漫画資料の組み込みポイントを設計。</span>
+    <!-- ===== 7. CHAPTER 06 — PRODUCTION FLOW ===== -->
+    <section class="lpv2-section lpv2-flow" id="chapter-06-flow" aria-label="制作フロー">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">06</span>
+          <span class="lpv2-chapter-mark">CHAPTER 06 &middot; PRODUCTION FLOW</span>
+          <h2 class="lpv2-h2">営業資料マンガの<em>制作フロー</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">ヒアリングから納品まで、8つのステップで進行します。営業プロセス・決裁フロー・商談ツールへの組み込みまで含めて設計します</p>
+        </header>
+        <!-- 裏面の画像は制作フローのMVP作例画像(material/images/flow/)を流用。8ステップ完全対応。フリップ裏面imgはloading=lazy禁止 -->
+        <div class="lpv2-flow-grid">
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">01</span>
+                <span class="lpv2-flow-step__name">ヒアリング</span>
+                <span class="lpv2-flow-step__desc">営業プロセス（インサイドセールス／フィールド／カスタマーサクセス）と商談時間・決裁フロー・顧客ペルソナを把握し、漫画資料の組み込みポイントを設計。BANT/SPINとの接続も整理します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
               </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="2"
-                    data-pm-flow-slug="step2_arasuji"
-                    data-pm-flow-name="あらすじ"
-                    data-pm-flow-desc="「現場担当者の悩み → 自社サービス導入 → 決裁者を巻き込んでの社内合意」の流れを物語化。担当者から決裁者への伝言ゲームに勝つための「読み返したくなる」骨組みを作ります。">
-              <span class="flow-step-num">2</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="あらすじ">あらすじ</span>
-                <span class="pm-flow-step-desc" data-ja="「現場担当者の悩み → 自社サービス導入 → 決裁者を巻き込んでの社内合意」の流れを物語化。" data-en="">「現場担当者の悩み → 自社サービス導入 → 決裁者を巻き込んでの社内合意」の流れを物語化。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="3"
-                    data-pm-flow-slug="step3_scenario"
-                    data-pm-flow-name="シナリオ"
-                    data-pm-flow-desc="BtoB特有の専門用語・業界用語を必要最小限に抑え、決裁者層（経営者・役員）にも瞬時に理解できるセリフを設計。ROI・KPI・LTVなどビジネス文脈で重要な数字の扱いも検討します。">
-              <span class="flow-step-num">3</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="シナリオ">シナリオ</span>
-                <span class="pm-flow-step-desc" data-ja="BtoB特有の専門用語・業界用語を必要最小限に抑え、決裁者層（経営者・役員）にも瞬時に理解できるセリフを設計。" data-en="">BtoB特有の専門用語・業界用語を必要最小限に抑え、決裁者層（経営者・役員）にも瞬時に理解できるセリフを設計。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="4"
-                    data-pm-flow-slug="step4_gafu"
-                    data-pm-flow-name="画風決定"
-                    data-pm-flow-desc="商材と決裁者層に合わせた画風を選定。エンタープライズ向けは落ち着いた線画、SMB向けはスピード感のある画風、テック系は近未来的な演出など、提案書の権威性を損なわない画風を選びます。">
-              <span class="flow-step-num">4</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="画風決定" data-en="画風決定">画風決定</span>
-                <span class="pm-flow-step-desc" data-ja="商材と決裁者層に合わせた画風を選定。" data-en="">商材と決裁者層に合わせた画風を選定。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="5"
-                    data-pm-flow-slug="step5_name"
-                    data-pm-flow-name="ネーム"
-                    data-pm-flow-desc="商談時に画面共有で見せる流れを想定したコマ割り設計。商談時間（30分／60分）に合わせたページ数調整、決裁者プレゼン用1〜2ページ要約版の同時制作なども含めて設計します。">
-              <span class="flow-step-num">5</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ネーム" data-en="ネーム">ネーム</span>
-                <span class="pm-flow-step-desc" data-ja="商談時に画面共有で見せる流れを想定したコマ割り設計。" data-en="">商談時に画面共有で見せる流れを想定したコマ割り設計。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="6"
-                    data-pm-flow-slug="step6_seisaku"
-                    data-pm-flow-name="漫画制作"
-                    data-pm-flow-desc="プロの漫画家がBtoB特有の落ち着いた表現で清書。経営層・購買担当が見ても違和感のない品位ある画面作りを行い、商談中に「面白い」と評価される質感を実現します。">
-              <span class="flow-step-num">6</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="漫画制作">漫画制作</span>
-                <span class="pm-flow-step-desc" data-ja="プロの漫画家がBtoB特有の落ち着いた表現で清書。" data-en="">プロの漫画家がBtoB特有の落ち着いた表現で清書。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="7"
-                    data-pm-flow-slug="step7_kakunin"
-                    data-pm-flow-name="初稿確認"
-                    data-pm-flow-desc="営業企画・営業現場・経営層・法務（守秘義務関連）の複数視点でレビュー。誇大表現や事実誤認がないか、特に競合比較箇所での景表法対応を厳格にチェックします。">
-              <span class="flow-step-num">7</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="初稿確認">初稿確認</span>
-                <span class="pm-flow-step-desc" data-ja="営業企画・営業現場・経営層・法務（守秘義務関連）の複数視点でレビュー。" data-en="">営業企画・営業現場・経営層・法務（守秘義務関連）の複数視点でレビュー。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="8"
-                    data-pm-flow-slug="step8_nouhin"
-                    data-pm-flow-name="最終納品"
-                    data-pm-flow-desc="PowerPoint・Keynote・Googleスライドへ画像配置できるPNG/PDF納品。担当者ごとにカスタマイズできるテンプレート構造、商談録画用の高解像度版、CRM連携用のサムネイル画像まで一括対応します。">
-              <span class="flow-step-num">8</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="最終納品" data-en="最終納品">最終納品</span>
-                <span class="pm-flow-step-desc" data-ja="PowerPoint・Keynote・Googleスライドへ画像配置できるPNG/PDF納品。" data-en="">PowerPoint・Keynote・Googleスライドへ画像配置できるPNG/PDF納品。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FAQ（FAQPage Schema 連動） ===== -->
-    <section class="pm-section pm-faq-section" aria-label="よくあるご質問">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">FAQ</span>
-        <h2 class="pm-section-title">営業資料マンガについてよくあるご質問</h2>
-        <p class="pm-section-lead">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
-        <div class="pm-faq-list">
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">制作期間はどのくらいかかりますか？</summary>
-            <div class="pm-faq-answer">営業資料マンガは商談前倒し納品が肝なので、標準10ページで4〜5週間、急ぎ案件は2〜3週間の短納期プランあり。期初の予算消化前や大型案件提案前のタイミングに合わせて納品します。商談ツール（iPad・PCデッキ）への組み込みも納期に含みます。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">費用の相場はいくらですか？</summary>
-            <div class="pm-faq-answer">営業資料マンガは1ページ16,600円〜。提案書冒頭3〜5ページの導入用なら約7.9万円〜、フル提案書差し替えは10ページで17.4万円〜が目安。稟議資料・商談デッキ・事例集への横展開も同一原稿で対応します。詳細は料金ページ（bizmanga.contentsx.jp/pricing）。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">修正は何回まで対応していますか？</summary>
-            <div class="pm-faq-answer">営業資料マンガでは自社サービス機能の表記精度が受注率を左右するため、営業部門・プロダクト部門の両方に確認いただきます。競合比較表現は薬機法・景表法面のチェックも含めて修正サイクルに組み込み、稟議に耐える品質に整えます。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">著作権・使用範囲はどうなりますか？</summary>
-            <div class="pm-faq-answer">提案書・商談ツール・稟議資料・事例集での使用権がクライアント様に帰属します。営業現場での印刷配布・iPad/PCデッキ表示・社内共有サーバー保管も自由。商談相手への配布・受注後の社内浸透資料への横展開に追加費用は発生しません。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">機密保持契約（NDA）には対応していますか？</summary>
-            <div class="pm-faq-answer">対応可能です。公開前の新サービス・受注前の見積案件・M&A準備中の事業提案など機密性の高い営業活動でも安心して活用可能。1社単位のNDA締結に加え、複数顧客への営業活動を想定した汎用版＋機密案件専用版の2軸運用も承ります。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">英語版・多言語版は作れますか？</summary>
-            <div class="pm-faq-answer">対応可能です。海外営業・グローバルアカウント向け提案書として英・中・韓を中心に対応。日本市場で完成した提案書の海外展開時、現地法令・商習慣・支払条件の差異を反映したローカライズも承ります。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">商談で使う場合、何ページ構成が最適ですか？</summary>
-            <div class="pm-faq-answer">提案書冒頭の「課題共感パート」として4〜8ページが最適です。導入事例として中盤に8〜12ページ挟むパターンも効果的。商談時間・商材複雑度・決裁フローに合わせて構成設計します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">既存の提案書テンプレート（PowerPoint等）に組み込めますか？</summary>
-            <div class="pm-faq-answer">可能です。納品はPNG・PDF・PSDで、PowerPoint・Keynote・Googleスライドへ画像配置できます。表紙差し替えだけで担当者ごとにカスタマイズする運用設計もサポートします。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">商談で実際に活用するための営業研修・トレーニングはありますか？</summary>
-            <div class="pm-faq-answer">オプションで対応可能です。漫画資料を使った商談ロールプレイング、決裁者プレゼンの想定問答集、CRM連携での閲覧トラッキング設定方法まで、営業現場での実装まで伴走します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">PowerPoint・Keynote・Googleスライドへの組み込み方法は？</summary>
-            <div class="pm-faq-answer">PNG/JPEG/PSD で納品し、各プレゼンソフトに画像配置可能。表紙・要約スライド・補足スライドと組み合わせるレイアウトテンプレもご提案。担当者ごとにカスタマイズしやすい構造設計を行います。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">商品アップデート時の差し替え運用はどうなりますか？</summary>
-            <div class="pm-faq-answer">新機能追加・価格改定・キャンペーン情報など、軽微な差し替えは数日〜1週間で対応。年次更新パッケージもご用意しており、継続的な営業資料の鮮度維持が可能です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">受注率改善の効果はどう測定できますか？</summary>
-            <div class="pm-faq-answer">導入前後の受注率・商談時間・決裁スピード・客単価の変化を計測する指標設計をサポートします。CRM・SFA との連携で漫画資料閲覧と受注の相関を可視化する手法もご提案可能。</div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 関連LP（他の用途別マンガ） ===== -->
-    <section class="pm-related" aria-label="他の用途別マンガ">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-related-eyebrow">OTHER USE CASES</span>
-        <h2 class="pm-related-title">他の用途別マンガを見る</h2>
-        <p class="pm-related-lead">商品紹介・採用・広告・営業資料・研修・IR・インバウンド・会社紹介。それぞれの目的に合わせた構成と訴求軸でご提案します。</p>
-        <div class="pm-related-grid">
-          <a class="pm-related-card" href="/product-manga">            <h3 class="pm-related-card-name">商品紹介マンガ</h3>
-            <p class="pm-related-card-hook">SaaS・無形商材も、漫画なら伝わる</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/recruit-manga">            <h3 class="pm-related-card-name">採用マンガ</h3>
-            <p class="pm-related-card-hook">応募・内定承諾率を高める</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/manga-ad-lp">            <h3 class="pm-related-card-name">マンガ広告</h3>
-            <p class="pm-related-card-hook">広告らしくない、止まる広告</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/company-manga">            <h3 class="pm-related-card-name">会社紹介マンガ</h3>
-            <p class="pm-related-card-hook">ステークホルダー横断で届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/training-manga">            <h3 class="pm-related-card-name">研修マンガ</h3>
-            <p class="pm-related-card-hook">失敗事例を安全に疑似体験</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/inbound-manga">            <h3 class="pm-related-card-name">インバウンド漫画</h3>
-            <p class="pm-related-card-hook">言葉を超えて旅人に届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/ir-manga">            <h3 class="pm-related-card-name">IRマンガ</h3>
-            <p class="pm-related-card-hook">個人投資家は数字より物語</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-
-
-    <aside class="bm-related-guide" aria-label="関連: 漫画制作会社 比較ガイド">
-      <p class="bm-related-guide-eyebrow" data-ja="業者比較で迷ったら" data-en="Comparing vendors?">業者比較で迷ったら</p>
-      <p class="bm-related-guide-text" data-ja="営業資料マンガを発注する業者選びにお迷いの方は、業界主要 5 社の料金・対応カテゴリを一覧化した【営業資料マンガ対応の漫画制作会社 比較ガイド】もご覧ください。" data-en="Comparing vendors for sales-material manga? See our Sales-Manga Production Company Comparison Guide.">
-        営業資料マンガを発注する業者選びにお迷いの方は、業界主要 5 社の料金・対応カテゴリを一覧化した
-        <a href="/manga-production-company" data-ja="営業資料マンガ対応の漫画制作会社 比較ガイド" data-en="Sales-Manga Production Company Comparison Guide">営業資料マンガ対応の漫画制作会社 比較ガイド</a>
-        もご覧ください。
-      </p>
-    </aside>
-
-    <section class="pm-end">
-      <div class="pm-container pm-container--narrow">
-        <div class="pm-rule"></div>
-        <h2 class="pm-end-title">勝ちたい商談があるなら<br>その提案を<br><em>一緒に物語にしましょう</em></h2>
-        <p class="pm-end-text">営業現場の課題ヒアリングから、商談スクリプト分析・企画・作画・納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の営業課題に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。</p>
-        <div class="pm-end-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="お問い合わせ">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step1_hearing.avif">
+                  <img src="/material/images/flow/step1_hearing.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
-          </a>
-          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="pm-cta-btn pm-cta-btn--line" data-tooltip="LINEで相談" target="_blank" rel="noopener">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">LINEで相談</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z"/>
-                </svg>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">02</span>
+                <span class="lpv2-flow-step__name">あらすじ</span>
+                <span class="lpv2-flow-step__desc">「現場担当者の悩み → 自社サービス導入 → 決裁者を巻き込んでの社内合意」の流れを物語化。担当者から決裁者への伝言ゲームに勝つための「読み返したくなる」骨組みを作ります。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step2_arasuji.avif">
+                  <img src="/material/images/flow/step2_arasuji.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">03</span>
+                <span class="lpv2-flow-step__name">シナリオ</span>
+                <span class="lpv2-flow-step__desc">BtoB特有の専門用語・業界用語を必要最小限に抑え、決裁者層（経営者・役員）にも瞬時に理解できるセリフを設計。ROI・KPI・LTVなどビジネス文脈で重要な数字の扱いも検討します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step3_scenario.avif">
+                  <img src="/material/images/flow/step3_scenario.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">04</span>
+                <span class="lpv2-flow-step__name">画風決定</span>
+                <span class="lpv2-flow-step__desc">商材と決裁者層に合わせた画風を選定。エンタープライズ向けは落ち着いた線画、SMB向けはスピード感のある画風、テック系は近未来的な演出など、提案書の権威性を損なわない画風を選びます。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step4_gafu.avif">
+                  <img src="/material/images/flow/step4_gafu.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">05</span>
+                <span class="lpv2-flow-step__name">ネーム</span>
+                <span class="lpv2-flow-step__desc">商談時に画面共有で見せる流れを想定したコマ割り設計。商談時間（30分／60分）に合わせたページ数調整、決裁者プレゼン用1〜2ページ要約版の同時制作なども含めて設計します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step5_name.avif">
+                  <img src="/material/images/flow/step5_name.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">06</span>
+                <span class="lpv2-flow-step__name">漫画制作</span>
+                <span class="lpv2-flow-step__desc">プロの漫画家がBtoB特有の落ち着いた表現で清書。経営層・購買担当が見ても違和感のない品位ある画面作りを行い、商談中に「面白い」と評価される質感を実現します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step6_seisaku.avif">
+                  <img src="/material/images/flow/step6_seisaku.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">07</span>
+                <span class="lpv2-flow-step__name">初稿確認</span>
+                <span class="lpv2-flow-step__desc">営業企画・営業現場・経営層・法務（守秘義務関連）の複数視点でレビュー。誇大表現や事実誤認がないか、特に競合比較箇所での景表法対応を厳格にチェックします。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step7_kakunin.avif">
+                  <img src="/material/images/flow/step7_kakunin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">08</span>
+                <span class="lpv2-flow-step__name">最終納品</span>
+                <span class="lpv2-flow-step__desc">PowerPoint・Keynote・Googleスライドへ画像配置できるPNG/PDF納品。担当者ごとにカスタマイズできるテンプレート構造、商談録画用の高解像度版、CRM連携用のサムネイル画像まで一括対応します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step8_nouhin.avif">
+                  <img src="/material/images/flow/step8_nouhin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. CHAPTER 07 — FAQ ===== -->
+    <section class="lpv2-section lpv2-faq" id="chapter-07-faq" aria-label="よくあるご質問">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">07</span>
+          <span class="lpv2-chapter-mark">CHAPTER 07 &middot; FAQ</span>
+          <h2 class="lpv2-h2">営業資料マンガについて、<em>よくあるご質問</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください</p>
+        </header>
+        <div class="lpv2-faq-list">
+          <details class="lpv2-faq-item">
+            <summary>制作期間はどのくらいかかりますか？</summary>
+            <div class="lpv2-faq-answer">営業資料マンガは商談前倒し納品が肝なので、標準10ページで4〜5週間、急ぎ案件は2〜3週間の短納期プランあり。期初の予算消化前や大型案件提案前のタイミングに合わせて納品します。商談ツール（iPad・PCデッキ）への組み込みも納期に含みます。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>費用の相場はいくらですか？</summary>
+            <div class="lpv2-faq-answer">営業資料マンガは1ページ16,600円〜。提案書冒頭3〜5ページの導入用なら約7.9万円〜、フル提案書差し替えは10ページで17.4万円〜が目安。稟議資料・商談デッキ・事例集への横展開も同一原稿で対応します。詳細は <a href="/pricing">料金ページ</a> をご覧ください。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>修正は何回まで対応していますか？</summary>
+            <div class="lpv2-faq-answer">営業資料マンガでは自社サービス機能の表記精度が受注率を左右するため、営業部門・プロダクト部門の両方に確認いただきます。競合比較表現は薬機法・景表法面のチェックも含めて修正サイクルに組み込み、稟議に耐える品質に整えます。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>著作権・使用範囲はどうなりますか？</summary>
+            <div class="lpv2-faq-answer">提案書・商談ツール・稟議資料・事例集での使用権がクライアント様に帰属します。営業現場での印刷配布・iPad/PCデッキ表示・社内共有サーバー保管も自由。商談相手への配布・受注後の社内浸透資料への横展開に追加費用は発生しません。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>機密保持契約（NDA）には対応していますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。公開前の新サービス・受注前の見積案件・M&A準備中の事業提案など機密性の高い営業活動でも安心して活用可能。1社単位のNDA締結に加え、複数顧客への営業活動を想定した汎用版＋機密案件専用版の2軸運用も承ります。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>英語版・多言語版は作れますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。海外営業・グローバルアカウント向け提案書として英・中・韓を中心に対応。日本市場で完成した提案書の海外展開時、現地法令・商習慣・支払条件の差異を反映したローカライズも承ります。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>商談で使う場合、何ページ構成が最適ですか？</summary>
+            <div class="lpv2-faq-answer">提案書冒頭の「課題共感パート」として4〜8ページが最適です。導入事例として中盤に8〜12ページ挟むパターンも効果的。商談時間・商材複雑度・決裁フローに合わせて構成設計します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>既存の提案書テンプレート（PowerPoint等）に組み込めますか？</summary>
+            <div class="lpv2-faq-answer">可能です。納品はPNG・PDF・PSDで、PowerPoint・Keynote・Googleスライドへ画像配置できます。表紙差し替えだけで担当者ごとにカスタマイズする運用設計もサポートします。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>商談で実際に活用するための営業研修・トレーニングはありますか？</summary>
+            <div class="lpv2-faq-answer">オプションで対応可能です。漫画資料を使った商談ロールプレイング、決裁者プレゼンの想定問答集、CRM連携での閲覧トラッキング設定方法まで、営業現場での実装まで伴走します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>PowerPoint・Keynote・Googleスライドへの組み込み方法は？</summary>
+            <div class="lpv2-faq-answer">PNG/JPEG/PSD で納品し、各プレゼンソフトに画像配置可能。表紙・要約スライド・補足スライドと組み合わせるレイアウトテンプレもご提案。担当者ごとにカスタマイズしやすい構造設計を行います。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>商品アップデート時の差し替え運用はどうなりますか？</summary>
+            <div class="lpv2-faq-answer">新機能追加・価格改定・キャンペーン情報など、軽微な差し替えは数日〜1週間で対応。年次更新パッケージもご用意しており、継続的な営業資料の鮮度維持が可能です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>受注率改善の効果はどう測定できますか？</summary>
+            <div class="lpv2-faq-answer">導入前後の受注率・商談時間・決裁スピード・客単価の変化を計測する指標設計をサポートします。CRM・SFA との連携で漫画資料閲覧と受注の相関を可視化する手法もご提案可能。</div>
+          </details>
+        </div>
+
+        <aside class="lpv2-guide" aria-label="関連: 漫画制作会社 比較ガイド">
+          <p class="lpv2-guide__eyebrow">業者比較で迷ったら</p>
+          <p class="lpv2-guide__text" data-ja="営業資料マンガを発注する業者選びにお迷いの方は、業界主要 5 社の料金・対応カテゴリを一覧化した【営業資料マンガ対応の漫画制作会社 比較ガイド】もご覧ください。" data-en="Comparing vendors for sales-material manga? See our Sales-Manga Production Company Comparison Guide of top 5 vendors.">
+            営業資料マンガを発注する業者選びにお迷いの方は、業界主要 5 社の料金・対応カテゴリを一覧化した
+            <a href="/manga-production-company" data-ja="営業資料マンガ対応の漫画制作会社 比較ガイド" data-en="Sales-Manga Production Company Comparison Guide">営業資料マンガ対応の漫画制作会社 比較ガイド</a>
+            もご覧ください。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== 9. RELATED LPs ("Next issues") ===== -->
+    <section class="lpv2-section lpv2-related" aria-label="他の用途別マンガ">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-mark">NEXT ISSUE &middot; OTHER USE CASES</span>
+          <h2 class="lpv2-h2">他の<em>用途別マンガ</em>を見る</h2>
+          <p class="lpv2-lead lpv2-lead--center">商品紹介・採用・広告・会社紹介・営業資料・研修・インバウンド・IR。それぞれの目的に合わせた構成と訴求軸でご提案します</p>
+        </header>
+        <div class="lpv2-related-grid">
+          <a class="lpv2-related-card" href="/product-manga">
+            <p class="lpv2-related-card__num">No. 01</p>
+            <h3 class="lpv2-related-card__name">商品紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">SaaS・無形商材も、漫画なら伝わる</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/recruit-manga">
+            <p class="lpv2-related-card__num">No. 02</p>
+            <h3 class="lpv2-related-card__name">採用マンガ</h3>
+            <p class="lpv2-related-card__hook">応募・内定承諾率を高める</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/manga-ad-lp">
+            <p class="lpv2-related-card__num">No. 03</p>
+            <h3 class="lpv2-related-card__name">マンガ広告</h3>
+            <p class="lpv2-related-card__hook">広告らしくない、止まる広告</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/company-manga">
+            <p class="lpv2-related-card__num">No. 04</p>
+            <h3 class="lpv2-related-card__name">会社紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">ステークホルダー横断で届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/training-manga">
+            <p class="lpv2-related-card__num">No. 06</p>
+            <h3 class="lpv2-related-card__name">研修マンガ</h3>
+            <p class="lpv2-related-card__hook">失敗事例を安全に疑似体験</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/inbound-manga">
+            <p class="lpv2-related-card__num">No. 07</p>
+            <h3 class="lpv2-related-card__name">インバウンド漫画</h3>
+            <p class="lpv2-related-card__hook">言葉を超えて旅人に届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/ir-manga">
+            <p class="lpv2-related-card__num">No. 08</p>
+            <h3 class="lpv2-related-card__name">IRマンガ</h3>
+            <p class="lpv2-related-card__hook">個人投資家は数字より物語</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
           </a>
         </div>
       </div>
     </section>
 
-      </div><!-- /.pm-main-col -->
-
-      <aside class="pm-rail pm-rail--right" aria-label="ビズ書庫グリッド" data-bm-lp-library data-category="営業資料">
-        <span class="pm-rail-reader-eyebrow">FROM BIZ LIBRARY</span>
-        <h3 class="pm-rail-reader-title">営業資料マンガを、<br>読んでみる。</h3>
-        <div class="pm-rail-lib-grid" data-bm-lp-library-grid>
-          <p class="bm-lp-lib-loading">読み込み中…</p>
+    <!-- ===== 10. END — Final CTA ===== -->
+    <section class="lpv2-end" aria-label="お問い合わせ">
+      <div class="lpv2-end-inner">
+        <p class="lpv2-end-eyebrow">TO BE CONTINUED — WITH YOU</p>
+        <h2 class="lpv2-end-title">勝ちたい商談があるなら、<br>その提案を<br><em>一緒に物語にしましょう</em>。</h2>
+        <p class="lpv2-end-text">営業現場の課題ヒアリングから、商談スクリプト分析・企画・作画・納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の営業課題に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。</p>
+        <div class="lpv2-end-cta-row">
+          <a href="/contact" class="lpv2-btn lpv2-btn--accent-on-dark lpv2-btn--lg">
+            無料相談・お見積もり
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="lpv2-btn lpv2-btn--line lpv2-btn--lg" target="_blank" rel="noopener">
+            LINEで相談
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2z"/></svg>
+          </a>
         </div>
-        <p class="pm-rail-reader-foot">
-          全作品は <a href="/biz-library">ビズ書庫</a> へ
-        </p>
-      </aside>
-
-    </div><!-- /.pm-shell -->
+      </div>
+    </section>
 
   </main>
 
+  <!-- ===== フッター ===== -->
   <footer class="bm-footer">
     <div class="bm-container">
       <div class="bm-footer-inner">
@@ -766,7 +800,7 @@
           <a href="/">ホーム</a>
           <a href="/works">制作事例</a>
           <a href="/biz-library">ビズ書庫</a>
-          料金（bizmanga.contentsx.jp/pricing）
+          <a href="/pricing">料金</a>
           <a href="/strength">強み</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
@@ -780,12 +814,11 @@
     </div>
   </footer>
 
-  <script src="js/bm-sanitize.js" defer></script>
-  <script src="js/bm-i18n.js" defer></script>
-  <script src="js/bm-nav.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-lp-library-embed.js" defer></script>
-  <script src="js/bm-product-manga.js" defer></script>
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+  <script src="/js/bm-i18n.js" defer></script>
+  <script src="/js/bm-nav.js" defer></script>
+  <script src="/js/bm-kinsoku.js" defer></script>
+  <script src="/js/bm-lp-library-embed.js" defer></script>
+  <script src="/js/bm-lp-v2.js" defer></script>
 </body>
 </html>

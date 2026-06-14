@@ -60,7 +60,7 @@ if (window.i18n && window.i18n.translateAll) {
 | コラム一覧/詳細 | column.html / column-detail.html | bm-wp-api.js |
 | ニュース | news.html / news-detail.html | bm-wp-api.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
-| 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （v2移行: recruit・manga-ad-lp が bm-lp-v2.css/js。残り6本は順次v2化中） |
+| 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
 | その他 | strength / use-cases / manga-types / pricing / privacy-policy / 404 / embed-viewer | 各ページ固有JS |
 
 > 注: 旧 `pre-production.html` / `gallery.html` / `production-flow.html` は廃止済み（index.html に統合 or 削除）。存在しないので新規リンクしないこと。

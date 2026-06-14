@@ -2,18 +2,20 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-06-14T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
   </script>
+  <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
   window.addEventListener('load', function() {
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
@@ -25,6 +27,7 @@
   <link rel="canonical" href="https://bizmanga.contentsx.jp/training-manga">
   <link rel="alternate" hreflang="ja" href="https://bizmanga.contentsx.jp/training-manga">
   <link rel="alternate" hreflang="x-default" href="https://bizmanga.contentsx.jp/training-manga">
+  <!-- OG Tags -->
   <meta property="og:title" content="研修マンガ・研修漫画制作｜新人・コンプラ・社員教育に効く｜ビズマンガ">
   <meta property="og:description" content="研修マンガ・研修漫画（研修用マンガ）の制作。動画・テキストでは形骸化する研修を「物語で疑似体験」に変換し、研修効率化・記憶定着を高めます。新人・コンプラ・ハラスメント・店舗OJTに対応。125項目品質チェック。">
   <meta property="og:type" content="website">
@@ -35,6 +38,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="研修マンガ・研修漫画（研修用マンガ）制作 - 新人・コンプラ・社員教育">
   <meta property="og:locale" content="ja_JP">
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:creator" content="@Bizmanga_">
@@ -46,6 +50,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#e85500">
   <link rel="alternate" type="application/rss+xml" title="ビズマンガ RSS" href="https://bizmanga.contentsx.jp/feed.xml">
+  <!-- JSON-LD: WebPage + Service -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -56,7 +61,7 @@
     "url": "https://bizmanga.contentsx.jp/training-manga",
     "inLanguage": "ja-JP",
     "datePublished": "2026-04-26",
-    "dateModified": "2026-04-28",
+    "dateModified": "2026-06-14",
     "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
     "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
     "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/training-manga#breadcrumb" },
@@ -131,13 +136,15 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="/css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/bm-lp-template.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
 </head>
-<body class="pm-page" data-fuwa-auto>
+<!-- LP-DESIGN:v2 — migrated to the v2 design system (2026-06-14, pilot: recruit-manga). -->
+<body class="lpv2-page" data-lp-v2>
+  <!-- ===== ヘッダー（共通nav.jsで生成） ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
       <a href="/" class="bm-logo">
@@ -169,241 +176,249 @@
 
   <main id="main">
 
-    <section class="pm-hero-strip" aria-label="研修マンガ">
-      <picture>
-        <source type="image/avif" srcset="material/images/lp/hero_LP.avif">
-        <img src="material/images/lp/hero_LP.webp" alt="研修マンガ・研修漫画（研修用マンガ）で学ぶ社員のイメージ — ビズマンガ" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="pm-hero-overlay">
-        <p class="pm-hero-eyebrow"><span data-ja="研修マンガ（研修漫画・研修用漫画）" data-en="Training Manga">研修マンガ（研修漫画・研修用漫画）</span> · TRAINING MANGA</p>
-        <h1 class="pm-hero-title">
-          <span data-ja="研修を、" data-en="Turn training">研修を、</span><br>
-          <span data-ja="疑似体験する物語に" data-en="into lived experience">疑似体験する物語に</span>
-        </h1>
-        <div class="pm-hero-divider" aria-hidden="true"></div>
+    <!-- ===== 1. HERO — full-bleed bg (既存 hero_LP を流用) + 左コピー ===== -->
+    <section class="lpv2-hero" aria-label="研修マンガ">
+      <div class="lpv2-hero-stage">
+        <div class="lpv2-hero-bg" aria-hidden="true">
+          <picture>
+            <source type="image/avif" srcset="/material/images/lp/hero_LP.avif">
+            <img src="/material/images/lp/hero_LP.webp" alt="" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+        </div>
+        <div class="lpv2-hero-inner">
+          <div class="lpv2-hero-text">
+            <p class="lpv2-hero-eyebrow"><span class="lpv2-hero-eyebrow-ja" data-ja="研修マンガ" data-en="Training Manga">研修マンガ</span><span class="lpv2-hero-eyebrow-en">TRAINING MANGA</span></p>
+            <h1 class="lpv2-hero-title">
+              <span data-ja="研修を、" data-en="Turn training">研修を、</span><br>
+              <em data-ja="疑似体験する" data-en="into lived">疑似体験する</em><br class="sp-br"><span data-ja="物語に。" data-en="experience.">物語に。</span>
+            </h1>
+            <p class="lpv2-hero-sub" data-i18n-html data-ja="動画もテキストも、社員の記憶に残らない。<br class='sp-br'>研修マンガ（研修漫画・研修用マンガ）は、<br class='sp-br'>失敗事例を主人公として疑似体験させ、<br class='sp-br'>知識の定着と、現場での実践率を引き上げます。" data-en="Videos and text fade from memory. Training manga lets staff live through failure cases as the protagonist — boosting retention and real-world application.">動画もテキストも、社員の記憶に残らない。<br class="sp-br">研修マンガ（研修漫画・研修用マンガ）は、<br class="sp-br">失敗事例を主人公として疑似体験させ、<br class="sp-br">知識の定着と、現場での実践率を引き上げます。</p>
+            <div class="lpv2-hero-cta-row">
+              <a href="/contact" class="lpv2-btn lpv2-btn--pill lpv2-btn--lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
+              </a>
+              <a href="#chapter-05-library" class="lpv2-btn lpv2-btn--pill lpv2-btn--ghost lpv2-btn--lg">
+                <span data-ja="事例を見る" data-en="See case studies">事例を見る</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="pm-shell">
-
-      <aside class="pm-rail pm-rail--left" aria-label="編集者ノート">
-        <div class="pm-rail-character-frame">
-          <div class="pm-rail-character" id="pmCharacter" data-mood="confident">
-            <img src="images/product-manga/hero_confident.png" alt="" loading="lazy" decoding="async">
-          </div>
-        </div>
-        <p class="pm-rail-caption" id="pmCaption">EDITOR&rsquo;S DESK</p>
-        <div class="pm-rail-content" id="pmRailContent">
-          <div class="pm-rail-hint" id="pmHint">
-            <span class="pm-rail-hint-eyebrow">EDITOR&rsquo;S NOTE</span>
-            <h3 class="pm-rail-hint-title">教えるのではなく、<br>体験させる研修へ。</h3>
-            <p class="pm-rail-hint-text">研修動画もテキストも、社員の記憶に残らない時代です。研修マンガ（研修漫画・研修用マンガとも呼ばれる）は「失敗事例を主人公として疑似体験させる」ことで、知識の定着と現場での実践率を引き上げる手法です。各セクションを<strong>クリック／タップ</strong>で詳細表示。</p>
-            <p class="pm-rail-hint-tip">編集担当からのひとこと —<br>「人は説明では動かない。物語の中で『自分ごと』として失敗してこそ学ぶ」</p>
-          </div>
-          <div class="pm-rail-detail" id="pmDetail" hidden>
-            <button class="pm-rail-back" id="pmDetailBack" type="button">一覧に戻る</button>
-            <h3 class="pm-rail-detail-title" id="pmDetailTitle"></h3>
-            <div class="pm-rail-detail-body" id="pmDetailBody"></div>
-          </div>
-        </div>
-      </aside>
-
-      <div class="pm-main-col">
-
-    <header class="pm-masthead">
-      <div class="pm-masthead-inner">
-        <p class="pm-lead">形骸化した研修動画やテキストを、<br>研修マンガ・研修漫画（研修用マンガ）として物語で疑似体験できる教材に変えます。研修効率化を実現します。</p>
-        <p class="pm-formats-caption">あらゆる研修場面で活躍。</p>
-        <ul class="pm-formats pm-formats--illustrated" aria-label="活用フォーマット">
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-newhire" data-detail-title="新人研修・OJT">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/training-manga/format-newhire.webp">
-              <img src="images/training-manga/format-newhire.png" alt="" loading="lazy" decoding="async" width="564" height="610">
-            </picture>
-            <h3 class="pm-format-name">新人研修</h3>
-            <span class="pm-format-en">Onboarding</span>
-            <p class="pm-format-use">新入社員に基礎を伝える</p>
-            <div class="pm-format-detail">
-              <p>新入社員研修の冒頭に、先輩社員の1日や典型的な失敗エピソードを漫画化した教材を入れると、新人の理解スピードが大幅に上がります。「何を覚えるべきか」ではなく「どんな行動が現場で求められるか」が物語として伝わります。</p>
-              <p>配属後のOJTにも転用可能で、現場のトレーナーごとに教える内容がブレる課題を解消できます。</p>
+    <!-- ===== 1b. FORMATS ===== -->
+    <section class="lpv2-section lpv2-formats" id="chapter-03-formats" aria-label="研修マンガの活用フォーマット">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">03</span>
+          <span class="lpv2-chapter-mark">CHAPTER 03 &middot; FORMATS</span>
+          <h2 class="lpv2-h2">あらゆる<em>研修場面</em>で活躍</h2>
+          <p class="lpv2-lead lpv2-lead--center">新人研修・コンプラ研修・eラーニング・店舗マニュアルまで<br>——形骸化した研修を、物語で疑似体験できる教材に変えます</p>
+        </header>
+        <div class="lpv2-formats-grid">
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/training-manga/format-newhire.webp">
+                <img src="/images/training-manga/format-newhire.png" alt="新人研修・OJT" loading="lazy" decoding="async" width="564" height="610">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-compliance" data-detail-title="コンプライアンス研修">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/training-manga/format-compliance.webp">
-              <img src="images/training-manga/format-compliance.png" alt="" loading="lazy" decoding="async" width="580" height="698">
-            </picture>
-            <h3 class="pm-format-name">コンプラ研修</h3>
-            <span class="pm-format-en">Compliance</span>
-            <p class="pm-format-use">違反の疑似体験で防止</p>
-            <div class="pm-format-detail">
-              <p>コンプライアンス研修・ハラスメント研修は、形骸化が最も深刻な領域です。「研修動画を年1回流すだけ」になっている企業がほとんどで、現場での違反防止には繋がっていません。</p>
-              <p>研修マンガでは、登場人物が違反グレーゾーンに踏み込み、結果として何が起きるかを物語化します。知識ではなく「やってはいけない理由」が感情を伴って腹に落ちるため、実際の現場での意思決定が変わります。</p>
+            <p class="lpv2-format__num">01 &middot; Onboarding</p>
+            <h3 class="lpv2-format__name">新人研修</h3>
+            <p class="lpv2-format__use">新入社員に基礎を伝える</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/training-manga/format-compliance.webp">
+                <img src="/images/training-manga/format-compliance.png" alt="コンプライアンス研修" loading="lazy" decoding="async" width="580" height="698">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-elearning" data-detail-title="eラーニング・LMS">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/training-manga/format-elearning.webp">
-              <img src="images/training-manga/format-elearning.png" alt="" loading="lazy" decoding="async" width="566" height="668">
-            </picture>
-            <h3 class="pm-format-name">eラーニング</h3>
-            <span class="pm-format-en">e-Learning</span>
-            <p class="pm-format-use">完了率と理解度を上げる</p>
-            <div class="pm-format-detail">
-              <p>eラーニング・LMSの最大の課題は「最後まで見られない」ことです。動画は早送り、テキストはスキップ、結果として研修ログだけが残り知識は定着しないというパターンが大半です。</p>
-              <p>漫画形式のeラーニング教材は、ユーザーが自然に「次のページが気になる」モードでスクロールするため、完了率が大幅に向上します。理解度テストの平均点数も上がる傾向が確認されています。</p>
+            <p class="lpv2-format__num">02 &middot; Compliance</p>
+            <h3 class="lpv2-format__name">コンプラ研修</h3>
+            <p class="lpv2-format__use">違反の疑似体験で防止</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/training-manga/format-elearning.webp">
+                <img src="/images/training-manga/format-elearning.png" alt="eラーニング・LMS" loading="lazy" decoding="async" width="566" height="668">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-store-ops" data-detail-title="店舗マニュアル・現場OJT">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/training-manga/format-store-ops.webp">
-              <img src="images/training-manga/format-store-ops.png" alt="" loading="lazy" decoding="async" width="572" height="662">
-            </picture>
-            <h3 class="pm-format-name">店舗マニュアル</h3>
-            <span class="pm-format-en">Store Ops</span>
-            <p class="pm-format-use">多店舗で品質を均一化</p>
-            <div class="pm-format-detail">
-              <p>飲食・小売・サービス業の多店舗展開では、店舗ごとに接客品質・オペレーションがばらつくのが慢性的課題です。文字主体のマニュアルは現場で読まれず、店長個人のOJTスキルに依存している状態です。</p>
-              <p>漫画形式の店舗マニュアルは、アルバイト・パートを含む全スタッフが手に取って読める教材です。「良い接客」「悪い接客」を物語で見せることで、多店舗・多拠点の品質均一化に直結します。</p>
+            <p class="lpv2-format__num">03 &middot; e-Learning</p>
+            <h3 class="lpv2-format__name">eラーニング</h3>
+            <p class="lpv2-format__use">完了率と理解度を上げる</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/training-manga/format-store-ops.webp">
+                <img src="/images/training-manga/format-store-ops.png" alt="店舗マニュアル・現場OJT" loading="lazy" decoding="async" width="572" height="662">
+              </picture>
             </div>
-          </li>
-        </ul>
-        <div class="pm-masthead-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="無料相談・お見積もり">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-          <a href="#library" class="pm-btn pm-btn--ghost">事例を見る</a>
+            <p class="lpv2-format__num">04 &middot; Store Ops</p>
+            <h3 class="lpv2-format__name">店舗マニュアル</h3>
+            <p class="lpv2-format__use">多店舗で品質を均一化</p>
+          </article>
         </div>
       </div>
-    </header>
+    </section>
 
-    <section class="pm-section pm-section--alt pm-section--first">
-      <div class="pm-container">
-        <div style="text-align:center; margin-bottom:56px;">
-          <span class="pm-eyebrow">PROBLEM</span>
-          <h2 class="pm-h2">人事・教育担当の、こんな<em>お悩み</em>。</h2>
-        </div>
-        <ul class="pm-pain-list pm-pain-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-01" data-detail-title="研修動画が真剣に見られていない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/training-manga/pain-01.webp">
-              <img src="images/training-manga/pain-01.png" alt="" loading="lazy" decoding="async" width="1418" height="412">
+    <!-- ===== 2. CHAPTER 01 — PROBLEM ===== -->
+    <section class="lpv2-section lpv2-problem" id="chapter-01-problem" aria-label="人事・教育担当のお悩み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">01</span>
+          <span class="lpv2-chapter-mark">CHAPTER 01 &middot; PROBLEM</span>
+          <h2 class="lpv2-h2">人事・教育担当の、こんな<em>お悩み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">研修動画もテキストも、社員の記憶に残らない——次年度も同じ研修を繰り返す形骸化が、年々深刻になっています</p>
+        </header>
+        <div class="lpv2-problem-grid">
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">1</span>
+              <h3 class="lpv2-pain__title">研修動画が、社員に<em>真剣に見られない</em>。</h3>
+              <p class="lpv2-pain__text">eラーニングは早送り、研修動画はBGM代わり。ログ上は受講完了だが、内容を覚えている社員はほぼいない。次年度も同じ研修が繰り返される。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/training-manga/pain-01.webp">
+              <img src="/images/training-manga/pain-01.png" alt="研修動画が社員に真剣に見られない" loading="lazy" decoding="async" width="1418" height="412">
             </picture>
-            <span class="pm-pain-num">01</span>
-            <p class="pm-pain-title">研修動画が、社員に<em>真剣に見られない</em>。</p>
-            <p class="pm-pain-text">eラーニングは早送り、研修動画はBGM代わり。ログ上は受講完了だが、内容を覚えている社員はほぼいない。次年度も同じ研修が繰り返される。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>研修動画・eラーニングが形骸化する根本原因は「視聴者が能動的に物語を追わなくても完了できる」設計にあります。社員はBGMのように動画を流しながら別作業をし、最終テストだけクリアして終わる。これでは知識も行動も定着しません。</p>
               <p>研修マンガは、ページをめくる能動的な行動が必要なフォーマットです。次のコマを読みたい心理が働くため、社員は自然に集中して読み進めます。読了後の理解度テストの平均スコアが、動画教材より20〜30%高くなる事例があります。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-02" data-detail-title="コンプラ研修が形骸化している">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/training-manga/pain-02.webp">
-              <img src="images/training-manga/pain-02.png" alt="" loading="lazy" decoding="async" width="1466" height="346">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">2</span>
+              <h3 class="lpv2-pain__title">コンプライアンス研修が、完全に<em>形骸化</em>している。</h3>
+              <p class="lpv2-pain__text">毎年同じスライドを流して、確認テストにチェックを入れて終わる。実際の現場では、研修内容が思い出されることもなく、グレーな判断が繰り返される。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/training-manga/pain-02.webp">
+              <img src="/images/training-manga/pain-02.png" alt="コンプラ研修が形骸化している" loading="lazy" decoding="async" width="1466" height="346">
             </picture>
-            <span class="pm-pain-num">02</span>
-            <p class="pm-pain-title">コンプライアンス研修が、完全に<em>形骸化</em>している。</p>
-            <p class="pm-pain-text">毎年同じスライドを流して、確認テストにチェックを入れて終わる。実際の現場では、研修内容が思い出されることもなく、グレーな判断が繰り返される。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>コンプライアンス・ハラスメント研修は「年1回・全社員受講・記録を残す」ことが目的化しがちで、現場での違反防止には繋がっていません。法令の文言・抽象的な行動規範は、社員の現場判断に影響を与えにくいためです。</p>
               <p>研修マンガでは、登場人物が「うっかり違反グレーゾーンに踏み込む」シーンを描き、その結果として本人・チーム・会社に何が起きるかを物語化します。「やってはいけない理由」が感情を伴って腹に落ちるため、実際の現場での意思決定が変わります。違反発生件数の減少を実感した企業も多数あります。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-03" data-detail-title="多店舗・多拠点で品質がばらつく">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/training-manga/pain-03.webp">
-              <img src="images/training-manga/pain-03.png" alt="" loading="lazy" decoding="async" width="1442" height="416">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">3</span>
+              <h3 class="lpv2-pain__title">多店舗・多拠点で、研修品質が<em>ばらつく</em>。</h3>
+              <p class="lpv2-pain__text">本部が作ったマニュアルは現場で読まれず、店舗ごとに「店長の教え方」で品質が決まる。新人の戦力化スピードも、接客品質も、店舗で大差がつく。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/training-manga/pain-03.webp">
+              <img src="/images/training-manga/pain-03.png" alt="多店舗・多拠点で研修品質がばらつく" loading="lazy" decoding="async" width="1442" height="416">
             </picture>
-            <span class="pm-pain-num">03</span>
-            <p class="pm-pain-title">多店舗・多拠点で、研修品質が<em>ばらつく</em>。</p>
-            <p class="pm-pain-text">本部が作ったマニュアルは現場で読まれず、店舗ごとに「店長の教え方」で品質が決まる。新人の戦力化スピードも、接客品質も、店舗で大差がつく。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>多店舗・多拠点・チェーン展開する企業の最大の悩みは、教育品質のばらつきです。本部が用意したマニュアルや研修動画は、現場のアルバイト・パートには手に取られず、結局は店長個人のOJTスキルに依存する構造になります。</p>
               <p>漫画形式のマニュアル・研修教材は、忙しい店舗現場でも休憩時間に手に取って読める軽さがあります。アルバイト・パートも含めた全スタッフが共通の教材で学べるため、全店舗の接客品質・オペレーションを均一化できます。新人の戦力化スピードも上がり、店舗運営の負担軽減に直結します。</p>
             </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="pm-bridge">
-      <div class="pm-container pm-container--narrow">
-        <p class="pm-bridge-line">その悩みは、<br><em>「研修マンガ」</em>で解決できます。</p>
-      </div>
-    </section>
-
-    <section class="pm-section">
-      <div class="pm-container pm-container--narrow">
-        <div style="text-align:center; margin-bottom:48px;">
-          <span class="pm-eyebrow">MERIT</span>
-          <h2 class="pm-h2">研修マンガの、4つの強み。</h2>
+          </article>
         </div>
-        <p class="pm-section-lead" style="text-align:center; max-width:680px; margin:0 auto 32px; font-size:13px; color:#7a7770;">※ 本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します。</p>
-        <ol class="pm-merit-list pm-merit-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-01" data-detail-title="自分ごと化で記憶に残る">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/training-manga/merit-01.webp">
-              <img src="images/training-manga/merit-01.png" alt="" loading="lazy" decoding="async" width="850" height="540">
+      </div>
+    </section>
+
+    <!-- ===== 3. BRIDGE ===== -->
+    <section class="lpv2-bridge" aria-label="解決策">
+      <div class="lpv2-bridge-inner">
+        <p class="lpv2-bridge-eyebrow">SOLUTION</p>
+        <p class="lpv2-bridge-statement">実はその悩み、<br><em>研修マンガ</em>で解決できる！</p>
+      </div>
+    </section>
+
+    <!-- ===== 4. CHAPTER 02 — MERIT ===== -->
+    <section class="lpv2-section lpv2-merit" id="chapter-02-merit" aria-label="研修マンガの強み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">02</span>
+          <span class="lpv2-chapter-mark">CHAPTER 02 &middot; STRENGTH</span>
+          <h2 class="lpv2-h2">研修マンガの、<em>4つの強み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します</p>
+        </header>
+        <div class="lpv2-merit-grid">
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">01</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/training-manga/merit-01.webp">
+              <img src="/images/training-manga/merit-01.png" alt="自分ごと化で記憶に残る" loading="lazy" decoding="async" width="850" height="540">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">主人公に重ねる<em>「自分ごと化」</em>で記憶に残る。</h3>
-            <p class="pm-merit-text">説明型の研修ではなく、登場人物の体験として疑似的に学べます。「自分だったらどうする？」という問いが自然に生まれ、知識の定着率が大きく上がります。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">主人公に重ねる<em>「自分ごと化」</em>で記憶に残る。</h3>
+              <p class="lpv2-merit-card__text">説明型の研修ではなく、登場人物の体験として疑似的に学べます。「自分だったらどうする？」という問いが自然に生まれ、知識の定着率が大きく上がります。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>記憶定着の研究では、抽象的な知識よりエピソード記憶（物語の文脈で学んだこと）のほうが、長期記憶に残りやすいことが知られています。研修動画やテキスト教材が「明日には忘れる知識」になるのは、エピソード化されていないためです。</p>
               <p>研修マンガでは、社員と同じ立場の登場人物が課題に直面し、対応し、結果を体験します。読み手は登場人物に自分を重ねて疑似体験するため、研修内容がエピソード記憶として定着します。半年後・1年後の現場判断にも影響を与える、本質的な研修教材です。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-02" data-detail-title="失敗事例を物語で疑似体験">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/training-manga/merit-02.webp">
-              <img src="images/training-manga/merit-02.png" alt="" loading="lazy" decoding="async" width="878" height="534">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">02</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/training-manga/merit-02.webp">
+              <img src="/images/training-manga/merit-02.png" alt="失敗事例を物語で疑似体験" loading="lazy" decoding="async" width="878" height="534">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">失敗事例を、<em>安全に疑似体験</em>できる。</h3>
-            <p class="pm-merit-text">コンプラ違反・ハラスメント・接客失敗。実際には絶対起こしたくないシーンを、研修漫画（研修マンガ）なら何度でも疑似体験させて学習できます。研修最適化に直結します。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">失敗事例を、<em>安全に疑似体験</em>できる。</h3>
+              <p class="lpv2-merit-card__text">コンプラ違反・ハラスメント・接客失敗。実際には絶対起こしたくないシーンを、研修漫画（研修マンガ）なら何度でも疑似体験させて学習できます。研修最適化に直結します。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>コンプライアンス・ハラスメント・顧客対応のミスは、現場で実際に経験させることはできません。社員は「やってはいけない」とは知っていても、「具体的に何が起きるのか」を知らないため、グレーゾーンで判断を誤りがちです。</p>
               <p>研修マンガは、失敗事例を物語として疑似体験できる安全な学習環境を提供します。登場人物が踏み外し、上司に怒られ、お客様を失い、自分のキャリアが揺らぐ。その一連の流れを物語として体験することで、現場で「あの漫画のあのシーンだ」と思い出せる記憶が作られます。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-03" data-detail-title="動画・テキスト・eラーニングで使える">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/training-manga/merit-03.webp">
-              <img src="images/training-manga/merit-03.png" alt="" loading="lazy" decoding="async" width="798" height="598">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">03</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/training-manga/merit-03.webp">
+              <img src="/images/training-manga/merit-03.png" alt="動画・テキスト・eラーニングで使える" loading="lazy" decoding="async" width="798" height="598">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">動画・テキスト・eラーニング、<em>どれにも使える</em>。</h3>
-            <p class="pm-merit-text">原稿を1本作れば、印刷マニュアル・eラーニング教材・動画ナレーション付き教材まで派生展開できます。研修予算の最適化にも貢献します。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">動画・テキスト・eラーニング、<em>どれにも使える</em>。</h3>
+              <p class="lpv2-merit-card__text">原稿を1本作れば、印刷マニュアル・eラーニング教材・動画ナレーション付き教材まで派生展開できます。研修予算の最適化にも貢献します。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>研修部門の予算は、年々厳しさを増しています。一方で、研修ニーズ（新人・コンプラ・ハラスメント・DX・店舗運営…）は増え続け、媒体ごとの教材制作コストが膨らむ一方です。</p>
               <p>研修マンガは、原稿1本から印刷マニュアル・PDF教材・eラーニング・動画ナレーション付き教材まで派生展開できる「資産」です。年間の研修制作予算を圧縮しながら、教材の質と統一性を高められます。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-04" data-detail-title="多店舗・多拠点で品質均一化">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/training-manga/merit-04.webp">
-              <img src="images/training-manga/merit-04.png" alt="" loading="lazy" decoding="async" width="850" height="586">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">04</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/training-manga/merit-04.webp">
+              <img src="/images/training-manga/merit-04.png" alt="多店舗・多拠点で品質均一化" loading="lazy" decoding="async" width="850" height="586">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">多店舗・多拠点の<em>品質を均一化</em>できる。</h3>
-            <p class="pm-merit-text">本部の教育意図を、現場のアルバイト・パートまで届ける唯一のフォーマットです。店長依存の教育構造から脱却できます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">多店舗・多拠点の<em>品質を均一化</em>できる。</h3>
+              <p class="lpv2-merit-card__text">本部の教育意図を、現場のアルバイト・パートまで届ける唯一のフォーマットです。店長依存の教育構造から脱却できます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>多店舗・多拠点展開する企業では、本部の教育意図が末端まで届かないことが慢性的な課題です。本部が作ったマニュアル・研修動画は店長レベルでフィルタリングされ、現場のアルバイト・パートには「店長が言ったこと」しか届きません。</p>
               <p>漫画形式のマニュアル・研修教材は、店長を介さず現場スタッフ全員に直接届く稀なフォーマットです。本部の意図と現場のオペレーションがズレない構造を作れるため、ブランド一貫性・接客品質・教育コストの全てに長期的な効果があります。</p>
             </div>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
+
+    <!-- ===== 5. CHAPTER 04 — CASES (auto-built) ===== -->
     <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->
     <section class="pm-section pm-cases-static" aria-label="研修マンガの制作事例">
       <div class="pm-container pm-container--narrow">
@@ -434,296 +449,315 @@
     </section>
     <!-- BUILD:LP-CASES:END -->
 
-
-
-
-
-
-
-
-
-
-
-    <section class="pm-section pm-library" id="library" data-bm-lp-library data-category="研修">
-      <div class="pm-container">
-        <div class="pm-library-head">
-          <span class="pm-eyebrow">FROM BIZ LIBRARY</span>
-          <h2 class="pm-h2">研修マンガを、実際に読んでみる。</h2>
-          <p class="pm-library-note">クライアント企業向けに制作した研修マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます。</p>
-        </div>
-        <div class="pm-lp-lib-grid" data-bm-lp-library-grid>
+    <!-- ===== 6. CHAPTER 05 — LIBRARY (Biz Library embed) ===== -->
+    <section class="lpv2-section lpv2-library" id="chapter-05-library" data-bm-lp-library data-category="研修" aria-label="ビズ書庫から研修マンガを読む">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">05</span>
+          <span class="lpv2-chapter-mark">CHAPTER 05 &middot; FROM BIZ LIBRARY</span>
+          <h2 class="lpv2-h2">研修マンガを、<em>実際に読んでみる</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">クライアント企業向けに制作した研修マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます</p>
+        </header>
+        <div class="lpv2-library-grid" data-bm-lp-library-grid>
           <p class="bm-lp-lib-loading">読み込み中…</p>
         </div>
-        <div class="pm-library-cta">
-          <a href="/biz-library" class="pm-btn pm-btn--ghost">ビズ書庫で全作品を見る</a>
+        <div class="lpv2-library-cta">
+          <a href="/biz-library" class="lpv2-btn lpv2-btn--accent-on-dark">ビズ書庫で全作品を見る</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 制作フロー（クリックで左ペインに画像と詳細） ===== -->
-    <section class="pm-section pm-flow-section" id="productionFlow" aria-label="制作フロー">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
-        <h2 class="pm-section-title">研修マンガの制作フロー</h2>
-        <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで進行します。各ステップをクリックすると、左の編集者ノートに参考画像と詳しい解説が表示されます。</p>
-        <div class="pm-flow-list-v">
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="1"
-                    data-pm-flow-slug="step1_hearing"
-                    data-pm-flow-name="ヒアリング"
-                    data-pm-flow-desc="受講対象者の階層・研修目的（新人／コンプラ／OJT／管理職）・LMS環境（SCORM／xAPI対応有無）・テスト連動の有無まで含めてヒアリング。法改正対応の必要性もこの段階で整理します。">
-              <span class="flow-step-num">1</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="ヒアリング">ヒアリング</span>
-                <span class="pm-flow-step-desc" data-ja="受講対象者の階層・研修目的（新人／コンプラ／OJT／管理職）・LMS環境（SCORM／xAPI対応有無）・テスト連動の有無まで含めてヒアリング。" data-en="">受講対象者の階層・研修目的（新人／コンプラ／OJT／管理職）・LMS環境（SCORM／xAPI対応有無）・テスト連動の有無まで含めてヒアリング。</span>
+    <!-- ===== 7. CHAPTER 06 — PRODUCTION FLOW ===== -->
+    <section class="lpv2-section lpv2-flow" id="chapter-06-flow" aria-label="制作フロー">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">06</span>
+          <span class="lpv2-chapter-mark">CHAPTER 06 &middot; PRODUCTION FLOW</span>
+          <h2 class="lpv2-h2">研修マンガの<em>制作フロー</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">ヒアリングから納品まで、8つのステップで進行します。LMS環境・法令準拠・理解度テスト連動まで含めて運用します</p>
+        </header>
+        <!-- 裏面の画像は制作フローのMVP作例画像(material/images/flow/)を流用。8ステップ完全対応。フリップ裏面imgはloading=lazy禁止 -->
+        <div class="lpv2-flow-grid">
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">01</span>
+                <span class="lpv2-flow-step__name">ヒアリング</span>
+                <span class="lpv2-flow-step__desc">受講対象者の階層・研修目的（新人／コンプラ／OJT／管理職）・LMS環境（SCORM／xAPI対応有無）・テスト連動の有無まで含めてヒアリング。法改正対応の必要性もこの段階で整理します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
               </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="2"
-                    data-pm-flow-slug="step2_arasuji"
-                    data-pm-flow-name="あらすじ"
-                    data-pm-flow-desc="「失敗事例 → 学び → 正しい行動」を物語化し、受講者が安全に疑似体験できる構成を立案。動画やテキストでは形骸化する研修を「自分ごと」に変える起承転結の骨組みを作ります。">
-              <span class="flow-step-num">2</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="あらすじ">あらすじ</span>
-                <span class="pm-flow-step-desc" data-ja="「失敗事例 → 学び → 正しい行動」を物語化し、受講者が安全に疑似体験できる構成を立案。" data-en="">「失敗事例 → 学び → 正しい行動」を物語化し、受講者が安全に疑似体験できる構成を立案。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="3"
-                    data-pm-flow-slug="step3_scenario"
-                    data-pm-flow-name="シナリオ"
-                    data-pm-flow-desc="業務マニュアル・社内規定・法令条文を、研修対象者の理解度に合わせ平易なセリフに翻訳。コンプラ研修では曖昧な表現を避け、判例・指針・社内処分例まで具体的に盛り込みます。">
-              <span class="flow-step-num">3</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="シナリオ">シナリオ</span>
-                <span class="pm-flow-step-desc" data-ja="業務マニュアル・社内規定・法令条文を、研修対象者の理解度に合わせ平易なセリフに翻訳。" data-en="">業務マニュアル・社内規定・法令条文を、研修対象者の理解度に合わせ平易なセリフに翻訳。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="4"
-                    data-pm-flow-slug="step4_gafu"
-                    data-pm-flow-name="画風決定"
-                    data-pm-flow-desc="受講対象者層に合わせた画風を選定。新人研修は若手に親しみやすい現代的な画風、管理職研修は重厚さのある画風、店舗OJT研修は明るく実用的な画風など、研修の真剣さと読みやすさを両立します。">
-              <span class="flow-step-num">4</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="画風決定" data-en="画風決定">画風決定</span>
-                <span class="pm-flow-step-desc" data-ja="受講対象者層に合わせた画風を選定。" data-en="">受講対象者層に合わせた画風を選定。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="5"
-                    data-pm-flow-slug="step5_name"
-                    data-pm-flow-name="ネーム"
-                    data-pm-flow-desc="研修1コマ（30分／60分）の配分に合わせたページ数設計。理解度テスト用の確認問題ページ、グループディスカッション用の問いかけページなど、研修運営者が使いやすい構成を組み込みます。">
-              <span class="flow-step-num">5</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ネーム" data-en="ネーム">ネーム</span>
-                <span class="pm-flow-step-desc" data-ja="研修1コマ（30分／60分）の配分に合わせたページ数設計。" data-en="">研修1コマ（30分／60分）の配分に合わせたページ数設計。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="6"
-                    data-pm-flow-slug="step6_seisaku"
-                    data-pm-flow-name="漫画制作"
-                    data-pm-flow-desc="プロの漫画家が研修教材としての分かりやすさを最優先に作画。色覚バリアフリー・印刷時のコントラスト・LMS表示時の可読性まで考慮した仕上げを行います。">
-              <span class="flow-step-num">6</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="漫画制作">漫画制作</span>
-                <span class="pm-flow-step-desc" data-ja="プロの漫画家が研修教材としての分かりやすさを最優先に作画。" data-en="">プロの漫画家が研修教材としての分かりやすさを最優先に作画。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="7"
-                    data-pm-flow-slug="step7_kakunin"
-                    data-pm-flow-name="初稿確認"
-                    data-pm-flow-desc="人事・教育担当・法務・産業医（メンタルヘルス研修の場合）の複数視点でレビュー。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など最新法令への適合を厳格にチェックします。">
-              <span class="flow-step-num">7</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="初稿確認">初稿確認</span>
-                <span class="pm-flow-step-desc" data-ja="人事・教育担当・法務・産業医（メンタルヘルス研修の場合）の複数視点でレビュー。" data-en="">人事・教育担当・法務・産業医（メンタルヘルス研修の場合）の複数視点でレビュー。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="8"
-                    data-pm-flow-slug="step8_nouhin"
-                    data-pm-flow-name="最終納品"
-                    data-pm-flow-desc="SCORM準拠e-learning版・PDF配布版・社内ポータル掲載用Web版・研修講師向けPowerPointスライド版を一括書き出し。法改正対応のアップデート（年次更新）もオプションで継続承ります。">
-              <span class="flow-step-num">8</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="最終納品" data-en="最終納品">最終納品</span>
-                <span class="pm-flow-step-desc" data-ja="SCORM準拠e-learning版・PDF配布版・社内ポータル掲載用Web版・研修講師向けPowerPointスライド版を一括書き出し。" data-en="">SCORM準拠e-learning版・PDF配布版・社内ポータル掲載用Web版・研修講師向けPowerPointスライド版を一括書き出し。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FAQ（FAQPage Schema 連動） ===== -->
-    <section class="pm-section pm-faq-section" aria-label="よくあるご質問">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">FAQ</span>
-        <h2 class="pm-section-title">研修マンガについてよくあるご質問</h2>
-        <p class="pm-section-lead">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
-        <div class="pm-faq-list">
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">制作期間はどのくらいかかりますか？</summary>
-            <div class="pm-faq-answer">研修マンガは年度切替・新人研修開始日からの逆算で動くため、標準10ページで5〜6週間。1月着手・3月末納品で4月研修に間に合うスケジュールが基本です。コンプライアンス研修は法令アップデートに合わせて別途納期相談を承ります。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">費用の相場はいくらですか？</summary>
-            <div class="pm-faq-answer">研修マンガは1ページ16,600円〜、ハラスメント研修・コンプライアンス研修パッケージは10ページ17.4万円〜。eラーニング書き出し（HTML5・SCORM対応）・店舗マニュアル展開・新人研修ガイドへの派生も同価格内で対応します。詳細は料金ページ（bizmanga.contentsx.jp/pricing）。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">修正は何回まで対応していますか？</summary>
-            <div class="pm-faq-answer">研修マンガは法令・社内規程との整合性が必要なため、人事・コンプラ・法務部門のレビューを修正サイクルに組み込みます。「グレーゾーン違反」シーンの表現はネーム段階で慎重に擦り合わせ、誤った学習を起こさせない構成に仕上げる運用です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">著作権・使用範囲はどうなりますか？</summary>
-            <div class="pm-faq-answer">研修教材・eラーニング・LMS・店舗マニュアル・新入社員配布資料での使用権がクライアント様に帰属。社内のあらゆる教育シーンで自由活用可能で、グループ会社展開・海外拠点展開も追加費用なし。改訂版作成時も継続支援します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">機密保持契約（NDA）には対応していますか？</summary>
-            <div class="pm-faq-answer">対応可能です。コンプライアンス違反事例・ハラスメント研修など、社内事情を扱う機密性の高い研修教材で実績多数。実例の匿名加工・社外秘マニュアルの制作・違反事例ヒアリングを伴う案件にも対応します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">英語版・多言語版は作れますか？</summary>
-            <div class="pm-faq-answer">対応可能です。海外拠点・外国人従業員研修向けに英語・中国語・ベトナム語・タイ語・ミャンマー語などへの翻訳実績あり。各国労働法令・文化習慣・宗教的配慮を反映した表現で展開可能で、技能実習生向け教材にも対応します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">LMS（学習管理システム）に取り込めますか？</summary>
-            <div class="pm-faq-answer">対応可能です。SCORM対応のe-learning化・PDF配布・社内ポータル掲載など、運用環境に合わせて納品します。理解度テストとの連携、視聴時間の記録など、LMS要件に合わせた設計が可能です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">ハラスメント・コンプライアンス研修で法令準拠も意識できますか？</summary>
-            <div class="pm-faq-answer">可能です。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など最新法令に準拠した内容を、人事・法務担当の監修付きで制作します。法改正対応のアップデートもオプションで承ります。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">既存のe-learningシステム（LMS）との連携は対応できますか？</summary>
-            <div class="pm-faq-answer">対応可能です。SCORM 1.2 / SCORM 2004 / xAPI 形式での書き出しに対応。Moodle・LearnDash・Talent LMS・Cornerstone など主要LMSへの取り込み実績があります。受講ログ・修了テスト連動の設計もサポート。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">動画化やナレーション付与は可能ですか？</summary>
-            <div class="pm-faq-answer">対応可能です。コマ送りアニメーション化、プロナレーター・声優によるナレーション、BGM・SE 付与まで対応。視聴障害対応の字幕、聴覚障害対応の手話映像同梱も応相談。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">法改正対応のアップデート（年次更新）はオプションですか？</summary>
-            <div class="pm-faq-answer">オプションでご提供します。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など、研修テーマに関連する法改正を毎年トラッキング。改正発効前にアップデート版を納品します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">多言語版（英語・中国語等）の同時制作は対応できますか？</summary>
-            <div class="pm-faq-answer">対応可能です。グローバル企業の海外拠点向けコンプラ研修・新人研修などで、英語・中国語・韓国語・タイ語・ベトナム語版を同時制作する実績があります。文化的タブー表現の事前回避も実施。</div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 関連LP（他の用途別マンガ） ===== -->
-    <section class="pm-related" aria-label="他の用途別マンガ">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-related-eyebrow">OTHER USE CASES</span>
-        <h2 class="pm-related-title">他の用途別マンガを見る</h2>
-        <p class="pm-related-lead">商品紹介・採用・広告・営業資料・研修・IR・インバウンド・会社紹介。それぞれの目的に合わせた構成と訴求軸でご提案します。</p>
-        <div class="pm-related-grid">
-          <a class="pm-related-card" href="/product-manga">            <h3 class="pm-related-card-name">商品紹介マンガ</h3>
-            <p class="pm-related-card-hook">SaaS・無形商材も、漫画なら伝わる</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/recruit-manga">            <h3 class="pm-related-card-name">採用マンガ</h3>
-            <p class="pm-related-card-hook">応募・内定承諾率を高める</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/manga-ad-lp">            <h3 class="pm-related-card-name">マンガ広告</h3>
-            <p class="pm-related-card-hook">広告らしくない、止まる広告</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/company-manga">            <h3 class="pm-related-card-name">会社紹介マンガ</h3>
-            <p class="pm-related-card-hook">ステークホルダー横断で届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/sales-manga">            <h3 class="pm-related-card-name">営業資料マンガ</h3>
-            <p class="pm-related-card-hook">決裁者まで物語のまま届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/inbound-manga">            <h3 class="pm-related-card-name">インバウンド漫画</h3>
-            <p class="pm-related-card-hook">言葉を超えて旅人に届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/ir-manga">            <h3 class="pm-related-card-name">IRマンガ</h3>
-            <p class="pm-related-card-hook">個人投資家は数字より物語</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-
-
-    <aside class="bm-related-guide" aria-label="関連: 漫画制作会社 比較ガイド">
-      <p class="bm-related-guide-eyebrow" data-ja="業者比較で迷ったら" data-en="Comparing vendors?">業者比較で迷ったら</p>
-      <p class="bm-related-guide-text" data-ja="研修マンガに強い業者を比較検討中の方は、業界主要 5 社の料金・対応カテゴリを一覧化した【研修マンガ対応の漫画制作会社 比較ガイド】もご参照ください。" data-en="Comparing vendors for training manga? See our Training-Manga Production Company Comparison Guide.">
-        研修マンガに強い業者を比較検討中の方は、業界主要 5 社の料金・対応カテゴリを一覧化した
-        <a href="/manga-production-company" data-ja="研修マンガ対応の漫画制作会社 比較ガイド" data-en="Training-Manga Production Company Comparison Guide">研修マンガ対応の漫画制作会社 比較ガイド</a>
-        もご参照ください。
-      </p>
-    </aside>
-
-    <section class="pm-end">
-      <div class="pm-container pm-container--narrow">
-        <div class="pm-rule"></div>
-        <h2 class="pm-end-title">伝えたい教育があるなら<br>その学びを<br><em>物語にしましょう</em></h2>
-        <p class="pm-end-text">研修目的のヒアリング、現場取材、企画・作画、納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の研修課題に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。新人・コンプラ・ハラスメント・店舗OJT・DX全て対応可能です。</p>
-        <div class="pm-end-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="お問い合わせ">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step1_hearing.avif">
+                  <img src="/material/images/flow/step1_hearing.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
-          </a>
-          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="pm-cta-btn pm-cta-btn--line" data-tooltip="LINEで相談" target="_blank" rel="noopener">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">LINEで相談</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z"/>
-                </svg>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">02</span>
+                <span class="lpv2-flow-step__name">あらすじ</span>
+                <span class="lpv2-flow-step__desc">「失敗事例 → 学び → 正しい行動」を物語化し、受講者が安全に疑似体験できる構成を立案。動画やテキストでは形骸化する研修を「自分ごと」に変える起承転結の骨組みを作ります。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step2_arasuji.avif">
+                  <img src="/material/images/flow/step2_arasuji.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">03</span>
+                <span class="lpv2-flow-step__name">シナリオ</span>
+                <span class="lpv2-flow-step__desc">業務マニュアル・社内規定・法令条文を、研修対象者の理解度に合わせ平易なセリフに翻訳。コンプラ研修では曖昧な表現を避け、判例・指針・社内処分例まで具体的に盛り込みます。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step3_scenario.avif">
+                  <img src="/material/images/flow/step3_scenario.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">04</span>
+                <span class="lpv2-flow-step__name">画風決定</span>
+                <span class="lpv2-flow-step__desc">受講対象者層に合わせた画風を選定。新人研修は若手に親しみやすい現代的な画風、管理職研修は重厚さのある画風、店舗OJT研修は明るく実用的な画風など、研修の真剣さと読みやすさを両立します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step4_gafu.avif">
+                  <img src="/material/images/flow/step4_gafu.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">05</span>
+                <span class="lpv2-flow-step__name">ネーム</span>
+                <span class="lpv2-flow-step__desc">研修1コマ（30分／60分）の配分に合わせたページ数設計。理解度テスト用の確認問題ページ、グループディスカッション用の問いかけページなど、研修運営者が使いやすい構成を組み込みます。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step5_name.avif">
+                  <img src="/material/images/flow/step5_name.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">06</span>
+                <span class="lpv2-flow-step__name">漫画制作</span>
+                <span class="lpv2-flow-step__desc">プロの漫画家が研修教材としての分かりやすさを最優先に作画。色覚バリアフリー・印刷時のコントラスト・LMS表示時の可読性まで考慮した仕上げを行います。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step6_seisaku.avif">
+                  <img src="/material/images/flow/step6_seisaku.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">07</span>
+                <span class="lpv2-flow-step__name">初稿確認</span>
+                <span class="lpv2-flow-step__desc">人事・教育担当・法務・産業医（メンタルヘルス研修の場合）の複数視点でレビュー。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など最新法令への適合を厳格にチェックします。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step7_kakunin.avif">
+                  <img src="/material/images/flow/step7_kakunin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">08</span>
+                <span class="lpv2-flow-step__name">最終納品</span>
+                <span class="lpv2-flow-step__desc">SCORM準拠e-learning版・PDF配布版・社内ポータル掲載用Web版・研修講師向けPowerPointスライド版を一括書き出し。法改正対応のアップデート（年次更新）もオプションで継続承ります。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step8_nouhin.avif">
+                  <img src="/material/images/flow/step8_nouhin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. CHAPTER 07 — FAQ ===== -->
+    <section class="lpv2-section lpv2-faq" id="chapter-07-faq" aria-label="よくあるご質問">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">07</span>
+          <span class="lpv2-chapter-mark">CHAPTER 07 &middot; FAQ</span>
+          <h2 class="lpv2-h2">研修マンガについて、<em>よくあるご質問</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください</p>
+        </header>
+        <div class="lpv2-faq-list">
+          <details class="lpv2-faq-item">
+            <summary>制作期間はどのくらいかかりますか？</summary>
+            <div class="lpv2-faq-answer">研修マンガは年度切替・新人研修開始日からの逆算で動くため、標準10ページで5〜6週間。1月着手・3月末納品で4月研修に間に合うスケジュールが基本です。コンプライアンス研修は法令アップデートに合わせて別途納期相談を承ります。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>費用の相場はいくらですか？</summary>
+            <div class="lpv2-faq-answer">研修マンガは1ページ16,600円〜、ハラスメント研修・コンプライアンス研修パッケージは10ページ17.4万円〜。eラーニング書き出し（HTML5・SCORM対応）・店舗マニュアル展開・新人研修ガイドへの派生も同価格内で対応します。詳細は <a href="/pricing">料金ページ</a> をご覧ください。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>修正は何回まで対応していますか？</summary>
+            <div class="lpv2-faq-answer">研修マンガは法令・社内規程との整合性が必要なため、人事・コンプラ・法務部門のレビューを修正サイクルに組み込みます。「グレーゾーン違反」シーンの表現はネーム段階で慎重に擦り合わせ、誤った学習を起こさせない構成に仕上げる運用です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>著作権・使用範囲はどうなりますか？</summary>
+            <div class="lpv2-faq-answer">研修教材・eラーニング・LMS・店舗マニュアル・新入社員配布資料での使用権がクライアント様に帰属。社内のあらゆる教育シーンで自由活用可能で、グループ会社展開・海外拠点展開も追加費用なし。改訂版作成時も継続支援します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>機密保持契約（NDA）には対応していますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。コンプライアンス違反事例・ハラスメント研修など、社内事情を扱う機密性の高い研修教材で実績多数。実例の匿名加工・社外秘マニュアルの制作・違反事例ヒアリングを伴う案件にも対応します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>英語版・多言語版は作れますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。海外拠点・外国人従業員研修向けに英語・中国語・ベトナム語・タイ語・ミャンマー語などへの翻訳実績あり。各国労働法令・文化習慣・宗教的配慮を反映した表現で展開可能で、技能実習生向け教材にも対応します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>LMS（学習管理システム）に取り込めますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。SCORM対応のe-learning化・PDF配布・社内ポータル掲載など、運用環境に合わせて納品します。理解度テストとの連携、視聴時間の記録など、LMS要件に合わせた設計が可能です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>ハラスメント・コンプライアンス研修で法令準拠も意識できますか？</summary>
+            <div class="lpv2-faq-answer">可能です。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など最新法令に準拠した内容を、人事・法務担当の監修付きで制作します。法改正対応のアップデートもオプションで承ります。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>既存のe-learningシステム（LMS）との連携は対応できますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。SCORM 1.2 / SCORM 2004 / xAPI 形式での書き出しに対応。Moodle・LearnDash・Talent LMS・Cornerstone など主要LMSへの取り込み実績があります。受講ログ・修了テスト連動の設計もサポート。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>動画化やナレーション付与は可能ですか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。コマ送りアニメーション化、プロナレーター・声優によるナレーション、BGM・SE 付与まで対応。視聴障害対応の字幕、聴覚障害対応の手話映像同梱も応相談。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>法改正対応のアップデート（年次更新）はオプションですか？</summary>
+            <div class="lpv2-faq-answer">オプションでご提供します。労働施策総合推進法（パワハラ防止法）・個人情報保護法・景表法など、研修テーマに関連する法改正を毎年トラッキング。改正発効前にアップデート版を納品します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>多言語版（英語・中国語等）の同時制作は対応できますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。グローバル企業の海外拠点向けコンプラ研修・新人研修などで、英語・中国語・韓国語・タイ語・ベトナム語版を同時制作する実績があります。文化的タブー表現の事前回避も実施。</div>
+          </details>
+        </div>
+
+        <aside class="lpv2-guide" aria-label="関連: 漫画制作会社 比較ガイド">
+          <p class="lpv2-guide__eyebrow">業者比較で迷ったら</p>
+          <p class="lpv2-guide__text" data-ja="研修マンガに強い業者を比較検討中の方は、業界主要 5 社の料金・対応カテゴリを一覧化した【研修マンガ対応の漫画制作会社 比較ガイド】もご参照ください。" data-en="Comparing vendors for training manga? See our Training-Manga Production Company Comparison Guide of top 5 vendors.">
+            研修マンガに強い業者を比較検討中の方は、業界主要 5 社の料金・対応カテゴリを一覧化した
+            <a href="/manga-production-company" data-ja="研修マンガ対応の漫画制作会社 比較ガイド" data-en="Training-Manga Production Company Comparison Guide">研修マンガ対応の漫画制作会社 比較ガイド</a>
+            もご参照ください。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== 9. RELATED LPs ("Next issues") ===== -->
+    <section class="lpv2-section lpv2-related" aria-label="他の用途別マンガ">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-mark">NEXT ISSUE &middot; OTHER USE CASES</span>
+          <h2 class="lpv2-h2">他の<em>用途別マンガ</em>を見る</h2>
+          <p class="lpv2-lead lpv2-lead--center">商品紹介・採用・広告・会社紹介・営業資料・研修・インバウンド・IR。それぞれの目的に合わせた構成と訴求軸でご提案します</p>
+        </header>
+        <div class="lpv2-related-grid">
+          <a class="lpv2-related-card" href="/product-manga">
+            <p class="lpv2-related-card__num">No. 01</p>
+            <h3 class="lpv2-related-card__name">商品紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">SaaS・無形商材も、漫画なら伝わる</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/recruit-manga">
+            <p class="lpv2-related-card__num">No. 02</p>
+            <h3 class="lpv2-related-card__name">採用マンガ</h3>
+            <p class="lpv2-related-card__hook">応募・内定承諾率を高める</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/manga-ad-lp">
+            <p class="lpv2-related-card__num">No. 03</p>
+            <h3 class="lpv2-related-card__name">マンガ広告</h3>
+            <p class="lpv2-related-card__hook">広告らしくない、止まる広告</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/company-manga">
+            <p class="lpv2-related-card__num">No. 04</p>
+            <h3 class="lpv2-related-card__name">会社紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">ステークホルダー横断で届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/sales-manga">
+            <p class="lpv2-related-card__num">No. 05</p>
+            <h3 class="lpv2-related-card__name">営業資料マンガ</h3>
+            <p class="lpv2-related-card__hook">決裁者まで物語のまま届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/inbound-manga">
+            <p class="lpv2-related-card__num">No. 07</p>
+            <h3 class="lpv2-related-card__name">インバウンド漫画</h3>
+            <p class="lpv2-related-card__hook">言葉を超えて旅人に届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/ir-manga">
+            <p class="lpv2-related-card__num">No. 08</p>
+            <h3 class="lpv2-related-card__name">IRマンガ</h3>
+            <p class="lpv2-related-card__hook">個人投資家は数字より物語</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
           </a>
         </div>
       </div>
     </section>
 
-      </div><!-- /.pm-main-col -->
-
-      <aside class="pm-rail pm-rail--right" aria-label="ビズ書庫グリッド" data-bm-lp-library data-category="研修">
-        <span class="pm-rail-reader-eyebrow">FROM BIZ LIBRARY</span>
-        <h3 class="pm-rail-reader-title">研修マンガを、<br>読んでみる。</h3>
-        <div class="pm-rail-lib-grid" data-bm-lp-library-grid>
-          <p class="bm-lp-lib-loading">読み込み中…</p>
+    <!-- ===== 10. END — Final CTA ===== -->
+    <section class="lpv2-end" aria-label="お問い合わせ">
+      <div class="lpv2-end-inner">
+        <p class="lpv2-end-eyebrow">TO BE CONTINUED — WITH YOU</p>
+        <h2 class="lpv2-end-title">伝えたい教育があるなら、<br>その学びを<br><em>物語にしましょう</em>。</h2>
+        <p class="lpv2-end-text">研修目的のヒアリング、現場取材、企画・作画、納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の研修課題に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。新人・コンプラ・ハラスメント・店舗OJT・DX全て対応可能です。</p>
+        <div class="lpv2-end-cta-row">
+          <a href="/contact" class="lpv2-btn lpv2-btn--accent-on-dark lpv2-btn--lg">
+            無料相談・お見積もり
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="lpv2-btn lpv2-btn--line lpv2-btn--lg" target="_blank" rel="noopener">
+            LINEで相談
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2z"/></svg>
+          </a>
         </div>
-        <p class="pm-rail-reader-foot">
-          全作品は <a href="/biz-library">ビズ書庫</a> へ
-        </p>
-      </aside>
-
-    </div><!-- /.pm-shell -->
+      </div>
+    </section>
 
   </main>
 
+  <!-- ===== フッター ===== -->
   <footer class="bm-footer">
     <div class="bm-container">
       <div class="bm-footer-inner">
@@ -736,7 +770,7 @@
           <a href="/">ホーム</a>
           <a href="/works">制作事例</a>
           <a href="/biz-library">ビズ書庫</a>
-          料金（bizmanga.contentsx.jp/pricing）
+          <a href="/pricing">料金</a>
           <a href="/strength">強み</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
@@ -750,12 +784,11 @@
     </div>
   </footer>
 
-  <script src="js/bm-sanitize.js" defer></script>
-  <script src="js/bm-i18n.js" defer></script>
-  <script src="js/bm-nav.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-lp-library-embed.js" defer></script>
-  <script src="js/bm-product-manga.js" defer></script>
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+  <script src="/js/bm-i18n.js" defer></script>
+  <script src="/js/bm-nav.js" defer></script>
+  <script src="/js/bm-kinsoku.js" defer></script>
+  <script src="/js/bm-lp-library-embed.js" defer></script>
+  <script src="/js/bm-lp-v2.js" defer></script>
 </body>
 </html>

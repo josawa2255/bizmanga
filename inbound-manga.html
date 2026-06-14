@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-06-14T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
@@ -56,7 +56,7 @@
     "url": "https://bizmanga.contentsx.jp/inbound-manga",
     "inLanguage": "ja-JP",
     "datePublished": "2026-04-26",
-    "dateModified": "2026-04-28",
+    "dateModified": "2026-06-14",
     "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
     "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
     "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/inbound-manga#breadcrumb" },
@@ -131,13 +131,15 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="/css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/bm-lp-template.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
 </head>
-<body class="pm-page" data-fuwa-auto>
+<!-- LP-DESIGN:v2 — migrated to the v2 design system (2026-06-14, pilot: recruit-manga). -->
+<body class="lpv2-page" data-lp-v2>
+  <!-- ===== ヘッダー（共通nav.jsで生成） ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
       <a href="/" class="bm-logo">
@@ -169,241 +171,249 @@
 
   <main id="main">
 
-    <section class="pm-hero-strip" aria-label="インバウンド漫画">
-      <picture>
-        <source type="image/avif" srcset="material/images/lp/hero_LP.avif">
-        <img src="material/images/lp/hero_LP.webp" alt="観光マンガ・インバウンド漫画（観光漫画）を読む訪日外国人のイメージ — ビズマンガ" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="pm-hero-overlay">
-        <p class="pm-hero-eyebrow"><span data-ja="観光マンガ・インバウンド漫画（観光漫画）" data-en="Inbound Manga">観光マンガ・インバウンド漫画（観光漫画）</span> · INBOUND MANGA</p>
-        <h1 class="pm-hero-title">
-          <span data-ja="日本の魅力を、" data-en="Tell Japan&rsquo;s charm">日本の魅力を、</span><br>
-          <span data-ja="国境を越える物語に" data-en="across every language">国境を越える物語に</span>
-        </h1>
-        <div class="pm-hero-divider" aria-hidden="true"></div>
+    <!-- ===== 1. HERO — full-bleed bg (既存 hero_LP を流用) + 左コピー ===== -->
+    <section class="lpv2-hero" aria-label="インバウンド漫画">
+      <div class="lpv2-hero-stage">
+        <div class="lpv2-hero-bg" aria-hidden="true">
+          <picture>
+            <source type="image/avif" srcset="/material/images/lp/hero_LP.avif">
+            <img src="/material/images/lp/hero_LP.webp" alt="" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+        </div>
+        <div class="lpv2-hero-inner">
+          <div class="lpv2-hero-text">
+            <p class="lpv2-hero-eyebrow"><span class="lpv2-hero-eyebrow-ja" data-ja="観光マンガ・インバウンド漫画" data-en="Inbound Manga">観光マンガ・インバウンド漫画</span><span class="lpv2-hero-eyebrow-en">INBOUND MANGA</span></p>
+            <h1 class="lpv2-hero-title">
+              <span data-ja="日本の魅力を、" data-en="Tell Japan&rsquo;s charm,">日本の魅力を、</span><br>
+              <em data-ja="国境を越える" data-en="in a story">国境を越える</em><br class="sp-br"><span data-ja="物語に。" data-en="across borders.">物語に。</span>
+            </h1>
+            <p class="lpv2-hero-sub" data-i18n-html data-ja="文字主体のパンフレットは、<br class='sp-br'>言語以前にハードルが高すぎる。<br class='sp-br'>観光漫画は、言葉を超えて<br class='sp-br'>文化・体験・サービスを伝える<br class='sp-br'>「世界共通言語」です。" data-en="Text-heavy pamphlets are a barrier before language even comes in. Tourism manga is a universal language that conveys culture, experiences, and services beyond words.">文字主体のパンフレットは、<br class="sp-br">言語以前にハードルが高すぎる。<br class="sp-br">観光漫画は、言葉を超えて<br class="sp-br">文化・体験・サービスを伝える<br class="sp-br">「世界共通言語」です。</p>
+            <div class="lpv2-hero-cta-row">
+              <a href="/contact" class="lpv2-btn lpv2-btn--pill lpv2-btn--lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
+              </a>
+              <a href="#chapter-05-library" class="lpv2-btn lpv2-btn--pill lpv2-btn--ghost lpv2-btn--lg">
+                <span data-ja="事例を見る" data-en="See case studies">事例を見る</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="pm-shell">
-
-      <aside class="pm-rail pm-rail--left" aria-label="編集者ノート">
-        <div class="pm-rail-character-frame">
-          <div class="pm-rail-character" id="pmCharacter" data-mood="confident">
-            <img src="images/product-manga/hero_confident.png" alt="" loading="lazy" decoding="async">
-          </div>
-        </div>
-        <p class="pm-rail-caption" id="pmCaption">EDITOR&rsquo;S DESK</p>
-        <div class="pm-rail-content" id="pmRailContent">
-          <div class="pm-rail-hint" id="pmHint">
-            <span class="pm-rail-hint-eyebrow">EDITOR&rsquo;S NOTE</span>
-            <h3 class="pm-rail-hint-title">日本の文化は、<br>絵で伝わる。</h3>
-            <p class="pm-rail-hint-text">訪日外国人にとって、文字主体のパンフレットは言語以前にハードルが高すぎる。観光漫画・観光マンガは、言葉を超えて文化・体験・サービスを伝える「世界共通言語」です。各セクションを<strong>クリック／タップ</strong>で詳細表示。</p>
-            <p class="pm-rail-hint-tip">編集担当からのひとこと —<br>「Manga」は世界に通じる日本のソフトパワー。観光・地方創生の切り札になります。</p>
-          </div>
-          <div class="pm-rail-detail" id="pmDetail" hidden>
-            <button class="pm-rail-back" id="pmDetailBack" type="button">一覧に戻る</button>
-            <h3 class="pm-rail-detail-title" id="pmDetailTitle"></h3>
-            <div class="pm-rail-detail-body" id="pmDetailBody"></div>
-          </div>
-        </div>
-      </aside>
-
-      <div class="pm-main-col">
-
-    <header class="pm-masthead">
-      <div class="pm-masthead-inner">
-        <p class="pm-lead">日本文化・観光地・地域サービスの魅力を、<br>観光マンガ・観光漫画（インバウンド漫画）として言語の壁を越えて世界に届けます。</p>
-        <p class="pm-formats-caption">観光・宿泊・物販のあらゆる接点で活躍。</p>
-        <ul class="pm-formats pm-formats--illustrated" aria-label="活用フォーマット">
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-tourism" data-detail-title="観光案内・観光パンフレット">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/inbound-manga/format-tourism.webp">
-              <img src="images/inbound-manga/format-tourism.png" alt="" loading="lazy" decoding="async" width="576" height="786">
-            </picture>
-            <h3 class="pm-format-name">観光案内</h3>
-            <span class="pm-format-en">Tourism</span>
-            <p class="pm-format-use">空港・駅・観光案内所で配布</p>
-            <div class="pm-format-detail">
-              <p>空港・駅・観光案内所のラックに並ぶ多言語パンフレットの中で、観光漫画（観光マンガ）表紙は圧倒的な視認性を持ちます。実際に手に取ってもらえる確率が大幅に上がり、観光地への送客に直結します。</p>
-              <p>多言語版（英・中・韓・タイ・スペイン語など）への展開も、テキストの差し替えだけで対応可能なため、コスト効率も非常に高いフォーマットです。</p>
+    <!-- ===== 1b. FORMATS ===== -->
+    <section class="lpv2-section lpv2-formats" id="chapter-03-formats" aria-label="インバウンド漫画の活用フォーマット">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">03</span>
+          <span class="lpv2-chapter-mark">CHAPTER 03 &middot; FORMATS</span>
+          <h2 class="lpv2-h2">観光・宿泊・物販の<em>あらゆる接点</em>に</h2>
+          <p class="lpv2-lead lpv2-lead--center">日本文化・観光地・地域サービスの魅力を、観光マンガ・観光漫画（インバウンド漫画）として<br>言語の壁を越えて世界に届けます</p>
+        </header>
+        <div class="lpv2-formats-grid">
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/inbound-manga/format-tourism.webp">
+                <img src="/images/inbound-manga/format-tourism.png" alt="観光案内" loading="lazy" decoding="async" width="576" height="786">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-tourism-site" data-detail-title="観光サイト・自治体Webサイト">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/inbound-manga/format-tourism-site.webp">
-              <img src="images/inbound-manga/format-tourism-site.png" alt="" loading="lazy" decoding="async" width="528" height="786">
-            </picture>
-            <h3 class="pm-format-name">観光サイト</h3>
-            <span class="pm-format-en">Web</span>
-            <p class="pm-format-use">海外からの旅行検討者に届ける</p>
-            <div class="pm-format-detail">
-              <p>日本旅行を検討中の海外ユーザーは、Google・Instagram・TikTokで日本の体験コンテンツを探します。漫画形式のWebコンテンツは、文字主体の観光サイトと差別化でき、「行ってみたい」という具体的動機を生み出します。</p>
-              <p>SEOにおいても、漫画コンテンツは外部リンクや滞在時間が伸びやすく、観光地検索クエリでの上位表示にも貢献します。</p>
+            <p class="lpv2-format__num">01 &middot; Tourism</p>
+            <h3 class="lpv2-format__name">観光案内</h3>
+            <p class="lpv2-format__use">空港・駅・観光案内所で配布</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/inbound-manga/format-tourism-site.webp">
+                <img src="/images/inbound-manga/format-tourism-site.png" alt="観光サイト・自治体Webサイト" loading="lazy" decoding="async" width="528" height="786">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-poster" data-detail-title="空港・駅・観光地ポスター">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/inbound-manga/format-poster.webp">
-              <img src="images/inbound-manga/format-poster.png" alt="" loading="lazy" decoding="async" width="586" height="790">
-            </picture>
-            <h3 class="pm-format-name">ポスター</h3>
-            <span class="pm-format-en">Poster</span>
-            <p class="pm-format-use">空港・駅・宿泊施設に掲出</p>
-            <div class="pm-format-detail">
-              <p>空港・主要駅・観光ホテルのロビーは、訪日客の最初の接点です。漫画の1コマを大判ポスター化すると、写真主体のポスター群の中で「物語の一場面」として目を引き、SNS投稿のきっかけになります。</p>
-              <p>掲出された漫画ポスター自体が訪日体験のフォトスポットになり、無償の口コミ拡散を生み出す効果も期待できます。</p>
+            <p class="lpv2-format__num">02 &middot; Web</p>
+            <h3 class="lpv2-format__name">観光サイト</h3>
+            <p class="lpv2-format__use">海外からの旅行検討者に届ける</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/inbound-manga/format-poster.webp">
+                <img src="/images/inbound-manga/format-poster.png" alt="空港・駅・観光地ポスター" loading="lazy" decoding="async" width="586" height="790">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-shop-restaurant" data-detail-title="店舗・飲食店向け案内">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/inbound-manga/format-shop-restaurant.webp">
-              <img src="images/inbound-manga/format-shop-restaurant.png" alt="" loading="lazy" decoding="async" width="562" height="786">
-            </picture>
-            <h3 class="pm-format-name">店舗案内</h3>
-            <span class="pm-format-en">Retail/Dining</span>
-            <p class="pm-format-use">注文・接客の言語の壁を埋める</p>
-            <div class="pm-format-detail">
-              <p>飲食店・物販店・観光施設での注文・接客は、スタッフの語学力に依存します。漫画形式の店舗案内・メニュー説明・サービス紹介は、スタッフが英語を話せなくても訪日客に伝わり、現場のオペレーション負荷を減らします。</p>
-              <p>「日本の伝統工芸の使い方」「老舗料亭の楽しみ方」「神社参拝のマナー」など、文字では伝わりにくい体験ガイドにも最適です。</p>
+            <p class="lpv2-format__num">03 &middot; Poster</p>
+            <h3 class="lpv2-format__name">ポスター</h3>
+            <p class="lpv2-format__use">空港・駅・宿泊施設に掲出</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/inbound-manga/format-shop-restaurant.webp">
+                <img src="/images/inbound-manga/format-shop-restaurant.png" alt="店舗・飲食店向け案内" loading="lazy" decoding="async" width="562" height="786">
+              </picture>
             </div>
-          </li>
-        </ul>
-        <div class="pm-masthead-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="無料相談・お見積もり">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-          <a href="#library" class="pm-btn pm-btn--ghost">事例を見る</a>
+            <p class="lpv2-format__num">04 &middot; Retail / Dining</p>
+            <h3 class="lpv2-format__name">店舗案内</h3>
+            <p class="lpv2-format__use">注文・接客の言語の壁を埋める</p>
+          </article>
         </div>
       </div>
-    </header>
+    </section>
 
-    <section class="pm-section pm-section--alt pm-section--first">
-      <div class="pm-container">
-        <div style="text-align:center; margin-bottom:56px;">
-          <span class="pm-eyebrow">PROBLEM</span>
-          <h2 class="pm-h2">観光・自治体・小売の、こんな<em>お悩み</em>。</h2>
-        </div>
-        <ul class="pm-pain-list pm-pain-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-01" data-detail-title="多言語パンフレットが読まれない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/inbound-manga/pain-01.webp">
-              <img src="images/inbound-manga/pain-01.png" alt="" loading="lazy" decoding="async" width="1156" height="382">
+    <!-- ===== 2. CHAPTER 01 — PROBLEM ===== -->
+    <section class="lpv2-section lpv2-problem" id="chapter-01-problem" aria-label="観光・自治体・小売のお悩み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">01</span>
+          <span class="lpv2-chapter-mark">CHAPTER 01 &middot; PROBLEM</span>
+          <h2 class="lpv2-h2">観光・自治体・小売の、こんな<em>お悩み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">翻訳予算をかけても読まれない、写真だけでは文化が伝わらない——インバウンド施策の現実的な壁を整理しました</p>
+        </header>
+        <div class="lpv2-problem-grid">
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">1</span>
+              <h3 class="lpv2-pain__title">多言語パンフレットが、訪日客に<em>読まれない</em>。</h3>
+              <p class="lpv2-pain__text">英語・中国語・韓国語・タイ語…と翻訳予算をかけたパンフレットが、観光案内所のラックでほぼ手に取られない。配布数より廃棄数のほうが多い。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/pain-01.webp">
+              <img src="/images/inbound-manga/pain-01.png" alt="多言語パンフレットが訪日客に読まれない" loading="lazy" decoding="async" width="1156" height="382">
             </picture>
-            <span class="pm-pain-num">01</span>
-            <p class="pm-pain-title">多言語パンフレットが、訪日客に<em>読まれない</em>。</p>
-            <p class="pm-pain-text">英語・中国語・韓国語・タイ語…と翻訳予算をかけたパンフレットが、観光案内所のラックでほぼ手に取られない。配布数より廃棄数のほうが多い。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>多言語化したパンフレットは、文字主体である限り「読み始める前のハードル」を下げられません。観光地で時間が限られている訪日客は、パンフレット表紙を3秒で判定し、興味がなければ素通りします。翻訳費用と印刷費用の大半が機能していないのが、インバウンド予算の現実です。</p>
               <p>漫画形式のパンフレットは、表紙時点で「これは絵で読める」と直感的に伝わり、手に取られる確率が大幅に上がります。本文も絵で進むため、外国語が苦手な訪日客でも内容を理解でき、観光地への送客率が向上します。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-02" data-detail-title="文化・体験の魅力が写真だけでは伝わらない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/inbound-manga/pain-02.webp">
-              <img src="images/inbound-manga/pain-02.png" alt="" loading="lazy" decoding="async" width="1106" height="336">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">2</span>
+              <h3 class="lpv2-pain__title">伝統文化の魅力が、写真だけでは<em>伝わりきらない</em>。</h3>
+              <p class="lpv2-pain__text">茶道・神社参拝・温泉・伝統工芸。それぞれに作法や歴史背景があるが、写真とキャプションだけでは「綺麗だね」で終わってしまう。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/pain-02.webp">
+              <img src="/images/inbound-manga/pain-02.png" alt="伝統文化の魅力が写真だけでは伝わりきらない" loading="lazy" decoding="async" width="1106" height="336">
             </picture>
-            <span class="pm-pain-num">02</span>
-            <p class="pm-pain-title">伝統文化の魅力が、写真だけでは<em>伝わりきらない</em>。</p>
-            <p class="pm-pain-text">茶道・神社参拝・温泉・伝統工芸。それぞれに作法や歴史背景があるが、写真とキャプションだけでは「綺麗だね」で終わってしまう。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>日本の観光資源の多くは「体験価値」であり、写真では撮りきれない作法・歴史・季節感に本質があります。これを多言語テキストで説明しようとすると、長文化して読まれず、簡略化すると「綺麗な景色」止まりの紹介になってしまいます。</p>
               <p>漫画は「主人公が体験している姿」を描くため、訪日客は登場人物に自分を重ねて文化を疑似体験できます。茶道の作法・神社参拝のマナー・温泉の楽しみ方など、体験価値の解像度が一気に上がり、現地での消費単価向上にも繋がります。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-03" data-detail-title="現場スタッフの語学力に依存している">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/inbound-manga/pain-03.webp">
-              <img src="images/inbound-manga/pain-03.png" alt="" loading="lazy" decoding="async" width="1092" height="374">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">3</span>
+              <h3 class="lpv2-pain__title">現場スタッフの<em>語学力に依存</em>している。</h3>
+              <p class="lpv2-pain__text">飲食店・物販・宿泊・観光案内。訪日客対応の質がスタッフの英語力で決まり、繁忙期の対応負担が現場を疲弊させている。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/pain-03.webp">
+              <img src="/images/inbound-manga/pain-03.png" alt="現場スタッフの語学力に依存している" loading="lazy" decoding="async" width="1092" height="374">
             </picture>
-            <span class="pm-pain-num">03</span>
-            <p class="pm-pain-title">現場スタッフの<em>語学力に依存</em>している。</p>
-            <p class="pm-pain-text">飲食店・物販・宿泊・観光案内。訪日客対応の質がスタッフの英語力で決まり、繁忙期の対応負担が現場を疲弊させている。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>地方の観光施設・飲食店・宿泊施設では、現場スタッフの語学力にばらつきがあり、訪日客対応の質が個人差に依存する状況が続いています。繁忙期にはスタッフが疲弊し、観光客の満足度低下にも繋がります。</p>
               <p>漫画形式の店舗案内・メニュー・サービス紹介は、スタッフが英語を話せなくても訪日客に伝わる「無人ガイド」として機能します。注文・案内のオペレーション負荷を軽減し、訪日客の満足度を保ちながら、繁忙期の現場の疲弊を緩和できます。</p>
             </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="pm-bridge">
-      <div class="pm-container pm-container--narrow">
-        <p class="pm-bridge-line">その悩みは、<br><em>「インバウンド漫画」</em>で解決できます。</p>
-      </div>
-    </section>
-
-    <section class="pm-section">
-      <div class="pm-container pm-container--narrow">
-        <div style="text-align:center; margin-bottom:48px;">
-          <span class="pm-eyebrow">MERIT</span>
-          <h2 class="pm-h2">インバウンド漫画の、4つの強み。</h2>
+          </article>
         </div>
-        <p class="pm-section-lead" style="text-align:center; max-width:680px; margin:0 auto 32px; font-size:13px; color:#7a7770;">※ 本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します。</p>
-        <ol class="pm-merit-list pm-merit-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-01" data-detail-title="言語の壁を超えて伝わる">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/inbound-manga/merit-01.webp">
-              <img src="images/inbound-manga/merit-01.png" alt="" loading="lazy" decoding="async" width="828" height="514">
+      </div>
+    </section>
+
+    <!-- ===== 3. BRIDGE ===== -->
+    <section class="lpv2-bridge" aria-label="解決策">
+      <div class="lpv2-bridge-inner">
+        <p class="lpv2-bridge-eyebrow">SOLUTION</p>
+        <p class="lpv2-bridge-statement">その悩みは、<br><em>インバウンド漫画</em>で解決できる！</p>
+      </div>
+    </section>
+
+    <!-- ===== 4. CHAPTER 02 — MERIT ===== -->
+    <section class="lpv2-section lpv2-merit" id="chapter-02-merit" aria-label="インバウンド漫画の強み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">02</span>
+          <span class="lpv2-chapter-mark">CHAPTER 02 &middot; STRENGTH</span>
+          <h2 class="lpv2-h2">インバウンド漫画の、<em>4つの強み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します</p>
+        </header>
+        <div class="lpv2-merit-grid">
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">01</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/merit-01.webp">
+              <img src="/images/inbound-manga/merit-01.png" alt="言葉を越えて絵で伝わる" loading="lazy" decoding="async" width="828" height="514">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">言葉を越えて、<em>絵で伝わる</em>。</h3>
-            <p class="pm-merit-text">英語・中国語・韓国語の翻訳が読めなくても、絵の流れで「何が起きているか」が伝わります。多言語化コストの最小化と訴求力の最大化を両立できます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">言葉を越えて、<em>絵で伝わる</em>。</h3>
+              <p class="lpv2-merit-card__text">英語・中国語・韓国語の翻訳が読めなくても、絵の流れで「何が起きているか」が伝わります。多言語化コストの最小化と訴求力の最大化を両立できます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>多言語化されたテキストは、各言語の母語話者には届きますが、語学が苦手な訪日客には届きません。一方で、漫画は絵を中心に物語が進むため、英語・中国語・韓国語の文字が読めなくても「主人公が今何を体験しているか」が直感的に伝わります。</p>
               <p>結果として、限られた多言語化予算で最大限の訴求力を発揮できます。少数言語（タイ・ベトナム・スペイン語など）に展開する際も、テキスト差し替えだけで対応可能で、コスト効率が極めて高いフォーマットです。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-02" data-detail-title="SNSで世界に拡散される">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/inbound-manga/merit-02.webp">
-              <img src="images/inbound-manga/merit-02.png" alt="" loading="lazy" decoding="async" width="896" height="560">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">02</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/merit-02.webp">
+              <img src="/images/inbound-manga/merit-02.png" alt="SNSで世界に拡散される" loading="lazy" decoding="async" width="896" height="560">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">SNSで<em>世界に拡散</em>される。</h3>
-            <p class="pm-merit-text">「Manga」は世界共通の日本ソフトパワー。漫画コンテンツは訪日客のSNSで自然に拡散され、無償のグローバル広告として機能します。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">SNSで<em>世界に拡散</em>される。</h3>
+              <p class="lpv2-merit-card__text">「Manga」は世界共通の日本ソフトパワー。漫画コンテンツは訪日客のSNSで自然に拡散され、無償のグローバル広告として機能します。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>「Manga」「Anime」は、世界中のZ世代・ミレニアル世代が好む日本発のコンテンツフォーマットです。漫画形式の観光コンテンツは、訪日客が自国の友人にシェアしやすく、Instagram・TikTok・X上で自然に拡散されます。</p>
               <p>1本の漫画が、訪日客の母国で何百〜何千人にリーチする「無償のグローバル広告」として機能する事例が増えています。インバウンド広告予算では到達できない地域・層にもオーガニックでリーチできる、地方自治体・DMOにとって最も投資対効果の高い手段の一つです。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-03" data-detail-title="観光・宿泊・物販で使い回せる">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/inbound-manga/merit-03.webp">
-              <img src="images/inbound-manga/merit-03.png" alt="" loading="lazy" decoding="async" width="786" height="578">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">03</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/merit-03.webp">
+              <img src="/images/inbound-manga/merit-03.png" alt="観光・宿泊・物販で使い回せる" loading="lazy" decoding="async" width="786" height="578">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">観光・宿泊・物販で、<em>使い回せる</em>。</h3>
-            <p class="pm-merit-text">1本のインバウンド漫画を、観光案内・ホテル客室・空港ポスター・店舗ガイドまで派生展開できます。地域全体の連携強化にも貢献します。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">観光・宿泊・物販で、<em>使い回せる</em>。</h3>
+              <p class="lpv2-merit-card__text">1本のインバウンド漫画を、観光案内・ホテル客室・空港ポスター・店舗ガイドまで派生展開できます。地域全体の連携強化にも貢献します。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>地方自治体・DMO・観光協会・宿泊事業者・地元小売店が、それぞれ別の翻訳パンフレットを作るケースは、コストの重複と地域ブランドの分裂という二重の損失を生みます。</p>
               <p>インバウンド漫画を1本制作すれば、自治体・宿泊・小売・飲食まで横断的に活用でき、地域全体で「同じ世界観のおもてなし」を提供できます。地域連携型のインバウンド戦略の核として機能する、長期投資型のクリエイティブです。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-04" data-detail-title="文化・歴史背景まで自然に伝えられる">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/inbound-manga/merit-04.webp">
-              <img src="images/inbound-manga/merit-04.png" alt="" loading="lazy" decoding="async" width="872" height="542">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">04</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/inbound-manga/merit-04.webp">
+              <img src="/images/inbound-manga/merit-04.png" alt="文化・歴史の背景まで自然に伝わる" loading="lazy" decoding="async" width="872" height="542">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">文化・歴史の背景まで<em>自然に伝わる</em>。</h3>
-            <p class="pm-merit-text">茶道・神社・温泉・伝統工芸。物語の流れの中に背景知識を織り込むことで、訪日客の体験単価と満足度を引き上げられます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">文化・歴史の背景まで<em>自然に伝わる</em>。</h3>
+              <p class="lpv2-merit-card__text">茶道・神社・温泉・伝統工芸。物語の流れの中に背景知識を織り込むことで、訪日客の体験単価と満足度を引き上げられます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>日本の観光資源の本質は、「景色」ではなく「体験と文脈」にあります。神社の参拝マナー、茶道の所作、温泉の入り方、伝統工芸の使い方。これらの文脈を理解した訪日客は、体験単価も満足度も大幅に上がります。</p>
               <p>漫画は登場人物の体験を通じて、文化背景・歴史・作法を「物語の流れ」の中に自然に織り込めます。説明文では受け入れてもらえない情報量を、無理なく伝えられる唯一のフォーマットと言えます。リピート訪日意欲・地域への愛着・口コミ拡散に直結する、本質的なインバウンド施策です。</p>
             </div>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
+
+    <!-- ===== 5. CHAPTER 04 — CASES (auto-built) ===== -->
     <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->
     <section class="pm-section pm-cases-static" aria-label="インバウンド漫画の制作事例">
       <div class="pm-container pm-container--narrow">
@@ -449,296 +459,315 @@
     </section>
     <!-- BUILD:LP-CASES:END -->
 
-
-
-
-
-
-
-
-
-
-
-    <section class="pm-section pm-library" id="library" data-bm-lp-library data-category="インバウンド">
-      <div class="pm-container">
-        <div class="pm-library-head">
-          <span class="pm-eyebrow">FROM BIZ LIBRARY</span>
-          <h2 class="pm-h2">インバウンド漫画を、実際に読んでみる。</h2>
-          <p class="pm-library-note">クライアント企業向けに制作したインバウンド漫画を、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます。</p>
-        </div>
-        <div class="pm-lp-lib-grid" data-bm-lp-library-grid>
+    <!-- ===== 6. CHAPTER 05 — LIBRARY (Biz Library embed) ===== -->
+    <section class="lpv2-section lpv2-library" id="chapter-05-library" data-bm-lp-library data-category="インバウンド" aria-label="ビズ書庫からインバウンド漫画を読む">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">05</span>
+          <span class="lpv2-chapter-mark">CHAPTER 05 &middot; FROM BIZ LIBRARY</span>
+          <h2 class="lpv2-h2">インバウンド漫画を、<em>実際に読んでみる</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">クライアント企業向けに制作したインバウンド漫画を、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます</p>
+        </header>
+        <div class="lpv2-library-grid" data-bm-lp-library-grid>
           <p class="bm-lp-lib-loading">読み込み中…</p>
         </div>
-        <div class="pm-library-cta">
-          <a href="/biz-library" class="pm-btn pm-btn--ghost">ビズ書庫で全作品を見る</a>
+        <div class="lpv2-library-cta">
+          <a href="/biz-library" class="lpv2-btn lpv2-btn--accent-on-dark">ビズ書庫で全作品を見る</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 制作フロー（クリックで左ペインに画像と詳細） ===== -->
-    <section class="pm-section pm-flow-section" id="productionFlow" aria-label="制作フロー">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
-        <h2 class="pm-section-title">インバウンド漫画の制作フロー</h2>
-        <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで進行します。各ステップをクリックすると、左の編集者ノートに参考画像と詳しい解説が表示されます。</p>
-        <div class="pm-flow-list-v">
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="1"
-                    data-pm-flow-slug="step1_hearing"
-                    data-pm-flow-name="ヒアリング"
-                    data-pm-flow-desc="対象国（英／中／韓／東南アジア）・対応言語数・配布媒体（パンフ／空港駅サイネージ／Web）・補助金や入札要件・観光庁／自治体の調達プロセスまでヒアリングし、多言語展開を逆算で設計します。">
-              <span class="flow-step-num">1</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="ヒアリング">ヒアリング</span>
-                <span class="pm-flow-step-desc" data-ja="対象国（英／中／韓／東南アジア）・対応言語数・配布媒体（パンフ／空港駅サイネージ／Web）・補助金や入札要件・観光庁／自治体の調達プロセスまでヒアリングし、多言語展開を逆算で設計します。" data-en="">対象国（英／中／韓／東南アジア）・対応言語数・配布媒体（パンフ／空港駅サイネージ／Web）・補助金や入札要件・観光庁／自治体の調達プロセスまでヒアリングし、多言語展開を逆算で設計します。</span>
+    <!-- ===== 7. CHAPTER 06 — PRODUCTION FLOW ===== -->
+    <section class="lpv2-section lpv2-flow" id="chapter-06-flow" aria-label="制作フロー">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">06</span>
+          <span class="lpv2-chapter-mark">CHAPTER 06 &middot; PRODUCTION FLOW</span>
+          <h2 class="lpv2-h2">インバウンド漫画の<em>制作フロー</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">ヒアリングから納品まで、8つのステップで進行します。多言語ローカライズ・文化レビュー・補助金対応まで含めて運用します</p>
+        </header>
+        <!-- 裏面の画像は制作フローのMVP作例画像(material/images/flow/)を流用。8ステップ完全対応。フリップ裏面imgはloading=lazy禁止 -->
+        <div class="lpv2-flow-grid">
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">01</span>
+                <span class="lpv2-flow-step__name">ヒアリング</span>
+                <span class="lpv2-flow-step__desc">対象国（英／中／韓／東南アジア）・対応言語数・配布媒体（パンフ／空港駅サイネージ／Web）・補助金や入札要件・観光庁／自治体の調達プロセスまでヒアリングし、多言語展開を逆算で設計します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
               </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="2"
-                    data-pm-flow-slug="step2_arasuji"
-                    data-pm-flow-name="あらすじ"
-                    data-pm-flow-desc="訪日外国人の旅程（到着→移動→観光→食事→宿泊→帰国）に沿った体験ストーリーを構成。日本独自の文化（神社・温泉・茶道）を物語の中で自然に伝える「言葉を超える」骨組みを作ります。">
-              <span class="flow-step-num">2</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="あらすじ">あらすじ</span>
-                <span class="pm-flow-step-desc" data-ja="訪日外国人の旅程（到着→移動→観光→食事→宿泊→帰国）に沿った体験ストーリーを構成。" data-en="">訪日外国人の旅程（到着→移動→観光→食事→宿泊→帰国）に沿った体験ストーリーを構成。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="3"
-                    data-pm-flow-slug="step3_scenario"
-                    data-pm-flow-name="シナリオ"
-                    data-pm-flow-desc="日本語シナリオ作成時から多言語化を前提に、文化固有の表現・ジョーク・ジェスチャーが翻訳でも成立するか検証。各言語のネイティブ翻訳者と連携し、文化的タブー表現を事前回避します。">
-              <span class="flow-step-num">3</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="シナリオ">シナリオ</span>
-                <span class="pm-flow-step-desc" data-ja="日本語シナリオ作成時から多言語化を前提に、文化固有の表現・ジョーク・ジェスチャーが翻訳でも成立するか検証。" data-en="">日本語シナリオ作成時から多言語化を前提に、文化固有の表現・ジョーク・ジェスチャーが翻訳でも成立するか検証。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="4"
-                    data-pm-flow-slug="step4_gafu"
-                    data-pm-flow-name="画風決定"
-                    data-pm-flow-desc="海外で日本らしさが伝わりつつ、現地の宗教・倫理観に配慮した画風を選定。アニメ調・浮世絵調・水彩調など、対象国別の好みに合わせて画風を変えることも可能です。">
-              <span class="flow-step-num">4</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="画風決定" data-en="画風決定">画風決定</span>
-                <span class="pm-flow-step-desc" data-ja="海外で日本らしさが伝わりつつ、現地の宗教・倫理観に配慮した画風を選定。" data-en="">海外で日本らしさが伝わりつつ、現地の宗教・倫理観に配慮した画風を選定。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="5"
-                    data-pm-flow-slug="step5_name"
-                    data-pm-flow-name="ネーム"
-                    data-pm-flow-desc="空港・駅・観光案内所での配布物として「立ち止まって読まれる」コマ割り設計。多言語版でテキスト量が変動しても破綻しない吹き出しサイズと配置を組みます。">
-              <span class="flow-step-num">5</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ネーム" data-en="ネーム">ネーム</span>
-                <span class="pm-flow-step-desc" data-ja="空港・駅・観光案内所での配布物として「立ち止まって読まれる」コマ割り設計。" data-en="">空港・駅・観光案内所での配布物として「立ち止まって読まれる」コマ割り設計。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="6"
-                    data-pm-flow-slug="step6_seisaku"
-                    data-pm-flow-name="漫画制作"
-                    data-pm-flow-desc="プロの漫画家が日本の風景・文化財・伝統行事を正確に作画。実在の観光地は許諾済みの資料を元に描写し、現地の方が見ても違和感のない品質を実現します。">
-              <span class="flow-step-num">6</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="漫画制作">漫画制作</span>
-                <span class="pm-flow-step-desc" data-ja="プロの漫画家が日本の風景・文化財・伝統行事を正確に作画。" data-en="">プロの漫画家が日本の風景・文化財・伝統行事を正確に作画。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="7"
-                    data-pm-flow-slug="step7_kakunin"
-                    data-pm-flow-name="初稿確認"
-                    data-pm-flow-desc="観光協会・自治体・観光庁・現地翻訳者・ネイティブチェッカーの複数視点でレビュー。文化的不適切表現・宗教的タブー・現地の最新情勢への配慮を多層的にチェックします。">
-              <span class="flow-step-num">7</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="初稿確認">初稿確認</span>
-                <span class="pm-flow-step-desc" data-ja="観光協会・自治体・観光庁・現地翻訳者・ネイティブチェッカーの複数視点でレビュー。" data-en="">観光協会・自治体・観光庁・現地翻訳者・ネイティブチェッカーの複数視点でレビュー。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="8"
-                    data-pm-flow-slug="step8_nouhin"
-                    data-pm-flow-name="最終納品"
-                    data-pm-flow-desc="多言語版PDF（A4／A5／DLサイズ対応）・空港駅サイネージ用大判データ・QRコード連動Web版・各国SNS媒体用の縦動画化など、インバウンド向けの全媒体に合わせた一括書き出しを行います。">
-              <span class="flow-step-num">8</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="最終納品" data-en="最終納品">最終納品</span>
-                <span class="pm-flow-step-desc" data-ja="多言語版PDF（A4／A5／DLサイズ対応）・空港駅サイネージ用大判データ・QRコード連動Web版・各国SNS媒体用の縦動画化など、インバウンド向けの全媒体に合わせた一括書き出しを行います。" data-en="">多言語版PDF（A4／A5／DLサイズ対応）・空港駅サイネージ用大判データ・QRコード連動Web版・各国SNS媒体用の縦動画化など、インバウンド向けの全媒体に合わせた一括書き出しを行います。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FAQ（FAQPage Schema 連動） ===== -->
-    <section class="pm-section pm-faq-section" aria-label="よくあるご質問">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">FAQ</span>
-        <h2 class="pm-section-title">インバウンド漫画についてよくあるご質問</h2>
-        <p class="pm-section-lead">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
-        <div class="pm-faq-list">
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">制作期間はどのくらいかかりますか？</summary>
-            <div class="pm-faq-answer">インバウンド漫画は多言語ローカライズ込みで標準10ページ＋翻訳版で6〜8週間。観光シーズン（春・秋）逆算なら3〜4ヶ月前の着手が理想。空港・観光案内所への配布物は印刷リードタイム＋2週間も加味してスケジュールします。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">費用の相場はいくらですか？</summary>
-            <div class="pm-faq-answer">インバウンド漫画は1ページ16,600円〜、英・中・韓3言語ローカライズ込みで10ページ約25万円〜が目安。観光案内パンフ・空港ポスター・店舗ガイド・観光サイトWebコンテンツへの派生展開も同一原稿から書き出します。詳細は料金ページ（bizmanga.contentsx.jp/pricing）。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">修正は何回まで対応していますか？</summary>
-            <div class="pm-faq-answer">インバウンド漫画は外国人読者の文化的視点を反映する必要があるため、ネイティブ翻訳者のレビューを通常の2回修正サイクルに加えて実施します。神社参拝・茶道など日本固有の文化表現は誤解を生まないよう特に丁寧に擦り合わせる運用です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">著作権・使用範囲はどうなりますか？</summary>
-            <div class="pm-faq-answer">インバウンド漫画の使用権はクライアント様に帰属します。観光案内所・空港ポスター・ホテル客室・店舗ガイド・観光サイト・SNSの全媒体で展開可能。自治体・DMO・宿泊・小売の地域連携運用、観光協会内での共有利用にも柔軟対応します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">機密保持契約（NDA）には対応していますか？</summary>
-            <div class="pm-faq-answer">対応可能です。新観光ルート・季節限定キャンペーン・地域連携の未発表案件にも対応実績あり。観光協会・自治体・DMOとの機密プロジェクトでは、発表会前の機密管理体制も整えた上で制作を進めます。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">英語版・多言語版は作れますか？</summary>
-            <div class="pm-faq-answer">対応可能です。インバウンド向け制作の本領分野で、英・中（簡/繁）・韓・タイ・スペイン・フランス・ドイツ・インドネシア・ベトナム語など主要訪日客言語に対応。ネイティブ翻訳＋現地文化レビュー＋日本文化説明の3段階チェックで仕上げます。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">対応言語は何カ国語まで可能ですか？</summary>
-            <div class="pm-faq-answer">英語・中国語（簡体字・繁体字）・韓国語・タイ語・ベトナム語・スペイン語・フランス語・インドネシア語など主要言語に対応。ネイティブ校正・現地文化への配慮（ジェスチャー・色・タブー表現）まで含めて納品します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">観光協会・自治体向けの公費案件・補助金申請にも対応できますか？</summary>
-            <div class="pm-faq-answer">対応可能です。観光庁・地域DMO向けの調達プロセス、補助金申請に必要な見積書・仕様書フォーマット、入札要件への適合など、自治体案件特有の手続きをサポートします。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">観光地・名所の選定からトータルで依頼できますか？</summary>
-            <div class="pm-faq-answer">可能です。観光協会・自治体との協議、訪日外国人アンケート分析、SNSバズ分析からの「描くべき場所」リストアップまで一貫対応。地域DMOの観光戦略との整合性も担保します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">QRコード連動でWeb版・動画への誘導設計は可能ですか？</summary>
-            <div class="pm-faq-answer">対応可能です。紙パンフから多言語Web版へ、空港駅サイネージから観光地マップアプリへ、ARコンテンツへの誘導設計まで対応。クロスメディア展開で訪日外国人の体験価値を最大化します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">訪日外国人へのアンケート調査も組み合わせられますか？</summary>
-            <div class="pm-faq-answer">対応可能です。提携リサーチ会社経由で訪日外国人 n=100〜1,000 規模のアンケート調査を実施し、漫画コンテンツの効果測定・ペルソナ精緻化・ニーズ発掘まで一気通貫でサポートします。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">自治体・観光協会向けの補助金申請・入札書類対応は可能ですか？</summary>
-            <div class="pm-faq-answer">可能です。観光庁・地方創生推進交付金・インバウンド受入環境整備事業など、各種補助金スキームの仕様書・見積書フォーマット対応に実績があります。提案書共同制作もご相談承ります。</div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 関連LP（他の用途別マンガ） ===== -->
-    <section class="pm-related" aria-label="他の用途別マンガ">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-related-eyebrow">OTHER USE CASES</span>
-        <h2 class="pm-related-title">他の用途別マンガを見る</h2>
-        <p class="pm-related-lead">商品紹介・採用・広告・営業資料・研修・IR・インバウンド・会社紹介。それぞれの目的に合わせた構成と訴求軸でご提案します。</p>
-        <div class="pm-related-grid">
-          <a class="pm-related-card" href="/product-manga">            <h3 class="pm-related-card-name">商品紹介マンガ</h3>
-            <p class="pm-related-card-hook">SaaS・無形商材も、漫画なら伝わる</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/recruit-manga">            <h3 class="pm-related-card-name">採用マンガ</h3>
-            <p class="pm-related-card-hook">応募・内定承諾率を高める</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/manga-ad-lp">            <h3 class="pm-related-card-name">マンガ広告</h3>
-            <p class="pm-related-card-hook">広告らしくない、止まる広告</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/company-manga">            <h3 class="pm-related-card-name">会社紹介マンガ</h3>
-            <p class="pm-related-card-hook">ステークホルダー横断で届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/sales-manga">            <h3 class="pm-related-card-name">営業資料マンガ</h3>
-            <p class="pm-related-card-hook">決裁者まで物語のまま届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/training-manga">            <h3 class="pm-related-card-name">研修マンガ</h3>
-            <p class="pm-related-card-hook">失敗事例を安全に疑似体験</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/ir-manga">            <h3 class="pm-related-card-name">IRマンガ</h3>
-            <p class="pm-related-card-hook">個人投資家は数字より物語</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-
-
-    <aside class="bm-related-guide" aria-label="関連: 漫画制作会社 比較ガイド">
-      <p class="bm-related-guide-eyebrow" data-ja="業者比較で迷ったら" data-en="Comparing vendors?">業者比較で迷ったら</p>
-      <p class="bm-related-guide-text" data-ja="インバウンド漫画・多言語マンガを発注する業者を探している方は、業界主要 5 社の料金・対応範囲を一覧化した【インバウンド対応の漫画制作会社 比較ガイド】もご活用ください。" data-en="Looking for inbound or multilingual manga vendors? See our Inbound-Manga Production Company Comparison Guide.">
-        インバウンド漫画・多言語マンガを発注する業者を探している方は、業界主要 5 社の料金・対応範囲を一覧化した
-        <a href="/manga-production-company" data-ja="インバウンド対応の漫画制作会社 比較ガイド" data-en="Inbound-Manga Production Company Comparison Guide">インバウンド対応の漫画制作会社 比較ガイド</a>
-        もご活用ください。
-      </p>
-    </aside>
-
-    <section class="pm-end">
-      <div class="pm-container pm-container--narrow">
-        <div class="pm-rule"></div>
-        <h2 class="pm-end-title">届けたい日本の魅力があるなら<br>その物語を<br><em>世界に届けましょう</em></h2>
-        <p class="pm-end-text">企画・取材・作画・多言語化・納品まで、専任の編集担当が伴走します。30分の無料相談で、貴自治体・施設・店舗の特性に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。多言語版（英・中・韓・タイ・スペイン語など）も対応可能です。</p>
-        <div class="pm-end-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="お問い合わせ">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step1_hearing.avif">
+                  <img src="/material/images/flow/step1_hearing.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
-          </a>
-          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="pm-cta-btn pm-cta-btn--line" data-tooltip="LINEで相談" target="_blank" rel="noopener">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">LINEで相談</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z"/>
-                </svg>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">02</span>
+                <span class="lpv2-flow-step__name">あらすじ</span>
+                <span class="lpv2-flow-step__desc">訪日外国人の旅程（到着→移動→観光→食事→宿泊→帰国）に沿った体験ストーリーを構成。日本独自の文化（神社・温泉・茶道）を物語の中で自然に伝える「言葉を超える」骨組みを作ります。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step2_arasuji.avif">
+                  <img src="/material/images/flow/step2_arasuji.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">03</span>
+                <span class="lpv2-flow-step__name">シナリオ</span>
+                <span class="lpv2-flow-step__desc">日本語シナリオ作成時から多言語化を前提に、文化固有の表現・ジョーク・ジェスチャーが翻訳でも成立するか検証。各言語のネイティブ翻訳者と連携し、文化的タブー表現を事前回避します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step3_scenario.avif">
+                  <img src="/material/images/flow/step3_scenario.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">04</span>
+                <span class="lpv2-flow-step__name">画風決定</span>
+                <span class="lpv2-flow-step__desc">海外で日本らしさが伝わりつつ、現地の宗教・倫理観に配慮した画風を選定。アニメ調・浮世絵調・水彩調など、対象国別の好みに合わせて画風を変えることも可能です。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step4_gafu.avif">
+                  <img src="/material/images/flow/step4_gafu.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">05</span>
+                <span class="lpv2-flow-step__name">ネーム</span>
+                <span class="lpv2-flow-step__desc">空港・駅・観光案内所での配布物として「立ち止まって読まれる」コマ割り設計。多言語版でテキスト量が変動しても破綻しない吹き出しサイズと配置を組みます。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step5_name.avif">
+                  <img src="/material/images/flow/step5_name.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">06</span>
+                <span class="lpv2-flow-step__name">漫画制作</span>
+                <span class="lpv2-flow-step__desc">プロの漫画家が日本の風景・文化財・伝統行事を正確に作画。実在の観光地は許諾済みの資料を元に描写し、現地の方が見ても違和感のない品質を実現します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step6_seisaku.avif">
+                  <img src="/material/images/flow/step6_seisaku.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">07</span>
+                <span class="lpv2-flow-step__name">初稿確認</span>
+                <span class="lpv2-flow-step__desc">観光協会・自治体・観光庁・現地翻訳者・ネイティブチェッカーの複数視点でレビュー。文化的不適切表現・宗教的タブー・現地の最新情勢への配慮を多層的にチェックします。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step7_kakunin.avif">
+                  <img src="/material/images/flow/step7_kakunin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">08</span>
+                <span class="lpv2-flow-step__name">最終納品</span>
+                <span class="lpv2-flow-step__desc">多言語版PDF（A4／A5／DLサイズ対応）・空港駅サイネージ用大判データ・QRコード連動Web版・各国SNS媒体用の縦動画化など、インバウンド向けの全媒体に合わせた一括書き出しを行います。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step8_nouhin.avif">
+                  <img src="/material/images/flow/step8_nouhin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. CHAPTER 07 — FAQ ===== -->
+    <section class="lpv2-section lpv2-faq" id="chapter-07-faq" aria-label="よくあるご質問">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">07</span>
+          <span class="lpv2-chapter-mark">CHAPTER 07 &middot; FAQ</span>
+          <h2 class="lpv2-h2">インバウンド漫画について、<em>よくあるご質問</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください</p>
+        </header>
+        <div class="lpv2-faq-list">
+          <details class="lpv2-faq-item">
+            <summary>制作期間はどのくらいかかりますか？</summary>
+            <div class="lpv2-faq-answer">インバウンド漫画は多言語ローカライズ込みで標準10ページ＋翻訳版で6〜8週間。観光シーズン（春・秋）逆算なら3〜4ヶ月前の着手が理想。空港・観光案内所への配布物は印刷リードタイム＋2週間も加味してスケジュールします。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>費用の相場はいくらですか？</summary>
+            <div class="lpv2-faq-answer">インバウンド漫画は1ページ16,600円〜、英・中・韓3言語ローカライズ込みで10ページ約25万円〜が目安。観光案内パンフ・空港ポスター・店舗ガイド・観光サイトWebコンテンツへの派生展開も同一原稿から書き出します。詳細は <a href="/pricing">料金ページ</a> をご覧ください。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>修正は何回まで対応していますか？</summary>
+            <div class="lpv2-faq-answer">インバウンド漫画は外国人読者の文化的視点を反映する必要があるため、ネイティブ翻訳者のレビューを通常の2回修正サイクルに加えて実施します。神社参拝・茶道など日本固有の文化表現は誤解を生まないよう特に丁寧に擦り合わせる運用です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>著作権・使用範囲はどうなりますか？</summary>
+            <div class="lpv2-faq-answer">インバウンド漫画の使用権はクライアント様に帰属します。観光案内所・空港ポスター・ホテル客室・店舗ガイド・観光サイト・SNSの全媒体で展開可能。自治体・DMO・宿泊・小売の地域連携運用、観光協会内での共有利用にも柔軟対応します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>機密保持契約（NDA）には対応していますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。新観光ルート・季節限定キャンペーン・地域連携の未発表案件にも対応実績あり。観光協会・自治体・DMOとの機密プロジェクトでは、発表会前の機密管理体制も整えた上で制作を進めます。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>英語版・多言語版は作れますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。インバウンド向け制作の本領分野で、英・中（簡/繁）・韓・タイ・スペイン・フランス・ドイツ・インドネシア・ベトナム語など主要訪日客言語に対応。ネイティブ翻訳＋現地文化レビュー＋日本文化説明の3段階チェックで仕上げます。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>対応言語は何カ国語まで可能ですか？</summary>
+            <div class="lpv2-faq-answer">英語・中国語（簡体字・繁体字）・韓国語・タイ語・ベトナム語・スペイン語・フランス語・インドネシア語など主要言語に対応。ネイティブ校正・現地文化への配慮（ジェスチャー・色・タブー表現）まで含めて納品します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>観光協会・自治体向けの公費案件・補助金申請にも対応できますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。観光庁・地域DMO向けの調達プロセス、補助金申請に必要な見積書・仕様書フォーマット、入札要件への適合など、自治体案件特有の手続きをサポートします。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>観光地・名所の選定からトータルで依頼できますか？</summary>
+            <div class="lpv2-faq-answer">可能です。観光協会・自治体との協議、訪日外国人アンケート分析、SNSバズ分析からの「描くべき場所」リストアップまで一貫対応。地域DMOの観光戦略との整合性も担保します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>QRコード連動でWeb版・動画への誘導設計は可能ですか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。紙パンフから多言語Web版へ、空港駅サイネージから観光地マップアプリへ、ARコンテンツへの誘導設計まで対応。クロスメディア展開で訪日外国人の体験価値を最大化します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>訪日外国人へのアンケート調査も組み合わせられますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。提携リサーチ会社経由で訪日外国人 n=100〜1,000 規模のアンケート調査を実施し、漫画コンテンツの効果測定・ペルソナ精緻化・ニーズ発掘まで一気通貫でサポートします。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>自治体・観光協会向けの補助金申請・入札書類対応は可能ですか？</summary>
+            <div class="lpv2-faq-answer">可能です。観光庁・地方創生推進交付金・インバウンド受入環境整備事業など、各種補助金スキームの仕様書・見積書フォーマット対応に実績があります。提案書共同制作もご相談承ります。</div>
+          </details>
+        </div>
+
+        <aside class="lpv2-guide" aria-label="関連: 漫画制作会社 比較ガイド">
+          <p class="lpv2-guide__eyebrow">業者比較で迷ったら</p>
+          <p class="lpv2-guide__text" data-ja="インバウンド漫画・多言語マンガを発注する業者を探している方は、業界主要 5 社の料金・対応範囲を一覧化した【インバウンド対応の漫画制作会社 比較ガイド】もご活用ください。" data-en="Looking for inbound or multilingual manga vendors? See our Inbound-Manga Production Company Comparison Guide of top 5 vendors.">
+            インバウンド漫画・多言語マンガを発注する業者を探している方は、業界主要 5 社の料金・対応範囲を一覧化した
+            <a href="/manga-production-company" data-ja="インバウンド対応の漫画制作会社 比較ガイド" data-en="Inbound-Manga Production Company Comparison Guide">インバウンド対応の漫画制作会社 比較ガイド</a>
+            もご活用ください。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== 9. RELATED LPs ("Next issues") ===== -->
+    <section class="lpv2-section lpv2-related" aria-label="他の用途別マンガ">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-mark">NEXT ISSUE &middot; OTHER USE CASES</span>
+          <h2 class="lpv2-h2">他の<em>用途別マンガ</em>を見る</h2>
+          <p class="lpv2-lead lpv2-lead--center">商品紹介・採用・広告・会社紹介・営業資料・研修・インバウンド・IR。それぞれの目的に合わせた構成と訴求軸でご提案します</p>
+        </header>
+        <div class="lpv2-related-grid">
+          <a class="lpv2-related-card" href="/product-manga">
+            <p class="lpv2-related-card__num">No. 01</p>
+            <h3 class="lpv2-related-card__name">商品紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">SaaS・無形商材も、漫画なら伝わる</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/recruit-manga">
+            <p class="lpv2-related-card__num">No. 02</p>
+            <h3 class="lpv2-related-card__name">採用マンガ</h3>
+            <p class="lpv2-related-card__hook">応募・内定承諾率を高める</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/manga-ad-lp">
+            <p class="lpv2-related-card__num">No. 03</p>
+            <h3 class="lpv2-related-card__name">マンガ広告</h3>
+            <p class="lpv2-related-card__hook">広告らしくない、止まる広告</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/company-manga">
+            <p class="lpv2-related-card__num">No. 04</p>
+            <h3 class="lpv2-related-card__name">会社紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">ステークホルダー横断で届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/sales-manga">
+            <p class="lpv2-related-card__num">No. 05</p>
+            <h3 class="lpv2-related-card__name">営業資料マンガ</h3>
+            <p class="lpv2-related-card__hook">決裁者まで物語のまま届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/training-manga">
+            <p class="lpv2-related-card__num">No. 06</p>
+            <h3 class="lpv2-related-card__name">研修マンガ</h3>
+            <p class="lpv2-related-card__hook">失敗事例を安全に疑似体験</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/ir-manga">
+            <p class="lpv2-related-card__num">No. 08</p>
+            <h3 class="lpv2-related-card__name">IRマンガ</h3>
+            <p class="lpv2-related-card__hook">個人投資家は数字より物語</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
           </a>
         </div>
       </div>
     </section>
 
-      </div><!-- /.pm-main-col -->
-
-      <aside class="pm-rail pm-rail--right" aria-label="ビズ書庫グリッド" data-bm-lp-library data-category="インバウンド">
-        <span class="pm-rail-reader-eyebrow">FROM BIZ LIBRARY</span>
-        <h3 class="pm-rail-reader-title">インバウンド漫画を、<br>読んでみる。</h3>
-        <div class="pm-rail-lib-grid" data-bm-lp-library-grid>
-          <p class="bm-lp-lib-loading">読み込み中…</p>
+    <!-- ===== 10. END — Final CTA ===== -->
+    <section class="lpv2-end" aria-label="お問い合わせ">
+      <div class="lpv2-end-inner">
+        <p class="lpv2-end-eyebrow">TO BE CONTINUED — WITH YOU</p>
+        <h2 class="lpv2-end-title">届けたい日本の魅力があるなら、<br>その物語を<br><em>世界に届けましょう</em>。</h2>
+        <p class="lpv2-end-text">企画・取材・作画・多言語化・納品まで、専任の編集担当が伴走します。30分の無料相談で、貴自治体・施設・店舗の特性に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。多言語版（英・中・韓・タイ・スペイン語など）も対応可能です。</p>
+        <div class="lpv2-end-cta-row">
+          <a href="/contact" class="lpv2-btn lpv2-btn--accent-on-dark lpv2-btn--lg">
+            無料相談・お見積もり
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="lpv2-btn lpv2-btn--line lpv2-btn--lg" target="_blank" rel="noopener">
+            LINEで相談
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2z"/></svg>
+          </a>
         </div>
-        <p class="pm-rail-reader-foot">
-          全作品は <a href="/biz-library">ビズ書庫</a> へ
-        </p>
-      </aside>
-
-    </div><!-- /.pm-shell -->
+      </div>
+    </section>
 
   </main>
 
+  <!-- ===== フッター ===== -->
   <footer class="bm-footer">
     <div class="bm-container">
       <div class="bm-footer-inner">
@@ -751,7 +780,7 @@
           <a href="/">ホーム</a>
           <a href="/works">制作事例</a>
           <a href="/biz-library">ビズ書庫</a>
-          料金（bizmanga.contentsx.jp/pricing）
+          <a href="/pricing">料金</a>
           <a href="/strength">強み</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
@@ -765,12 +794,11 @@
     </div>
   </footer>
 
-  <script src="js/bm-sanitize.js" defer></script>
-  <script src="js/bm-i18n.js" defer></script>
-  <script src="js/bm-nav.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-lp-library-embed.js" defer></script>
-  <script src="js/bm-product-manga.js" defer></script>
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+  <script src="/js/bm-i18n.js" defer></script>
+  <script src="/js/bm-nav.js" defer></script>
+  <script src="/js/bm-kinsoku.js" defer></script>
+  <script src="/js/bm-lp-library-embed.js" defer></script>
+  <script src="/js/bm-lp-v2.js" defer></script>
 </body>
 </html>

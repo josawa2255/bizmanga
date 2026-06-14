@@ -2,18 +2,20 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-06-14T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
   </script>
+  <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
   window.addEventListener('load', function() {
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
@@ -56,7 +58,7 @@
     "url": "https://bizmanga.contentsx.jp/ir-manga",
     "inLanguage": "ja-JP",
     "datePublished": "2026-04-26",
-    "dateModified": "2026-04-28",
+    "dateModified": "2026-06-14",
     "isPartOf": { "@id": "https://bizmanga.contentsx.jp/#website" },
     "publisher": { "@id": "https://bizmanga.contentsx.jp/#organization" },
     "breadcrumb": { "@id": "https://bizmanga.contentsx.jp/ir-manga#breadcrumb" },
@@ -131,13 +133,15 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="css/bizmanga.css">
+  <link rel="stylesheet" href="/css/bizmanga.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/bm-lp-template.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
 </head>
-<body class="pm-page" data-fuwa-auto>
+<!-- LP-DESIGN:v2 — migrated to the v2 design system (2026-06-14, pilot: recruit-manga). -->
+<body class="lpv2-page" data-lp-v2>
+  <!-- ===== ヘッダー（共通nav.jsで生成） ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
       <a href="/" class="bm-logo">
@@ -169,241 +173,249 @@
 
   <main id="main">
 
-    <section class="pm-hero-strip" aria-label="IR漫画・周年史マンガ">
-      <picture>
-        <source type="image/avif" srcset="material/images/lp/hero_LP.avif">
-        <img src="material/images/lp/hero_LP.webp" alt="IR漫画・IRマンガ（経営企画漫画）を読むイメージ — ビズマンガ" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="pm-hero-overlay">
-        <p class="pm-hero-eyebrow"><span data-ja="IR漫画・IRマンガ（経営企画漫画）" data-en="IR &amp; Anniversary">IR漫画・IRマンガ（経営企画漫画）</span> · IR &amp; ANNIVERSARY</p>
-        <h1 class="pm-hero-title">
-          <span data-ja="会社の歩みを、" data-en="Turn your journey">会社の歩みを、</span><br>
-          <span data-ja="未来に残る物語に" data-en="into a lasting story">未来に残る物語に</span>
-        </h1>
-        <div class="pm-hero-divider" aria-hidden="true"></div>
+    <!-- ===== 1. HERO — full-bleed bg (既存 hero_LP を流用) + 左コピー ===== -->
+    <section class="lpv2-hero" aria-label="IR漫画・周年史マンガ">
+      <div class="lpv2-hero-stage">
+        <div class="lpv2-hero-bg" aria-hidden="true">
+          <picture>
+            <source type="image/avif" srcset="/material/images/lp/hero_LP.avif">
+            <img src="/material/images/lp/hero_LP.webp" alt="" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+        </div>
+        <div class="lpv2-hero-inner">
+          <div class="lpv2-hero-text">
+            <p class="lpv2-hero-eyebrow"><span class="lpv2-hero-eyebrow-ja" data-ja="IR漫画・IRマンガ（経営企画漫画）" data-en="IR &amp; Anniversary">IR漫画・IRマンガ（経営企画漫画）</span><span class="lpv2-hero-eyebrow-en">IR &amp; ANNIVERSARY</span></p>
+            <h1 class="lpv2-hero-title">
+              <span data-ja="会社の歩みを、" data-en="Turn your journey">会社の歩みを、</span><br>
+              <em data-ja="未来に残る" data-en="into a lasting">未来に残る</em><br class="sp-br"><span data-ja="物語に。" data-en="story.">物語に。</span>
+            </h1>
+            <p class="lpv2-hero-sub" data-i18n-html data-ja="数字や年表では伝わらない会社の歩みを、<br class='sp-br'>IR漫画・IRマンガ（経営企画漫画）として<br class='sp-br'>投資家・株主・社員に届けます。<br class='sp-br'>個人投資家にビジネスモデルを伝え、<br class='sp-br'>社員・OBにアイデンティティを残します。" data-en="Tell the story behind the numbers as IR manga. Convey your business model to retail investors and leave a lasting identity for employees and alumni.">数字や年表では伝わらない会社の歩みを、<br class="sp-br">IR漫画・IRマンガ（経営企画漫画）として<br class="sp-br">投資家・株主・社員に届けます。<br class="sp-br">個人投資家にビジネスモデルを伝え、<br class="sp-br">社員・OBにアイデンティティを残します。</p>
+            <div class="lpv2-hero-cta-row">
+              <a href="/contact" class="lpv2-btn lpv2-btn--pill lpv2-btn--lg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
+              </a>
+              <a href="#chapter-05-library" class="lpv2-btn lpv2-btn--pill lpv2-btn--ghost lpv2-btn--lg">
+                <span data-ja="事例を見る" data-en="See case studies">事例を見る</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="pm-shell">
-
-      <aside class="pm-rail pm-rail--left" aria-label="編集者ノート">
-        <div class="pm-rail-character-frame">
-          <div class="pm-rail-character" id="pmCharacter" data-mood="confident">
-            <img src="images/product-manga/hero_confident.png" alt="" loading="lazy" decoding="async">
-          </div>
-        </div>
-        <p class="pm-rail-caption" id="pmCaption">EDITOR&rsquo;S DESK</p>
-        <div class="pm-rail-content" id="pmRailContent">
-          <div class="pm-rail-hint" id="pmHint">
-            <span class="pm-rail-hint-eyebrow">EDITOR&rsquo;S NOTE</span>
-            <h3 class="pm-rail-hint-title">数字では伝わらない、<br>会社の物語があります。</h3>
-            <p class="pm-rail-hint-text">統合報告書も、株主総会資料も、社史も、本来は「会社の歩み」を伝えるはずのドキュメントです。IR漫画・IRマンガ（経営企画漫画）は、数字の裏側にある人と挑戦の物語を、ステークホルダーに届ける手法です。各セクションを<strong>クリック／タップ</strong>で詳細表示。</p>
-            <p class="pm-rail-hint-tip">編集担当からのひとこと —<br>「個人投資家は決算ではなく『この会社が何を成したか』を見ています」</p>
-          </div>
-          <div class="pm-rail-detail" id="pmDetail" hidden>
-            <button class="pm-rail-back" id="pmDetailBack" type="button">一覧に戻る</button>
-            <h3 class="pm-rail-detail-title" id="pmDetailTitle"></h3>
-            <div class="pm-rail-detail-body" id="pmDetailBody"></div>
-          </div>
-        </div>
-      </aside>
-
-      <div class="pm-main-col">
-
-    <header class="pm-masthead">
-      <div class="pm-masthead-inner">
-        <p class="pm-lead">数字や年表では伝わらない会社の歩みを、<br>IR漫画・IRマンガ（経営企画漫画とも呼ばれる）として投資家・株主・社員に届けます。</p>
-        <p class="pm-formats-caption">企業ドキュメントの全方位で活躍。</p>
-        <ul class="pm-formats pm-formats--illustrated" aria-label="活用フォーマット">
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-ir-book" data-detail-title="IRブック・統合報告書">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/ir-manga/format-ir-book.webp">
-              <img src="images/ir-manga/format-ir-book.png" alt="" loading="lazy" decoding="async" width="402" height="358">
-            </picture>
-            <h3 class="pm-format-name">IRブック</h3>
-            <span class="pm-format-en">IR Book</span>
-            <p class="pm-format-use">個人投資家・新規株主に伝える</p>
-            <div class="pm-format-detail">
-              <p>統合報告書・IRブックは数十ページに渡る情報密度の高いドキュメントですが、個人投資家の多くは冒頭だけ読んで終わります。冒頭に「事業の歩み」を漫画化したセクションを入れると、その後の財務情報・ESG情報まで読み進められる確率が大幅に上がります。</p>
-              <p>機関投資家には決算書ベースの情報が届きますが、個人投資家・新規株主・取引先銀行には「物語ベースの理解」が必要です。漫画は、その情報ギャップを埋める唯一のフォーマットです。</p>
+    <!-- ===== 1b. FORMATS ===== -->
+    <section class="lpv2-section lpv2-formats" id="chapter-03-formats" aria-label="IR漫画・周年史マンガの活用フォーマット">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">03</span>
+          <span class="lpv2-chapter-mark">CHAPTER 03 &middot; FORMATS</span>
+          <h2 class="lpv2-h2">企業ドキュメントの<em>全方位</em>で活躍</h2>
+          <p class="lpv2-lead lpv2-lead--center">統合報告書・周年史・株主総会資料・社内浸透まで<br>——会社の歩みを伝える、あらゆる企業ドキュメントに</p>
+        </header>
+        <div class="lpv2-formats-grid">
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/ir-manga/format-ir-book.webp">
+                <img src="/images/ir-manga/format-ir-book.png" alt="IRブック・統合報告書" loading="lazy" decoding="async" width="402" height="358">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-anniversary" data-detail-title="周年史・社史">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/ir-manga/format-anniversary.webp">
-              <img src="images/ir-manga/format-anniversary.png" alt="" loading="lazy" decoding="async" width="448" height="366">
-            </picture>
-            <h3 class="pm-format-name">周年史</h3>
-            <span class="pm-format-en">Anniversary</span>
-            <p class="pm-format-use">10〜100周年に残す</p>
-            <div class="pm-format-detail">
-              <p>10周年・30周年・50周年・100周年など、会社の節目に発行する社史・周年史は「年表＋写真＋経営者挨拶」が定番ですが、配布された日にデスクの引き出しに入って忘れられるのが現実です。漫画形式の周年史は、社員の自宅に持ち帰られ、家族にも読まれる稀な配布物になります。</p>
-              <p>創業期の苦労・転換点での意思決定・現在に繋がる挑戦を物語として残すことで、会社のアイデンティティを次世代に継承する文化資産として機能します。</p>
+            <p class="lpv2-format__num">01 &middot; IR Book</p>
+            <h3 class="lpv2-format__name">IRブック</h3>
+            <p class="lpv2-format__use">個人投資家・新規株主に伝える</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/ir-manga/format-anniversary.webp">
+                <img src="/images/ir-manga/format-anniversary.png" alt="周年史・社史" loading="lazy" decoding="async" width="448" height="366">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-stockholder" data-detail-title="株主総会資料・招集通知">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/ir-manga/format-stockholder.webp">
-              <img src="images/ir-manga/format-stockholder.png" alt="" loading="lazy" decoding="async" width="420" height="342">
-            </picture>
-            <h3 class="pm-format-name">株主総会資料</h3>
-            <span class="pm-format-en">Stockholder</span>
-            <p class="pm-format-use">招集通知・事業報告に挿入</p>
-            <div class="pm-format-detail">
-              <p>株主総会の招集通知・事業報告書は、法定要件を満たすことが優先される結果、形式的・冷たい文書になりがちです。冒頭または各事業セグメントの紹介に漫画を挿入すると、議決権行使率・参加意欲が高まる傾向があります。</p>
-              <p>個人株主・長期保有を促進する施策として、近年は東証プライム上場企業を中心にIR漫画・IRマンガ（経営企画漫画）の導入が広がっています。</p>
+            <p class="lpv2-format__num">02 &middot; Anniversary</p>
+            <h3 class="lpv2-format__name">周年史</h3>
+            <p class="lpv2-format__use">10〜100周年に残す</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/ir-manga/format-stockholder.webp">
+                <img src="/images/ir-manga/format-stockholder.png" alt="株主総会資料・招集通知" loading="lazy" decoding="async" width="420" height="342">
+              </picture>
             </div>
-          </li>
-          <li class="pm-format-item" data-pm-detail data-detail-id="format-internal" data-detail-title="社内浸透・OB向け">
-            <picture class="pm-format-illust">
-              <source type="image/webp" srcset="images/ir-manga/format-internal.webp">
-              <img src="images/ir-manga/format-internal.png" alt="" loading="lazy" decoding="async" width="418" height="350">
-            </picture>
-            <h3 class="pm-format-name">社内浸透</h3>
-            <span class="pm-format-en">Internal/OB</span>
-            <p class="pm-format-use">社員・OBに歴史を残す</p>
-            <div class="pm-format-detail">
-              <p>会社の歩みを最も知ってほしい相手は、実は社員とOBです。新人社員にとっては「自社のアイデンティティ」、ベテランや退職OBにとっては「自分が貢献した歴史の確認」になります。</p>
-              <p>漫画形式なら、世代を超えて読まれる文化資産として残せます。社員エンゲージメント・OB会の活性化にも繋がる、長期投資型のコーポレートコミュニケーションです。</p>
+            <p class="lpv2-format__num">03 &middot; Stockholder</p>
+            <h3 class="lpv2-format__name">株主総会資料</h3>
+            <p class="lpv2-format__use">招集通知・事業報告に挿入</p>
+          </article>
+          <article class="lpv2-format">
+            <div class="lpv2-format__illust">
+              <picture>
+                <source type="image/webp" srcset="/images/ir-manga/format-internal.webp">
+                <img src="/images/ir-manga/format-internal.png" alt="社内浸透・OB向け" loading="lazy" decoding="async" width="418" height="350">
+              </picture>
             </div>
-          </li>
-        </ul>
-        <div class="pm-masthead-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="無料相談・お見積もり">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-          <a href="#library" class="pm-btn pm-btn--ghost">事例を見る</a>
+            <p class="lpv2-format__num">04 &middot; Internal/OB</p>
+            <h3 class="lpv2-format__name">社内浸透</h3>
+            <p class="lpv2-format__use">社員・OBに歴史を残す</p>
+          </article>
         </div>
       </div>
-    </header>
+    </section>
 
-    <section class="pm-section pm-section--alt pm-section--first">
-      <div class="pm-container">
-        <div style="text-align:center; margin-bottom:56px;">
-          <span class="pm-eyebrow">PROBLEM</span>
-          <h2 class="pm-h2">IR・経営企画の、こんな<em>お悩み</em>。</h2>
-        </div>
-        <ul class="pm-pain-list pm-pain-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-01" data-detail-title="個人投資家にビジネスモデルが伝わらない">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/ir-manga/pain-01.webp">
-              <img src="images/ir-manga/pain-01.png" alt="" loading="lazy" decoding="async" width="536" height="240">
+    <!-- ===== 2. CHAPTER 01 — PROBLEM ===== -->
+    <section class="lpv2-section lpv2-problem" id="chapter-01-problem" aria-label="IR・経営企画のお悩み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">01</span>
+          <span class="lpv2-chapter-mark">CHAPTER 01 &middot; PROBLEM</span>
+          <h2 class="lpv2-h2">IR・経営企画の、こんな<em>お悩み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">予算をかけた統合報告書も記念誌も、読まれずに棚で眠る——企業ドキュメントは「伝わらない」課題を抱えています</p>
+        </header>
+        <div class="lpv2-problem-grid">
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">1</span>
+              <h3 class="lpv2-pain__title">個人投資家に、ビジネスモデルが<em>伝わらない</em>。</h3>
+              <p class="lpv2-pain__text">機関投資家には決算と中計で説明できるが、個人投資家・新規株主には専門用語の壁がある。指名買いに繋がらず、長期保有比率が伸びない。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/ir-manga/pain-01.webp">
+              <img src="/images/ir-manga/pain-01.png" alt="個人投資家にビジネスモデルが伝わらない" loading="lazy" decoding="async" width="536" height="240">
             </picture>
-            <span class="pm-pain-num">01</span>
-            <p class="pm-pain-title">個人投資家に、ビジネスモデルが<em>伝わらない</em>。</p>
-            <p class="pm-pain-text">機関投資家には決算と中計で説明できるが、個人投資家・新規株主には専門用語の壁がある。指名買いに繋がらず、長期保有比率が伸びない。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>個人投資家の銘柄選定は、機関投資家とは異なる軸で動きます。彼らが知りたいのは「この会社が何をしているか」「経営者がどんな人か」「将来何を成そうとしているか」という物語的な情報です。決算短信や統合報告書の数字は、購入意思決定の決め手になりにくいのが実態です。</p>
               <p>IR漫画は、個人投資家が銘柄を「物語として」理解する入り口を提供します。冒頭の数ページを漫画にするだけで、その後の財務情報・ESG情報まで読み進められる確率が大幅に上がり、個人株主比率・長期保有比率の改善に貢献します。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-02" data-detail-title="周年事業の記念誌がただの年表になる">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/ir-manga/pain-02.webp">
-              <img src="images/ir-manga/pain-02.png" alt="" loading="lazy" decoding="async" width="584" height="236">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">2</span>
+              <h3 class="lpv2-pain__title">周年記念誌が、ただの<em>年表になる</em>。</h3>
+              <p class="lpv2-pain__text">10周年・50周年に予算をかけた記念誌が、出来上がってみれば年表＋写真＋挨拶の繰り返し。社員にすら読まれず棚で眠ることが分かっている。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/ir-manga/pain-02.webp">
+              <img src="/images/ir-manga/pain-02.png" alt="周年記念誌がただの年表になる" loading="lazy" decoding="async" width="584" height="236">
             </picture>
-            <span class="pm-pain-num">02</span>
-            <p class="pm-pain-title">周年記念誌が、ただの<em>年表になる</em>。</p>
-            <p class="pm-pain-text">10周年・50周年に予算をかけた記念誌が、出来上がってみれば年表＋写真＋挨拶の繰り返し。社員にすら読まれず棚で眠ることが分かっている。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>従来の周年史は、編集委員会が「客観性」「網羅性」を優先する結果、面白みのない年表になりがちです。創業者の挫折・転換点での葛藤・現場の苦労といった「人の物語」が、客観性のためにそぎ落とされてしまいます。</p>
               <p>IR漫画・周年史漫画は、その「客観性の罠」から抜け出します。創業者・経営陣・現場社員を登場人物として描き、会社の歩みを「人の物語」として再構成することで、若手社員からOBまで世代を超えて読まれる文化資産になります。</p>
             </div>
-          </li>
-          <li class="pm-pain-item" data-pm-detail data-detail-id="pain-03" data-detail-title="社員・OBへの会社史共有が形骸化">
-            <picture class="pm-pain-illust">
-              <source type="image/webp" srcset="images/ir-manga/pain-03.webp">
-              <img src="images/ir-manga/pain-03.png" alt="" loading="lazy" decoding="async" width="620" height="240">
+          </article>
+
+          <article class="lpv2-pain" data-lpv2-toggle>
+            <div class="lpv2-pain__body">
+              <span class="lpv2-pain__num">3</span>
+              <h3 class="lpv2-pain__title">社員・OBに、会社史が<em>届いていない</em>。</h3>
+              <p class="lpv2-pain__text">新入社員研修で配る会社案内も、OB会で配る記念冊子も、誰も真剣に読まない。会社のアイデンティティが世代を越えて継承されていない。</p>
+              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="lpv2-pain__illust">
+              <source type="image/webp" srcset="/images/ir-manga/pain-03.webp">
+              <img src="/images/ir-manga/pain-03.png" alt="社員・OBに会社史が届いていない" loading="lazy" decoding="async" width="620" height="240">
             </picture>
-            <span class="pm-pain-num">03</span>
-            <p class="pm-pain-title">社員・OBに、会社史が<em>届いていない</em>。</p>
-            <p class="pm-pain-text">新入社員研修で配る会社案内も、OB会で配る記念冊子も、誰も真剣に読まない。会社のアイデンティティが世代を越えて継承されていない。</p>
-            <div class="pm-pain-detail">
+            <div class="lpv2-pain__detail">
               <p>会社のアイデンティティ継承は、本来は社員・OBに対する最も重要なコミュニケーションです。しかし従来の会社史・記念誌は、新人にとって「過去の話」、ベテランにとって「自分が知っている話」になり、誰の心にも刺さらない構造に陥りがちです。</p>
               <p>IR漫画・周年史漫画は、世代を超えて「面白く読める」フォーマットです。新人社員は会社のルーツを物語として理解でき、ベテラン・OBは自分が関わった歴史を「物語の中の登場人物」として再認識できます。社員エンゲージメント・OBコミュニティ活性化に直接効きます。</p>
             </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="pm-bridge">
-      <div class="pm-container pm-container--narrow">
-        <p class="pm-bridge-line">その悩みは、<br><em>「IR漫画・周年史マンガ」</em>で解決できます。</p>
-      </div>
-    </section>
-
-    <section class="pm-section">
-      <div class="pm-container pm-container--narrow">
-        <div style="text-align:center; margin-bottom:48px;">
-          <span class="pm-eyebrow">MERIT</span>
-          <h2 class="pm-h2">IR漫画・周年史マンガの、4つの強み。</h2>
+          </article>
         </div>
-        <p class="pm-section-lead" style="text-align:center; max-width:680px; margin:0 auto 32px; font-size:13px; color:#7a7770;">※ 本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します。</p>
-        <ol class="pm-merit-list pm-merit-list--illustrated" style="list-style:none; padding:0; margin:0;">
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-01" data-detail-title="創業からの歩みを物語で残す">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/ir-manga/merit-01.webp">
-              <img src="images/ir-manga/merit-01.png" alt="" loading="lazy" decoding="async" width="820" height="274">
+      </div>
+    </section>
+
+    <!-- ===== 3. BRIDGE ===== -->
+    <section class="lpv2-bridge" aria-label="解決策">
+      <div class="lpv2-bridge-inner">
+        <p class="lpv2-bridge-eyebrow">SOLUTION</p>
+        <p class="lpv2-bridge-statement">その悩みは、<br><em>IR漫画・周年史マンガ</em>で解決できる！</p>
+      </div>
+    </section>
+
+    <!-- ===== 4. CHAPTER 02 — MERIT ===== -->
+    <section class="lpv2-section lpv2-merit" id="chapter-02-merit" aria-label="IR漫画・周年史マンガの強み">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">02</span>
+          <span class="lpv2-chapter-mark">CHAPTER 02 &middot; STRENGTH</span>
+          <h2 class="lpv2-h2">IR漫画・周年史マンガの、<em>4つの強み</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">本ページに記載の数値はすべて自社調べ（2025年度実績・サンプル限定）です。実際の効果は案件により変動します</p>
+        </header>
+        <div class="lpv2-merit-grid">
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">01</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/ir-manga/merit-01.webp">
+              <img src="/images/ir-manga/merit-01.png" alt="創業からの歩みを物語として残せる" loading="lazy" decoding="async" width="820" height="274">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">創業からの歩みを<em>物語として残せる</em>。</h3>
-            <p class="pm-merit-text">年表では伝わらない、創業者の覚悟・転換点の葛藤・現場の挑戦を、登場人物の物語として描きます。会社のアイデンティティを次世代に継承できます。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">創業からの歩みを<em>物語として残せる</em>。</h3>
+              <p class="lpv2-merit-card__text">年表では伝わらない、創業者の覚悟・転換点の葛藤・現場の挑戦を、登場人物の物語として描きます。会社のアイデンティティを次世代に継承できます。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>会社の本質は「人の物語」です。誰が、何に直面し、どう乗り越えたか。その積み重ねが今の会社を作っています。しかし従来の年表式社史では、その「人の物語」がほぼ排除されてしまいます。</p>
               <p>IR漫画では、創業者・キーパーソンを登場人物として描き、各時代の意思決定を「感情と一緒に」追体験できます。10年・50年後の社員が読み返したときに「自分たちの会社のルーツ」を物語として理解できる、文化資産として残せる稀な企業ドキュメントです。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-02" data-detail-title="個人投資家にビジネスモデルを伝える">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/ir-manga/merit-02.webp">
-              <img src="images/ir-manga/merit-02.png" alt="" loading="lazy" decoding="async" width="844" height="276">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">02</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/ir-manga/merit-02.webp">
+              <img src="/images/ir-manga/merit-02.png" alt="個人投資家にビジネスモデルを伝える" loading="lazy" decoding="async" width="844" height="276">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">個人投資家に<em>ビジネスモデルを伝える</em>。</h3>
-            <p class="pm-merit-text">統合報告書冒頭に物語パートを置くことで、個人株主・新規株主の理解度が一気に上がります。指名買い・長期保有比率の改善に貢献します。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">個人投資家に<em>ビジネスモデルを伝える</em>。</h3>
+              <p class="lpv2-merit-card__text">統合報告書冒頭に物語パートを置くことで、個人株主・新規株主の理解度が一気に上がります。指名買い・長期保有比率の改善に貢献します。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>機関投資家とは異なり、個人投資家は「物語ベース」で銘柄を判断します。決算書の数字よりも「この会社が何を成したか」「経営者がどんな人か」を知りたがります。IR漫画は、この情報ニーズに最も適したフォーマットです。</p>
               <p>統合報告書・IRサイト・株主総会招集通知の冒頭にIR漫画を配置すると、個人投資家の理解度・銘柄ロイヤリティが大きく改善します。長期保有比率の上昇は、株価安定・経営の自由度向上にも繋がる、本質的なIR施策です。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-03" data-detail-title="社員教育・採用にも転用可能">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/ir-manga/merit-03.webp">
-              <img src="images/ir-manga/merit-03.png" alt="" loading="lazy" decoding="async" width="828" height="222">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">03</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/ir-manga/merit-03.webp">
+              <img src="/images/ir-manga/merit-03.png" alt="社員教育・採用にも転用可能" loading="lazy" decoding="async" width="828" height="222">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">社員教育・採用にも<em>転用可能</em>。</h3>
-            <p class="pm-merit-text">1本のIR漫画を、新人研修・採用説明会・取引先紹介まで派生展開できます。コーポレートコミュニケーションの一貫性が高まります。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">社員教育・採用にも<em>転用可能</em>。</h3>
+              <p class="lpv2-merit-card__text">1本のIR漫画を、新人研修・採用説明会・取引先紹介まで派生展開できます。コーポレートコミュニケーションの一貫性が高まります。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>会社の歩み・ビジネスモデル・経営者の想いは、IR・採用・営業・社員教育のすべてで必要な情報です。これまでは媒体ごとに別の制作物を作ることが多く、コストとブランド一貫性の両立が困難でした。</p>
               <p>IR漫画は、1本制作すれば全ステークホルダー向けに派生展開できる「企業の物語の核」になります。投資家向けにはビジネスモデルパートを強調し、求職者向けには働く人パートを強調する、といった編集だけで派生展開できるため、コーポレートコミュニケーションの全体最適化に直結します。</p>
             </div>
-          </li>
-          <li class="pm-merit-item" data-pm-detail data-detail-id="merit-04" data-detail-title="社史・周年史としての記念性">
-            <picture class="pm-merit-illust">
-              <source type="image/webp" srcset="images/ir-manga/merit-04.webp">
-              <img src="images/ir-manga/merit-04.png" alt="" loading="lazy" decoding="async" width="870" height="222">
+          </article>
+
+          <article class="lpv2-merit-card" data-lpv2-toggle>
+            <span class="lpv2-merit-card__num">04</span>
+            <picture class="lpv2-merit-card__illust">
+              <source type="image/webp" srcset="/images/ir-manga/merit-04.webp">
+              <img src="/images/ir-manga/merit-04.png" alt="社史・周年史としての記念性がある" loading="lazy" decoding="async" width="870" height="222">
             </picture>
-            <span class="pm-merit-num"></span>
-            <h3 class="pm-merit-title">社史・周年史としての<em>記念性</em>がある。</h3>
-            <p class="pm-merit-text">読まれない記念誌ではなく、世代を超えて読み継がれる「文化資産」を残せます。社員の家族にも届く稀な配布物になります。</p>
-            <div class="pm-merit-detail">
+            <div class="lpv2-merit-card__body">
+              <h3 class="lpv2-merit-card__title">社史・周年史としての<em>記念性</em>がある。</h3>
+              <p class="lpv2-merit-card__text">読まれない記念誌ではなく、世代を超えて読み継がれる「文化資産」を残せます。社員の家族にも届く稀な配布物になります。</p>
+              <button class="lpv2-merit-card__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <div class="lpv2-merit-card__detail">
               <p>周年事業の予算は、企業によっては数百万〜数千万円規模になりますが、その大半は記念誌・記念パーティ・記念品で消えていきます。記念誌は配布後すぐに棚で眠り、誰の記憶にも残らないというのが多くの企業の実情です。</p>
               <p>漫画版周年記念誌は、社員の自宅にも持ち帰られ、家族にも読まれる稀な配布物になります。社員エンゲージメントの向上に貢献し、10年後・20年後の社員が読み返せる「文化資産」として残せます。周年事業の投資対効果を、最大化する選択肢です。</p>
             </div>
-          </li>
-        </ol>
+          </article>
+        </div>
       </div>
     </section>
+
+    <!-- ===== 5. CHAPTER 04 — CASES (auto-built) ===== -->
     <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->
     <section class="pm-section pm-cases-static" aria-label="IR漫画・周年史マンガの制作事例">
       <div class="pm-container pm-container--narrow">
@@ -434,296 +446,315 @@
     </section>
     <!-- BUILD:LP-CASES:END -->
 
-
-
-
-
-
-
-
-
-
-
-    <section class="pm-section pm-library" id="library" data-bm-lp-library data-category="IR">
-      <div class="pm-container">
-        <div class="pm-library-head">
-          <span class="pm-eyebrow">FROM BIZ LIBRARY</span>
-          <h2 class="pm-h2">IR漫画・周年史マンガを、実際に読んでみる。</h2>
-          <p class="pm-library-note">クライアント企業向けに制作したIR漫画・周年史マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます。</p>
-        </div>
-        <div class="pm-lp-lib-grid" data-bm-lp-library-grid>
+    <!-- ===== 6. CHAPTER 05 — LIBRARY (Biz Library embed) ===== -->
+    <section class="lpv2-section lpv2-library" id="chapter-05-library" data-bm-lp-library data-category="IR" aria-label="ビズ書庫からIR漫画・周年史マンガを読む">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">05</span>
+          <span class="lpv2-chapter-mark">CHAPTER 05 &middot; FROM BIZ LIBRARY</span>
+          <h2 class="lpv2-h2">IR漫画・周年史マンガを、<em>実際に読んでみる</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">クライアント企業向けに制作したIR漫画・周年史マンガを、ビズ書庫から抜粋して掲載しています。タップ／クリックすると、全画面のビューアで作品を読めます</p>
+        </header>
+        <div class="lpv2-library-grid" data-bm-lp-library-grid>
           <p class="bm-lp-lib-loading">読み込み中…</p>
         </div>
-        <div class="pm-library-cta">
-          <a href="/biz-library" class="pm-btn pm-btn--ghost">ビズ書庫で全作品を見る</a>
+        <div class="lpv2-library-cta">
+          <a href="/biz-library" class="lpv2-btn lpv2-btn--accent-on-dark">ビズ書庫で全作品を見る</a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 制作フロー（クリックで左ペインに画像と詳細） ===== -->
-    <section class="pm-section pm-flow-section" id="productionFlow" aria-label="制作フロー">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">PRODUCTION FLOW</span>
-        <h2 class="pm-section-title">IR漫画・周年史マンガの制作フロー</h2>
-        <p class="pm-section-lead">ヒアリングから納品まで、8つのステップで進行します。各ステップをクリックすると、左の編集者ノートに参考画像と詳しい解説が表示されます。</p>
-        <div class="pm-flow-list-v">
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="1"
-                    data-pm-flow-slug="step1_hearing"
-                    data-pm-flow-name="ヒアリング"
-                    data-pm-flow-desc="IR担当・経営企画・IRコンサル・法務など複数関係者を含めたヒアリング。適時開示・将来予測表現の制約条件・統合報告書／株主通信／株主総会資料などの納品物計画もこの段階で整理します。">
-              <span class="flow-step-num">1</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ヒアリング" data-en="ヒアリング">ヒアリング</span>
-                <span class="pm-flow-step-desc" data-ja="IR担当・経営企画・IRコンサル・法務など複数関係者を含めたヒアリング。" data-en="">IR担当・経営企画・IRコンサル・法務など複数関係者を含めたヒアリング。</span>
+    <!-- ===== 7. CHAPTER 06 — PRODUCTION FLOW ===== -->
+    <section class="lpv2-section lpv2-flow" id="chapter-06-flow" aria-label="制作フロー">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">06</span>
+          <span class="lpv2-chapter-mark">CHAPTER 06 &middot; PRODUCTION FLOW</span>
+          <h2 class="lpv2-h2">IR漫画・周年史マンガの<em>制作フロー</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">ヒアリングから納品まで、8つのステップで進行します。適時開示・金商法・上場ルールへの配慮を各工程に組み込んで運用します</p>
+        </header>
+        <!-- 裏面の画像は制作フローのMVP作例画像(material/images/flow/)を流用。8ステップ完全対応。フリップ裏面imgはloading=lazy禁止 -->
+        <div class="lpv2-flow-grid">
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">01</span>
+                <span class="lpv2-flow-step__name">ヒアリング</span>
+                <span class="lpv2-flow-step__desc">IR担当・経営企画・IRコンサル・法務など複数関係者を含めたヒアリング。適時開示・将来予測表現の制約条件・統合報告書／株主通信／株主総会資料などの納品物計画もこの段階で整理します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
               </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="2"
-                    data-pm-flow-slug="step2_arasuji"
-                    data-pm-flow-name="あらすじ"
-                    data-pm-flow-desc="個人投資家が「数字より物語で動く」ことを前提に、事業モデル・成長戦略・経営理念を物語化。機関投資家向けの定量分析資料とは異なる「読みたくなる」IR文書の骨組みを作ります。">
-              <span class="flow-step-num">2</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="あらすじ" data-en="あらすじ">あらすじ</span>
-                <span class="pm-flow-step-desc" data-ja="個人投資家が「数字より物語で動く」ことを前提に、事業モデル・成長戦略・経営理念を物語化。" data-en="">個人投資家が「数字より物語で動く」ことを前提に、事業モデル・成長戦略・経営理念を物語化。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="3"
-                    data-pm-flow-slug="step3_scenario"
-                    data-pm-flow-name="シナリオ"
-                    data-pm-flow-desc="業績見通し・将来予測表現は金融商品取引法のガイドラインに沿った言い回しに調整。重要事実（インサイダー情報）への言及・特定の銘柄推奨表現の回避を徹底し、適時開示ルールに抵触しない構成を設計します。">
-              <span class="flow-step-num">3</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="シナリオ" data-en="シナリオ">シナリオ</span>
-                <span class="pm-flow-step-desc" data-ja="業績見通し・将来予測表現は金融商品取引法のガイドラインに沿った言い回しに調整。" data-en="">業績見通し・将来予測表現は金融商品取引法のガイドラインに沿った言い回しに調整。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="4"
-                    data-pm-flow-slug="step4_gafu"
-                    data-pm-flow-name="画風決定"
-                    data-pm-flow-desc="上場企業ブランドの格を保ちつつ、個人投資家にも親しみやすい画風を選定。プライム市場向けは落ち着いた写実調、グロース市場向けは現代的な画風、ファミリー企業向けは温かみのある画風を採用します。">
-              <span class="flow-step-num">4</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="画風決定" data-en="画風決定">画風決定</span>
-                <span class="pm-flow-step-desc" data-ja="上場企業ブランドの格を保ちつつ、個人投資家にも親しみやすい画風を選定。" data-en="">上場企業ブランドの格を保ちつつ、個人投資家にも親しみやすい画風を選定。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="5"
-                    data-pm-flow-slug="step5_name"
-                    data-pm-flow-name="ネーム"
-                    data-pm-flow-desc="統合報告書・株主通信の挿入箇所を想定したページ数・コマ割り設計。投資家説明会で画面表示する場合の文字サイズ、紙面印刷の縮小耐性、電子公告対応のPDF最適化までこの段階で組みます。">
-              <span class="flow-step-num">5</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="ネーム" data-en="ネーム">ネーム</span>
-                <span class="pm-flow-step-desc" data-ja="統合報告書・株主通信の挿入箇所を想定したページ数・コマ割り設計。" data-en="">統合報告書・株主通信の挿入箇所を想定したページ数・コマ割り設計。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="6"
-                    data-pm-flow-slug="step6_seisaku"
-                    data-pm-flow-name="漫画制作"
-                    data-pm-flow-desc="プロの漫画家がIR文書としての品位ある作画を実現。決算数字・業績推移グラフを漫画演出に組み込みつつ、有報・統合報告書としての記録性を保つ仕上げを行います。">
-              <span class="flow-step-num">6</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="漫画制作" data-en="漫画制作">漫画制作</span>
-                <span class="pm-flow-step-desc" data-ja="プロの漫画家がIR文書としての品位ある作画を実現。" data-en="">プロの漫画家がIR文書としての品位ある作画を実現。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="7"
-                    data-pm-flow-slug="step7_kakunin"
-                    data-pm-flow-name="初稿確認"
-                    data-pm-flow-desc="IR担当・経営企画・法務・監査法人・主幹事証券（必要に応じて）の複数視点でレビュー。適時開示規則・金商法・取引所規則への抵触リスクを厳格にチェックし、記述の正確性を担保します。">
-              <span class="flow-step-num">7</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="初稿確認" data-en="初稿確認">初稿確認</span>
-                <span class="pm-flow-step-desc" data-ja="IR担当・経営企画・法務・監査法人・主幹事証券（必要に応じて）の複数視点でレビュー。" data-en="">IR担当・経営企画・法務・監査法人・主幹事証券（必要に応じて）の複数視点でレビュー。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="flow-step pm-flow-step-row" type="button"
-                    data-pm-flow-step="8"
-                    data-pm-flow-slug="step8_nouhin"
-                    data-pm-flow-name="最終納品"
-                    data-pm-flow-desc="統合報告書挿入用PDF（高解像度・印刷入稿対応）・株主総会資料用PNG・株主通信印刷用PDF・IRサイト掲載用Web版・電子公告対応PDFなど、上場企業のIR媒体に合わせた書き出しを行います。">
-              <span class="flow-step-num">8</span>
-              <span class="pm-flow-step-info">
-                <span class="pm-flow-step-name" data-ja="最終納品" data-en="最終納品">最終納品</span>
-                <span class="pm-flow-step-desc" data-ja="統合報告書挿入用PDF（高解像度・印刷入稿対応）・株主総会資料用PNG・株主通信印刷用PDF・IRサイト掲載用Web版・電子公告対応PDFなど、上場企業のIR媒体に合わせた書き出しを行います。" data-en="">統合報告書挿入用PDF（高解像度・印刷入稿対応）・株主総会資料用PNG・株主通信印刷用PDF・IRサイト掲載用Web版・電子公告対応PDFなど、上場企業のIR媒体に合わせた書き出しを行います。</span>
-              </span>
-              <span class="pm-flow-step-arrow" aria-hidden="true">→</span>
-            </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FAQ（FAQPage Schema 連動） ===== -->
-    <section class="pm-section pm-faq-section" aria-label="よくあるご質問">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-section-eyebrow">FAQ</span>
-        <h2 class="pm-section-title">IR漫画・周年史マンガについてよくあるご質問</h2>
-        <p class="pm-section-lead">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください。</p>
-        <div class="pm-faq-list">
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">制作期間はどのくらいかかりますか？</summary>
-            <div class="pm-faq-answer">IR漫画は株主総会・統合報告書発行・周年事業のタイミングからの逆算で動きます。標準10ページで5〜6週間、統合報告書全体組み込みなら3〜4ヶ月の長期プロジェクト。3月総会逆算なら12月着手、6月総会逆算なら3月着手が標準スケジュールです。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">費用の相場はいくらですか？</summary>
-            <div class="pm-faq-answer">IR漫画は1ページ16,600円〜、統合報告書冒頭5〜10ページの導入用なら約7.9万円〜17.4万円が目安。周年史と統合的に制作する場合は30〜50ページで40〜80万円規模。IR担当・経営企画・株主総会配布版も同価格内で対応します。詳細は料金ページ（bizmanga.contentsx.jp/pricing）。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">修正は何回まで対応していますか？</summary>
-            <div class="pm-faq-answer">IR漫画は適時開示・金商法・上場ルールへの配慮が必要なため、IR部門・経営企画・法務部門のレビューを修正サイクルに組み込みます。決算数値・将来予測の表現は特に慎重に擦り合わせ、機関投資家・個人投資家の両方に違和感のない仕上がりに整えます。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">著作権・使用範囲はどうなりますか？</summary>
-            <div class="pm-faq-answer">IR漫画の使用権はクライアント様に帰属します。統合報告書・株主総会招集通知・事業報告書・IRサイト・社員向け開示資料の全媒体で展開可能。年次更新時の改訂運用、決算ごとのアップデート版作成にも対応します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">機密保持契約（NDA）には対応していますか？</summary>
-            <div class="pm-faq-answer">対応可能です。適時開示前の経営戦略・M&A・新規事業情報など、金商法上の機密管理が必要な案件で実績多数。インサイダー情報の取扱いも準拠した社内体制で、適時開示原則に沿った制作管理を実施します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">英語版・多言語版は作れますか？</summary>
-            <div class="pm-faq-answer">対応可能です。海外機関投資家・グローバルIR向けに英語版を制作。日米欧の投資家向け統合報告書英語版・株主総会英語版招集通知でも実績あり。財務用語・上場ルール用語（IFRS・US GAAP・東証規定）の正確な翻訳対応が可能です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">適時開示・金融商品取引法との整合性は確認していますか？</summary>
-            <div class="pm-faq-answer">ご担当者・IRコンサル・法務監査と連携した監修フローで制作します。重要事実・業績見通し・将来予測表現はガイドラインに沿った言い回しに調整し、適時開示ルールに抵触しない構成を設計します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">統合報告書・株主総会資料への掲載実績はありますか？</summary>
-            <div class="pm-faq-answer">上場企業の統合報告書・株主通信・有価証券報告書の補足資料・周年記念誌など、IR文書への掲載実績があります。印刷品質・PDF最適化・電子公告対応まで一貫対応可能です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">統合報告書のページ単位で挿入する形式に対応できますか？</summary>
-            <div class="pm-faq-answer">対応可能です。1ページ漫画・見開き2ページ漫画・章扉漫画など、統合報告書の構成に合わせた挿入形態で制作。印刷入稿用の高解像度PDFと、有報PDFへの埋め込み最適化版を同時納品します。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">監査法人や法務とのレビュー調整は誰が窓口ですか？</summary>
-            <div class="pm-faq-answer">クライアント様側のIR担当が監査法人・法務との連絡窓口を担い、ビズマンガ側は編集担当が一元的に修正対応します。重要事実の取り扱い・将来予測表現・適時開示ルールの全レビューラウンドに対応可能。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">株主総会前の短納期（4〜6週間以内）対応は可能ですか？</summary>
-            <div class="pm-faq-answer">可能です。3月決算企業の6月株主総会、12月決算企業の3月株主総会など、定時株主総会のタイミングからの逆算スケジュールで短納期対応。並行制作・優先アサインで通常の半分の期間で完成可能です。</div>
-          </details>
-          <details class="pm-faq-item">
-            <summary class="pm-faq-question">個人投資家向けと機関投資家向けで内容を分けられますか？</summary>
-            <div class="pm-faq-answer">対応可能です。個人投資家向けには物語性・親しみやすさ重視、機関投資家向けには事業モデル・成長戦略の解像度重視で、同一テーマから2バージョン制作。決算説明会・株主通信・統合報告書で使い分けられます。</div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 関連LP（他の用途別マンガ） ===== -->
-    <section class="pm-related" aria-label="他の用途別マンガ">
-      <div class="pm-container pm-container--narrow">
-        <span class="pm-related-eyebrow">OTHER USE CASES</span>
-        <h2 class="pm-related-title">他の用途別マンガを見る</h2>
-        <p class="pm-related-lead">商品紹介・採用・広告・営業資料・研修・IR・インバウンド・会社紹介。それぞれの目的に合わせた構成と訴求軸でご提案します。</p>
-        <div class="pm-related-grid">
-          <a class="pm-related-card" href="/product-manga">            <h3 class="pm-related-card-name">商品紹介マンガ</h3>
-            <p class="pm-related-card-hook">SaaS・無形商材も、漫画なら伝わる</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/recruit-manga">            <h3 class="pm-related-card-name">採用マンガ</h3>
-            <p class="pm-related-card-hook">応募・内定承諾率を高める</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/manga-ad-lp">            <h3 class="pm-related-card-name">マンガ広告</h3>
-            <p class="pm-related-card-hook">広告らしくない、止まる広告</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/company-manga">            <h3 class="pm-related-card-name">会社紹介マンガ</h3>
-            <p class="pm-related-card-hook">ステークホルダー横断で届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/sales-manga">            <h3 class="pm-related-card-name">営業資料マンガ</h3>
-            <p class="pm-related-card-hook">決裁者まで物語のまま届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/training-manga">            <h3 class="pm-related-card-name">研修マンガ</h3>
-            <p class="pm-related-card-hook">失敗事例を安全に疑似体験</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-          <a class="pm-related-card" href="/inbound-manga">            <h3 class="pm-related-card-name">インバウンド漫画</h3>
-            <p class="pm-related-card-hook">言葉を超えて旅人に届く</p>
-            <span class="pm-related-card-arrow" aria-hidden="true">詳しく →</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-
-
-    <aside class="bm-related-guide" aria-label="関連: 漫画制作会社 比較ガイド">
-      <p class="bm-related-guide-eyebrow" data-ja="業者比較で迷ったら" data-en="Comparing vendors?">業者比較で迷ったら</p>
-      <p class="bm-related-guide-text" data-ja="IR漫画・統合報告書を依頼する業者選びにお迷いの方は、業界主要 5 社の料金・実績を一覧化した【IR漫画対応の漫画制作会社 比較ガイド】もご覧ください。" data-en="Comparing vendors for IR or integrated-report manga? See our IR-Manga Production Company Comparison Guide.">
-        IR漫画・統合報告書を依頼する業者選びにお迷いの方は、業界主要 5 社の料金・実績を一覧化した
-        <a href="/manga-production-company" data-ja="IR漫画対応の漫画制作会社 比較ガイド" data-en="IR-Manga Production Company Comparison Guide">IR漫画対応の漫画制作会社 比較ガイド</a>
-        もご覧ください。
-      </p>
-    </aside>
-
-    <section class="pm-end">
-      <div class="pm-container pm-container--narrow">
-        <div class="pm-rule"></div>
-        <h2 class="pm-end-title">残したい歴史と、伝えたい未来があるなら<br>その物語を<br><em>一緒に編みましょう</em></h2>
-        <p class="pm-end-text">創業者・経営陣・現場へのインタビュー、史実調査、企画・作画、納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の規模・上場区分・節目に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。周年事業のスケジュールに合わせた逆算スケジュールも対応可能です。</p>
-        <div class="pm-end-cta">
-          <a href="/contact" class="pm-cta-btn pm-cta-btn--primary" data-tooltip="お問い合わせ">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">無料相談・お見積もり</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step1_hearing.avif">
+                  <img src="/material/images/flow/step1_hearing.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
-          </a>
-          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="pm-cta-btn pm-cta-btn--line" data-tooltip="LINEで相談" target="_blank" rel="noopener">
-            <span class="pm-cta-btn__wrap">
-              <span class="pm-cta-btn__text">LINEで相談</span>
-              <span class="pm-cta-btn__icon-box">
-                <svg class="pm-cta-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z"/>
-                </svg>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">02</span>
+                <span class="lpv2-flow-step__name">あらすじ</span>
+                <span class="lpv2-flow-step__desc">個人投資家が「数字より物語で動く」ことを前提に、事業モデル・成長戦略・経営理念を物語化。機関投資家向けの定量分析資料とは異なる「読みたくなる」IR文書の骨組みを作ります。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step2_arasuji.avif">
+                  <img src="/material/images/flow/step2_arasuji.webp" alt="" decoding="async">
+                </picture>
               </span>
             </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">03</span>
+                <span class="lpv2-flow-step__name">シナリオ</span>
+                <span class="lpv2-flow-step__desc">業績見通し・将来予測表現は金融商品取引法のガイドラインに沿った言い回しに調整。重要事実（インサイダー情報）への言及・特定の銘柄推奨表現の回避を徹底し、適時開示ルールに抵触しない構成を設計します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step3_scenario.avif">
+                  <img src="/material/images/flow/step3_scenario.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">04</span>
+                <span class="lpv2-flow-step__name">画風決定</span>
+                <span class="lpv2-flow-step__desc">上場企業ブランドの格を保ちつつ、個人投資家にも親しみやすい画風を選定。プライム市場向けは落ち着いた写実調、グロース市場向けは現代的な画風、ファミリー企業向けは温かみのある画風を採用します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step4_gafu.avif">
+                  <img src="/material/images/flow/step4_gafu.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">05</span>
+                <span class="lpv2-flow-step__name">ネーム</span>
+                <span class="lpv2-flow-step__desc">統合報告書・株主通信の挿入箇所を想定したページ数・コマ割り設計。投資家説明会で画面表示する場合の文字サイズ、紙面印刷の縮小耐性、電子公告対応のPDF最適化までこの段階で組みます。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step5_name.avif">
+                  <img src="/material/images/flow/step5_name.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">06</span>
+                <span class="lpv2-flow-step__name">漫画制作</span>
+                <span class="lpv2-flow-step__desc">プロの漫画家がIR文書としての品位ある作画を実現。決算数字・業績推移グラフを漫画演出に組み込みつつ、有報・統合報告書としての記録性を保つ仕上げを行います。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step6_seisaku.avif">
+                  <img src="/material/images/flow/step6_seisaku.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">07</span>
+                <span class="lpv2-flow-step__name">初稿確認</span>
+                <span class="lpv2-flow-step__desc">IR担当・経営企画・法務・監査法人・主幹事証券（必要に応じて）の複数視点でレビュー。適時開示規則・金商法・取引所規則への抵触リスクを厳格にチェックし、記述の正確性を担保します。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step7_kakunin.avif">
+                  <img src="/material/images/flow/step7_kakunin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+          <button class="lpv2-flow-step" type="button" aria-expanded="false">
+            <span class="lpv2-flow-step__inner">
+              <span class="lpv2-flow-step__face lpv2-flow-step__front">
+                <span class="lpv2-flow-step__num">08</span>
+                <span class="lpv2-flow-step__name">最終納品</span>
+                <span class="lpv2-flow-step__desc">統合報告書挿入用PDF（高解像度・印刷入稿対応）・株主総会資料用PNG・株主通信印刷用PDF・IRサイト掲載用Web版・電子公告対応PDFなど、上場企業のIR媒体に合わせた書き出しを行います。</span>
+                <span class="lpv2-flow-step__hint">イメージを見る</span>
+              </span>
+              <span class="lpv2-flow-step__face lpv2-flow-step__back">
+                <picture class="lpv2-flow-step__pic">
+                  <source type="image/avif" srcset="/material/images/flow/step8_nouhin.avif">
+                  <img src="/material/images/flow/step8_nouhin.webp" alt="" decoding="async">
+                </picture>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 8. CHAPTER 07 — FAQ ===== -->
+    <section class="lpv2-section lpv2-faq" id="chapter-07-faq" aria-label="よくあるご質問">
+      <div class="lpv2-container">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-num">07</span>
+          <span class="lpv2-chapter-mark">CHAPTER 07 &middot; FAQ</span>
+          <h2 class="lpv2-h2">IR漫画・周年史マンガについて、<em>よくあるご質問</em></h2>
+          <p class="lpv2-lead lpv2-lead--center">お問い合わせ前に解消しておきたい疑問を、編集担当目線でまとめました。ここに無いご質問はお気軽にお問い合わせください</p>
+        </header>
+        <div class="lpv2-faq-list">
+          <details class="lpv2-faq-item">
+            <summary>制作期間はどのくらいかかりますか？</summary>
+            <div class="lpv2-faq-answer">IR漫画は株主総会・統合報告書発行・周年事業のタイミングからの逆算で動きます。標準10ページで5〜6週間、統合報告書全体組み込みなら3〜4ヶ月の長期プロジェクト。3月総会逆算なら12月着手、6月総会逆算なら3月着手が標準スケジュールです。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>費用の相場はいくらですか？</summary>
+            <div class="lpv2-faq-answer">IR漫画は1ページ16,600円〜、統合報告書冒頭5〜10ページの導入用なら約7.9万円〜17.4万円が目安。周年史と統合的に制作する場合は30〜50ページで40〜80万円規模。IR担当・経営企画・株主総会配布版も同価格内で対応します。詳細は <a href="/pricing">料金ページ</a> をご覧ください。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>修正は何回まで対応していますか？</summary>
+            <div class="lpv2-faq-answer">IR漫画は適時開示・金商法・上場ルールへの配慮が必要なため、IR部門・経営企画・法務部門のレビューを修正サイクルに組み込みます。決算数値・将来予測の表現は特に慎重に擦り合わせ、機関投資家・個人投資家の両方に違和感のない仕上がりに整えます。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>著作権・使用範囲はどうなりますか？</summary>
+            <div class="lpv2-faq-answer">IR漫画の使用権はクライアント様に帰属します。統合報告書・株主総会招集通知・事業報告書・IRサイト・社員向け開示資料の全媒体で展開可能。年次更新時の改訂運用、決算ごとのアップデート版作成にも対応します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>機密保持契約（NDA）には対応していますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。適時開示前の経営戦略・M&A・新規事業情報など、金商法上の機密管理が必要な案件で実績多数。インサイダー情報の取扱いも準拠した社内体制で、適時開示原則に沿った制作管理を実施します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>英語版・多言語版は作れますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。海外機関投資家・グローバルIR向けに英語版を制作。日米欧の投資家向け統合報告書英語版・株主総会英語版招集通知でも実績あり。財務用語・上場ルール用語（IFRS・US GAAP・東証規定）の正確な翻訳対応が可能です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>適時開示・金融商品取引法との整合性は確認していますか？</summary>
+            <div class="lpv2-faq-answer">ご担当者・IRコンサル・法務監査と連携した監修フローで制作します。重要事実・業績見通し・将来予測表現はガイドラインに沿った言い回しに調整し、適時開示ルールに抵触しない構成を設計します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>統合報告書・株主総会資料への掲載実績はありますか？</summary>
+            <div class="lpv2-faq-answer">上場企業の統合報告書・株主通信・有価証券報告書の補足資料・周年記念誌など、IR文書への掲載実績があります。印刷品質・PDF最適化・電子公告対応まで一貫対応可能です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>統合報告書のページ単位で挿入する形式に対応できますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。1ページ漫画・見開き2ページ漫画・章扉漫画など、統合報告書の構成に合わせた挿入形態で制作。印刷入稿用の高解像度PDFと、有報PDFへの埋め込み最適化版を同時納品します。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>監査法人や法務とのレビュー調整は誰が窓口ですか？</summary>
+            <div class="lpv2-faq-answer">クライアント様側のIR担当が監査法人・法務との連絡窓口を担い、ビズマンガ側は編集担当が一元的に修正対応します。重要事実の取り扱い・将来予測表現・適時開示ルールの全レビューラウンドに対応可能。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>株主総会前の短納期（4〜6週間以内）対応は可能ですか？</summary>
+            <div class="lpv2-faq-answer">可能です。3月決算企業の6月株主総会、12月決算企業の3月株主総会など、定時株主総会のタイミングからの逆算スケジュールで短納期対応。並行制作・優先アサインで通常の半分の期間で完成可能です。</div>
+          </details>
+          <details class="lpv2-faq-item">
+            <summary>個人投資家向けと機関投資家向けで内容を分けられますか？</summary>
+            <div class="lpv2-faq-answer">対応可能です。個人投資家向けには物語性・親しみやすさ重視、機関投資家向けには事業モデル・成長戦略の解像度重視で、同一テーマから2バージョン制作。決算説明会・株主通信・統合報告書で使い分けられます。</div>
+          </details>
+        </div>
+
+        <aside class="lpv2-guide" aria-label="関連: 漫画制作会社 比較ガイド">
+          <p class="lpv2-guide__eyebrow">業者比較で迷ったら</p>
+          <p class="lpv2-guide__text" data-ja="IR漫画・統合報告書を依頼する業者選びにお迷いの方は、業界主要 5 社の料金・実績を一覧化した【IR漫画対応の漫画制作会社 比較ガイド】もご覧ください。" data-en="Comparing vendors for IR or integrated-report manga? See our IR-Manga Production Company Comparison Guide.">
+            IR漫画・統合報告書を依頼する業者選びにお迷いの方は、業界主要 5 社の料金・実績を一覧化した
+            <a href="/manga-production-company" data-ja="IR漫画対応の漫画制作会社 比較ガイド" data-en="IR-Manga Production Company Comparison Guide">IR漫画対応の漫画制作会社 比較ガイド</a>
+            もご覧ください。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== 9. RELATED LPs ("Next issues") ===== -->
+    <section class="lpv2-section lpv2-related" aria-label="他の用途別マンガ">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="lpv2-section-head">
+          <span class="lpv2-chapter-mark">NEXT ISSUE &middot; OTHER USE CASES</span>
+          <h2 class="lpv2-h2">他の<em>用途別マンガ</em>を見る</h2>
+          <p class="lpv2-lead lpv2-lead--center">商品紹介・採用・広告・会社紹介・営業資料・研修・インバウンド・IR。それぞれの目的に合わせた構成と訴求軸でご提案します</p>
+        </header>
+        <div class="lpv2-related-grid">
+          <a class="lpv2-related-card" href="/product-manga">
+            <p class="lpv2-related-card__num">No. 01</p>
+            <h3 class="lpv2-related-card__name">商品紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">SaaS・無形商材も、漫画なら伝わる</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/recruit-manga">
+            <p class="lpv2-related-card__num">No. 02</p>
+            <h3 class="lpv2-related-card__name">採用マンガ</h3>
+            <p class="lpv2-related-card__hook">応募・内定承諾率を高める</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/manga-ad-lp">
+            <p class="lpv2-related-card__num">No. 03</p>
+            <h3 class="lpv2-related-card__name">マンガ広告</h3>
+            <p class="lpv2-related-card__hook">広告らしくない、止まる広告</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/company-manga">
+            <p class="lpv2-related-card__num">No. 04</p>
+            <h3 class="lpv2-related-card__name">会社紹介マンガ</h3>
+            <p class="lpv2-related-card__hook">ステークホルダー横断で届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/sales-manga">
+            <p class="lpv2-related-card__num">No. 05</p>
+            <h3 class="lpv2-related-card__name">営業資料マンガ</h3>
+            <p class="lpv2-related-card__hook">決裁者まで物語のまま届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/training-manga">
+            <p class="lpv2-related-card__num">No. 06</p>
+            <h3 class="lpv2-related-card__name">研修マンガ</h3>
+            <p class="lpv2-related-card__hook">失敗事例を安全に疑似体験</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
+          </a>
+          <a class="lpv2-related-card" href="/inbound-manga">
+            <p class="lpv2-related-card__num">No. 07</p>
+            <h3 class="lpv2-related-card__name">インバウンド漫画</h3>
+            <p class="lpv2-related-card__hook">言葉を超えて旅人に届く</p>
+            <span class="lpv2-related-card__arrow">詳しく →</span>
           </a>
         </div>
       </div>
     </section>
 
-      </div><!-- /.pm-main-col -->
-
-      <aside class="pm-rail pm-rail--right" aria-label="ビズ書庫グリッド" data-bm-lp-library data-category="IR">
-        <span class="pm-rail-reader-eyebrow">FROM BIZ LIBRARY</span>
-        <h3 class="pm-rail-reader-title">IR漫画・周年史マンガを、<br>読んでみる。</h3>
-        <div class="pm-rail-lib-grid" data-bm-lp-library-grid>
-          <p class="bm-lp-lib-loading">読み込み中…</p>
+    <!-- ===== 10. END — Final CTA ===== -->
+    <section class="lpv2-end" aria-label="お問い合わせ">
+      <div class="lpv2-end-inner">
+        <p class="lpv2-end-eyebrow">TO BE CONTINUED — WITH YOU</p>
+        <h2 class="lpv2-end-title">残したい歴史と、伝えたい未来があるなら、<br>その物語を<br><em>一緒に編みましょう</em>。</h2>
+        <p class="lpv2-end-text">創業者・経営陣・現場へのインタビュー、史実調査、企画・作画、納品まで、専任の編集担当が伴走します。30分の無料相談で、貴社の規模・上場区分・節目に最適な構成・ページ数・予算感をご提案いたします。発注義務はありません。周年事業のスケジュールに合わせた逆算スケジュールも対応可能です。</p>
+        <div class="lpv2-end-cta-row">
+          <a href="/contact" class="lpv2-btn lpv2-btn--accent-on-dark lpv2-btn--lg">
+            無料相談・お見積もり
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+          <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="lpv2-btn lpv2-btn--line lpv2-btn--lg" target="_blank" rel="noopener">
+            LINEで相談
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2z"/></svg>
+          </a>
         </div>
-        <p class="pm-rail-reader-foot">
-          全作品は <a href="/biz-library">ビズ書庫</a> へ
-        </p>
-      </aside>
-
-    </div><!-- /.pm-shell -->
+      </div>
+    </section>
 
   </main>
 
+  <!-- ===== フッター ===== -->
   <footer class="bm-footer">
     <div class="bm-container">
       <div class="bm-footer-inner">
@@ -736,7 +767,7 @@
           <a href="/">ホーム</a>
           <a href="/works">制作事例</a>
           <a href="/biz-library">ビズ書庫</a>
-          料金（bizmanga.contentsx.jp/pricing）
+          <a href="/pricing">料金</a>
           <a href="/strength">強み</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
@@ -750,12 +781,11 @@
     </div>
   </footer>
 
-  <script src="js/bm-sanitize.js" defer></script>
-  <script src="js/bm-i18n.js" defer></script>
-  <script src="js/bm-nav.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-lp-library-embed.js" defer></script>
-  <script src="js/bm-product-manga.js" defer></script>
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+  <script src="/js/bm-i18n.js" defer></script>
+  <script src="/js/bm-nav.js" defer></script>
+  <script src="/js/bm-kinsoku.js" defer></script>
+  <script src="/js/bm-lp-library-embed.js" defer></script>
+  <script src="/js/bm-lp-v2.js" defer></script>
 </body>
 </html>
