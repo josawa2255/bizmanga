@@ -176,13 +176,15 @@
 
   <main id="main">
 
-    <!-- ===== 1. HERO — full-bleed bg (既存 hero_LP を流用) + 左コピー ===== -->
+    <!-- ===== 1. HERO — recruit統一(ブランドマスコット recruit-hero-v2 全面背景) + 左コピー ===== -->
     <section class="lpv2-hero" aria-label="研修マンガ">
       <div class="lpv2-hero-stage">
         <div class="lpv2-hero-bg" aria-hidden="true">
           <picture>
-            <source type="image/avif" srcset="/material/images/lp/hero_LP.avif">
-            <img src="/material/images/lp/hero_LP.webp" alt="" width="2400" height="1018" loading="eager" fetchpriority="high" decoding="async">
+            <source type="image/avif" media="(max-width: 720px)" srcset="/material/images/lp/recruit-hero-v2-sp.avif">
+            <source type="image/webp" media="(max-width: 720px)" srcset="/material/images/lp/recruit-hero-v2-sp.webp">
+            <source type="image/avif" srcset="/material/images/lp/recruit-hero-v2.avif">
+            <img src="/material/images/lp/recruit-hero-v2.webp" alt="" width="1672" height="941" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
         <div class="lpv2-hero-inner">
