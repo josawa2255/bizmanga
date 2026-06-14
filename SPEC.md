@@ -71,10 +71,17 @@
 
 8本の用途別LPは「Editorial Magazine」(pm-* / `bm-lp-template.css`) を共通テンプレとして 2026-04-26 に同時公開した。1位を狙うSEO中核ページであるため、ブランド体験・滞在時間・CV率を底上げする目的で、より大胆な「MANGA MAGAZINE × BRAND SITE」コンセプトの v2 デザインシステムに移行中。
 
+### 2026-06-14 SEO改善（8LP一括・seo-page診断より）
+- **H1にKW挿入**: 各H1はキャッチコピー主体でKW欠落だったため、H1末尾に視覚非表示の `<span class="lpv2-sr-only" data-ja/data-en>` でページKW句（例: 採用マンガ・採用漫画の制作）を補完。`.lpv2-sr-only` ユーティリティを `bm-lp-v2.css` 冒頭に新設（clip-rect方式・画面表示は不変）。eyebrowはSPで `display:none` のためH1のKW補完がモバイル評価上も有効。
+- **FAQ汎用4問にKW冠**: 全8本で文言完全一致だった汎用質問（制作期間/費用の相場/修正回数/英語版多言語）の先頭にページKWを付与（例「採用マンガの費用の相場はいくらですか？」）。表示`<summary>`とFAQPageスキーマ`name`を同時更新。ロングテール「{用途}マンガ 費用 相場」獲得＋ページ間重複解消。後半6問は元々用途特化済み（計12問）。
+- **title短縮**: recruit/company/inbound の `<title>` がSERP切れ（38-40全角）だったため28-31全角に短縮（KW＋ブランドは保持、`og:title`/`twitter:title`は社内SNS用に長文維持で意図的diverge）。
+- **meta description短縮**: 最長3本（inbound/ir/recruit）の末尾共通ボイラープレート「125項目品質チェック…」等を削りモバイル切れ回避（91-95全角）。description+og+twitter+schema同期。
+- **ヒーローLCPは変更なし**: `<picture>`(AVIF/WebP)+SP専用版(≤720px)+`fetchpriority="high"`+寸法指定で最適化済みのためpreloadは冗長と判断し見送り。
+
 ### v2 の構成ファイル
 | ファイル | 役割 |
 |---|---|
-| `css/bm-lp-v2.css` | 新デザインシステム（`lpv2-*` クラス、約760行） |
+| `css/bm-lp-v2.css` | 新デザインシステム（`lpv2-*` クラス、約760行）。冒頭に `.lpv2-sr-only`(SEO/a11y視覚非表示)ユーティリティ |
 | `js/bm-lp-v2.js` | スクロールスパイ目次 + 折りたたみパネル + reveal-on-scroll |
 | HTMLマーカー | `<!-- LP-DESIGN:v2 -->` を `<head>` 直後に置くと v2 判定される |
 | `body` 属性 | `class="lpv2-page"` + `data-lp-v2` |
