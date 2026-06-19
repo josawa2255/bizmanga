@@ -185,7 +185,7 @@
       var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
       card.innerHTML =
         '<div class="bm-works-card-thumb">' +
-          '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy">' +
+          '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy" width="400" height="560">' +
         '</div>' +
         '<div class="bm-works-card-body">' +
           '<span class="bm-works-card-category" data-ja="' + esc(w.category) + '" data-en="' + esc(catEn) + '">' + esc(w.category) + '</span>' +

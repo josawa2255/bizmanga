@@ -4877,7 +4877,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   /* Works cards: スマホもPC同様の横並び */
   .bm-works-card { gap: 16px; padding: 20px 0; }
   .bm-works-card > .bm-works-card-link { gap: 16px; }
-  .bm-works-card-thumb { flex: none; height: 160px; }
+  .bm-works-card-thumb { flex: 0 0 110px; width: 110px; height: 160px; }
   .bm-works-card-title { font-size: 15px; }
   .bm-works-card-desc { display: none; }
 
