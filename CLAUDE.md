@@ -40,7 +40,6 @@ if (window.i18n && window.i18n.translateAll) {
 
 ### i18n対応済みJS
 - `bm-testimonials.js`, `bm-home.js`, `bm-pre-production.js` → translateAll()パターン
-- `bm-pricing-quiz.js` → `i18n.t()` で翻訳取得
 - `bm-works-page.js` → CATEGORY_EN, MEDIA_EN マップ + data-ja/data-en動的セット
 - `works.js` → CATEGORY_EN_MAP + filter/card/modal/viewer UI の i18n
 
@@ -53,7 +52,7 @@ if (window.i18n && window.i18n.translateAll) {
 | トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-flow.js |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
-| 料金 | pricing.html | bm-pricing-quiz.js |
+| 料金 | pricing.html | （なし。3プランカード型料金表、2026-07-02刷新） |
 | FAQ | faq.html | （なし） |
 | お問い合わせ | contact.html | bm-hubspot.js |
 | お客様の声 | testimonials.html | bm-testimonials-page.js |

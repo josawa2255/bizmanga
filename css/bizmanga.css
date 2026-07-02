@@ -3755,59 +3755,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     padding: 0 16px;
   }
 }
-.bm-pricing-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 24px; margin-top: 48px;
-}
-.bm-pricing-card {
-  background: var(--bm-card-bg);
-  border: 2px solid var(--bm-border);
-  border-radius: var(--bm-radius);
-  padding: 40px 28px;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.bm-pricing-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
-}
-.bm-pricing-card.featured {
-  border-color: var(--bm-accent);
-  position: relative;
-}
-.bm-pricing-card.featured::before {
-  content: '人気';
-  position: absolute; top: -12px; left: 50%;
-  transform: translateX(-50%);
-  background: var(--bm-accent); color: #fff;
-  font-size: 12px; font-weight: 700;
-  padding: 4px 16px; border-radius: 50px;
-}
-.bm-pricing-plan {
-  font-size: 14px; font-weight: 700;
-  color: var(--bm-accent); letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.bm-pricing-price {
-  font-size: 36px; font-weight: 900; color: #000;
-  margin-bottom: 8px;
-}
-.bm-pricing-price span { font-size: 16px; color: var(--bm-text-muted); }
-.bm-pricing-desc {
-  font-size: 14px; color: var(--bm-text-muted);
-  margin-bottom: 24px;
-}
-.bm-pricing-features {
-  list-style: none; margin-bottom: 32px;
-}
-.bm-pricing-features li {
-  font-size: 14px; color: var(--bm-text);
-  padding: 8px 0;
-  border-bottom: 1px solid var(--bm-border);
-}
-.bm-pricing-features li:last-child { border-bottom: none; }
 
-/* --- Price Hero (per-page pricing) --- */
 /* --- Plan grid (3カード) --- */
 .bm-plan-grid {
   display: grid;
@@ -3871,6 +3819,191 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   font-size: 13px;
   color: #000;
   margin-top: 8px;
+}
+
+/* --- 料金プラン刷新 (2026-07: 3プランカード型 pricing.html) --- */
+.bm-plans {
+  background: var(--bm-bg-light);
+  padding: var(--section-py) 0;
+}
+.bm-plans-eyebrow {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--bm-accent);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.bm-plans-badges {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--bm-card-bg);
+  border-radius: var(--bm-radius);
+  box-shadow: var(--bm-card-shadow);
+  padding: var(--sp-xs) var(--sp-md);
+}
+.bm-plans-badge {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: var(--sp-xs) var(--sp-sm);
+  color: var(--bm-accent);
+}
+.bm-plans-badge + .bm-plans-badge { border-left: 1px solid var(--bm-border); }
+.bm-plans-badge svg { flex-shrink: 0; }
+.bm-plans-badge-body { display: flex; flex-direction: column; text-align: left; min-width: 0; }
+.bm-plans-badge-body strong { font-size: var(--fs-sm); font-weight: 700; color: var(--bm-text); }
+.bm-plans-badge-body small { font-size: var(--fs-xs); color: var(--bm-text-muted); }
+
+/* プランカード（上の .bm-plan-* 基本形を上書き拡張） */
+.bm-plan-grid {
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: var(--sp-lg);
+  align-items: stretch;
+}
+.bm-plan-card {
+  background: var(--bm-card-bg);
+  border-radius: var(--bm-radius);
+  box-shadow: var(--bm-card-shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.bm-plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+}
+.bm-plan-header {
+  border-radius: calc(var(--bm-radius) - 3px) calc(var(--bm-radius) - 3px) 0 0;
+  font-size: var(--fs-lg);
+  padding: 14px 8px;
+}
+.bm-plan-badge {
+  background: var(--bm-accent);
+  border: 2px solid #fff;
+  color: #fff;
+  top: -16px;
+  padding: 4px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.bm-plan-body {
+  padding: var(--sp-md) clamp(16px, 1.8vw, 28px) clamp(20px, 2vw, 28px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.bm-plan-tagline {
+  font-size: var(--fs-sm);
+  color: var(--bm-text-muted);
+  margin-bottom: var(--sp-sm);
+}
+.bm-plan-total {
+  color: var(--bm-accent);
+  margin-bottom: 2px;
+}
+.bm-plan-num {
+  font-size: clamp(32px, 3.2vw, 42px);
+  font-weight: 900;
+  font-feature-settings: "tnum";
+}
+.bm-plan-unit { font-size: var(--fs-xl); font-weight: 900; }
+.bm-plan-model {
+  font-size: var(--fs-xs);
+  color: var(--bm-text-muted);
+  margin-bottom: 6px;
+}
+.bm-plan-breakdown {
+  font-size: var(--fs-xs);
+  color: var(--bm-text-light);
+  padding-bottom: var(--sp-sm);
+  margin-bottom: var(--sp-sm);
+  border-bottom: 1px solid var(--bm-border);
+}
+.bm-plan-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: var(--sp-md);
+}
+.bm-plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+.bm-plan-features li svg { flex-shrink: 0; color: var(--bm-accent); margin-top: 2px; }
+.bm-plan-features li.is-plus { font-weight: 700; color: var(--bm-accent); }
+.bm-plan-cta {
+  display: block;
+  margin-top: auto;
+  padding: 13px 16px;
+  border-radius: 100px;
+  border: 2px solid var(--bm-accent);
+  color: var(--bm-accent);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-align: center;
+  transition: background 0.25s, color 0.25s;
+}
+.bm-plan-cta:hover { background: var(--bm-accent); color: #fff; }
+.bm-plan-cta--accent { background: var(--bm-accent); color: #fff; }
+.bm-plan-cta--accent:hover { background: var(--bm-accent-hover); border-color: var(--bm-accent-hover); }
+
+/* 本数割引ミニ表 */
+.bm-plan-discount {
+  max-width: 860px;
+  margin: var(--sp-lg) auto 0;
+  background: var(--bm-card-bg);
+  border-radius: var(--bm-radius);
+  box-shadow: var(--bm-card-shadow);
+  padding: var(--sp-md) var(--sp-md) var(--sp-sm);
+  text-align: center;
+}
+.bm-plan-discount-title { font-size: var(--fs-md); font-weight: 700; margin-bottom: var(--sp-sm); }
+.bm-plan-discount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-xs);
+}
+.bm-plan-discount-cell {
+  background: var(--bm-bg-light);
+  border-radius: 10px;
+  padding: 12px 8px;
+}
+.bm-plan-discount-cell dt { font-size: var(--fs-xs); color: var(--bm-text-muted); margin-bottom: 2px; }
+.bm-plan-discount-cell dd { font-size: var(--fs-lg); font-weight: 900; font-feature-settings: "tnum"; }
+.bm-plan-discount-cell dd span { font-size: var(--fs-xs); font-weight: 500; color: var(--bm-text-muted); }
+.bm-plan-discount-cell.is-accent dd { color: var(--bm-accent); }
+.bm-plan-discount-note { font-size: var(--fs-xs); color: var(--bm-text-light); margin-top: var(--sp-sm); }
+
+/* 全プラン共通の特徴ストリップ */
+.bm-plans-features {
+  background: var(--bm-bg);
+  padding: var(--sp-lg) 0;
+  border-bottom: 1px solid var(--bm-border);
+}
+.bm-feature-strip {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-md);
+}
+.bm-feature-item { display: flex; align-items: center; gap: 12px; color: var(--bm-accent); }
+.bm-feature-item + .bm-feature-item { border-left: 1px solid var(--bm-border); padding-left: var(--sp-md); }
+.bm-feature-item svg { flex-shrink: 0; }
+.bm-feature-body { display: flex; flex-direction: column; min-width: 0; }
+.bm-feature-body strong { font-size: var(--fs-sm); font-weight: 700; color: var(--bm-text); }
+.bm-feature-body small { font-size: var(--fs-xs); color: var(--bm-text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-plan-card { transition: none; }
+  .bm-plan-card:hover { transform: none; }
 }
 
 /* --- Option grid (4カード) --- */
@@ -4320,214 +4453,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   -webkit-backface-visibility: hidden;
 }
 
-/* ============================================
-   Pricing Quiz (bm-pricing-quiz.js)
-   ============================================ */
-.bm-quiz-section {
-  background: #fff;
-  padding: 80px 0 72px;
-  border-bottom: 1px solid var(--bm-border);
-}
-
-.bm-quiz-container {
-  max-width: 780px;
-  margin: 40px auto 0;
-}
-
-/* プログレスバー */
-.bm-quiz-progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 40px;
-}
-.bm-quiz-progress-track {
-  flex: 1;
-  height: 6px;
-  background: #e8e0d8;
-  border-radius: 99px;
-  overflow: hidden;
-}
-.bm-quiz-progress-bar {
-  height: 100%;
-  width: 0%;
-  background: var(--bm-accent);
-  border-radius: 99px;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.bm-quiz-progress-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--bm-text-muted);
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-
-/* クイズ本体 アニメーション */
-.bm-quiz-body {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-.bm-quiz-body.bm-quiz-enter {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.bm-quiz-step-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--bm-accent);
-  letter-spacing: 0.15em;
-  margin-bottom: 10px;
-}
-.bm-quiz-question {
-  font-size: clamp(18px, 2.4vw, 26px);
-  font-weight: 900;
-  color: #000;
-  line-height: 1.45;
-  margin-bottom: 8px;
-}
-.bm-quiz-sub {
-  font-size: 13px;
-  color: var(--bm-text-muted);
-  margin-bottom: 28px;
-}
-
-/* オプション — Apple風リストスタイル */
-.bm-quiz-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.bm-quiz-option {
-  position: relative;
-  cursor: pointer;
-  border: 1.5px solid var(--bm-border);
-  border-radius: 14px;
-  padding: 18px 22px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
-  user-select: none;
-}
-.bm-quiz-option:last-child { margin-bottom: 0; }
-.bm-quiz-option:hover {
-  border-color: var(--bm-accent);
-  box-shadow: 0 2px 12px rgba(235,82,0,0.10);
-}
-.bm-quiz-option.selected {
-  border-color: var(--bm-accent);
-  background: rgba(235,82,0,0.04);
-  box-shadow: 0 2px 12px rgba(235,82,0,0.14);
-}
-
-/* バッジ */
-.bm-quiz-badge {
-  position: absolute;
-  top: -10px;
-  left: 20px;
-  background: var(--bm-accent);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 10px;
-  border-radius: 99px;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
-/* 左側：ラベル + 説明 */
-.bm-quiz-opt-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.bm-quiz-opt-label {
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-}
-.bm-quiz-opt-desc {
-  font-size: 12px;
-  color: var(--bm-text-muted);
-  line-height: 1.4;
-}
-
-/* 右側：価格等 */
-.bm-quiz-opt-right {
-  font-size: 14px;
-  font-weight: 600;
-  color: #000;
-  white-space: nowrap;
-  text-align: right;
-}
-
-/* 結果表示 */
-.bm-quiz-result { text-align: center; }
-.bm-quiz-result-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--bm-text-muted);
-  letter-spacing: 0.15em;
-  margin-bottom: 12px;
-}
-.bm-quiz-result-total {
-  font-size: clamp(40px, 6vw, 64px);
-  font-weight: 900;
-  color: var(--bm-accent);
-  line-height: 1.1;
-  margin-bottom: 8px;
-}
-.bm-quiz-result-total span {
-  font-size: clamp(16px, 2vw, 22px);
-  font-weight: 500;
-  color: var(--bm-text-muted);
-}
-.bm-quiz-result-note {
-  font-size: 12px;
-  color: var(--bm-text-light);
-  margin-bottom: 32px;
-}
-.bm-quiz-result-breakdown {
-  background: var(--bm-bg-light);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
-  text-align: left;
-}
-.bm-quiz-result-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  font-size: 14px;
-  border-bottom: 1px solid var(--bm-border);
-  color: #000;
-}
-.bm-quiz-result-row:last-child { border-bottom: none; }
-.bm-quiz-result-row span:first-child { color: var(--bm-text-muted); }
-.bm-quiz-result-row span:last-child { font-weight: 700; color: #000; }
-.bm-quiz-result-row--purpose span:last-child { font-weight: 500; }
-
-.bm-quiz-result-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-.bm-quiz-restart {
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: var(--bm-text-muted);
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 4px 8px;
-  transition: color 0.2s;
-}
-.bm-quiz-restart:hover { color: var(--bm-text); }
 
 /* ============================================
    Responsive
@@ -4545,7 +4470,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 @media (max-width: 1024px) {
   /* .bm-testimonials-grid は flex 横スクロール */
   .bm-artists-grid { grid-template-columns: repeat(2, 1fr); }
-  .bm-pricing-grid { grid-template-columns: repeat(2, 1fr); }
   .bm-included-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -4843,7 +4767,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   /* グリッド: 1カラム */
   /* .bm-testimonials-grid は flex 横スクロール — 1カラム不要 */
   .bm-artists-grid { grid-template-columns: repeat(2, 1fr); }
-  .bm-pricing-grid { grid-template-columns: 1fr; }
 
   .bm-footer-inner { flex-direction: column; gap: 24px; }
   .bm-footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
@@ -4863,16 +4786,17 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-plan-grid { grid-template-columns: 1fr; gap: 16px; }
   .bm-plan-card--recommend { margin-top: 8px; }
   .bm-plan-badge { top: -14px; }
+  .bm-plans-badges { flex-direction: column; padding: 6px var(--sp-sm); }
+  .bm-plans-badge { justify-content: flex-start; padding: 10px 4px; }
+  .bm-plans-badge + .bm-plans-badge { border-left: none; border-top: 1px solid var(--bm-border); }
+  .bm-plan-discount-grid { grid-template-columns: 1fr; }
+  .bm-plan-discount-cell { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; }
+  .bm-plan-discount-cell dt { margin-bottom: 0; }
+  .bm-feature-strip { grid-template-columns: 1fr 1fr; gap: var(--sp-sm); }
+  .bm-feature-item + .bm-feature-item { border-left: none; padding-left: 0; }
   .bm-option-grid { grid-template-columns: 1fr 1fr; }
   .bm-included-grid { grid-template-columns: 1fr; }
   .bm-color-grid { grid-template-columns: 1fr; }
-
-  /* クイズ: モバイル */
-  .bm-quiz-container { padding: 32px 20px 40px; }
-  .bm-quiz-option { padding: 16px 18px; }
-  .bm-quiz-question { font-size: 20px; }
-  .bm-quiz-opt-label { font-size: 14px; }
-  .bm-quiz-opt-right { font-size: 12px; }
 
   /* Works cards: スマホもPC同様の横並び */
   .bm-works-card { gap: 16px; padding: 20px 0; }
