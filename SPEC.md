@@ -305,7 +305,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 ### WP 管理画面メニュー（2026-06-12 再編）
 - B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層
-- **ニュース・コラムの掲載先がチェックボックス複数選択に**（BizManga/ContentsX/リクルートX、2026-06-12）。旧値 `both`=B+Cの意味で固定なのでBの表示は不変。`?site=bizmanga` の返却結果も移行前後で完全一致を検証済み
+- **ニュース・コラムの掲載先がチェックボックス複数選択に**（BizManga/ContentsX/イチオシ採用、2026-06-12。イチオシ採用は旧称リクルートX、2026-07-09にキー`recruitx`→`ichioshi`改名・旧キーは読み込み時正規化で互換）。旧値 `both`=B+Cの意味で固定なのでBの表示は不変。`?site=bizmanga` の返却結果も移行前後で完全一致を検証済み
 - 新サービスのWP取り込み・メニュー追加はルートの wp-service-onboard スキル（`.claude/skills/wp-service-onboard/`）で実施
 
 ### WP 編集可能フィールド
