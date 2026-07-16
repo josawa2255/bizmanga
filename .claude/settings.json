@@ -10,6 +10,15 @@
             "command": "[ -n \"$CLAUDE_REVERSE_HOOK\" ] && exit 0; staged=$(git diff --cached --name-only 2>/dev/null); code=$(printf \"%s\\n\" \"$staged\" | grep -E \"\\.(html|css|js)$\"); docs=$(printf \"%s\\n\" \"$staged\" | grep -E \"(^docs/|\\.md$)\"); if [ -n \"$code\" ] && [ -z \"$docs\" ]; then jq -n --arg c \"$(printf \"%s \" $code)\" '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"deny\",permissionDecisionReason:(\"コードがステージ済み(\\($c))ですがドキュメントが未更新です。github.md と ../docs/MD-UPDATE-ROUTING.md の差分表に従い該当md(SPEC.md/CLAUDE.md/BUGS.md等)を更新してgit addし、同一コミットに含めてから再コミットしてください。意図的にコードのみコミットする場合はBUGS.md等を更新するか、このフックを一時的に無効化してください。\")}}'; fi"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/bugs-md-preflight.sh\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -35,6 +44,10 @@
     "UserPromptSubmit": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/build-on-prompt.sh\""
+          },
           {
             "type": "command",
             "async": true,
