@@ -1,0 +1,60 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "[ -n \"$CLAUDE_REVERSE_HOOK\" ] && exit 0; staged=$(git diff --cached --name-only 2>/dev/null); code=$(printf \"%s\\n\" \"$staged\" | grep -E \"\\.(html|css|js)$\"); docs=$(printf \"%s\\n\" \"$staged\" | grep -E \"(^docs/|\\.md$)\"); if [ -n \"$code\" ] && [ -z \"$docs\" ]; then jq -n --arg c \"$(printf \"%s \" $code)\" '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"deny\",permissionDecisionReason:(\"コードがステージ済み(\\($c))ですがドキュメントが未更新です。github.md と ../docs/MD-UPDATE-ROUTING.md の差分表に従い該当md(SPEC.md/CLAUDE.md/BUGS.md等)を更新してgit addし、同一コミットに含めてから再コミットしてください。意図的にコードのみコミットする場合はBUGS.md等を更新するか、このフックを一時的に無効化してください。\")}}'; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/bugs-md-preflight.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$CLAUDE_REVERSE_HOOK\" ] && exit 0; f=$(jq -r \".tool_input.file_path // .tool_response.filePath // empty\"); case \"$f\" in *.md) if [ -n \"$f\" ] && ! git ls-files --error-unmatch \"$f\" >/dev/null 2>&1; then jq -n --arg f \"$f\" '{hookSpecificOutput:{hookEventName:\"PostToolUse\",additionalContext:(\"新規mdを作成: \\($f)。ハブmd(このリポの CLAUDE.md/SPEC.md と ../docs のルーティング表)にこのファイルへの参照を追加すべきか判断し、必要なら追記すること。既に登録済み/一時ファイルなら不要。\")}}'; fi ;; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/stuck-detect.sh\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/build-on-prompt.sh\""
+          },
+          {
+            "type": "command",
+            "async": true,
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/rule-candidate.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
