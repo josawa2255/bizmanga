@@ -173,6 +173,14 @@ p{margin:0 0 16px;}
             <label class="bm-form-label" data-ja="お問い合わせ内容" data-en="Inquiry">お問い合わせ内容 <span class="bm-required" data-ja="必須" data-en="Required">必須</span></label>
             <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required></textarea>
           </div>
+          <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
+               値が入っていた送信はCRM側で黙って破棄する。
+               display:none ではなく画面外に飛ばす（display:none を無視するボット対策）。
+               tabindex=-1 と autocomplete=off でキーボード操作・自動補完からも外す。 -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+            <label for="bmWebsite">Website (do not fill)</label>
+            <input type="text" id="bmWebsite" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <button type="submit" class="cb-submit bm-form-submit" aria-label="送信する">
             <span class="cb-label" data-ja="送信する" data-en="Send">送信する</span>
             <span class="cb-icon" aria-hidden="true">
@@ -227,6 +235,15 @@ p{margin:0 0 16px;}
       var HUBSPOT_PORTAL_ID = '48367061';
       var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
+      // Contents X CRM の受信箱に問い合わせを流す（HubSpotへの送信とは独立）。
+      // CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・活動が作られる。
+      // ここのトークンは静的サイトに埋まる＝機密ではない。総当たり抑止用の門番で、
+      // 実質のスパム対策はCRM側のレート制限とハニーポット。
+      // エンドポイントは Vercel の本番URL。独自ドメイン crm.contentsx.jp は
+      // 割当が保留中（現在NXDOMAIN）のため、割当後にここを差し替える。
+      var CRM_ENDPOINT = 'https://contentsx-crm.vercel.app/api/inbound/web';
+      var CRM_TOKEN    = 'REPLACE_WITH_INBOUND_SECRET';
+
       // プランパラメータ自動入力
       var params = new URLSearchParams(window.location.search);
       var plan = params.get('plan');
@@ -280,6 +297,36 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
             pageName: 'BizManga - お問い合わせ'
           }
         };
+
+        // CRM受信箱へも送る（HubSpotとは独立。失敗しても送信者には影響させない＝
+        // CRMが落ちていてもHubSpot側の受付とサンクス表示は従来どおり動く）
+        try {
+          fetch(CRM_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + CRM_TOKEN
+            },
+            body: JSON.stringify({
+              site: 'bizmanga',
+              company_name: company,
+              department: department,
+              full_name: fullName,
+              email: email,
+              message: message,
+              page_url: window.location.href,
+              utm_source: utmSource,
+              utm_medium: utmMedium,
+              utm_campaign: utmCampaign,
+              referrer: document.referrer || null,
+              hp: document.getElementById('bmWebsite') ? document.getElementById('bmWebsite').value : ''
+            })
+          }).catch(function (err) {
+            console.warn('CRM inbound failed (ignored):', err);
+          });
+        } catch (err) {
+          console.warn('CRM inbound skipped:', err);
+        }
 
         var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
           + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
