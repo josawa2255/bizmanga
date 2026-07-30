@@ -498,6 +498,42 @@ def build_category_card(w):
     )
 
 
+def build_category_works_json(works):
+    """カテゴリページのモーダル用に作品データを JSON で埋め込む。
+
+    Why: カテゴリページは静的SEOページで WP API を読み込んでいないため、
+    カードクリック直後にモーダルを開くにはビルド時のデータ同梱が必要。
+    js/bm-work-modal.js が #bmWorksModalData から読む。
+    モーダルのプレビューは最大5ページなので gallery も5枚までに絞る。
+    """
+    payload = []
+    for w in works:
+        spec = w.get("spec") or {}
+        payload.append({
+            "id": w.get("id"),
+            "title_ja": w.get("title_ja") or "",
+            "title_en": w.get("title_en") or "",
+            "category": w.get("category") or "",
+            "category_en": w.get("category_en") or "",
+            "media": w.get("media") or [],
+            "spec": {
+                "pages": spec.get("pages") or "",
+                "period": spec.get("period") or "",
+                "period_en": spec.get("period_en") or "",
+            },
+            "point": w.get("point") or "",
+            "point_en": w.get("point_en") or "",
+            "comment": w.get("comment") or "",
+            "comment_en": w.get("comment_en") or "",
+            "pages": w.get("pages") or 0,
+            "view_type": w.get("view_type") or "",
+            "gallery": (w.get("gallery") or [])[:5],
+        })
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    # <script> 内に埋め込むため "<" を全てエスケープ（"</script>" 混入防止）
+    return raw.replace("<", "\\u003c")
+
+
 def build_cat_nav(active_slug, works):
     """カテゴリページ間ナビ。各カテゴリの該当件数も表示。"""
     items = []
@@ -655,6 +691,7 @@ def generate_category_pages(works):
             "{{lp_path}}": esc(cfg["lp_path"]),
             "{{lp_label}}": esc(cfg["lp_label"]),
             "{{cards_html}}": cards_html,
+            "{{works_json}}": build_category_works_json(matched),
             "{{cat_nav_html}}": cat_nav_html,
             "{{faq_html}}": faq_html,
             "{{faq_jsonld}}": faq_jsonld,

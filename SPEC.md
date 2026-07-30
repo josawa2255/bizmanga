@@ -218,6 +218,30 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - sitemap.xml に `BUILD:WORKS_CATEGORIES` ブロックで自動追記
 - 週1ビルド（日曜03:00 JST、`.github/workflows/build-works.yml`）で更新
 
+### 2.0c 制作事例のクリック挙動統一（2026-07-30）
+
+**課題:** カテゴリページ新設時（2.0b）にモーダル層を載せ忘れていたため、`/works` と `/` はカードクリックでモーダル、カテゴリページだけ個別ページへ直行という不統一が発生していた。
+
+**統一後の挙動（全ページ共通）:**
+1. カードクリック → 制作事例モーダル（カード）を表示
+2. モーダル最下部の「詳細を見る」ボタン → 個別作品ページ `/works/{id}` へ遷移
+
+| ページ | モーダル実装 |
+|---|---|
+| `/`（トップ） | `js/bm-hero.js` |
+| `/works` | `js/bm-works-page.js` |
+| `/works/category/{slug}` | `js/bm-work-modal.js`（本対応で新設） |
+
+**`js/bm-work-modal.js`（静的ページ用の汎用モーダル）:**
+- 作品データは `<script type="application/json" id="bmWorksModalData">` からビルド時同梱で読む（カテゴリページはWP APIを読み込まないため。`build_category_works_json()` が生成、gallery は5枚まで）
+- `window.BM_WORKS_DATA` / `bm-data-ready` があればそれで上書き（API併用ページでも動く）
+- `.bm-works-card[data-work-id]` を自動 hydrate。カードは `<a href="/works/{id}">` のまま残し `preventDefault()` で抑止 → 内部リンクのクロール性・Cmd/Ctrl/中クリックの新規タブを維持
+- 縦読み/見開き判定は `window.bmViewType` に委譲（BUGS #012/#013 再発防止）
+- 公開API: `window.bmWorkModal = { open, close, setWorks, hydrate }`
+- 読込順は `bm-view-type.js` → `bm-work-modal.js`
+
+**「詳細を見る」ボタン:** `#workDetailLink`（`.work-detail-cta`）。3ページのモーダルHTMLに追加。href は各 `openWorkDetail()` が `/works/{id}` にセット。i18n は data-ja/data-en。
+
 ### 2.1 QR コード用ダイレクトモード ⭐重要
 ```
 https://bizmanga.contentsx.jp/biz-library?manga={manga-id}

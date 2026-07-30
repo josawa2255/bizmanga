@@ -331,6 +331,7 @@
   var wdSpec = document.getElementById('workDetailSpec');
   var wdPoint = document.getElementById('workDetailPoint');
   var wdComment = document.getElementById('workDetailComment');
+  var wdLink = document.getElementById('workDetailLink');
 
   var wdCurrentPage = 0;
   var wdTotalPages = 0;
@@ -390,6 +391,8 @@
       wdComment.setAttribute('data-en', commentEn);
       wdComment.textContent = isEn ? commentEn : (work.comment || '');
     }
+    // 「詳細を見る」→ 個別作品ページ
+    if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
 
     var previewPages = Math.min(work.pages || 5, 5);
     wdTotalPages = previewPages;
