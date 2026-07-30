@@ -352,11 +352,59 @@
     </div>
   </footer>
 
+  <!-- ===== 制作事例モーダル (works.html と同構造) ===== -->
+  <div class="work-detail-overlay" id="workDetailOverlay">
+    <button class="work-detail-close" id="workDetailClose" aria-label="閉じる">&times;</button>
+    <div class="work-detail-content">
+      <div class="work-detail-left">
+        <div class="work-detail-carousel-wrap" style="position:relative;">
+          <div class="bm-manga-loader-wrap" id="workDetailLoader">
+            <span class="bm-manga-loader"></span>
+          </div>
+          <button class="work-detail-arrow work-detail-prev" id="workDetailPrev" aria-label="前のページ">&#8249;</button>
+          <div class="work-detail-carousel" id="workDetailCarousel"></div>
+          <button class="work-detail-arrow work-detail-next" id="workDetailNext" aria-label="次のページ">&#8250;</button>
+        </div>
+        <div class="work-detail-dots" id="workDetailDots"></div>
+      </div>
+      <div class="work-detail-right">
+        <div class="work-detail-title-row">
+          <h2 class="work-detail-title" id="workDetailTitle"></h2>
+          <span class="work-detail-category" id="workDetailCategory"></span>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
+          <ul class="work-detail-list" id="workDetailMedia"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation Details">導入内容</h3>
+          <ul class="work-detail-list" id="workDetailSpec"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Key Points">演出ポイント</h3>
+          <p class="work-detail-text" id="workDetailPoint"></p>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
+          <p class="work-detail-quote" id="workDetailComment"></p>
+        </div>
+        <div class="work-detail-cta-wrap">
+          <a class="work-detail-cta" id="workDetailLink" href="/works" data-ja="詳細を見る" data-en="View details">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル用の作品データ（ビルド時に埋め込み。WP API を叩かずに即開けるため） -->
+  <script type="application/json" id="bmWorksModalData">[{"id":"life-buzfes","title_ja":"バズフェス","title_en":"BuzzFes","category":"集客","category_en":"","media":["イベント告知","SNS広告"],"spec":{"pages":"25P","period":"3週間","period_en":""},"point":"イベントの魅力と参加メリットをストーリー形式で訴求。ターゲットの\"自分ごと化\"を促す構成で集客力を最大化。","point_en":"","comment":"漫画広告を使った告知で、前回比150%の集客を達成できました。","comment_en":"","pages":25,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-10.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-10.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-10.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-10.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-7.webp"]},{"id":"lady-column","title_ja":"レディーコラム","title_en":"Lady Column","category":"IP","category_en":"","media":["Webサイト","SNS"],"spec":{"pages":"8P","period":"2週間","period_en":""},"point":"女性向けコラムの魅力を漫画で表現。読者の共感と興味を引き出すストーリー構成。","point_en":"","comment":"","comment_en":"","pages":8,"view_type":"vertical_only","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/kyari-hyousi.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/01.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04.webp"]},{"id":"asobi-kyary","title_ja":"ASOBI SYSTEM×きゃりーぱみゅぱみゅ","title_en":"ASOBI SYSTEM x Kyary Pamyu Pamyu","category":"IP","category_en":"","media":["提案資料","SNS"],"spec":{"pages":"6P","period":"1週間","period_en":""},"point":"ASOBI SYSTEMとの共同企画。きゃりーぱみゅぱみゅをモチーフにしたキャラクター漫画で、IPコラボレーションの可能性を提案。","point_en":"","comment":"キャラクターの魅力が漫画で十分に表現されており、コラボ企画の説得力が増しました。","comment_en":"","pages":6,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-16.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-16.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-16.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-16.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-12.webp"]}]</script>
+
   <script src="/js/bm-sanitize.js" defer></script>
   <script src="/js/bm-i18n.js" defer></script>
   <script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-kinsoku.js" defer></script>
   <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-work-modal.js" defer></script>
 </body>
 </html>

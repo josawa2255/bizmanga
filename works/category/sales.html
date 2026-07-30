@@ -314,11 +314,59 @@
     </div>
   </footer>
 
+  <!-- ===== 制作事例モーダル (works.html と同構造) ===== -->
+  <div class="work-detail-overlay" id="workDetailOverlay">
+    <button class="work-detail-close" id="workDetailClose" aria-label="閉じる">&times;</button>
+    <div class="work-detail-content">
+      <div class="work-detail-left">
+        <div class="work-detail-carousel-wrap" style="position:relative;">
+          <div class="bm-manga-loader-wrap" id="workDetailLoader">
+            <span class="bm-manga-loader"></span>
+          </div>
+          <button class="work-detail-arrow work-detail-prev" id="workDetailPrev" aria-label="前のページ">&#8249;</button>
+          <div class="work-detail-carousel" id="workDetailCarousel"></div>
+          <button class="work-detail-arrow work-detail-next" id="workDetailNext" aria-label="次のページ">&#8250;</button>
+        </div>
+        <div class="work-detail-dots" id="workDetailDots"></div>
+      </div>
+      <div class="work-detail-right">
+        <div class="work-detail-title-row">
+          <h2 class="work-detail-title" id="workDetailTitle"></h2>
+          <span class="work-detail-category" id="workDetailCategory"></span>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
+          <ul class="work-detail-list" id="workDetailMedia"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation Details">導入内容</h3>
+          <ul class="work-detail-list" id="workDetailSpec"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Key Points">演出ポイント</h3>
+          <p class="work-detail-text" id="workDetailPoint"></p>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
+          <p class="work-detail-quote" id="workDetailComment"></p>
+        </div>
+        <div class="work-detail-cta-wrap">
+          <a class="work-detail-cta" id="workDetailLink" href="/works" data-ja="詳細を見る" data-en="View details">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル用の作品データ（ビルド時に埋め込み。WP API を叩かずに即開けるため） -->
+  <script type="application/json" id="bmWorksModalData">[{"id":"ichinohe-home","title_ja":"一戸ホーム","title_en":"Ichinohe Home","category":"営業","category_en":"","media":["営業ツール","Web掲載"],"spec":{"pages":"22P","period":"3週間","period_en":""},"point":"住宅メーカーの魅力をストーリー漫画で伝える営業ツール。漫画ならではの没入感で、お客様の理解と共感を引き出します。","point_en":"","comment":"漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。","comment_en":"","pages":22,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-1.webp"]}]</script>
+
   <script src="/js/bm-sanitize.js" defer></script>
   <script src="/js/bm-i18n.js" defer></script>
   <script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-kinsoku.js" defer></script>
   <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-work-modal.js" defer></script>
 </body>
 </html>
