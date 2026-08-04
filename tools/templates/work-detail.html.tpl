@@ -7,15 +7,15 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <title>{{title_ja}} | 制作事例 | ビズマンガ</title>
+  <title>{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ</title>
   <meta name="description" content="{{description}}">
-  <meta name="keywords" content="{{title_ja}},{{category}},ビジネス漫画 制作事例,{{category}}漫画,漫画制作 実績,ビズマンガ">
+  <meta name="keywords" content="{{title_ja}},{{category_kw}},{{category_kw}} 事例,{{category_kw}} 制作,ビジネス漫画 制作事例,漫画制作 実績,ビズマンガ">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{url}}">
   <link rel="alternate" hreflang="ja" href="{{url}}">
   <link rel="alternate" hreflang="x-default" href="{{url}}">
   <!-- OGP -->
-  <meta property="og:title" content="{{title_ja}} | 制作事例 | ビズマンガ">
+  <meta property="og:title" content="{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ">
   <meta property="og:description" content="{{description}}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="{{url}}">
@@ -31,7 +31,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:creator" content="@Bizmanga_">
-  <meta name="twitter:title" content="{{title_ja}} | 制作事例 | ビズマンガ">
+  <meta name="twitter:title" content="{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ">
   <meta name="twitter:description" content="{{description}}">
   <meta name="twitter:image" content="{{og_image}}">
   <meta name="twitter:image:alt" content="{{title_ja}}｜ビズマンガ制作事例">

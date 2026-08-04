@@ -172,6 +172,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
+- **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
 
 **運用ルール:**
 - 新作品を顧客・商談で共有する時 → `?manga=id` を使う（即時）
@@ -189,7 +190,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 
 | URL | ターゲットKW | 集約データカテゴリ |
 |---|---|---|
-| `/works/category/recruit` | 採用マンガ制作 | 採用 |
+| `/works/category/recruit` | 採用マンガ制作（title は2026-08-04に「採用**漫画**の制作事例〜」へ変更＝漢字が約23倍） | 採用 |
 | `/works/category/product` | 商品紹介マンガ制作 | 商品紹介 + 紹介 |
 | `/works/category/sales` | 営業マンガ制作 | 営業 |
 | `/works/category/company` | 会社紹介マンガ制作 | ブランド + 紹介 |
