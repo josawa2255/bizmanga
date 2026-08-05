@@ -313,7 +313,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
-| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `contact.html` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信とサンクス表示は従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#bmWebsite`**（画面外・aria-hidden）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は【3箇所】を同時に更新する**（①CRM側 Vercel の環境変数 `INBOUND_SECRET`＝更新後に再デプロイ ②本サイトの `contact.html` ③ContentsXの `js/contact.js`）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付とサンクス表示は正常に動き続けるため気づきにくい。commit時に警告する `crm-token-sync` フックあり |
+| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `contact.html` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信とサンクス表示は従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#bmWebsite`**（画面外・aria-hidden）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は【4箇所】を同時に更新する**（①CRM側 Vercel の環境変数 `INBOUND_SECRET`＝更新後に再デプロイ ②本サイトの `contact.html` ③ContentsXの `js/contact.js` ④イチオシ採用の `js/main.js`＝別リポジトリ josawa2255/recruitx のため `crm-token-sync` フックでは検知できない。2026-08-04 追加）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付とサンクス表示は正常に動き続けるため気づきにくい。commit時に警告する `crm-token-sync` フックあり |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
@@ -465,7 +465,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
-- キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「6月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
+- キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「8月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
