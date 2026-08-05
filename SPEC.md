@@ -338,12 +338,16 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 |---|---|---|---|---|
 | **Hero マーキー** | `cx_show_hero_site` | `show_hero_site` | `both`/`bizmanga`/`contentsx`/`none` | `/works`（全件返却、フロントでフィルタ） |
 | Hero 順序 | `cx_hero_order_bm` / `cx_hero_order_cx` | `hero_order_bm` / `hero_order_cx` | 整数（小さい順、未設定=9999末尾） | 同上、編集画面のドラッグUIで並べ替え可 |
-| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（1=表示） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
+| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
 | ギャラリー枠 順序 | `cx_sort_order`（全リスト共通の「表示順」入力欄） | `sort_order` | 整数（小さい順、0=末尾） | 同上、WP側で `cx_sort_order` 昇順ソート済み |
-| **ビズ書庫** | `cx_show_library` | `show_library` | bool | `/works` / `/library` |
-| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx` | works.html や `/works?site=` フィルタの基準 |
+| **ContentsX 新作情報** | `cx_show_new_contentsx` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=contentsx` |
+| **ビズ書庫** | `cx_show_library` | `show_library` | bool（**未設定=表示する**） | `/works` / `/library` |
+| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx`（**未設定=`both`**） | works.html や `/works?site=` フィルタの基準 |
 
-- 4系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- 各系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- ⭐ **掲載先フラグは全て「未設定＝表示する」**（2026-08-05統一）。明示的に `0`（`cx_show_site` は `contentsx`）が入っているものだけ非表示になる。
+  以前はギャラリーと新作情報だけ `=== '1'` の完全一致判定で、**新規登録した作品がフラグを手で立てるまでどこにも出ない**状態だった。
+  WP側の判定は `cxcms_show_flag_meta_query()`（`!= '0'` OR `NOT EXISTS`）に集約されている
 - ホームのギャラリー枠は **`BM_NEW_WORKS_DATA`（`/works-new` から取得）を優先**（[bm-home.js](js/bm-home.js#L112-L122)）。WP側でフィルタ済みなのでフロントは追加フィルタ不要
 - 後方互換: `/works-new` が空 or 未取得時は `BM_WORKS_DATA` でフォールバック
 - 順序制御: ギャラリー枠は `cx_sort_order` 昇順（同順位は `cx_added_date` 降順）。Heroと違って独立順序フィールドは持たず、編集画面の「表示順」入力欄が共通利用される
