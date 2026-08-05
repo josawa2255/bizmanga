@@ -280,7 +280,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
   ```
-- **動的DOMの翻訳**: `window.i18n.translateAll()` を呼ぶ（英語モード時のみ）
+- **動的DOMの翻訳** ⭐: `translateAll()` は「英語に翻訳する」関数。**無条件呼び出しは日本語ページを壊す**（BUGS #008）。必ず言語チェックを通す:
+  ```javascript
+  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+    window.i18n.translateAll();
+  }
+  ```
 - **注意**: `restoreAll()` 呼び出し時は `data-ja` 属性へフォールバックする。動的レンダリング後は必ず現在言語を確認してから `translateAll()` を呼ぶこと
 
 ## 5. 外部連携
