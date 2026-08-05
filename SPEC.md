@@ -281,7 +281,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
   ```
-- **動的DOMの翻訳**: `window.i18n.translateAll()` を呼ぶ（英語モード時のみ）
+- **動的DOMの翻訳** ⭐: `translateAll()` は「英語に翻訳する」関数。**無条件呼び出しは日本語ページを壊す**（BUGS #008）。必ず言語チェックを通す:
+  ```javascript
+  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+    window.i18n.translateAll();
+  }
+  ```
 - **注意**: `restoreAll()` 呼び出し時は `data-ja` 属性へフォールバックする。動的レンダリング後は必ず現在言語を確認してから `translateAll()` を呼ぶこと
 
 ## 5. 外部連携
@@ -296,6 +301,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
 | 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開） |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
+
+### 5.1 お問い合わせフォームの二重送信ガード ⭐再発防止（2026-08-05 / BUGS #046）
+
+- **フォーム単位のフラグ `bmIsSubmitting`** を送信ハンドラ先頭で判定し、送信中の再入は経路によらず `return`。**ボタンの `disabled` だけに頼らない**（`disabled` はボタン経由の連打しか塞げず、Enter や `requestSubmit()` はすり抜ける）
+- フラグを false に戻すのは **`.catch` のみ**。成功時は戻さない＝完了画面から再送信されない
+- **失敗時の文言で無条件に再送を促さない**: fetch の失敗は「応答が取れなかった」であって「届かなかった」ではない。送信直後の通信断ではサーバーに届いているため、「もう一度お試しください」と促すと重複する。現行文言は「送信結果を確認できませんでした／すでに送信が完了している場合があります」＋電話番号の案内
 
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
