@@ -468,8 +468,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 - **ページング**: 20件/ページ
 - **モーダル操作**: クリック / スワイプ（スマホ）/ 矢印キー（PC）
-- **縦読み判定**: 1ページ目の縦横比 < 0.2 で縦スクロールモードに自動切替
+- **縦読み判定**: `window.bmViewType` に一本化（WPの `view_type` が `vertical`/`vertical_only`、または1ページ目が `height/width > 1.8`）。**各JSで自前判定しないこと**（[BUGS.md](../BUGS.md) #012 / #013）
 - **i18n**: モーダル内カテゴリ / メディア / UIテキストも翻訳対応
+- **DOMは index.html と works.html に同一のものが2つ存在**する。動かすJSはページごとに別（index=[js/bm-hero.js](js/bm-hero.js) / works=[js/bm-works-page.js](js/bm-works-page.js)）。**モーダルの挙動を変えるときは必ず両方に反映する**
+
+### 8.1 スマホ縦読みの上下2ペイン分割 ⭐ 2026-08-06 追加
+
+縦読み作品はスマホで漫画が非常に長く、一体スクロールだと「使用媒体 / 導入内容 / 演出ポイント」まで到達できず実質読まれなかったため、上下2ペインに分割する。
+
+- **適用条件**: 画面幅768px以下 **かつ** 縦読み（`.work-detail-carousel.vertical-scroll`）のときだけ。横読みとPC（769px以上の左右2カラム）は従来どおりで一切変更しない
+- **構造**: 上ペイン=漫画 / 下ペイン=詳細。各ペインが独立した `overflow-y: auto` を持ち、`overscroll-behavior: contain` で相手側にスクロールを伝播させない（下ペインを操作しても漫画は動かない）
+- **比率の自動追従（読んでいる側に広さを譲る）**: CSS変数 `--wd-split` が上ペインの高さ比率
+  | 状態 | `--wd-split` | 上:下 |
+  |------|-------------|-------|
+  | 開いた直後 / 漫画に触れた | 0.75 | 3:1 |
+  | 詳細に触れた | 0.5 | 1:1 |
+  | 詳細を読み進めた | 0.25 | 1:3 |
+- **手動リサイズ**: ペイン境界の `.wd-split-handle` をドラッグ。上下とも最低1/4は残す
+- **実装**: [js/bm-wd-split.js](js/bm-wd-split.js)（`window.bmWdSplit.apply()` / `.reset()`）。**縦読み判定の直後に `apply()`、モーダルを閉じる時とカルーセルモード時に `reset()`** を呼ぶ。CSSは [css/bizmanga.css](css/bizmanga.css) の `@media (max-width: 768px)` 内 `.wd-split` 配下
+- **読込順（必須）**: `bm-view-type.js` → `bm-wd-split.js` → 各ページJS（`bm-hero.js` / `bm-works-page.js`）
+- ⚠️ **比率変更はペイン高さを変え、それが `scrollTop` を押し戻して `scroll` イベントを再発火させる**。これを「ユーザーが読んでいる」と誤認すると比率が固まるフィードバックループになるため、変更後 420ms は `scroll` を意図とみなさない（`SETTLE_MS`）。`pointerdown`/`touchstart` は明示操作なのでガードしない
 
 ## 9. 漫画ビューア（works.js）
 

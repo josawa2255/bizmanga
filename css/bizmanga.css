@@ -4858,6 +4858,85 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .work-detail-right { max-height: none; overflow-y: visible; padding: 20px; }
   .work-detail-close { position: fixed; top: 8px; right: 8px; z-index: 10001; }
+
+  /* --- 縦読みのみ: 上下2ペイン分割（上=漫画 / 下=詳細） ---
+     縦読みは漫画が非常に長く、一体スクロールだと詳細まで到達できないため
+     ペインを分けて両方を同時に見せる。JS(bm-wd-split.js)が --wd-split を
+     読んでいる側に応じて 0.75 / 0.5 / 0.25 に切り替える。
+     横読み(.wd-split が付かない)は従来どおり一体スクロール。 */
+  .work-detail-overlay.wd-split {
+    overflow: hidden;
+    height: 100dvh;
+  }
+  .work-detail-overlay.wd-split .work-detail-content {
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+  /* 上ペイン: 漫画。--wd-split の比率で高さを取り、内部だけスクロール */
+  .work-detail-overlay.wd-split .work-detail-left {
+    flex: 0 0 auto;
+    height: calc(100dvh * var(--wd-split, 0.75));
+    min-height: 0;
+    overflow: hidden;
+    transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* ドラッグ中は指に追従させる（トランジションが遅延に見えるため切る） */
+  .work-detail-overlay.wd-split.wd-split-dragging .work-detail-left {
+    transition: none;
+  }
+  .work-detail-overlay.wd-split .work-detail-carousel-wrap.has-vertical-scroll {
+    height: 100%;
+    max-height: none;
+    overflow: hidden;
+  }
+  .work-detail-overlay.wd-split .work-detail-carousel.vertical-scroll {
+    height: 100%;
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* 親へスクロールを伝播させない＝下ペインが動かない */
+    background: #fff;
+  }
+  /* 画像同士の隙間を消す（inline 由来の余白でコマが分断されて見えるのを防ぐ） */
+  .work-detail-overlay.wd-split .work-detail-carousel.vertical-scroll img {
+    display: block;
+    vertical-align: top;
+  }
+  /* 下ペイン: 詳細。残り高さを占め、内部だけスクロール */
+  .work-detail-overlay.wd-split .work-detail-right {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 16px 20px 24px;
+    border-top: 1px solid #eee;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+  /* 下ペインの掴み手（ドラッグで手動リサイズ） */
+  .wd-split-handle { display: none; }
+  .work-detail-overlay.wd-split .wd-split-handle {
+    display: block;
+    flex: 0 0 auto;
+    height: 22px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    position: relative;
+    cursor: row-resize;
+    touch-action: none;
+  }
+  .work-detail-overlay.wd-split .wd-split-handle::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%;
+    transform: translateX(-50%);
+    width: 40px; height: 4px;
+    border-radius: 2px;
+    background: #ccc;
+  }
 }
 
 /* ===== 制作過程セクション (ホーム用) ===== */
