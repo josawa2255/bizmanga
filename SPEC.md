@@ -433,6 +433,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - CSP: `script-src` に `https://cdnjs.cloudflare.com` 必須
 - **クリック遷移なし**: 3D showcase は「こういう媒体がある」と見せるだけ。個別作品へは下のギャラリーで
 
+### 7.1.4b ⛔ 「Webtoon」はユーザー可視テキストで使わない（商標）
+
+- **Webtoon は NAVER の登録商標**（日・米・韓・欧・中）。**画面に出る日本語テキストでは使わない**
+- 代わりに **「縦スクロール漫画」「縦読み」「縦スクロール形式」** を使う
+- **CSS/JSの内部識別子（`data-group="webtoon"`、`bmGalleryGroupWebtoon` 等）は可視テキストではないので据え置きでよい**
+- 発生源は **WP側のフィールド値**であることが多い（事例の `cx_point` 等）。静的HTMLだけ直しても**次のビルドで元に戻る**ので、必ずWPの値を直す → ビルド → 生成物をgrepで確認、の順で行う（[BUGS.md](../BUGS.md) #048）
+- 例外: コラム本文で「Webtoonという呼称そのものを解説する」文脈（[column/vertical-manga-business.html](column/vertical-manga-business.html) 等）は説明上必要なため対象外
+- 関連: コラムのビルドには `normalize_brand_text()` による禁止表現の自動正規化があるが（§下部 S1 参照）、**漫画事例のビルド（`build-works.py`）には正規化が無い**ため、WP側の値がそのまま出る
+
 ### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
 - `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
 - **3タブ**: 全て / Webtoon（縦読み） / 横読み
