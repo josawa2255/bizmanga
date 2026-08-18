@@ -266,11 +266,11 @@ if (getBmLang() === 'en') {
       });
       works.forEach(function(w) {
         apiIds[w.id] = true;
+        // ギャラリーがある場合は実際の画像枚数を正とする（WP側のpages手入力ミスで
+        // ズレても表示・読込枚数が実データと一致するように。片方向補正だと
+        // gallery > pages のケース(例: pages=25なのにgallery=30枚)を見逃す）
         var galleryLen = (w.gallery && w.gallery.length) || 0;
-        var pages = w.pages || 0;
-        if (galleryLen > 0 && pages > galleryLen) {
-          pages = galleryLen;
-        }
+        var pages = galleryLen > 0 ? galleryLen : (w.pages || 0);
         mangaData[w.id] = {
           title: w.title_ja || '',
           title_en: w.title_en || '',
@@ -723,8 +723,9 @@ function openManga(key) {
   const data = mangaData[key];
   if (!data) return;
 
-  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込みを防止）
-  if (data.gallery && data.gallery.length > 0 && data.pages > data.gallery.length) {
+  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込み防止 /
+  // WP側pages手入力ミスでgalleryの方が多いケースも実データに合わせる。267行目付近と同ロジック）
+  if (data.gallery && data.gallery.length > 0 && data.pages !== data.gallery.length) {
     data.pages = data.gallery.length;
   }
 

@@ -324,6 +324,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
+  - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。`/biz-library`ビューア（`js/works.js`）は**galleryがあれば無条件でgallery実枚数を優先**する（2026-08-18〜、BUGS.md #049）。ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新すること（コード側で吸収されるとはいえ、事例スペック表記など他の用途でも使われるため）
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先URL
 - `cx_cta_label_ja` — ⭐ ビズ書庫最終ページCTAラベル（日本語、空欄＝デフォルト「公式サイトを見る →」）
