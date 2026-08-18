@@ -1849,6 +1849,13 @@ function registerFallbackPreData() {
     const allSlides = [];
     items.forEach((item) => {
       for (let p = 1; p <= item.pages; p++) {
+        if (item.gallery && item.gallery.length >= p) {
+          // galleryに実画像があればそれを使う
+        } else if (!item.path) {
+          // pathが無い(=API由来。BUGS #049と同種)のに実画像も無いページは
+          // 壊れたURL(例: "09.webp")を生成しないようスキップする
+          continue;
+        }
         const src = (item.gallery && item.gallery.length >= p)
           ? item.gallery[p - 1]
           : item.path + String(p).padStart(2, '0') + '.webp';
@@ -2017,11 +2024,15 @@ function registerFallbackPreData() {
         var apiName = [];
         data.forEach(function(item) {
           var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
+          // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
+          // 手入力ミスでズレるとカルーセルに壊れた画像URLや欠落が出るため）
+          var galleryLen = (item.gallery && item.gallery.length) || 0;
+          var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
           var entry = {
             key: key,
             title: item.title,
             path: '',
-            pages: item.pages,
+            pages: pages,
             gallery: item.gallery
           };
           if (item.type === 'akapen') {
@@ -2032,7 +2043,7 @@ function registerFallbackPreData() {
           // mangaDataに登録してビューアで開けるようにする
           mangaData[key] = {
             title: item.title,
-            pages: item.pages,
+            pages: pages,
             path: '',
             gallery: item.gallery,
             tags: [],
