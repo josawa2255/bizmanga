@@ -226,9 +226,15 @@ def build_detail_page(w, template):
     # 「採用漫画｜採用漫画の制作事例」と重複するため、業種等の補足に置き換える
     if category_kw in title_ja:
         category_kw = "ビジネス漫画"
-    pages_count = (w.get("spec") or {}).get("pages") or (
-        f"{w.get('pages')}P" if w.get("pages") else "—"
-    )
+    # gallery実枚数があればWP手入力(spec.pages/pages)より優先する
+    # (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
+    gallery_len_for_spec = len(gallery_list)
+    if gallery_len_for_spec > 0:
+        pages_count = f"{gallery_len_for_spec}P"
+    else:
+        pages_count = (w.get("spec") or {}).get("pages") or (
+            f"{w.get('pages')}P" if w.get("pages") else "—"
+        )
     period = (w.get("spec") or {}).get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
     # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示
