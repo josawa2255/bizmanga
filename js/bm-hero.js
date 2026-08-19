@@ -218,14 +218,20 @@
     if (wdMedia) wdMedia.innerHTML = (work.media || []).map(function(m) { return '<li>' + esc(m) + '</li>'; }).join('');
     if (wdSpec) {
       var spec = work.spec || {};
-      wdSpec.innerHTML = '<li>ページ数：' + esc(spec.pages || '—') + '</li><li>納期：' + esc(spec.period || '—') + '</li>';
+      // spec.pages(WP手入力の表示文字列)より実galleryの枚数を優先する
+      // (BUGS #049/#050と同種。bm-works-page.jsと同ロジック、必ず両方直す)
+      var galleryLenForSpec = (work.gallery && work.gallery.length) || 0;
+      var pagesV = esc(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
+      wdSpec.innerHTML = '<li>ページ数：' + pagesV + '</li><li>納期：' + esc(spec.period || '—') + '</li>';
     }
     if (wdPoint) wdPoint.textContent = work.point || '';
     if (wdComment) wdComment.textContent = work.comment || '';
     // 「詳細を見る」→ 個別作品ページ
     if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
 
-    var previewPages = Math.min(work.pages || 5, 5);
+    // gallery実枚数があればwork.pages(WP手入力)より優先する(BUGS #049/#050と同種)
+    var galleryLenForPreview = (work.gallery && work.gallery.length) || 0;
+    var previewPages = Math.min(galleryLenForPreview > 0 ? galleryLenForPreview : (work.pages || 5), 5);
     wdTotalPages = previewPages;
     wdCurrentPage = 0;
 

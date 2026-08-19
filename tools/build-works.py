@@ -193,9 +193,15 @@ def build_detail_page(w, template):
     hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
     thumb = hero_src  # 後方互換で thumb 変数名も維持
     category = w.get("category") or "制作事例"
-    pages_count = (w.get("spec") or {}).get("pages") or (
-        f"{w.get('pages')}P" if w.get("pages") else "—"
-    )
+    # gallery実枚数があればWP手入力(spec.pages/pages)より優先する
+    # (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
+    gallery_len_for_spec = len(gallery_list)
+    if gallery_len_for_spec > 0:
+        pages_count = f"{gallery_len_for_spec}P"
+    else:
+        pages_count = (w.get("spec") or {}).get("pages") or (
+            f"{w.get('pages')}P" if w.get("pages") else "—"
+        )
     period = (w.get("spec") or {}).get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
     # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示

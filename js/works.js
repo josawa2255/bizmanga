@@ -266,11 +266,11 @@ if (getBmLang() === 'en') {
       });
       works.forEach(function(w) {
         apiIds[w.id] = true;
+        // ギャラリーがある場合は実際の画像枚数を正とする（WP側のpages手入力ミスで
+        // ズレても表示・読込枚数が実データと一致するように。片方向補正だと
+        // gallery > pages のケース(例: pages=25なのにgallery=30枚)を見逃す）
         var galleryLen = (w.gallery && w.gallery.length) || 0;
-        var pages = w.pages || 0;
-        if (galleryLen > 0 && pages > galleryLen) {
-          pages = galleryLen;
-        }
+        var pages = galleryLen > 0 ? galleryLen : (w.pages || 0);
         mangaData[w.id] = {
           title: w.title_ja || '',
           title_en: w.title_en || '',
@@ -723,8 +723,9 @@ function openManga(key) {
   const data = mangaData[key];
   if (!data) return;
 
-  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込みを防止）
-  if (data.gallery && data.gallery.length > 0 && data.pages > data.gallery.length) {
+  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込み防止 /
+  // WP側pages手入力ミスでgalleryの方が多いケースも実データに合わせる。267行目付近と同ロジック）
+  if (data.gallery && data.gallery.length > 0 && data.pages !== data.gallery.length) {
     data.pages = data.gallery.length;
   }
 
@@ -1848,6 +1849,13 @@ function registerFallbackPreData() {
     const allSlides = [];
     items.forEach((item) => {
       for (let p = 1; p <= item.pages; p++) {
+        if (item.gallery && item.gallery.length >= p) {
+          // galleryに実画像があればそれを使う
+        } else if (!item.path) {
+          // pathが無い(=API由来。BUGS #049と同種)のに実画像も無いページは
+          // 壊れたURL(例: "09.webp")を生成しないようスキップする
+          continue;
+        }
         const src = (item.gallery && item.gallery.length >= p)
           ? item.gallery[p - 1]
           : item.path + String(p).padStart(2, '0') + '.webp';
@@ -2016,11 +2024,15 @@ function registerFallbackPreData() {
         var apiName = [];
         data.forEach(function(item) {
           var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
+          // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
+          // 手入力ミスでズレるとカルーセルに壊れた画像URLや欠落が出るため）
+          var galleryLen = (item.gallery && item.gallery.length) || 0;
+          var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
           var entry = {
             key: key,
             title: item.title,
             path: '',
-            pages: item.pages,
+            pages: pages,
             gallery: item.gallery
           };
           if (item.type === 'akapen') {
@@ -2031,7 +2043,7 @@ function registerFallbackPreData() {
           // mangaDataに登録してビューアで開けるようにする
           mangaData[key] = {
             title: item.title,
-            pages: item.pages,
+            pages: pages,
             path: '',
             gallery: item.gallery,
             tags: [],
