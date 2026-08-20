@@ -566,7 +566,14 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - pricing.html の Service+Offer JSON-LD を新2プランに更新（lowPrice 25740 / highPrice 33660 / offerCount 2）
 - 「業界最安値級」という断定的な価格訴求表現を**削除**（値上げにより根拠確認済みの主張が困難になったため）。「大手の約1/5の価格」は業界相場比較として引き続き使用（index.html / pricing.html のバッジ・meta・JSON-LD）
 - index.html・pricing.html・manga-production-company.html・strength.html・用途別LP群・works/category/recruit.html の料金言及箇所とJSON-LDを同期
-- **未対応（別Issue）**: column/配下17記事・README.md・faq.htmlに残る、現行体系とも既に不整合だった旧料金表記（1本19,800円等）は今回のスコープ外
+- **⭐総額表記は「原稿料込み」に統一**: 「10P目安」等の総額は `ページ単価×ページ数＋原稿料` で算出する（例: ハイブリッド10P = 25,740×10＋25,740 = 約28.3万円）。
+  pricing.html のカードのみ原稿料込みで、用途別LP8本・works/category/recruit.html の計22箇所が原稿料抜き（約25.7万円）になっており、**表示より実請求が高くなる不整合**が発生していたため統一（レビューで検出）。
+  - ir-manga = 5〜10P 約15.4万〜28.3万円 / inbound-manga = 3言語込み10P 約36.7万円 / sales-manga = 3〜5P 約10.3万円・10P 約28.3万円
+  - **pricing.html の本数割引表（7P基準・6セル）だけは原稿料「別」**。単価比較を主目的とする表のため金額は据え置き、各セルに「（原稿料別）」と明記して基準の混在を防ぐ
+  - `tools/build-works.py` の `CATEGORY_PAGES["recruit"].faq` にも旧価格（1ページ16,600円・10P約17.4万円）が残っていたため修正。**生成物である works/category/*.html だけ直しても日次ビルドで戻る**ので、生成元の更新が必須
+- **未対応（別Issue）**: 下記に残る旧料金表記（1ページ16,600円・1本19,800円等）は今回のスコープ外
+  - `column/配下26ファイル` と `column.html`（カード抜粋）— いずれもWP本文がマスターの自動生成物。`tools/build-columns.py` の `normalize_policy()` に「14,700→16,600」の置換があり、ここを更新すれば一括補正できるが、「5本セットで」等の文脈依存記述が壊れるため要精査
+  - `README.md` / `faq.html` / `i18n/en.json:139`（`"16,600円〜 / P"` の死んだ辞書エントリ。data-ja/data-en が優先されるため実害はないが次回改定時の混乱源）
 
 ### 2026-04-24 全ページ メタタグにパワーワード注入（第2弾）
 
