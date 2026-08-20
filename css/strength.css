@@ -126,6 +126,10 @@
 @media (max-width: 980px) {
   .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
 }
+/* 英語見出しは幅に関係なく2行に折り返すため、上の幅ガード(980px)では
+   捕まえられず、PC幅でも吹き出しが2行目の文字に被る。言語で切って出さない
+   （STYLE-GUIDE「ENは日本語より約30%長い前提で組む」） */
+html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
 @media (max-width: 1000px) {
   .str-v2 .str-head__lines { display: none; }
 }
@@ -363,6 +367,13 @@
 /* 2 行目だけ「2〜3ヶ月」と字数が多く、同じサイズだと 270px の列を
    はみ出して本文に重なる。この行だけ一段小さくする */
 .str-v2 .str-pain:nth-child(2) .str-pain__figure { font-size: clamp(34px, 3.9vw, 58px); }
+/* 英語は同じ意味でも語が長く（「権利?」→「Rights?」等）、nowrap のまま
+   日本語サイズで出すと 270px の列を突き抜けて本文タイトルに重なる。
+   行ごとの個別対処では漏れるので、EN は一律で一段小さくする。
+   セレクタに :nth-child を含めているのは、上の nth-child(2) ルール
+   (詳細度 0,4,0) に勝たせるため。単に html[lang] を足すだけでは
+   (0,3,1) で負け、2行目だけ EN 指定が効かない */
+html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4vw, 52px); }
 .str-v2 .str-pain__cat {
   margin: 8px 0 0;
   font-family: var(--lpv2-font-mono);
