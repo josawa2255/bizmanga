@@ -173,6 +173,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
+- **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
 
 **運用ルール:**
 - 新作品を顧客・商談で共有する時 → `?manga=id` を使う（即時）
@@ -190,7 +191,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 
 | URL | ターゲットKW | 集約データカテゴリ |
 |---|---|---|
-| `/works/category/recruit` | 採用マンガ制作 | 採用 |
+| `/works/category/recruit` | 採用マンガ制作（title は2026-08-04に「採用**漫画**の制作事例〜」へ変更＝漢字が約23倍） | 採用 |
 | `/works/category/product` | 商品紹介マンガ制作 | 商品紹介 + 紹介 |
 | `/works/category/sales` | 営業マンガ制作 | 営業 |
 | `/works/category/company` | 会社紹介マンガ制作 | ブランド + 紹介 |
@@ -305,7 +306,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
   ```
-- **動的DOMの翻訳**: `window.i18n.translateAll()` を呼ぶ（英語モード時のみ）
+- **動的DOMの翻訳** ⭐: `translateAll()` は「英語に翻訳する」関数。**無条件呼び出しは日本語ページを壊す**（BUGS #008）。必ず言語チェックを通す:
+  ```javascript
+  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+    window.i18n.translateAll();
+  }
+  ```
 - **注意**: `restoreAll()` 呼び出し時は `data-ja` 属性へフォールバックする。動的レンダリング後は必ず現在言語を確認してから `translateAll()` を呼ぶこと
 
 ## 5. 外部連携
@@ -321,6 +327,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開） |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
 
+### 5.1 お問い合わせフォームの二重送信ガード ⭐再発防止（2026-08-05 / BUGS #046）
+
+- **フォーム単位のフラグ `bmIsSubmitting`** を送信ハンドラ先頭で判定し、送信中の再入は経路によらず `return`。**ボタンの `disabled` だけに頼らない**（`disabled` はボタン経由の連打しか塞げず、Enter や `requestSubmit()` はすり抜ける）
+- フラグを false に戻すのは **`.catch` のみ**。成功時は戻さない＝完了画面から再送信されない
+- **失敗時の文言で無条件に再送を促さない**: fetch の失敗は「応答が取れなかった」であって「届かなかった」ではない。送信直後の通信断ではサーバーに届いているため、「もう一度お試しください」と促すと重複する。現行文言は「送信結果を確認できませんでした／すでに送信が完了している場合があります」＋電話番号の案内
+
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
@@ -332,12 +344,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ### WP 管理画面メニュー（2026-06-12 再編）
 - B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層
 - **ニュース・コラムの掲載先がチェックボックス複数選択に**（BizManga/ContentsX/イチオシ採用、2026-06-12。イチオシ採用は旧称リクルートX、2026-07-09にキー`recruitx`→`ichioshi`改名・旧キーは読み込み時正規化で互換）。旧値 `both`=B+Cの意味で固定なのでBの表示は不変。`?site=bizmanga` の返却結果も移行前後で完全一致を検証済み
-- 新サービスのWP取り込み・メニュー追加はルートの wp-service-onboard スキル（`.claude/skills/wp-service-onboard/`）で実施
+- 新サービスのWP取り込み・メニュー追加はルートの jou-wp-service-onboard スキル（`.claude/skills/jou-wp-service-onboard/`）で実施
 
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
-  - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路でgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
+  - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
     - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
     - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
@@ -355,12 +367,16 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 |---|---|---|---|---|
 | **Hero マーキー** | `cx_show_hero_site` | `show_hero_site` | `both`/`bizmanga`/`contentsx`/`none` | `/works`（全件返却、フロントでフィルタ） |
 | Hero 順序 | `cx_hero_order_bm` / `cx_hero_order_cx` | `hero_order_bm` / `hero_order_cx` | 整数（小さい順、未設定=9999末尾） | 同上、編集画面のドラッグUIで並べ替え可 |
-| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（1=表示） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
+| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
 | ギャラリー枠 順序 | `cx_sort_order`（全リスト共通の「表示順」入力欄） | `sort_order` | 整数（小さい順、0=末尾） | 同上、WP側で `cx_sort_order` 昇順ソート済み |
-| **ビズ書庫** | `cx_show_library` | `show_library` | bool | `/works` / `/library` |
-| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx` | works.html や `/works?site=` フィルタの基準 |
+| **ContentsX 新作情報** | `cx_show_new_contentsx` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=contentsx` |
+| **ビズ書庫** | `cx_show_library` | `show_library` | bool（**未設定=表示する**） | `/works` / `/library` |
+| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx`（**未設定=`both`**） | works.html や `/works?site=` フィルタの基準 |
 
-- 4系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- 各系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- ⭐ **掲載先フラグは全て「未設定＝表示する」**（2026-08-05統一）。明示的に `0`（`cx_show_site` は `contentsx`）が入っているものだけ非表示になる。
+  以前はギャラリーと新作情報だけ `=== '1'` の完全一致判定で、**新規登録した作品がフラグを手で立てるまでどこにも出ない**状態だった。
+  WP側の判定は `cxcms_show_flag_meta_query()`（`!= '0'` OR `NOT EXISTS`）に集約されている
 - ホームのギャラリー枠は **`BM_NEW_WORKS_DATA`（`/works-new` から取得）を優先**（[bm-home.js](js/bm-home.js#L112-L122)）。WP側でフィルタ済みなのでフロントは追加フィルタ不要
 - 後方互換: `/works-new` が空 or 未取得時は `BM_WORKS_DATA` でフォールバック
 - 順序制御: ギャラリー枠は `cx_sort_order` 昇順（同順位は `cx_added_date` 降順）。Heroと違って独立順序フィールドは持たず、編集画面の「表示順」入力欄が共通利用される
@@ -446,6 +462,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - CSP: `script-src` に `https://cdnjs.cloudflare.com` 必須
 - **クリック遷移なし**: 3D showcase は「こういう媒体がある」と見せるだけ。個別作品へは下のギャラリーで
 
+### 7.1.4b ⛔ 「Webtoon」はユーザー可視テキストで使わない（商標）
+
+- **Webtoon は NAVER の登録商標**（日・米・韓・欧・中）。**画面に出る日本語テキストでは使わない**
+- 代わりに **「縦スクロール漫画」「縦読み」「縦スクロール形式」** を使う
+- **CSS/JSの内部識別子（`data-group="webtoon"`、`bmGalleryGroupWebtoon` 等）は可視テキストではないので据え置きでよい**
+- 発生源は **WP側のフィールド値**であることが多い（事例の `cx_point` 等）。静的HTMLだけ直しても**次のビルドで元に戻る**ので、必ずWPの値を直す → ビルド → 生成物をgrepで確認、の順で行う（[BUGS.md](../BUGS.md) #048）
+- 例外: コラム本文で「Webtoonという呼称そのものを解説する」文脈（[column/vertical-manga-business.html](column/vertical-manga-business.html) 等）は説明上必要なため対象外
+- 関連: コラムのビルドには `normalize_brand_text()` による禁止表現の自動正規化があるが（§下部 S1 参照）、**漫画事例のビルド（`build-works.py`）には正規化が無い**ため、WP側の値がそのまま出る
+
 ### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
 - `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
 - **3タブ**: 全て / Webtoon（縦読み） / 横読み
@@ -481,8 +506,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 - **ページング**: 20件/ページ
 - **モーダル操作**: クリック / スワイプ（スマホ）/ 矢印キー（PC）
-- **縦読み判定**: 1ページ目の縦横比 < 0.2 で縦スクロールモードに自動切替
+- **縦読み判定**: `window.bmViewType` に一本化（WPの `view_type` が `vertical`/`vertical_only`、または1ページ目が `height/width > 1.8`）。**各JSで自前判定しないこと**（[BUGS.md](../BUGS.md) #012 / #013）
 - **i18n**: モーダル内カテゴリ / メディア / UIテキストも翻訳対応
+- **DOMは index.html と works.html に同一のものが2つ存在**する。動かすJSはページごとに別（index=[js/bm-hero.js](js/bm-hero.js) / works=[js/bm-works-page.js](js/bm-works-page.js)）。**モーダルの挙動を変えるときは必ず両方に反映する**
+
+### 8.1 スマホ縦読みの上下2ペイン分割 ⭐ 2026-08-06 追加
+
+縦読み作品はスマホで漫画が非常に長く、一体スクロールだと「使用媒体 / 導入内容 / 演出ポイント」まで到達できず実質読まれなかったため、上下2ペインに分割する。
+
+- **適用条件**: 画面幅768px以下 **かつ** 縦読み（`.work-detail-carousel.vertical-scroll`）のときだけ。横読みとPC（769px以上の左右2カラム）は従来どおりで一切変更しない
+- **構造**: 上ペイン=漫画 / 下ペイン=詳細。各ペインが独立した `overflow-y: auto` を持ち、`overscroll-behavior: contain` で相手側にスクロールを伝播させない（下ペインを操作しても漫画は動かない）
+- **比率の自動追従（読んでいる側に広さを譲る）**: CSS変数 `--wd-split` が上ペインの高さ比率
+  | 状態 | `--wd-split` | 上:下 |
+  |------|-------------|-------|
+  | 開いた直後 / 漫画に触れた | 0.75 | 3:1 |
+  | 詳細に触れた | 0.5 | 1:1 |
+  | 詳細を読み進めた | 0.25 | 1:3 |
+- **手動リサイズ**: ペイン境界の `.wd-split-handle` をドラッグ。上下とも最低1/4は残す
+- **実装**: [js/bm-wd-split.js](js/bm-wd-split.js)（`window.bmWdSplit.apply()` / `.reset()`）。**縦読み判定の直後に `apply()`、モーダルを閉じる時とカルーセルモード時に `reset()`** を呼ぶ。CSSは [css/bizmanga.css](css/bizmanga.css) の `@media (max-width: 768px)` 内 `.wd-split` 配下
+- **読込順（必須）**: `bm-view-type.js` → `bm-wd-split.js` → 各ページJS（`bm-hero.js` / `bm-works-page.js`）
+- ⚠️ **比率変更はペイン高さを変え、それが `scrollTop` を押し戻して `scroll` イベントを再発火させる**。これを「ユーザーが読んでいる」と誤認すると比率が固まるフィードバックループになるため、変更後 420ms は `scroll` を意図とみなさない（`SETTLE_MS`）。`pointerdown`/`touchstart` は明示操作なのでガードしない
 
 ## 9. 漫画ビューア（works.js）
 

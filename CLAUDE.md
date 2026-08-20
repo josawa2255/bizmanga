@@ -73,6 +73,8 @@ if (window.i18n && window.i18n.translateAll) {
 - タイトル+カテゴリタグ: `.work-detail-title-row` でflexbox横並び
 - カルーセル: 1ページ目の縦横比で縦読み(vertical-scroll)/カルーセル切替
 - フィルター: カテゴリ別絞り込み + カウント表示
+- ⚠️ **同じDOMが index.html と works.html の2箇所にあり、動かすJSは別**（index=`js/bm-hero.js` / works=`js/bm-works-page.js`）。挙動を変えるときは**必ず両方**直す
+- **スマホ縦読みは上下2ペイン分割**（上=漫画/下=詳細、読んでいる側が広がる）。`js/bm-wd-split.js` が担当。詳細は [SPEC.md §8.1](SPEC.md)
 
 ## 漫画ビューア（js/works.js）
 - 見開き(spread)/縦スクロール(vertical)/強制縦(vertical_only) の3モード
