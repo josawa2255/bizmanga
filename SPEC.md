@@ -54,6 +54,7 @@
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
 | 料金 | `pricing.html` | —（共通JSのみ） | **2026-07-02 全面刷新**: 3プランカード型料金表（ライト¥166,000〜/スタンダード¥181,000〜人気No.1/プレミアム¥246,000〜、いずれも10P×1本モデル・税抜）+ 3バッジ + 本数割引ミニ表（1本16,600/3本14,800/5本13,800円/P・原稿料0円）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=light\|standard\|premium`（§2.2のプリフィル連携）。旧プラン診断クイズ（bm-pricing-quiz.js）と長文解説・非表示FAQPage JSON-LDは廃止。Service JSON-LDのOfferは表示価格と同期（lowPrice 166000 / highPrice 246000） |
+| 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚(FORMATSスロット拡張)→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + 薄いアドオン `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**強みインデックスは他LPの4枚1行(1枚277px)に対し5枚1行(1枚235px)**（グリッド幅を1320pxまで拡張。旧3+2段組は1枚377pxで他ページより36%大きかった）。**本文は他LPよりワンサイズ大きい**（悩み16px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)） |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役 |
@@ -218,6 +219,30 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
 - sitemap.xml に `BUILD:WORKS_CATEGORIES` ブロックで自動追記
 - 週1ビルド（日曜03:00 JST、`.github/workflows/build-works.yml`）で更新
+
+### 2.0c 制作事例のクリック挙動統一（2026-07-30）
+
+**課題:** カテゴリページ新設時（2.0b）にモーダル層を載せ忘れていたため、`/works` と `/` はカードクリックでモーダル、カテゴリページだけ個別ページへ直行という不統一が発生していた。
+
+**統一後の挙動（全ページ共通）:**
+1. カードクリック → 制作事例モーダル（カード）を表示
+2. モーダル最下部の「詳細を見る」ボタン → 個別作品ページ `/works/{id}` へ遷移
+
+| ページ | モーダル実装 |
+|---|---|
+| `/`（トップ） | `js/bm-hero.js` |
+| `/works` | `js/bm-works-page.js` |
+| `/works/category/{slug}` | `js/bm-work-modal.js`（本対応で新設） |
+
+**`js/bm-work-modal.js`（静的ページ用の汎用モーダル）:**
+- 作品データは `<script type="application/json" id="bmWorksModalData">` からビルド時同梱で読む（カテゴリページはWP APIを読み込まないため。`build_category_works_json()` が生成、gallery は5枚まで）
+- `window.BM_WORKS_DATA` / `bm-data-ready` があればそれで上書き（API併用ページでも動く）
+- `.bm-works-card[data-work-id]` を自動 hydrate。カードは `<a href="/works/{id}">` のまま残し `preventDefault()` で抑止 → 内部リンクのクロール性・Cmd/Ctrl/中クリックの新規タブを維持
+- 縦読み/見開き判定は `window.bmViewType` に委譲（BUGS #012/#013 再発防止）
+- 公開API: `window.bmWorkModal = { open, close, setWorks, hydrate }`
+- 読込順は `bm-view-type.js` → `bm-work-modal.js`
+
+**「詳細を見る」ボタン:** `#workDetailLink`（`.work-detail-cta`）。3ページのモーダルHTMLに追加。href は各 `openWorkDetail()` が `/works/{id}` にセット。i18n は data-ja/data-en。
 
 ### 2.1 QR コード用ダイレクトモード ⭐重要
 ```
@@ -469,7 +494,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
-- キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「6月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
+- キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「8月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ

@@ -197,6 +197,7 @@
   var wdSpec = document.getElementById('workDetailSpec');
   var wdPoint = document.getElementById('workDetailPoint');
   var wdComment = document.getElementById('workDetailComment');
+  var wdLink = document.getElementById('workDetailLink');
 
   var wdCurrentPage = 0;
   var wdTotalPages = 0;
@@ -225,6 +226,8 @@
     }
     if (wdPoint) wdPoint.textContent = work.point || '';
     if (wdComment) wdComment.textContent = work.comment || '';
+    // 「詳細を見る」→ 個別作品ページ
+    if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
 
     // gallery実枚数があればwork.pages(WP手入力)より優先する(BUGS #049/#050と同種)
     var galleryLenForPreview = (work.gallery && work.gallery.length) || 0;

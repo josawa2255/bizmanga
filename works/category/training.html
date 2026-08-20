@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-08-05T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-08-19T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
@@ -314,11 +314,59 @@
     </div>
   </footer>
 
+  <!-- ===== 制作事例モーダル (works.html と同構造) ===== -->
+  <div class="work-detail-overlay" id="workDetailOverlay">
+    <button class="work-detail-close" id="workDetailClose" aria-label="閉じる">&times;</button>
+    <div class="work-detail-content">
+      <div class="work-detail-left">
+        <div class="work-detail-carousel-wrap" style="position:relative;">
+          <div class="bm-manga-loader-wrap" id="workDetailLoader">
+            <span class="bm-manga-loader"></span>
+          </div>
+          <button class="work-detail-arrow work-detail-prev" id="workDetailPrev" aria-label="前のページ">&#8249;</button>
+          <div class="work-detail-carousel" id="workDetailCarousel"></div>
+          <button class="work-detail-arrow work-detail-next" id="workDetailNext" aria-label="次のページ">&#8250;</button>
+        </div>
+        <div class="work-detail-dots" id="workDetailDots"></div>
+      </div>
+      <div class="work-detail-right">
+        <div class="work-detail-title-row">
+          <h2 class="work-detail-title" id="workDetailTitle"></h2>
+          <span class="work-detail-category" id="workDetailCategory"></span>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
+          <ul class="work-detail-list" id="workDetailMedia"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation Details">導入内容</h3>
+          <ul class="work-detail-list" id="workDetailSpec"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Key Points">演出ポイント</h3>
+          <p class="work-detail-text" id="workDetailPoint"></p>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
+          <p class="work-detail-quote" id="workDetailComment"></p>
+        </div>
+        <div class="work-detail-cta-wrap">
+          <a class="work-detail-cta" id="workDetailLink" href="/works" data-ja="詳細を見る" data-en="View details">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル用の作品データ（ビルド時に埋め込み。WP API を叩かずに即開けるため） -->
+  <script type="application/json" id="bmWorksModalData">[{"id":"diamond","title_ja":"DIAMOND シャンパンコール","title_en":"DIAMOND Champagne Call","category":"研修","category_en":"","media":["新人研修資料","マニュアル動画内"],"spec":{"pages":"11P","period":"10日間","period_en":""},"point":"新人が体験しがちな\"焦りとミス\"をストーリー化することで、正しい順序を守る大切さを体験として理解できる構成にしました。","point_en":"","comment":"これまで\"何度言っても同じミスをする\"新人が多かったのですが、漫画にしてから\"自分も同じことをしそう\"と感じてもらえるようになりました。","comment_en":"","pages":11,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/04/01-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/02-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/03-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/04-4.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/05-4.webp"]}]</script>
+
   <script src="/js/bm-sanitize.js" defer></script>
   <script src="/js/bm-i18n.js" defer></script>
   <script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-kinsoku.js" defer></script>
   <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-work-modal.js" defer></script>
 </body>
 </html>

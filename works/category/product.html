@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="last-modified" content="2026-08-18T03:00:00+09:00">
+  <meta http-equiv="last-modified" content="2026-08-19T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
@@ -485,11 +485,59 @@
     </div>
   </footer>
 
+  <!-- ===== 制作事例モーダル (works.html と同構造) ===== -->
+  <div class="work-detail-overlay" id="workDetailOverlay">
+    <button class="work-detail-close" id="workDetailClose" aria-label="閉じる">&times;</button>
+    <div class="work-detail-content">
+      <div class="work-detail-left">
+        <div class="work-detail-carousel-wrap" style="position:relative;">
+          <div class="bm-manga-loader-wrap" id="workDetailLoader">
+            <span class="bm-manga-loader"></span>
+          </div>
+          <button class="work-detail-arrow work-detail-prev" id="workDetailPrev" aria-label="前のページ">&#8249;</button>
+          <div class="work-detail-carousel" id="workDetailCarousel"></div>
+          <button class="work-detail-arrow work-detail-next" id="workDetailNext" aria-label="次のページ">&#8250;</button>
+        </div>
+        <div class="work-detail-dots" id="workDetailDots"></div>
+      </div>
+      <div class="work-detail-right">
+        <div class="work-detail-title-row">
+          <h2 class="work-detail-title" id="workDetailTitle"></h2>
+          <span class="work-detail-category" id="workDetailCategory"></span>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
+          <ul class="work-detail-list" id="workDetailMedia"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation Details">導入内容</h3>
+          <ul class="work-detail-list" id="workDetailSpec"></ul>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Key Points">演出ポイント</h3>
+          <p class="work-detail-text" id="workDetailPoint"></p>
+        </div>
+        <div class="work-detail-section">
+          <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
+          <p class="work-detail-quote" id="workDetailComment"></p>
+        </div>
+        <div class="work-detail-cta-wrap">
+          <a class="work-detail-cta" id="workDetailLink" href="/works" data-ja="詳細を見る" data-en="View details">詳細を見る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- モーダル用の作品データ（ビルド時に埋め込み。WP API を叩かずに即開けるため） -->
+  <script type="application/json" id="bmWorksModalData">[{"id":"macnica-ai-school","title_ja":"マクニカAI研修","title_en":"Macnica AI Training","category":"商品紹介","category_en":"","media":[],"spec":{"pages":"14P","period":"","period_en":""},"point":"「AI研修」という抽象的なサービスを、ナビゲーターキャラが案内する形で可視化。導入後の職場がどう変わるかを具体的な場面で見せ、無料相談へつなげる構成。","point_en":"","comment":"","comment_en":"","pages":14,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-01.webp","https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-02.webp","https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-03.webp","https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-04.webp","https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-05.webp"]},{"id":"omatome-ninja-new","title_ja":"黄色いおまとめ忍者参上！！","title_en":"The Savior of Trade Show Sales! The Consolidation Ninja","category":"商品紹介","category_en":"","media":["営業資料","Webサイト","展示会・セミナー配布用冊子","SNS投稿"],"spec":{"pages":"8P","period":"2週間","period_en":""},"point":"「“名刺をまとめて送る→1週間後にテンプレ送信”という展示会あるあるの徒労感と、『録音＋撮影＋10秒登録→60秒でパーソナライズメール』という体験の鮮やかさを対比させる構成にしました。」","point_en":"","comment":"「機能説明ではなく“受け取った側の驚き”から語ってもらえたことで、お客様が自社でのシーンを具体的に想像できるようになりました。」","comment_en":"","pages":8,"view_type":"vertical_only","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/04/おまとめ忍者-表紙.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/P1.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/P2.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/P3.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/P4.webp"]},{"id":"omatome-ninja-4","title_ja":"おまとめ忍者 手書き派の悩み 拙者にお任せ！","title_en":"Omatome Ninja: Helping the Handwriting Fans!","category":"商品紹介","category_en":"","media":["営業資料","展示会／セミナー配布用冊子","Webサイト・SNS投稿（X・Instagram）","社内説明資料／製品紹介動画内"],"spec":{"pages":"10P","period":"10日間","period_en":""},"point":"商品サービスの仕組みを説明するのではなく、\"現場でどんな変化が起きるか\"を体感的に理解できる構成にしました。","point_en":"","comment":"\"手書き派の社員でも使える\"というポイントを、言葉ではなく漫画で伝えられたことで、現場担当者からの理解が格段に早くなりました。","comment_en":"","pages":10,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-6.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-6.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-6.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-6.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-3.webp"]},{"id":"omatome-ninja-5","title_ja":"おまとめ忍者 長時間会議も怖くない！","title_en":"Omatome Ninja: No More Fear of Long Meetings!","category":"商品紹介","category_en":"","media":["展示会ブース配布冊子","営業資料（PDF）","Webサイト（製品紹介ページ）","SNS（X・Instagram）"],"spec":{"pages":"11P","period":"10日間","period_en":""},"point":"長い会議のストレスをリアルに描き、サービス導入後に\"仕事が軽くなる感覚\"を物語で表現。","point_en":"","comment":"\"AI議事録\"という言葉の説明より、漫画を見せる方が早い。経営層にも、\"こういうことか！\"とすぐ伝わるようになりました。","comment_en":"","pages":11,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-7.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-7.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-7.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-7.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-4.webp"]},{"id":"seko","title_ja":"瀬古恭介 始まりのものがたり","title_en":"Kyosuke Seko: A Story of Beginnings","category":"紹介","category_en":"","media":["ブランディング","Web掲載"],"spec":{"pages":"30P","period":"4週間","period_en":""},"point":"経営者の原体験と想いをストーリー漫画化。感情に訴える構成で、企業理念への深い理解と共感を生み出します。","point_en":"","comment":"自分の想いがこんなに伝わる形になるとは思いませんでした。社員にも読んでもらい、チームの結束が強まりました。","comment_en":"","pages":30,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-18.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-18.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-18.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-18.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-14.webp"]},{"id":"omatome-ninja-rohto","title_ja":"おまとめ忍者 忍者参上！！欠席者をお助けいたす！","title_en":"Omatome Ninja: Here to Help Absentees!","category":"商品紹介","category_en":"","media":["営業資料","Webサイト（製品紹介ページ）","SNS（X・Instagram）"],"spec":{"pages":"19P","period":"10日間","period_en":""},"point":"体調不良や欠席など、\"誰にでも起こる日常\"を題材にすることで、AIの便利さを\"助けてもらう安心感\"として自然に伝える構成にしました。","point_en":"","comment":"商談でも\"この漫画みたいなシーンあります！\"と共感の声を多くいただきました。","comment_en":"","pages":19,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-8.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-8.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-8.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-8.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-5.webp"]},{"id":"omatome-ninja-english","title_ja":"おまとめ忍者（海外版）","title_en":"Omatome Ninja (Global Edition)","category":"商品紹介","category_en":"","media":["グローバル展示会／海外パートナー企業への営業資料","Webサイト（英語版製品ページ）","SNS（LinkedIn・Instagram・X）","英語圏メディア向け紹介動画内素材"],"spec":{"pages":"15P","period":"18日間","period_en":""},"point":"英語版では、文化や言葉の違いを意識して、セリフやテンポをより自然なリズムに調整。国や文化が違っても、ビジュアルと物語の流れを追うだけで価値が伝わるストーリーに仕上げています。","point_en":"","comment":"海外の展示会で、漫画を見せると目立ち、人だかりができました。言葉で説明するよりも、物語で\"価値のイメージ\"を共有できるのが最大のメリットです。漫画は、日本のサービスが海外に出ていくうえでも強力な武器になると感じました。","comment_en":"","pages":15,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-9.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-9.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-9.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-9.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-6.webp"]},{"id":"omatome-ninja","title_ja":"おまとめ忍者 見つけてみせる！トレンドの兆し","title_en":"Omatome Ninja: Discovering Trend Signs","category":"商品紹介","category_en":"","media":["営業資料","Webサイト（製品紹介ページ）","SNS（X・Instagram）","社内説明・営業研修"],"spec":{"pages":"15P","period":"10日間","period_en":""},"point":"専門的なAI分析の説明を、“数字ではなく人の物語”に置き換え、“なるほど、こう使えるのか”と イメージできる構成にしました。","point_en":"","comment":"「堅かった“データ分析の説明”が、漫画を通して“現場の悩み”として伝わるようになりました。 会議でも“うちもこういう状況あるよね”と共感され、導入への理解が一気に進みました。」","comment_en":"","pages":15,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/04/01-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/02-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/03-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/04-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/05-5.webp"]},{"id":"omatome-ninja-2","title_ja":"おまとめ忍者 手間な議事録をこっそり要約","title_en":"Omatome Ninja: Secretly Summarizing Meeting Notes","category":"商品紹介","category_en":"","media":["営業資料（PDF／展示会パネル）","Webサイト（製品紹介ページ）","セミナー・展示会・SNS投稿"],"spec":{"pages":"9P","period":"10日間","period_en":""},"point":"\"難しそう\"を\"かわいい・簡単そう\"に変換し、AIツールの概念を直感で理解させる構成。","point_en":"","comment":"AIやDXのように専門的なサービスも、\"忍者が助けてくれる\"という比喩で、誰にでも理解してもらえるようになりました。","comment_en":"","pages":9,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/04/01-1-scaled.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/02-1-scaled.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/03-1-scaled.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/04-1-scaled.webp","https://cms.contentsx.jp/wp-content/uploads/2026/04/05-1-scaled.webp"]},{"id":"omatome-ninja-3","title_ja":"おまとめ忍者 地獄のまとめ作業 拙者におまかせ！","title_en":"Omatome Ninja: Leave the Tedious Summarizing to Me!","category":"商品紹介","category_en":"","media":["展示会ブース配布用冊子","営業用資料","Webサイト／SNS（Instagram投稿・X）","セミナーやオンライン説明会での導入動画内使用"],"spec":{"pages":"8P","period":"10日間","period_en":""},"point":"\"DX＝難しい\"という印象を払拭し、明るく親しみのあるコミュニケーションを狙った構成。","point_en":"","comment":"説明しづらかったAIの価値が\"誰でもわかる\"漫画になったことで、展示会での会話率が格段に上がりました。","comment_en":"","pages":8,"view_type":"spread","gallery":["https://cms.contentsx.jp/wp-content/uploads/2026/03/01-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/02-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/03-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/04-5.webp","https://cms.contentsx.jp/wp-content/uploads/2026/03/05-2.webp"]}]</script>
+
   <script src="/js/bm-sanitize.js" defer></script>
   <script src="/js/bm-i18n.js" defer></script>
   <script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-kinsoku.js" defer></script>
   <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-work-modal.js" defer></script>
 </body>
 </html>

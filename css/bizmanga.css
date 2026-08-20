@@ -4440,6 +4440,24 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   border-left: 3px solid var(--bm-accent);
   padding: 12px 16px; border-radius: 4px; margin-top: 4px;
 }
+/* モーダル最下部: 個別作品ページ（/works/{id}）へのCTA */
+.work-detail-cta-wrap { margin-top: 20px; }
+/* CTAが最後の子になるため、直前の情報セクションの区切り線を消す */
+.work-detail-section:has(+ .work-detail-cta-wrap) { border-bottom: none; }
+.work-detail-cta {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; box-sizing: border-box;
+  padding: 14px 20px;
+  background: var(--bm-accent); color: #fff;
+  font-size: 0.95rem; font-weight: 700; text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+.work-detail-cta:hover {
+  background: var(--bm-accent-hover); color: #fff;
+  transform: translateY(-1px);
+}
+.work-detail-cta::after { content: "→"; }
 
 
 /* ============================================
