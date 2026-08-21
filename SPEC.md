@@ -53,7 +53,7 @@
 | トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
-| 料金 | `pricing.html` | —（共通JSのみ） | **2026-08-19 全面刷新**: 2プランカード型料金表（フル漫画家プラン ¥33,660/ページ〜・原稿料別途33,660円/10P目安約37.0万円／ハイブリッドプラン ¥25,740/ページ〜・原稿料別途25,740円/10P目安約28.3万円、いずれも税抜）+ 3バッジ + プラン別本数割引ミニ表2枚（7P基準。フル漫画家: 1本33,660/3本30,320/5本28,260円/P、ハイブリッド: 1本25,740/3本23,200/5本21,600円/P。原稿料は各プラン単価と同額を別途）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=full\|hybrid`（§2.2のプリフィル連携）。旧3プラン体系（ライト/スタンダード/プレミアム、2026-07-02版）は廃止。「業界最安値級」表現は削除し「大手の約1/5の価格」に統一（値上げに伴う訴求見直し）。Service JSON-LDのOfferは表示価格と同期（lowPrice 25740 / highPrice 33660） |
+| 料金 | `pricing.html` | —（共通JSのみ） | **2026-08-21 Hero新デザイン追加**（`.pr-*`クラス）: 旧`.bm-img-hero`型ページヘッダーを廃止し、左=コピー+ビズちゃん(指差しポーズ+吹き出し「2つのプランから選べるよ！」)／右=料金カード2枚(フル漫画家/ハイブリット表記)／下部=特徴バッジ4項目、という2カラムHeroに刷新。背景は`material/images/pricing/pricing-hero-bg-manga.webp`（淡い桃色の漫画風ステーショナリー背景）。Hero直後に続く既存の詳細版セクション（下記）とは意図的に情報が重複（Hero=サマリー、詳細セクション=本数割引表・機能一覧を含むフル情報という二段構成）。ヘッダー自体は他ページ共通の通常形状を維持（角丸浮遊は不採用、参考デザイン画像に合わせた判断）。**2026-08-19 全面刷新**: 2プランカード型料金表（フル漫画家プラン ¥33,660/ページ〜・原稿料別途33,660円/10P目安約37.0万円／ハイブリッドプラン ¥25,740/ページ〜・原稿料別途25,740円/10P目安約28.3万円、いずれも税抜）+ 3バッジ + プラン別本数割引ミニ表2枚（7P基準。フル漫画家: 1本33,660/3本30,320/5本28,260円/P、ハイブリッド: 1本25,740/3本23,200/5本21,600円/P。原稿料は各プラン単価と同額を別途）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=full\|hybrid`（§2.2のプリフィル連携）。旧3プラン体系（ライト/スタンダード/プレミアム、2026-07-02版）は廃止。「業界最安値級」表現は削除し「大手の約1/5の価格」に統一（値上げに伴う訴求見直し）。Service JSON-LDのOfferは表示価格と同期（lowPrice 25740 / highPrice 33660） |
 | 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚(FORMATSスロット拡張)→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + 薄いアドオン `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**強みインデックスは他LPの4枚1行(1枚277px)に対し5枚1行(1枚235px)**（グリッド幅を1320pxまで拡張。旧3+2段組は1枚377pxで他ページより36%大きかった）。**本文は他LPよりワンサイズ大きい**（悩み16px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)） |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
@@ -554,6 +554,19 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
+
+### 2026-08-21 料金ページ Hero セクション新デザイン実装
+
+- pricing.html の旧`.bm-img-hero`型ページヘッダー（画像1枚+タイトル+説明文のみ）を廃止し、新しい`.pr-hero`セクションに全面差し替え
+  - 左: `PRICE PLAN`見出し + メインコピー「あなたにぴったりのプランをお選びください」+ 説明文 + 装飾ライン
+  - 左下: ビズちゃん（指差しポーズ、`material/images/pricing/pricing-hero-bizchan-point.webp`）+ 吹き出し「2つのプランから選べるよ！」
+  - 中央〜右: 料金カード2枚（フル漫画家プラン/ハイブリット表記＝Hero上限定の表記、正式名称は「ハイブリッドプラン」）
+  - 下部: 特徴バッジ帯4項目（最短2週間で納品/125項目の品質チェック/著作権リスクゼロ（原画資産方式）/4媒体以上に展開可能）
+  - 背景: `material/images/pricing/pricing-hero-bg-manga.webp`（淡い桃色の漫画風ステーショナリー背景、opacity 0.9で可読性優先）
+- 新規CSSクラスは`.pr-*`プレフィックスで独立させ、既存の`.bm-img-hero`（他ページ共用）・`.bm-plan-*`（直後の詳細セクションで使用中）には触れていない
+- Hero直後に続く既存の「料金プラン」詳細セクション（本数割引表・機能一覧含む、2026-08-19刷新版）はそのまま残す方針。Hero=ひと目で比較できるサマリー、詳細セクション=フル情報、という二段構成として意図的に情報を重複させている
+- ヘッダーは参考デザイン画像に合わせて他ページ共通の通常形状を維持（当初、指示文の「角丸浮遊ヘッダー」を試作したが、参考画像の実際のヘッダーが通常形状だったため不採用に変更）
+- 検証: JSON-LD構文（json.loads）全ブロックOK、data-ja/data-en属性ペア数一致、モバイル390px幅で横スクロールなし・ハンバーガーメニュー正常動作を確認済み
 
 ### 2026-08-19 料金プラン全面刷新（3プラン→2プラン）
 
