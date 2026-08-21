@@ -5599,6 +5599,13 @@ body:has(> .bm-floating-comics-bg) {
   background: #f9f5f1;
   overflow: hidden;
   padding-top: 72px; /* 固定ヘッダー(72px)ぶんの逃げ */
+  /* サイト共通の基準フォントに統一（pricing.htmlのクリティカルCSSがNoto Sans JPを
+     指定しているため、Hero内は明示的に body と同じスタックへ戻す） */
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
+    -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.pr-hero h1, .pr-hero h2, .pr-hero p, .pr-hero span, .pr-hero li {
+  font-family: inherit;
 }
 .pr-hero-bg {
   position: absolute;
@@ -5631,7 +5638,7 @@ body:has(> .bm-floating-comics-bg) {
   position: relative;
   min-width: 0;
   height: 100%;
-  padding-top: 135px; /* 目標: PRICE PLAN 上端 y=207（実ヘッダー72px → 135px） */
+  padding-top: 105px; /* 上の余白を詰めて全体を上寄せ */
 }
 .pr-hero-eyebrow {
   font-size: 20px;
@@ -5671,21 +5678,28 @@ body:has(> .bm-floating-comics-bg) {
 .pr-hero-chara {
   position: absolute;
   left: -14px;
-  /* 目標: 頭頂 y=520（ヘッダー下97 → Hero内 423px） */
-  top: 448px;
-  width: min(352px, 98%);
+  /* 目標: 頭頂 y=520（ヘッダー下97 → Hero内 423px）。全体を上寄せしたぶん -30px */
+  top: 430px;
+  width: min(388px, 100%);
+  /* 目標どおり「みぞおちから上」を大きく見せ、下端はHeroで切る */
+  height: 448px;
+  overflow: hidden;
   z-index: 2;
 }
 .pr-hero-chara img {
   display: block;
   width: 100%;
   height: auto;
+  /* 素材は全身。上半身だけを使うため上端基準で表示 */
+  object-fit: cover;
+  object-position: top center;
 }
 .pr-hero-balloon {
   position: absolute;
-  /* 目標: 円 x437-580, y640-785 → chara(x=82,y=520)基準で left=355, top=120 */
-  top: 120px;
-  left: 355px;
+  /* 目標: 円 x437-580, y640-785。.pr-hero-copy(x=68,y=72)基準 */
+  top: 538px;
+  left: 369px;
+  z-index: 3;
   width: 145px;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
@@ -5714,7 +5728,7 @@ body:has(> .bm-floating-comics-bg) {
 .pr-hero-right {
   min-width: 0;
   /* 目標: カード上端 y=251（ヘッダー下97 → Hero内 154px） */
-  padding-top: 179px;
+  padding-top: 149px;
 }
 .pr-plan-cards {
   display: grid;
@@ -5738,23 +5752,40 @@ body:has(> .bm-floating-comics-bg) {
 
 .pr-plan-tab {
   position: absolute;
-  /* 目標: タブ 180x42、カード上端(251)より30px上 = y221 */
+  /* 目標: タブ 180x42、カード上端(251)より30px上 = y221。
+     上辺は角ばり／下辺が大きく丸い「貼り付けたシール」形状 */
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  width: 180px;
-  height: 42px;
+  width: 186px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px 8px 14px 14px;
+  border-radius: 4px 4px 20px 20px;
   font-size: 17px;
   font-weight: 700;
+  letter-spacing: 0.04em;
   color: #ffffff;
   white-space: nowrap;
-  box-shadow: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.10);
 }
+/* シールの「折り返し」表現: 左右に台形状の小片を出してカードに貼られた感じを出す */
+.pr-plan-tab::before,
+.pr-plan-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 11px;
+  background: inherit;
+  filter: brightness(0.80);
+  opacity: 0.55;
+  z-index: -1;
+}
+.pr-plan-tab::before { left: -8px; clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+.pr-plan-tab::after { right: -8px; clip-path: polygon(0 0, 100% 100%, 0 100%); }
 .pr-plan-card--full .pr-plan-tab { background: var(--bm-accent); }
 .pr-plan-card--hybrid .pr-plan-tab { background: #2e4369; }
 
@@ -5779,7 +5810,7 @@ body:has(> .bm-floating-comics-bg) {
 .pr-plan-card--hybrid .pr-plan-name { color: #2e4369; }
 
 .pr-plan-name-en {
-  font-family: "Snell Roundhand", "Apple Chancery", Georgia, "Times New Roman", serif;
+  font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", "Brush Script MT", cursive;
   font-style: italic;
   font-size: 28px;
   letter-spacing: 0.06em;
@@ -5935,7 +5966,7 @@ body:has(> .bm-floating-comics-bg) {
     transform: translateX(-50%);
     width: min(330px, 86%);
   }
-  .pr-hero-balloon { top: 14%; left: auto; right: -10px; width: 128px; font-size: 13px; }
+  .pr-hero-balloon { top: auto; bottom: 300px; left: auto; right: 4px; width: 128px; font-size: 13px; }
   .pr-hero-right { padding-top: 32px; }
   .pr-plan-cards {
     grid-template-columns: 1fr;
@@ -5955,7 +5986,7 @@ body:has(> .bm-floating-comics-bg) {
   .pr-hero-title { font-size: clamp(26px, 7vw, 34px); }
   .pr-hero-copy { padding-bottom: 360px; }
   .pr-hero-chara { width: min(300px, 84%); }
-  .pr-hero-balloon { width: 120px; font-size: 12px; }
+  .pr-hero-balloon { width: 118px; font-size: 12px; bottom: 262px; right: 0; }
   .pr-hero-badges {
     grid-template-columns: 1fr 1fr;
     border-radius: 24px;

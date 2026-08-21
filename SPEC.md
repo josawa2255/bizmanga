@@ -576,6 +576,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - 見出しは `white-space:nowrap` + `width:max-content` で目標どおり2行（「あなたにぴったりの」「プランをお選びください」）を保証。カードに重ならないようフォントは`clamp(30px,3.0vw,46px)`
   - PC(901px以上)では固定FAB（LINE/お問い合わせ/電話）を`body.pr-page`スコープで非表示にし、Heroへの被りを解消（モバイルのCTA導線は維持）
   - モバイル(900px以下)ではPC用の絶対座標（`top`/`left`/負マージン）をすべて解除して縦積みに切替。320〜1920pxの9サイズで横スクロールなし・ハンバーガー動作を実測確認
+- **2026-08-22 ディテール調整**（ユーザーフィードバック）: ①上部余白を詰めて全体を約30px上寄せ ②ビズちゃんを目標どおり「みぞおちから上」のバストアップ表示に変更（コンテナに`height`+`overflow:hidden`、画像は`object-position:top center`で上半身のみ使用。素材は全身1086×1448のまま差し替えなし） ③カード上部ラベルを「貼られたシール」風に変更（`border-radius: 4px 4px 20px 20px`＋擬似要素で左右の折り返し片） ④Hero内のフォントをサイト共通スタック（Hiragino Kaku Gothic ProN系）に統一。pricing.htmlのクリティカルCSSが`Noto Sans JP`を先に当てているため`.pr-hero`で明示的に上書き。英字サブは筆記体スタックへ ⑤吹き出しは`.pr-hero-chara`の`overflow:hidden`でクリップされるため、DOM上でキャラ要素の外に移動
 
 ### 2026-08-19 料金プラン全面刷新（3プラン→2プラン）
 
