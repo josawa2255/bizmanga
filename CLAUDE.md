@@ -52,7 +52,7 @@ if (window.i18n && window.i18n.translateAll) {
 | トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-flow.js |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
-| 料金 | pricing.html | （なし。3プランカード型料金表、2026-07-02刷新） |
+| 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
 | FAQ | faq.html | （なし） |
 | お問い合わせ | contact.html | bm-hubspot.js |
 | お客様の声 | testimonials.html | bm-testimonials-page.js |

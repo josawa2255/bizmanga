@@ -53,7 +53,7 @@
 | トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
-| 料金 | `pricing.html` | —（共通JSのみ） | **2026-07-02 全面刷新**: 3プランカード型料金表（ライト¥166,000〜/スタンダード¥181,000〜人気No.1/プレミアム¥246,000〜、いずれも10P×1本モデル・税抜）+ 3バッジ + 本数割引ミニ表（1本16,600/3本14,800/5本13,800円/P・原稿料0円）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=light\|standard\|premium`（§2.2のプリフィル連携）。旧プラン診断クイズ（bm-pricing-quiz.js）と長文解説・非表示FAQPage JSON-LDは廃止。Service JSON-LDのOfferは表示価格と同期（lowPrice 166000 / highPrice 246000） |
+| 料金 | `pricing.html` | —（共通JSのみ） | **2026-08-19 全面刷新**: 2プランカード型料金表（フル漫画家プラン ¥33,660/ページ〜・原稿料別途33,660円/10P目安約37.0万円／ハイブリッドプラン ¥25,740/ページ〜・原稿料別途25,740円/10P目安約28.3万円、いずれも税抜）+ 3バッジ + プラン別本数割引ミニ表2枚（7P基準。フル漫画家: 1本33,660/3本30,320/5本28,260円/P、ハイブリッド: 1本25,740/3本23,200/5本21,600円/P。原稿料は各プラン単価と同額を別途）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=full\|hybrid`（§2.2のプリフィル連携）。旧3プラン体系（ライト/スタンダード/プレミアム、2026-07-02版）は廃止。「業界最安値級」表現は削除し「大手の約1/5の価格」に統一（値上げに伴う訴求見直し）。Service JSON-LDのOfferは表示価格と同期（lowPrice 25740 / highPrice 33660） |
 | 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚(FORMATSスロット拡張)→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + 薄いアドオン `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**強みインデックスは他LPの4枚1行(1枚277px)に対し5枚1行(1枚235px)**（グリッド幅を1320pxまで拡張。旧3+2段組は1枚377pxで他ページより36%大きかった）。**本文は他LPよりワンサイズ大きい**（悩み16px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)） |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
@@ -271,10 +271,11 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 
 ### 2.2 プラン事前選択
 ```
-https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
+https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 ```
 - お問い合わせフォームのメッセージ欄に自動で「【〇〇プランについて】」プレースホルダ挿入
-- [contact.html:144-149](contact.html) で処理
+- `full`=フル漫画家プラン、`hybrid`=ハイブリッドプラン（2026-08-19 料金プラン刷新でキーを`light|standard|premium`から変更）
+- [contact.html:249-256](contact.html) で処理
 
 ### 2.3 UTM / トラッキング
 - `?utm_source=...` `?utm_medium=...` `?utm_campaign=...` `?source=...`
@@ -553,6 +554,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
+
+### 2026-08-19 料金プラン全面刷新（3プラン→2プラン）
+
+- 旧プラン体系（ライト¥166,000〜/スタンダード¥181,000〜/プレミアム¥246,000〜、2026-07-02版）を廃止し、新2プラン体系に全面差し替え
+  - **フル漫画家プラン**: 1ページ33,660円〜（原稿料別途33,660円、10P目安 約37.0万円）。プロ漫画家が全工程を手がける最上位プラン
+  - **ハイブリッドプラン**: 1ページ25,740円〜（原稿料別途25,740円、10P目安 約28.3万円）。独自の制作メソッドでコストを抑えたプラン
+  - 本数割引（7P基準・1ページ単価）: フル漫画家=1本33,660/3本30,320/5本以上28,260円、ハイブリッド=1本25,740/3本23,200/5本以上21,600円
+  - 原稿料は総額込み表示（旧: 0円込み）から**別途表示**に変更
+- `/contact?plan={light|standard|premium}` → `/contact?plan={full|hybrid}` にURLパラメータのキーを変更（[contact.html](contact.html)の`planNames`マップ、§2.2参照）
+- pricing.html の Service+Offer JSON-LD を新2プランに更新（lowPrice 25740 / highPrice 33660 / offerCount 2）
+- 「業界最安値級」という断定的な価格訴求表現を**削除**（値上げにより根拠確認済みの主張が困難になったため）。「大手の約1/5の価格」は業界相場比較として引き続き使用（index.html / pricing.html のバッジ・meta・JSON-LD）
+- index.html・pricing.html・manga-production-company.html・strength.html・用途別LP群・works/category/recruit.html の料金言及箇所とJSON-LDを同期
+- **⭐総額表記は「原稿料込み」に統一**: 「10P目安」等の総額は `ページ単価×ページ数＋原稿料` で算出する（例: ハイブリッド10P = 25,740×10＋25,740 = 約28.3万円）。
+  pricing.html のカードのみ原稿料込みで、用途別LP8本・works/category/recruit.html の計22箇所が原稿料抜き（約25.7万円）になっており、**表示より実請求が高くなる不整合**が発生していたため統一（レビューで検出）。
+  - ir-manga = 5〜10P 約15.4万〜28.3万円 / inbound-manga = 3言語込み10P 約36.7万円 / sales-manga = 3〜5P 約10.3万円・10P 約28.3万円
+  - **pricing.html の本数割引表（7P基準・6セル）だけは原稿料「別」**。単価比較を主目的とする表のため金額は据え置き、各セルに「（原稿料別）」と明記して基準の混在を防ぐ
+  - `tools/build-works.py` の `CATEGORY_PAGES["recruit"].faq` にも旧価格（1ページ16,600円・10P約17.4万円）が残っていたため修正。**生成物である works/category/*.html だけ直しても日次ビルドで戻る**ので、生成元の更新が必須
+- **未対応（別Issue）**: 下記に残る旧料金表記（1ページ16,600円・1本19,800円等）は今回のスコープ外
+  - `column/配下26ファイル` と `column.html`（カード抜粋）— いずれもWP本文がマスターの自動生成物。`tools/build-columns.py` の `normalize_policy()` に「14,700→16,600」の置換があり、ここを更新すれば一括補正できるが、「5本セットで」等の文脈依存記述が壊れるため要精査
+  - `README.md` / `faq.html` / `i18n/en.json:139`（`"16,600円〜 / P"` の死んだ辞書エントリ。data-ja/data-en が優先されるため実害はないが次回改定時の混乱源）
 
 ### 2026-04-24 全ページ メタタグにパワーワード注入（第2弾）
 

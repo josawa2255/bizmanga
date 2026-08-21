@@ -3979,8 +3979,20 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-plan-discount-cell dt { font-size: var(--fs-xs); color: var(--bm-text-muted); margin-bottom: 2px; }
 .bm-plan-discount-cell dd { font-size: var(--fs-lg); font-weight: 900; font-feature-settings: "tnum"; }
 .bm-plan-discount-cell dd span { font-size: var(--fs-xs); font-weight: 500; color: var(--bm-text-muted); }
+.bm-plan-discount-cell dd small { display: block; font-size: var(--fs-xs); font-weight: 500; color: var(--bm-text-light); margin-top: 2px; }
 .bm-plan-discount-cell.is-accent dd { color: var(--bm-accent); }
 .bm-plan-discount-note { font-size: var(--fs-xs); color: var(--bm-text-light); margin-top: var(--sp-sm); }
+.bm-plan-discount-subtitle {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--bm-text-muted);
+  text-align: left;
+  margin: var(--sp-md) 0 var(--sp-xs);
+}
+.bm-plan-discount-subtitle:first-of-type { margin-top: 0; }
+
+/* 2プラン体系（フル漫画家/ハイブリッド）: 3カード用グリッドを2列に上書き */
+.bm-plan-grid--2col { grid-template-columns: repeat(2, 1fr); max-width: 860px; margin-left: auto; margin-right: auto; }
 
 /* 全プラン共通の特徴ストリップ */
 .bm-plans-features {
@@ -4801,7 +4813,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-pricing-bm strong { font-size: 14px; }
 
   /* 料金ページ新セクション: モバイル */
-  .bm-plan-grid { grid-template-columns: 1fr; gap: 16px; }
+  .bm-plan-grid, .bm-plan-grid--2col { grid-template-columns: 1fr; gap: 16px; }
   .bm-plan-card--recommend { margin-top: 8px; }
   .bm-plan-badge { top: -14px; }
   .bm-plans-badges { flex-direction: column; padding: 6px var(--sp-sm); }
