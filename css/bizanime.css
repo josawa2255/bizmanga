@@ -1,0 +1,554 @@
+@charset "UTF-8";
+/* ==========================================================================
+   ビズアニメ (BIZ ANIME) — Hero
+   ボイスコミック紹介ページ。ビズマンガのブランド × 映像制作のシネマティック感。
+   PC先行実装（1280〜1920px）。スマホは後日 responsive-rules で作り込む。
+   命名: .ba-*（BizAnime）。既存 bizmanga.css / bm-lp-v2.css とは衝突しない。
+   ========================================================================== */
+
+:root {
+  --ba-black:    #050505;
+  --ba-ink:      #090909;
+  --ba-charcoal: #111111;
+  --ba-orange:   #ff5a00;
+  --ba-orange-2: #ff6500;
+  --ba-orange-3: #ff7a00;
+  --ba-white:    #ffffff;
+  /* 既存ヘッダー高（bizmanga.css .bm-header = 72px）と揃える */
+  --ba-header-h: 72px;
+}
+
+/* ==========================================================================
+   0. ページ土台 — このページだけ黒地。body.ba-page のスコープに閉じる
+   ========================================================================== */
+body.ba-page {
+  background: var(--ba-black);
+  color: var(--ba-white);
+}
+
+/* ヘッダーをHero上で透明化（既存ヘッダーを流用し、見た目だけ上書き）。
+   白背景＋blur を打ち消し、白ロゴ・白文字に反転させる。 */
+body.ba-page .bm-header {
+  background: linear-gradient(180deg, rgba(5,5,5,.92) 0%, rgba(5,5,5,.55) 60%, rgba(5,5,5,0) 100%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+body.ba-page .bm-nav-link,
+body.ba-page .bm-nav-megamenu-heading { color: rgba(255,255,255,.88); }
+body.ba-page .bm-nav-link:hover,
+body.ba-page .bm-nav-link.active { color: var(--ba-orange-3); }
+/* ロゴは濃色前提のPNG。黒背景だと沈むので白へ反転させる */
+body.ba-page .bm-logo-img {
+  filter: brightness(0) invert(1);
+}
+/* 言語切替は黒背景に合わせる（既存の白地前提の配色だと浮く）。
+   ヘッダーが密なので、幅・高さも詰めてFAQと干渉しないようにする */
+body.ba-page .bm-lang-btn {
+  width: 50px;
+  height: 32px;
+  font-size: 12px;
+  color: rgba(255,255,255,.72);
+  background: transparent;
+  border-color: rgba(255,255,255,.28);
+}
+body.ba-page .bm-lang-btn.active {
+  color: var(--ba-white);
+  background: rgba(255,90,0,.92);
+  border-color: rgba(255,90,0,.92);
+}
+body.ba-page .bm-lang-btn:not(.active):hover {
+  background: rgba(255,255,255,.1);
+}
+/* Hero上では追従CTA（LINE/問い合わせ/電話）を出さない。
+   左下のCTAと重なり、完成デザインにも存在しないため。 */
+body.ba-page .bm-fab { display: none; }
+/* ロゴ横「| BIZ ANIME」— ヘッダー内のサービス名表示 */
+/* ロゴ横のサービス名。
+   ⚠️ ヘッダーは [ロゴ][nav flex:1][右CTA] の3分割で、ナビは約480px必要。
+      ここに要素を差し込むとナビのリンクが溢れて言語切替の下へ潜り込む(#003/#014と同種)。
+      そこでヘッダーの通常フローからは外し(absolute)、ロゴの右に重ねて置く。
+      ナビの幅計算に一切影響させないことが要点。 */
+.ba-header-brand {
+  position: absolute;
+  left: 208px;   /* ロゴ(140px)+左padding+余白 */
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  padding-left: 13px;
+  border-left: 1px solid rgba(255,255,255,.26);
+  pointer-events: none; /* ナビのクリックを妨げない */
+}
+body.ba-page .bm-header-inner { position: relative; }
+
+/* ナビと重なる幅ではサービス名を隠す（ロゴ内に BizManga があるので情報は失われない） */
+/* 既存ナビ(7項目)＋言語切替＋CTA＋アイコン2個で、1920pxでもロゴ右の余白は約70pxしかない。
+   サービス名を置くとナビ項目と物理的に重なるため、ヘッダーでは表示しない。
+   「BIZ ANIME」はHero本文のH1で大きく出るので、情報としては失われない。 */
+.ba-header-brand { display: none; }
+.ba-header-brand-en {
+  font-family: "Noto Serif JP", "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1;
+  color: var(--ba-white);
+  white-space: nowrap;
+}
+.ba-header-brand-ja {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.62);
+}
+
+/* ==========================================================================
+   1. Hero 全体
+   16:9 の完成デザインを基準。1920pxでも間延びしないよう max-height で抑える。
+   ========================================================================== */
+.ba-hero {
+  position: relative;
+  width: 100%;
+  min-height: 820px;
+  /* 完成デザインは16:9。幅に対して高さを追随させると、どの幅でも同じ構図になる。
+     100vh-header を下限に、間延びしないよう 1000px で頭打ちにする（§3） */
+  height: clamp(820px, min(56.25vw, calc(100vh - var(--ba-header-h))), 1000px);
+  overflow: hidden;
+  background-color: var(--ba-black);
+  isolation: isolate; /* 内部の mix-blend が外へ漏れないように */
+}
+
+/* --- 背景レイヤー群（下から: 生成背景 → 暗幕 → オレンジglow → ノイズ → vignette） --- */
+.ba-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    url('/material/images/biz-anime/hero-bg.webp') center center / cover no-repeat;
+  /* 生成画像は右側が明るい。左のコピー領域を暗く落として可読性を確保する */
+  opacity: .95;
+}
+/* 暗幕 + 右側だけオレンジの光（仕様§12のレイヤー構成） */
+.ba-hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 75% 45%, rgba(255,90,0,.16), transparent 35%),
+    linear-gradient(90deg, rgba(0,0,0,.98) 0%, rgba(0,0,0,.82) 42%, rgba(0,0,0,.5) 100%);
+}
+/* vignette（四隅を締めて中央へ視線を集める） */
+.ba-hero-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 78% 72% at 50% 45%, transparent 42%, rgba(0,0,0,.62) 100%);
+}
+/* 微細なノイズ（バンディング防止 + フィルムの質感）。SVGはCSS内に埋め込み、外部リクエスト0 */
+.ba-hero-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+}
+/* 漫画ハーフトーン（§13: ただの動画会社に見せない。主張はさせない） */
+.ba-hero-halftone {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .10;
+  background-image: radial-gradient(rgba(255,120,0,.9) 1px, transparent 1.6px);
+  background-size: 7px 7px;
+  -webkit-mask-image: linear-gradient(105deg, transparent 38%, #000 62%, transparent 92%);
+          mask-image: linear-gradient(105deg, transparent 38%, #000 62%, transparent 92%);
+}
+
+/* --- コンテンツ最大幅 --- */
+.ba-hero-inner {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   2. 左コピー（Heroの約34%）
+   完成デザイン実測: 左端 4.2% / 小見出し 18.6% / BIZ ANIME 25.5% / CTA 70.7%
+   ========================================================================== */
+.ba-copy {
+  position: absolute;
+  left: max(4.2vw, 24px);
+  top: 15.5%;
+  z-index: 5;
+  /* キャラ(left:40%)に食い込まない幅に抑える。完成デザインの左コピーは約34% */
+  width: 34%;
+  max-width: 540px;
+  /* .ba-title が cqw で自分の幅に追随できるようにする（1行維持のため） */
+  container-type: inline-size;
+}
+
+/* --- 小見出し「マンガに、声と動きを。」+ 波形ライン --- */
+.ba-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 22px;
+  font-size: clamp(15px, 1.15vw, 19px);
+  font-weight: 700;
+  letter-spacing: .05em;
+  color: rgba(255,255,255,.92);
+  white-space: nowrap;
+}
+.ba-eyebrow em {
+  font-style: normal;
+  color: var(--ba-orange-3);
+}
+/* コピー右へ伸びる音声波形（装飾。CSSのみ＝画像不要） */
+.ba-eyebrow-wave {
+  flex: 1 1 auto;
+  min-width: 0; /* Flex子の潰れ防止（STYLE-GUIDE 鉄則） */
+  height: 22px;
+  opacity: .55;
+  color: var(--ba-orange);
+}
+
+/* --- ブランドタイトル BIZ ANIME --- */
+.ba-title {
+  margin: 0;
+  font-family: "Noto Serif JP", "Didot", "Bodoni MT", "Times New Roman", serif;
+  /* 「BIZ ANIME」を必ず1行で収める。コンテナ幅(34%)基準の cqw を使い、
+     幅が変わっても改行しないサイズへ自動追随させる（vw基準だと親幅と噛み合わず折り返す） */
+  /* 実測: "BIZ ANIME" は font-size 100px で幅572px = 17.4cqw が1行の上限。
+     余裕を見て 17cqw に置き、それ以下でのみ vw 側の値を採用する */
+  font-size: min(clamp(58px, 5vw, 104px), 17cqw);
+  font-weight: 700;
+  line-height: .9;
+  letter-spacing: .01em;
+  white-space: nowrap;
+}
+.ba-title-biz   { color: var(--ba-white); }
+.ba-title-anime {
+  color: var(--ba-orange);
+  /* 白→オレンジの視線移動を強調する、ごく淡いglow */
+  text-shadow: 0 0 38px rgba(255,90,0,.34);
+}
+.ba-title-ja {
+  display: block;
+  margin-top: 14px;
+  font-size: clamp(13px, 1.05vw, 17px);
+  font-weight: 500;
+  letter-spacing: .34em;
+  color: rgba(255,255,255,.72);
+}
+
+/* --- メインコピー --- */
+.ba-lead {
+  margin: clamp(26px, 3.2vh, 44px) 0 0;
+  font-size: clamp(34px, 2.9vw, 54px);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: .01em;
+  color: var(--ba-white);
+  /* 日本語の改行を文節で切る（memory feedback_jp_line_break） */
+  word-break: auto-phrase;
+  line-break: strict;
+  text-shadow: 0 2px 24px rgba(0,0,0,.6);
+}
+
+/* --- 補足文 --- */
+.ba-sub {
+  margin: clamp(16px, 2vh, 26px) 0 0;
+  font-size: clamp(15px, 1.15vw, 19px);
+  line-height: 1.9;
+  color: rgba(255,255,255,.72);
+  word-break: auto-phrase;
+  line-break: strict;
+}
+
+/* ==========================================================================
+   3. CTA
+   ========================================================================== */
+.ba-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(26px, 3.4vh, 44px);
+  flex-wrap: nowrap; /* 1280pxでも折り返さない（§17） */
+}
+.ba-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: clamp(58px, 4.6vw, 66px);
+  padding: 0 26px;
+  border-radius: 10px;
+  font-size: clamp(15px, 1.1vw, 17px);
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s, background-color .28s, border-color .28s;
+}
+/* Primary — オレンジ */
+.ba-btn--primary {
+  min-width: 206px;
+  color: var(--ba-white);
+  background: linear-gradient(135deg, #ff5800, #ff7900);
+  box-shadow: 0 10px 30px rgba(255,88,0,.32);
+}
+.ba-btn--primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(255,88,0,.5), 0 0 28px rgba(255,110,0,.35);
+}
+/* Secondary — 透明＋オレンジ枠 */
+.ba-btn--ghost {
+  color: var(--ba-white);
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,110,0,.75);
+}
+.ba-btn--ghost:hover {
+  transform: translateY(-3px);
+  background: rgba(255,110,0,.14);
+  border-color: var(--ba-orange-3);
+  box-shadow: 0 12px 32px rgba(255,90,0,.22);
+}
+.ba-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+}
+.ba-btn--ghost .ba-btn-icon { background: rgba(255,110,0,.18); }
+.ba-btn-arrow { opacity: .8; }
+
+/* ==========================================================================
+   4. メディア表示（YouTube / SNS / Web / 広告・LP）— 重要度は低く抑える
+   ========================================================================== */
+.ba-media {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(20px, 2.6vh, 32px);
+  padding: 0;
+  list-style: none;
+  opacity: .75;
+  flex-wrap: nowrap;
+}
+.ba-media li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(12px, .95vw, 14px);
+  font-weight: 500;
+  color: rgba(255,255,255,.9);
+  white-space: nowrap;
+}
+.ba-media li + li { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.18); }
+.ba-media-icon { color: var(--ba-orange-3); flex: 0 0 auto; }
+.ba-media-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px; height: 17px;
+  padding: 0 4px;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* ==========================================================================
+   5. キャラクター（中央）
+   完成デザイン実測: 頭頂 y≈9.6% / 左 x≈36%。動画プレイヤーより手前。
+   ========================================================================== */
+.ba-character {
+  position: absolute;
+  left: 40%;
+  bottom: -18px;
+  z-index: 4;
+  /* 完成デザインではキャラがHero高の約90%を占める。存在感は最優先事項(§19-6)。
+     px上限を付けるとHeroが低い幅で急に小さくなり頭の位置が下がるため、%基準で統一する */
+  height: 92%;
+  width: auto;
+  pointer-events: none;
+  user-select: none;
+  /* 薄いオレンジのリムライト。光らせすぎない（§9） */
+  filter:
+    drop-shadow(0 0 26px rgba(255,90,0,.22))
+    drop-shadow(0 18px 40px rgba(0,0,0,.55));
+}
+
+/* ==========================================================================
+   6. 動画プレイヤー（右の主役）
+   キャラの後ろへ少し入り込ませる。歪ませすぎない。
+   ========================================================================== */
+.ba-player {
+  position: absolute;
+  /* 完成デザイン実測: 右端 96.3% / 上 16.5%。画面外へはみ出させない */
+  right: 3.5%;
+  top: 15%;
+  z-index: 3;
+  width: min(46%, 820px);
+  height: auto;
+  transform: perspective(1200px) rotateY(-5deg) rotateZ(-2deg);
+  transform-origin: center center;
+  filter:
+    drop-shadow(0 0 20px rgba(255,90,0,.25))
+    drop-shadow(0 25px 50px rgba(0,0,0,.5));
+}
+
+/* ==========================================================================
+   7. VOICE / MUSIC / SFX / MOTION（右下）
+   §18により文字は画像化しない。アイコンはインラインSVG、枠はCSSで再構築。
+   ========================================================================== */
+.ba-features {
+  position: absolute;
+  /* プレイヤーの真下に揃える（完成デザイン: 右下・プレイヤー幅とほぼ同じ範囲） */
+  right: 3.5%;
+  bottom: clamp(28px, 5vh, 56px);
+  /* キャラの脚は画像幅の93%まで及ぶため、余白で逃がすことはできない。
+     バッジ列をキャラより手前(z-index:5)に出して、文字が欠けないようにする。
+     完成デザインでもバッジのラベルは最前面で読める状態になっている。 */
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 30px);
+  width: min(36%, 640px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ba-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0; /* Grid子の潰れ防止 */
+}
+.ba-feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(44px, 3.4vw, 54px);
+  height: clamp(44px, 3.4vw, 54px);
+  margin-bottom: 10px;
+  border-radius: 50%;
+  color: var(--ba-orange-3);
+  background: radial-gradient(circle at 50% 38%, rgba(255,90,0,.20), rgba(0,0,0,.5) 72%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,120,0,.55),
+    0 0 22px rgba(255,90,0,.28);
+}
+.ba-feature-title {
+  font-size: clamp(15px, 1.15vw, 19px);
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1;
+  color: var(--ba-white);
+  /* キャラの脚や背景の明るい部分に重なっても文字が沈まないようにする */
+  text-shadow: 0 2px 10px rgba(0,0,0,.9), 0 0 22px rgba(0,0,0,.75);
+}
+/* 頭文字だけオレンジ（完成デザインの VOICE / MUSIC / SFX / MOTION の見せ方） */
+.ba-feature-title i {
+  font-style: normal;
+  color: var(--ba-orange-3);
+}
+.ba-feature-desc {
+  margin: 8px 0 0;
+  font-size: clamp(10px, .8vw, 12px);
+  line-height: 1.65;
+  color: rgba(255,255,255,.72);
+  word-break: auto-phrase;
+  line-break: strict;
+  text-shadow: 0 1px 8px rgba(0,0,0,.9);
+}
+
+/* 波形装飾（プレイヤー周辺・下部）— 主役にしない */
+.ba-wave-deco {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  color: var(--ba-orange);
+}
+.ba-wave-deco--player { right: 6vw; top: 13%;  width: min(20vw, 300px); opacity: .5; }
+.ba-wave-deco--bottom { left: 42%;  bottom: 8%; width: min(26vw, 380px); opacity: .22; }
+
+/* ==========================================================================
+   8. 登場アニメーション（§15: 過剰にしない。初回表示のみ）
+   ========================================================================== */
+@keyframes ba-fade-up   { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes ba-fade-char { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: none; } }
+@keyframes ba-fade-left { from { opacity: 0; transform: translateX(30px) perspective(1200px) rotateY(-5deg) rotateZ(-2deg); }
+                          to   { opacity: 1; transform: perspective(1200px) rotateY(-5deg) rotateZ(-2deg); } }
+@keyframes ba-pulse     { 0%,100% { opacity: .5; } 50% { opacity: .24; } }
+
+.ba-anim .ba-copy      { animation: ba-fade-up   .9s cubic-bezier(.22,1,.36,1) both; }
+.ba-anim .ba-character { animation: ba-fade-char 1.05s cubic-bezier(.22,1,.36,1) .12s both; }
+.ba-anim .ba-player    { animation: ba-fade-left 1.05s cubic-bezier(.22,1,.36,1) .06s both; }
+.ba-anim .ba-features  { animation: ba-fade-up   .9s cubic-bezier(.22,1,.36,1) .28s both; }
+.ba-anim .ba-wave-deco--player { animation: ba-pulse 6.5s ease-in-out 1.4s infinite; }
+
+/* 動きを減らす設定を尊重（アクセシビリティ） */
+@media (prefers-reduced-motion: reduce) {
+  .ba-anim .ba-copy,
+  .ba-anim .ba-character,
+  .ba-anim .ba-player,
+  .ba-anim .ba-features,
+  .ba-anim .ba-wave-deco--player {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   9. 幅ごとの調整（PC先行。1280pxまでを担保する）
+   ========================================================================== */
+@media (max-width: 1600px) {
+  .ba-character { left: 39%; }
+  .ba-features  { width: min(48vw, 660px); }
+}
+@media (max-width: 1440px) {
+  .ba-copy      { width: 33%; top: 14.5%; }
+  .ba-character { left: 38%; }
+  .ba-player    { top: 14%; }
+}
+/* 1280px: テキストとキャラが重ならない・CTAが折り返さないことを担保 */
+@media (max-width: 1360px) {
+  .ba-hero      { min-height: 780px; }
+  .ba-copy      { width: 34%; max-width: 440px; top: 13.5%; }
+  .ba-title     { font-size: clamp(56px, 5.2vw, 80px); }
+  .ba-lead      { font-size: clamp(28px, 2.5vw, 36px); }
+  .ba-character { left: 40%; }
+  .ba-player    { width: 47%; right: 2.5%; top: 13.5%; }
+  .ba-features  { width: min(52vw, 600px); gap: 12px; right: 1.5vw; }
+  .ba-feature-desc { display: none; } /* 狭い幅では説明を落とし、4列の横並びを維持 */
+}
+
+/* スマホ・タブレットは今回未対応（後日 responsive-rules で実装）。
+   それまでの間、崩れた状態を見せないための最低限のフォールバック。 */
+@media (max-width: 1024px) {
+  .ba-hero      { height: auto; min-height: 0; padding: 120px 0 64px; }
+  .ba-hero-inner{ height: auto; }
+  .ba-copy      { position: static; width: auto; max-width: none; padding: 0 24px; }
+  .ba-title     { white-space: normal; font-size: clamp(52px, 13vw, 84px); }
+  .ba-character,
+  .ba-player,
+  .ba-features,
+  .ba-wave-deco { display: none; }
+  .ba-cta-row   { flex-wrap: wrap; }
+}
