@@ -61,7 +61,8 @@ if (window.i18n && window.i18n.translateAll) {
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
 | 強み | strength.html | （**2026-08-05 v2デザインへ統一**: bm-lp-v2.css/js + アドオン css/strength.css（`body.str-v2` スコープ）。ヒーローは product-manga / manga-ad-lp と同型。旧 bm-strength.js は廃止。画像プロンプトは docs/strength-image-prompts.md） |
-| その他 | strength / use-cases / manga-types / pricing / privacy-policy / 404 / embed-viewer | 各ページ固有JS |
+| マンガの種類 | manga-types.html | （**2026-08-19 v2デザインへ全面刷新**: 旧・全画面キャラ+ラベル散りばめの独自ヒーローを廃止し、bm-lp-v2.css/js + アドオン css/manga-types.css（`body.mt-v2` スコープ）に統一。ヒーローは product-manga / strength と同型。構成: Hero→CH01 目的で選ぶ早見表（`lpv2-related-card`流用の4問クイズ）→CH02 7ジャンルグリッド（`lpv2-merit-card`を3列化 `.mt-genre-grid`、各カードにトグル詳細+関連LPへのリンク）→CH03 ページ構成比較（1コマ/4コマ/ストーリー型、各カードに挿絵 `.mt-length-card__illust`）→BRIDGE(縦読み対応)→CH04 FAQ→RELATED(用途別LP 8本)→END CTA。7ジャンルの挿絵 `images/manga-types/type-*.png` は**2026-08-21 ChatGPT Image 2.0生成の本番イラストに差し替え済み**（水彩+ink画風でrecruit-manga系に統一）。ページ構成カット `images/manga-types/format-{1koma,4koma,story}.png` は当初CSSのコマ割り模式図だったが**同日、実イラストに変更・生成完了**（水彩+ink画風で統一。スマホ1枚パネル/4コマ紙面/分厚い冊子読了、の3シーン）。画像プロンプトは docs/manga-types-image-prompts.md（A=7ジャンル、B=ページ構成カット3枚）） |
+| その他 | use-cases / pricing / privacy-policy / 404 / embed-viewer | 各ページ固有JS |
 
 > 注: 旧 `pre-production.html` / `gallery.html` / `production-flow.html` は廃止済み（index.html に統合 or 削除）。存在しないので新規リンクしないこと。
 
