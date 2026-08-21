@@ -5638,7 +5638,7 @@ body:has(> .bm-floating-comics-bg) {
   position: relative;
   min-width: 0;
   height: 100%;
-  padding-top: 105px; /* 上の余白を詰めて全体を上寄せ */
+  padding-top: 95px; /* 上の余白を詰めて全体を上寄せ */
 }
 .pr-hero-eyebrow {
   font-size: 20px;
@@ -5664,6 +5664,12 @@ body:has(> .bm-floating-comics-bg) {
   color: #5a5a5a;
   margin: 0 0 22px;
   max-width: 30em;
+  /* 背景（漫画コマ・キャラ）と同化しないよう文字に白フチを付ける */
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3px #ffffff;
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.95),
+    0 0 8px rgba(255, 255, 255, 0.7);
 }
 .pr-hero-rule {
   display: block;
@@ -5679,7 +5685,7 @@ body:has(> .bm-floating-comics-bg) {
   position: absolute;
   left: -14px;
   /* 目標: 頭頂 y=520（ヘッダー下97 → Hero内 423px）。全体を上寄せしたぶん -30px */
-  top: 430px;
+  top: 420px;
   width: min(388px, 100%);
   /* 目標どおり「みぞおちから上」を大きく見せ、下端はHeroで切る */
   height: 448px;
@@ -5697,7 +5703,7 @@ body:has(> .bm-floating-comics-bg) {
 .pr-hero-balloon {
   position: absolute;
   /* 目標: 円 x437-580, y640-785。.pr-hero-copy(x=68,y=72)基準 */
-  top: 538px;
+  top: 528px;
   left: 369px;
   z-index: 3;
   width: 145px;
@@ -5728,7 +5734,7 @@ body:has(> .bm-floating-comics-bg) {
 .pr-hero-right {
   min-width: 0;
   /* 目標: カード上端 y=251（ヘッダー下97 → Hero内 154px） */
-  padding-top: 149px;
+  padding-top: 139px;
 }
 .pr-plan-cards {
   display: grid;
@@ -5946,7 +5952,7 @@ body:has(> .bm-floating-comics-bg) {
   body.pr-page .bm-fab { display: none; }
 }
 
-/* ---- タブレット/モバイル: PC用の絶対座標指定をすべて解除して縦積みに ---- */
+/* ---- タブレット/モバイル: PC用の絶対座標指定をすべて解除 ---- */
 @media (max-width: 900px) {
   .pr-hero-inner {
     grid-template-columns: 1fr;
@@ -5956,49 +5962,77 @@ body:has(> .bm-floating-comics-bg) {
   .pr-hero-title { white-space: normal; width: auto; }
   .pr-hero-copy {
     padding-top: 0;
-    padding-bottom: 430px; /* ビズちゃんの立ち位置ぶん */
+    padding-bottom: 300px; /* ビズちゃんの立ち位置ぶん */
   }
-  /* PC固定の top/left を解除し、コピー下に自然配置 */
+  /* PC固定の top/left を解除し、コピー下に控えめなサイズで配置 */
   .pr-hero-chara {
     top: auto;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: min(330px, 86%);
+    width: min(240px, 62%);
+    height: 290px;
   }
-  .pr-hero-balloon { top: auto; bottom: 300px; left: auto; right: 4px; width: 128px; font-size: 13px; }
-  .pr-hero-right { padding-top: 32px; }
+  .pr-hero-balloon {
+    top: auto;
+    bottom: 190px;
+    left: auto;
+    right: 0;
+    width: 112px;
+    font-size: 12px;
+  }
+  .pr-hero-right { padding-top: 24px; }
+  /* スマホでも2枚を横並びに収める */
   .pr-plan-cards {
-    grid-template-columns: 1fr;
-    max-width: 360px;
-    margin: 0 auto;
-    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+    margin: 0;
+    gap: 10px;
   }
-  .pr-plan-card { height: auto; padding: 42px 26px 26px; }
-  .pr-hero-badges {
+  .pr-plan-card {
     height: auto;
-    padding: 20px clamp(16px, 2.5vw, 36px);
-    margin: 32px 0 0; /* PCの負マージンを解除 */
-    border-radius: 28px;
+    padding: 30px 10px 16px;
+    border-radius: 16px;
   }
+  .pr-plan-tab {
+    top: -16px;
+    width: min(122px, 92%);
+    height: 30px;
+    font-size: 12px;
+    border-radius: 3px 3px 12px 12px;
+  }
+  .pr-plan-tab::before, .pr-plan-tab::after { width: 6px; height: 8px; }
+  .pr-plan-icon { margin: 4px 0 4px; }
+  .pr-plan-icon svg { width: 26px; height: 26px; }
+  .pr-plan-sub { font-size: 10px; line-height: 1.4; margin: 0 0 4px; }
+  .pr-plan-name { font-size: 20px; margin: 0 0 1px; }
+  .pr-plan-name-en { font-size: 17px; margin: 0 0 8px; }
+  .pr-plan-divider { margin: 0 0 8px; }
+  .pr-plan-label { font-size: 10px; margin: 0 0 2px; }
+  .pr-plan-price { margin: 0 0 8px; }
+  .pr-plan-price-num { font-size: 25px; }
+  .pr-plan-price-unit { font-size: 12px; }
+  .pr-plan-manuscript-label { font-size: 10px; }
+  .pr-plan-manuscript-price { font-size: 15px; margin: 0 0 10px; }
+  .pr-plan-total-box { height: 66px; border-radius: 10px; }
+  .pr-plan-total-label { font-size: 10px; margin: 0 0 2px; }
+  .pr-plan-total-price { font-size: 11px; }
+  .pr-plan-total-num { font-size: 19px; }
+  /* 4項目バーはモバイルでは非表示（PCのみ表示） */
+  .pr-hero-badges { display: none; }
+  /* 画面下端の固定CTAバー(.bm-fab 約56px)ぶん、ページ末尾に余白を確保 */
+  .pr-hero-right { padding-bottom: 64px; }
 }
 @media (max-width: 640px) {
   .pr-hero-title { font-size: clamp(26px, 7vw, 34px); }
-  .pr-hero-copy { padding-bottom: 360px; }
-  .pr-hero-chara { width: min(300px, 84%); }
-  .pr-hero-balloon { width: 118px; font-size: 12px; bottom: 262px; right: 0; }
-  .pr-hero-badges {
-    grid-template-columns: 1fr 1fr;
-    border-radius: 24px;
-    gap: 14px 8px;
-  }
-  .pr-hero-badge { border-left: none !important; justify-content: flex-start; font-size: 13px; gap: 8px; }
-  /* 狭幅では1行固定を解除して折り返す */
-  .pr-hero-badge:nth-child(1) span,
-  .pr-hero-badge:nth-child(2) span { white-space: normal; }
-  .pr-hero-badge svg { width: 28px; height: 28px; }
-  .pr-hero-badge small { font-size: 12px; }
-  .pr-hero-badge:nth-child(odd) { border-right: 1px solid #ececec; }
-  .pr-hero-badge:nth-child(1), .pr-hero-badge:nth-child(2) { border-bottom: 1px solid #ececec; padding-bottom: 14px; }
-  .pr-hero-badge:nth-child(3), .pr-hero-badge:nth-child(4) { padding-top: 14px; }
+  .pr-hero-copy { padding-bottom: 270px; }
+  .pr-hero-chara { width: min(210px, 58%); height: 262px; }
+  .pr-hero-balloon { width: 104px; font-size: 11px; bottom: 172px; }
+  .pr-plan-card { padding: 28px 8px 14px; }
+  .pr-plan-name { font-size: 17px; }
+  .pr-plan-name-en { font-size: 15px; }
+  .pr-plan-price-num { font-size: 21px; }
+  .pr-plan-price-unit { font-size: 11px; }
+  .pr-plan-manuscript-price { font-size: 13px; }
+  .pr-plan-total-num { font-size: 17px; }
 }
