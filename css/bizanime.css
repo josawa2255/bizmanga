@@ -651,6 +651,12 @@ body.ba-page .bm-header-inner { position: relative; }
     margin-left: clamp(18px, 5vw, 32px);
     margin-right: clamp(18px, 5vw, 32px);
   }
+  /* メインコピーと説明文はキャラの手前に置き、絵に沈まないようにする。
+     キャラは z-index:2 なので、これで文字が必ず上に来る。 */
+  .ba-lead,
+  .ba-sub { position: relative; z-index: 5; }
+  /* 説明文はキャラのスカートに掛かる高さにあるため、右側に逃げ幅を作る */
+  .ba-sub { margin-right: clamp(56px, 22vw, 130px); }
   .ba-eyebrow { order: 1; }
   .ba-title   { order: 2; container-type: inline-size; }
   .ba-lead    { order: 3; }
@@ -689,16 +695,19 @@ body.ba-page .bm-header-inner { position: relative; }
     position: absolute;
     /* 上半分の右側に置き、腰付近で切る（全身は見せない）。
        見出し周辺にだけ重なり、説明文から下には掛からないようにする。 */
-    top: clamp(58px, 15vw, 120px);
+    top: clamp(44px, 11vw, 96px);
     left: auto;
-    right: -8%;
-    width: min(50%, 320px);
+    /* 顔が画面右端で切れないよう、はみ出しは最小限にとどめる */
+    right: -4%;
+    /* 見本では足がほぼ見えないほど大きく寄る。上半身の存在感を出す */
+    width: min(62%, 390px);
     height: auto;
     z-index: 2;   /* コピー(z-index:5)より奥。文字を絶対に隠さない */
     pointer-events: none;
-    /* 腰から下をフェードで消して、下の動画・媒体表示と干渉させない */
-    -webkit-mask-image: linear-gradient(180deg, #000 58%, rgba(0,0,0,.55) 74%, transparent 92%);
-            mask-image: linear-gradient(180deg, #000 58%, rgba(0,0,0,.55) 74%, transparent 92%);
+    /* 脚を見せないよう、腰の上あたりからフェードして消す
+       （画像は縦1513pxの全身。上から約50%＝腰の位置で切る） */
+    -webkit-mask-image: linear-gradient(180deg, #000 40%, rgba(0,0,0,.6) 50%, transparent 60%);
+            mask-image: linear-gradient(180deg, #000 40%, rgba(0,0,0,.6) 50%, transparent 60%);
     filter: drop-shadow(0 0 22px rgba(255,90,0,.24)) drop-shadow(0 16px 34px rgba(0,0,0,.5));
   }
 
@@ -769,4 +778,11 @@ body.ba-page .bm-header-inner { position: relative; }
 /* 極小幅（〜360px）: 4列の機能UIが潰れるので説明文だけ落として列は維持する */
 @media (max-width: 360px) {
   .ba-feature-desc { display: none; }
+}
+
+/* タブレット帯（600〜1024px）: 画面が広くなるとキャラの拡大率が過剰になり、
+   顔が右端で切れる。幅を絞って全体を収める。 */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .ba-character { width: min(46%, 380px); right: -2%; }
+  .ba-sub { margin-right: clamp(80px, 26vw, 200px); }
 }
