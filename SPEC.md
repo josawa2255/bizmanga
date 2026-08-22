@@ -54,6 +54,7 @@
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
 | **ビズアニメ**（ボイスコミック） | `bizanime.html` | `bm-i18n` + `bm-nav` + `bizanime.js` | **2026-08-21 Hero のみ実装（PC先行・作業中）**。漫画に声/音/動きを載せた動画（ボイスコミック）の紹介ページ。詳細は §1b |
+| **漫画家・作品紹介**（画風ギャラリー） | `artists.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `artists.js` | **2026-08-22 新規作成**。「誰が描くか」ではなく**「どんな画風があるか」を探すページ**として設計（漫画家名は出さず、画風カテゴリ単位で見せる）。構成: Hero→タブ(画風から探す/用途から探す)→チップ絞り込み(複数選択OR)→画風カード8枚→詳細モーダル→相談CTA。画風データは `js/artists.js` の `STYLE_DATA` 配列に集約し、CMS/CRM連携時は `window.bmArtists.setData()` に同形の配列を渡せば差し替わる。詳細は §1c |
 | 料金 | `pricing.html` | —（共通JSのみ） | **2026-07-02 全面刷新**: 3プランカード型料金表（ライト¥166,000〜/スタンダード¥181,000〜人気No.1/プレミアム¥246,000〜、いずれも10P×1本モデル・税抜）+ 3バッジ + 本数割引ミニ表（1本16,600/3本14,800/5本13,800円/P・原稿料0円）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=light\|standard\|premium`（§2.2のプリフィル連携）。旧プラン診断クイズ（bm-pricing-quiz.js）と長文解説・非表示FAQPage JSON-LDは廃止。Service JSON-LDのOfferは表示価格と同期（lowPrice 166000 / highPrice 246000）。**⚠️2026-08-21 新プラン刷新の作業依頼あり・未着手**: 3プラン制（ライト/スタンダード/プレミアム）→2プラン制「フル漫画家」(33,660円/P〜・全工程漫画家担当)/「ハイブリット」(25,740円/P〜・AI活用で工数削減)に変更予定、基準ページ数も10P→7Pに変更、本数割引もプランごとに独立2系統（フル漫画家: 1本33,660/3本30,320/5本28,260円・ハイブリット: 1本25,740/3本23,200/5本21,600円）に変更予定。実装時はプラン名表記「ハイブリット」（「ハイブリッド」ではない、ユーザー確認済み）を厳守し、pricing.html本体・CTAクエリ（`?plan=`値も要更新）・Service JSON-LDのOffer・SPEC.md本行・[docs/SERVICE-OVERVIEW.md §3](docs/SERVICE-OVERVIEW.md)・各用途別LPのFAQ内費用感を横断的に更新すること。詳細は SERVICE-OVERVIEW.md §3 参照 |
 | 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚(FORMATSスロット拡張)→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + 薄いアドオン `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**強みインデックスは他LPの4枚1行(1枚277px)に対し5枚1行(1枚235px)**（グリッド幅を1320pxまで拡張。旧3+2段組は1枚377pxで他ページより36%大きかった）。**本文は他LPよりワンサイズ大きい**（悩み16px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)） |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
@@ -153,6 +154,47 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 - **これ以上ナビ項目を増やす余地はほぼ無い**。次に増やすならメガメニューへ入れるか、既存項目を畳むこと
 - 変更後は 7ページ×4幅(1280/1440/1600/1920)×日英=56通りで溢れゼロ、
   スマホ3幅×3ページでハンバーガー開閉を実測済み
+
+## 1c. 漫画家・作品紹介（画風ギャラリー）2026-08-22 新規
+
+### このページの立ち位置
+**「どの漫画家がいるか」を見せるページではなく、「どんな画風があり、自社にはどの方向性が合うか」を見つけるページ。**
+そのため一覧カードに**漫画家名は出さない**。複数の作家を束ねた「画風カテゴリ」単位で見せる。
+
+### ファイル
+| 種別 | パス | 備考 |
+|---|---|---|
+| HTML | `artists.html` | URL は `/artists`。ヘッダー/フッターは product-manga と同型 |
+| CSS | `css/artists.css` | 全セレクタ `.art-*` / `body.art-page` にスコープし他ページへ非干渉。色・余白は `--bm-*` / `--lpv2-*` トークンを参照 |
+| JS | `js/artists.js` | `STYLE_DATA` 配列 + カード/チップ描画 + モーダル。DOMは `createElement` + `textContent` で組む（`innerHTML` 不使用＝CMS文字列が来てもXSSにならない） |
+| 画像 | `material/images/artists/` | Hero 1枚 + 縦読み作品用の切り出しサムネ8枚 |
+
+### 画風カテゴリ（8種・2026-08-22時点）
+ビジネス人物描写 / 実録・企業漫画 / デフォルメ・4コマ / モノクロ・ビジネス実務 /
+少年漫画・学園 / 少女・恋愛 / 劇画・重厚タッチ / グローバル・多言語
+
+### データ構造（差し替えポイント）⭐
+画風データは `js/artists.js` の **`STYLE_DATA` 配列だけに閉じている**。ここを差し替えれば HTML/CSS を触らずに追加・削除・並べ替えができる。
+1件のスキーマ: `id` / `slug` / `title` / `titleEn` / `thumbnail` / `summary` / `styleTags[]` / `genreTags[]` / `audienceTags[]` / `mediaTags[]` / `usecaseTags[]` / `gallery[]` / `detail`
+
+将来 WP/CRM から流し込む場合は、同じ形の配列を **`window.bmArtists.setData(list)`** に渡すだけでよい（再描画まで面倒を見る）。
+
+### 絞り込みの仕様
+- タブ「画風から探す」＝ `genreTags` を軸に、「用途から探す」＝ `usecaseTags` を軸に絞る（タブ切替時に選択はリセット）
+- チップは**複数選択可・OR判定**（AND にすると0件になりやすいため）
+- 該当0件のタグはチップ自体を出さない（押しても何も起きないチップを作らない）
+- 用途タブのときはカードのタグ表示を用途タグに差し替え、色も強調する（`.art-grid--usecase`）
+
+### ⚠️ 縦読み作品のサムネ問題（再発注意）
+`uike-law`（1200×12000）や `lady-column`（709×15748）などの**縦スクロール作品は1枚が極端に縦長**で、
+カードの `object-position: top center` で上端を切り出すと**余白や吹き出しだけしか映らない**（実際に空白カードになった）。
+対策として、作画が詰まっている箇所を切り出した専用画像を `material/images/artists/` に用意して参照している
+（`thumb-gekiga` / `thumb-shojo` / `gallery-gekiga-{1..3}` / `gallery-shojo-{1..3}`）。
+**この2カテゴリの画像を差し替えるときは、元の縦長ページを直接指定しないこと。**
+
+### 未実施（このページ単体の実装のみ完了）
+ナビ登録 / sitemap.xml 追加 / 既存ページからの内部リンク5〜10本 / 専用OG画像（現在は `og-index.webp` を流用）。
+⚠️ ナビは §1b の通り**項目を増やす余地がほぼ無い**ため、追加するならメガメニュー内に入れること。
 
 ## 1a. 用途別LP デザインシステム v2（2026-05-13）⭐進行中
 
