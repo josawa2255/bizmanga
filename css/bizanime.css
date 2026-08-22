@@ -415,8 +415,9 @@ body.ba-page .bm-header-inner { position: relative; }
   /* 目標ではキャラはモニター左辺に重なるだけで、吹き出しや人物は隠さない。
      顔が画面中央よりやや左に来る位置。 */
   /* 目標ではキャラはモニター左辺に軽く重なるだけで、吹き出しは完全に読める。
-     吹き出しは作品のメッセージそのものなので隠さない。 */
-  left: 27.5%;
+     吹き出し「伝えたい想いが、動画で動き出す！」は作品のメッセージそのものなので隠さない。
+     実測: 吹き出しの左端は 52%W。キャラの右端がそこに掛からない位置に置く。 */
+  left: 25%;
   /* 高さがHeroを超えるため bottom 基準だと頭が上に飛び出す。
      目標は頭頂 10.1%H なので top 基準で固定し、脚を下端で切る。 */
   top: 9%;
@@ -575,7 +576,7 @@ body.ba-page .bm-header-inner { position: relative; }
 @media (max-width: 1440px) {
   .ba-copy      { width: 32%; top: 12%; }
   /* 狭い幅ではキャラを小さく・右へ寄せて、CTAとモニターの居場所を確保する */
-  .ba-character { left: 33%; width: 29%; }
+  .ba-character { left: 30%; width: 29%; }
   .ba-player    { width: min(52%, 830px); right: 0.5%; top: 12%; }
 }
 /* 1280px: テキストとキャラが重ならない・CTAが折り返さないことを担保 */
@@ -583,7 +584,7 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-hero      { min-height: 780px; }
   .ba-copy      { width: 33%; max-width: 440px; top: 11.5%; }
   .ba-lead      { font-size: clamp(28px, 2.6vw, 38px); }
-  .ba-character { left: 34%; width: 29%; }
+  .ba-character { left: 31%; width: 29%; }
   .ba-player    { width: min(51%, 760px); right: 0.5%; top: 12%; }
   .ba-features  { width: min(52%, 620px); gap: 10px; right: 2%; }
   .ba-feature-desc { display: none; } /* 狭い幅では説明を落とし、4列の横並びを維持 */
