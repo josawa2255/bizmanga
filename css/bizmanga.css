@@ -142,15 +142,18 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 /* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
 .bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
 .bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; max-width: none; flex-shrink: 0; aspect-ratio: 1316 / 370; }
+/* ナビ8項目(ホーム/制作事例/ビズ書庫/ビズアニメ/サービス/料金/コラム/FAQ)＋言語切替＋CTA＋
+   アイコン2個で横幅がぎりぎり。gapを詰めないと FAQ が言語切替の下に潜る(BUGS #003/#014)。
+   2026-08-22 ビズアニメ追加時に 24px→14px。1280〜1920px・日英両方で溢れゼロを実測済み。 */
 .bm-nav {
-  display: flex; align-items: center; gap: 24px;
+  display: flex; align-items: center; gap: 14px;
   min-width: 0; flex-shrink: 1;
 }
 /* モバイル専用CTA(.bm-nav-mobile-cta)はデスクトップでは常に非表示 */
 .bm-nav-mobile-cta { display: none; }
 /* EN モードは英単語が日本語より幅広い (Services / Pricing / Column) ため、
    ナビ間隔と文字サイズをわずかに圧縮して言語スイッチ・CTAとの被りを回避 */
-html[lang="en"] .bm-nav { gap: 18px; }
+html[lang="en"] .bm-nav { gap: 12px; }
 html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 .bm-header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bm-nav-link {

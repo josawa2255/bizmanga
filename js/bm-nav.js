@@ -7,6 +7,7 @@
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
     { label: '制作事例',   labelEn: 'Works',      href: '/works' },
     { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    { label: 'ビズアニメ', labelEn: 'Biz Anime',  href: '/bizanime' },
     { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
       {
         heading: 'マーケ・広報部門向け',
