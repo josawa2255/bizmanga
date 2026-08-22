@@ -114,9 +114,9 @@ body.ba-page .bm-header-inner { position: relative; }
   position: relative;
   width: 100%;
   min-height: 820px;
-  /* 完成デザインは16:9。幅に対して高さを追随させると、どの幅でも同じ構図になる。
-     100vh-header を下限に、間延びしないよう 1000px で頭打ちにする（§3） */
-  height: clamp(820px, min(56.25vw, calc(100vh - var(--ba-header-h))), 1000px);
+  /* 目標は16:9のキービジュアル。画面いっぱいを使い切って黒い余白を作らない（§18）。
+     ヘッダーを除いたビューポート高を基準にしつつ、16:9より縦長にはしない。 */
+  height: clamp(820px, max(calc(100vh - var(--ba-header-h)), 56.25vw), 1040px);
   overflow: hidden;
   background-color: var(--ba-black);
   isolation: isolate; /* 内部の mix-blend が外へ漏れないように */
@@ -137,9 +137,11 @@ body.ba-page .bm-header-inner { position: relative; }
   content: '';
   position: absolute;
   inset: 0;
+  /* 目標は右側からオレンジ光が中央へ差し込む。現状より明確に強くする（§15） */
   background:
-    radial-gradient(circle at 75% 45%, rgba(255,90,0,.16), transparent 35%),
-    linear-gradient(90deg, rgba(0,0,0,.98) 0%, rgba(0,0,0,.82) 42%, rgba(0,0,0,.5) 100%);
+    radial-gradient(ellipse 55% 70% at 96% 48%, rgba(255,110,0,.40), transparent 62%),
+    radial-gradient(circle at 72% 45%, rgba(255,90,0,.20), transparent 45%),
+    linear-gradient(90deg, rgba(0,0,0,.97) 0%, rgba(0,0,0,.78) 40%, rgba(0,0,0,.34) 100%);
 }
 /* vignette（四隅を締めて中央へ視線を集める） */
 .ba-hero-vignette {
@@ -165,11 +167,25 @@ body.ba-page .bm-header-inner { position: relative; }
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: .10;
+  opacity: .13;
   background-image: radial-gradient(rgba(255,120,0,.9) 1px, transparent 1.6px);
   background-size: 7px 7px;
-  -webkit-mask-image: linear-gradient(105deg, transparent 38%, #000 62%, transparent 92%);
-          mask-image: linear-gradient(105deg, transparent 38%, #000 62%, transparent 92%);
+  -webkit-mask-image: linear-gradient(105deg, transparent 30%, #000 58%, transparent 94%);
+          mask-image: linear-gradient(105deg, transparent 30%, #000 58%, transparent 94%);
+}
+/* 左端・左下にも極薄の漫画表現を置いて、真っ黒な空白を減らす（§14）。
+   文字の可読性を邪魔しない範囲（opacity .06）に留める。 */
+.ba-hero-halftone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .06;
+  background-image:
+    repeating-linear-gradient(68deg, rgba(255,255,255,.5) 0 1px, transparent 1px 84px),
+    radial-gradient(rgba(255,255,255,.42) 1px, transparent 1.5px);
+  background-size: auto, 9px 9px;
+  -webkit-mask-image: radial-gradient(ellipse 46% 62% at 4% 92%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(ellipse 46% 62% at 4% 92%, #000 0%, transparent 72%);
 }
 
 /* --- コンテンツ最大幅 --- */
@@ -189,11 +205,13 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-copy {
   position: absolute;
   left: max(4.2vw, 24px);
-  top: 15.5%;
+  /* 目標ではHero上半分からコピーが始まり、BIZ ANIME とキャラの顔がほぼ同じ高さに並ぶ */
+  top: 11%;
   z-index: 5;
-  /* キャラ(left:40%)に食い込まない幅に抑える。完成デザインの左コピーは約34% */
-  width: 34%;
-  max-width: 540px;
+  /* キャラの手は画像左端まで届くので box は必ず重なる。実体が隠れないよう、
+     CTA など可視要素はキャラの胴体(左端+29%)より手前で終わらせる。 */
+  width: 33%;
+  max-width: 530px;
   /* .ba-title が cqw で自分の幅に追随できるようにする（1行維持のため） */
   container-type: inline-size;
 }
@@ -204,12 +222,14 @@ body.ba-page .bm-header-inner { position: relative; }
   align-items: center;
   gap: 16px;
   margin: 0 0 22px;
-  font-size: clamp(15px, 1.15vw, 19px);
+  /* コンテナ幅に追随させ「マンガに、声と動きを。」を必ず1行に収める */
+  font-size: min(clamp(14px, 1.1vw, 19px), 6.2cqw);
   font-weight: 700;
   letter-spacing: .05em;
   color: rgba(255,255,255,.92);
   white-space: nowrap;
 }
+.ba-eyebrow > span { white-space: nowrap; flex: 0 0 auto; }
 .ba-eyebrow em {
   font-style: normal;
   color: var(--ba-orange-3);
@@ -230,8 +250,8 @@ body.ba-page .bm-header-inner { position: relative; }
   /* 「BIZ ANIME」を必ず1行で収める。コンテナ幅(34%)基準の cqw を使い、
      幅が変わっても改行しないサイズへ自動追随させる（vw基準だと親幅と噛み合わず折り返す） */
   /* 実測: "BIZ ANIME" は font-size 100px で幅572px = 17.4cqw が1行の上限。
-     余裕を見て 17cqw に置き、それ以下でのみ vw 側の値を採用する */
-  font-size: min(clamp(58px, 5vw, 104px), 17cqw);
+     目標では左エリアを大胆に使うので上限いっぱい(17.2cqw)まで攻める（§7） */
+  font-size: min(clamp(64px, 6vw, 122px), 17.2cqw);
   font-weight: 700;
   line-height: .9;
   letter-spacing: .01em;
@@ -255,10 +275,12 @@ body.ba-page .bm-header-inner { position: relative; }
 /* --- メインコピー --- */
 .ba-lead {
   margin: clamp(26px, 3.2vh, 44px) 0 0;
-  font-size: clamp(34px, 2.9vw, 54px);
+  /* 目標は「明朝・漫画タイトル・広告コピー」寄り。太さで押さずに字面で見せる（§8） */
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: clamp(38px, 3.3vw, 60px);
   font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: .01em;
+  line-height: 1.42;
+  letter-spacing: .015em;
   color: var(--ba-white);
   /* 日本語の改行を文節で切る（memory feedback_jp_line_break） */
   word-break: auto-phrase;
@@ -282,19 +304,24 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-cta-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   margin-top: clamp(26px, 3.4vh, 44px);
   flex-wrap: nowrap; /* 1280pxでも折り返さない（§17） */
+  /* CTAはキャラの手前に置く。ボタンが絵に隠れて押せないのを防ぐ。
+     キャラを左へ寄せるとスカートが掛かるため、これは必須。 */
+  position: relative;
+  z-index: 6;
 }
 .ba-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  height: clamp(58px, 4.6vw, 66px);
-  padding: 0 26px;
+  /* 目標ではCTAがHeroの主要要素の一つとしてかなり目立つ（§9） */
+  height: clamp(64px, 5vw, 76px);
+  padding: 0 34px;
   border-radius: 10px;
-  font-size: clamp(15px, 1.1vw, 17px);
+  font-size: clamp(16px, 1.2vw, 19px);
   font-weight: 700;
   letter-spacing: .02em;
   white-space: nowrap;
@@ -303,7 +330,7 @@ body.ba-page .bm-header-inner { position: relative; }
 }
 /* Primary — オレンジ */
 .ba-btn--primary {
-  min-width: 206px;
+  min-width: 240px;
   color: var(--ba-white);
   background: linear-gradient(135deg, #ff5800, #ff7900);
   box-shadow: 0 10px 30px rgba(255,88,0,.32);
@@ -315,7 +342,10 @@ body.ba-page .bm-header-inner { position: relative; }
 /* Secondary — 透明＋オレンジ枠 */
 .ba-btn--ghost {
   color: var(--ba-white);
-  background: rgba(255,255,255,.02);
+  /* キャラのスカートが背後に来るため、ほぼ不透明の黒にして文字を沈ませない */
+  background: rgba(9,9,9,.9);
+  -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
   border: 1px solid rgba(255,110,0,.75);
 }
 .ba-btn--ghost:hover {
@@ -346,16 +376,17 @@ body.ba-page .bm-header-inner { position: relative; }
   margin-top: clamp(20px, 2.6vh, 32px);
   padding: 0;
   list-style: none;
-  opacity: .75;
+  /* 目標ではもう少しはっきり見える。左コピーの一部として揃える（§10） */
+  opacity: 1;
   flex-wrap: nowrap;
 }
 .ba-media li {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: clamp(12px, .95vw, 14px);
+  font-size: clamp(13px, 1.02vw, 15px);
   font-weight: 500;
-  color: rgba(255,255,255,.9);
+  color: rgba(255,255,255,.94);
   white-space: nowrap;
 }
 .ba-media li + li { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.18); }
@@ -379,13 +410,22 @@ body.ba-page .bm-header-inner { position: relative; }
    ========================================================================== */
 .ba-character {
   position: absolute;
-  left: 40%;
-  bottom: -18px;
+  /* 目標実測: 肌の左端 32.1%W / 頭頂 10.1%H / 幅 33.9%W。
+     顔が画面中央付近に来て、身体が左コピーと右モニターを繋ぐ位置。 */
+  /* 目標ではキャラはモニター左辺に重なるだけで、吹き出しや人物は隠さない。
+     顔が画面中央よりやや左に来る位置。 */
+  /* 目標ではキャラはモニター左辺に軽く重なるだけで、吹き出しは完全に読める。
+     吹き出しは作品のメッセージそのものなので隠さない。 */
+  left: 27.5%;
+  /* 高さがHeroを超えるため bottom 基準だと頭が上に飛び出す。
+     目標は頭頂 10.1%H なので top 基準で固定し、脚を下端で切る。 */
+  top: 9%;
   z-index: 4;
-  /* 完成デザインではキャラがHero高の約90%を占める。存在感は最優先事項(§19-6)。
-     px上限を付けるとHeroが低い幅で急に小さくなり頭の位置が下がるため、%基準で統一する */
-  height: 92%;
-  width: auto;
+  /* 目標ではキャラ幅が33.9%W＝画像比から高さ約1368px必要で、Hero高を大きく超える。
+     脚はViewport下端で切れてよい（広告KVとして大胆にトリミングする §1）。
+     幅を基準に指定し、高さは画像の縦横比(615:1513)に任せる方が構図が安定する。 */
+  width: 34%;
+  height: auto;
   pointer-events: none;
   user-select: none;
   /* 薄いオレンジのリムライト。光らせすぎない（§9） */
@@ -400,17 +440,21 @@ body.ba-page .bm-header-inner { position: relative; }
    ========================================================================== */
 .ba-player {
   position: absolute;
-  /* 完成デザイン実測: 右端 96.3% / 上 16.5%。画面外へはみ出させない */
-  right: 3.5%;
-  top: 15%;
+  /* 目標実測: 枠の x 50.0%〜98.8% / y 12.6%〜87.2%。右端はViewportぎりぎりまで使う */
+  right: -1.5%;
+  top: 12%;
   z-index: 3;
-  width: min(46%, 820px);
+  /* 目標では枠が y12.6%〜87.2% を占める＝高さ約690px。画像比(1366:1009)から幅は約57%W。
+     右へ寄せて、キャラが吹き出し（作品のメッセージ）を隠さないようにする。 */
+  width: min(56%, 990px);
   height: auto;
-  transform: perspective(1200px) rotateY(-5deg) rotateZ(-2deg);
+  transform: perspective(1150px) rotateY(-6deg) rotateZ(-2.2deg);
   transform-origin: center center;
+  /* 映画的な発光。ネオン看板にはしない（§16） */
   filter:
-    drop-shadow(0 0 20px rgba(255,90,0,.25))
-    drop-shadow(0 25px 50px rgba(0,0,0,.5));
+    drop-shadow(0 0 26px rgba(255,110,0,.42))
+    drop-shadow(0 0 70px rgba(255,80,0,.28))
+    drop-shadow(0 28px 56px rgba(0,0,0,.62));
 }
 
 /* ==========================================================================
@@ -420,16 +464,23 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-features {
   position: absolute;
   /* プレイヤーの真下に揃える（完成デザイン: 右下・プレイヤー幅とほぼ同じ範囲） */
-  right: 3.5%;
-  bottom: clamp(28px, 5vh, 56px);
+  /* モニター直下のUIとして一体に見せる（§11）。右端をモニターに揃える */
+  right: 3%;
+  top: 82%;
   /* キャラの脚は画像幅の93%まで及ぶため、余白で逃がすことはできない。
-     バッジ列をキャラより手前(z-index:5)に出して、文字が欠けないようにする。
-     完成デザインでもバッジのラベルは最前面で読める状態になっている。 */
+     バッジ列をキャラより手前(z-index:5)に出して、文字が欠けないようにする。 */
   z-index: 5;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(14px, 1.6vw, 30px);
-  width: min(36%, 640px);
+  gap: clamp(10px, 1.2vw, 22px);
+  width: min(46%, 800px);
+  /* 4枚のカードではなく、ひと続きの暗いUI領域に見せる（§12） */
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(5,5,5,.72);
+  border: 1px solid rgba(255,255,255,.06);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -519,23 +570,22 @@ body.ba-page .bm-header-inner { position: relative; }
    9. 幅ごとの調整（PC先行。1280pxまでを担保する）
    ========================================================================== */
 @media (max-width: 1600px) {
-  .ba-character { left: 39%; }
-  .ba-features  { width: min(48vw, 660px); }
+  .ba-features  { width: min(50%, 700px); }
 }
 @media (max-width: 1440px) {
-  .ba-copy      { width: 33%; top: 14.5%; }
-  .ba-character { left: 38%; }
-  .ba-player    { top: 14%; }
+  .ba-copy      { width: 32%; top: 12%; }
+  /* 狭い幅ではキャラを小さく・右へ寄せて、CTAとモニターの居場所を確保する */
+  .ba-character { left: 33%; width: 29%; }
+  .ba-player    { width: min(52%, 830px); right: 0.5%; top: 12%; }
 }
 /* 1280px: テキストとキャラが重ならない・CTAが折り返さないことを担保 */
 @media (max-width: 1360px) {
   .ba-hero      { min-height: 780px; }
-  .ba-copy      { width: 34%; max-width: 440px; top: 13.5%; }
-  .ba-title     { font-size: clamp(56px, 5.2vw, 80px); }
-  .ba-lead      { font-size: clamp(28px, 2.5vw, 36px); }
-  .ba-character { left: 40%; }
-  .ba-player    { width: 47%; right: 2.5%; top: 13.5%; }
-  .ba-features  { width: min(52vw, 600px); gap: 12px; right: 1.5vw; }
+  .ba-copy      { width: 33%; max-width: 440px; top: 11.5%; }
+  .ba-lead      { font-size: clamp(28px, 2.6vw, 38px); }
+  .ba-character { left: 34%; width: 29%; }
+  .ba-player    { width: min(51%, 760px); right: 0.5%; top: 12%; }
+  .ba-features  { width: min(52%, 620px); gap: 10px; right: 2%; }
   .ba-feature-desc { display: none; } /* 狭い幅では説明を落とし、4列の横並びを維持 */
 }
 
