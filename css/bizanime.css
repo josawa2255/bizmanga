@@ -651,12 +651,23 @@ body.ba-page .bm-header-inner { position: relative; }
     margin-left: clamp(18px, 5vw, 32px);
     margin-right: clamp(18px, 5vw, 32px);
   }
-  /* メインコピーと説明文はキャラの手前に置き、絵に沈まないようにする。
+  /* 見出し・メインコピー・説明文はキャラの手前に置き、絵に沈まないようにする。
      キャラは z-index:2 なので、これで文字が必ず上に来る。 */
+  .ba-eyebrow,
+  .ba-title,
   .ba-lead,
   .ba-sub { position: relative; z-index: 5; }
-  /* 説明文はキャラのスカートに掛かる高さにあるため、右側に逃げ幅を作る */
-  .ba-sub { margin-right: clamp(56px, 22vw, 130px); }
+  /* 文字自体は z-index:5 でイラストより前にあり潰れていないが、
+     背後に絵が来ると視覚的に読みづらい。字の周囲を暗く落として分離する。
+     （右マージンで逃がすと .ba-title の cqw 基準が変わり文字が縮むので使わない） */
+  .ba-title,
+  .ba-lead {
+    text-shadow: 0 2px 16px rgba(5,5,5,.95), 0 0 42px rgba(5,5,5,.9), 0 0 80px rgba(5,5,5,.7);
+  }
+  .ba-sub {
+    /* 説明文はスカートに重なる高さ。影を濃いめにして可読性を確保する */
+    text-shadow: 0 1px 12px rgba(5,5,5,.98), 0 0 34px rgba(5,5,5,.92);
+  }
   .ba-eyebrow { order: 1; }
   .ba-title   { order: 2; container-type: inline-size; }
   .ba-lead    { order: 3; }
@@ -695,7 +706,8 @@ body.ba-page .bm-header-inner { position: relative; }
     position: absolute;
     /* 上半分の右側に置き、腰付近で切る（全身は見せない）。
        見出し周辺にだけ重なり、説明文から下には掛からないようにする。 */
-    top: clamp(44px, 11vw, 96px);
+    /* リボン・頭頂が「BIZ ANIME」に近づきすぎないよう少し下げる */
+    top: clamp(64px, 16vw, 130px);
     left: auto;
     /* 顔が画面右端で切れないよう、はみ出しは最小限にとどめる */
     right: -4%;
@@ -745,7 +757,7 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-media li + li { padding-left: clamp(6px, 2vw, 14px); }
   .ba-media-icon { width: 15px; height: 15px; }
 
-  /* --- 機能UI: 4列のまま、ひと続きの暗い帯として下に置く --- */
+  /* --- 機能UI --- */
   .ba-features {
     position: static;
     width: auto;
@@ -773,11 +785,21 @@ body.ba-page .bm-header-inner { position: relative; }
 
   /* 波形装飾は絶対配置前提なので縦積みでは邪魔になる。背景側の光で代用する */
   .ba-wave-deco { display: none; }
+
+  /* VOICE/MUSIC/SFX/MOTION はスマホでは出さない（2026-08-22 ユーザー指示）。
+     上の .ba-features 指定より後に置いて display を確実に上書きする。
+     内容は Hero より下のセクションで扱う。 */
+  .ba-features { display: none; }
 }
 
 /* 極小幅（〜360px）: 4列の機能UIが潰れるので説明文だけ落として列は維持する */
 @media (max-width: 360px) {
   .ba-feature-desc { display: none; }
+}
+
+/* 極小幅（〜340px）: 説明文の行末がスカートに掛かるので、キャラを少し小さくして逃がす */
+@media (max-width: 340px) {
+  .ba-character { width: 56%; }
 }
 
 /* タブレット帯（600〜1024px）: 画面が広くなるとキャラの拡大率が過剰になり、
