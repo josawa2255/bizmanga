@@ -218,6 +218,11 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-title {
   margin: 0;
   font-family: "Noto Serif JP", "Didot", "Bodoni MT", "Times New Roman", serif;
+  /* Androidの文字拡大(約1.3〜1.6倍)でも1行を保つ演出文字。
+     拡大されると折り返してブランド表記が壊れるため、対象から外す（鉄則3 / BUGS #045）。
+     ⚠️ 本文・UIテキストには使わない（ユーザーの拡大設定を尊重するため） */
+  -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
   /* 「BIZ ANIME」を必ず1行で収める。コンテナ幅(34%)基準の cqw を使い、
      幅が変わっても改行しないサイズへ自動追随させる（vw基準だと親幅と噛み合わず折り返す） */
   /* 実測: "BIZ ANIME" は font-size 100px で幅572px = 17.4cqw が1行の上限。
@@ -561,16 +566,165 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-feature-desc { display: none; } /* 狭い幅では説明を落とし、4列の横並びを維持 */
 }
 
-/* スマホ・タブレットは今回未対応（後日 responsive-rules で実装）。
-   それまでの間、崩れた状態を見せないための最低限のフォールバック。 */
+/* ==========================================================================
+   10. スマホ・タブレット（〜1024px）
+   PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が足りないので成立しない。
+   目標デザインどおり、縦積み＋キャラを右上に重ねる構成へ組み替える。
+       コピー（キャラが右に重なる）
+         ↓
+       動画モニター（中央・全幅）
+         ↓
+       CTA（横幅いっぱい・縦2本）
+         ↓
+       媒体表示
+         ↓
+       VOICE/MUSIC/SFX/MOTION（4列・暗いUI帯）
+   文字サイズは clamp()+vw の連続スケールで書き、
+   ブレークポイントごとの再定義はしない（鉄則2・#045対策）。
+   ========================================================================== */
 @media (max-width: 1024px) {
-  .ba-hero      { height: auto; min-height: 0; padding: 120px 0 64px; }
-  .ba-hero-inner{ height: auto; }
-  .ba-copy      { position: static; width: auto; max-width: none; padding: 0 24px; }
-  .ba-title     { white-space: normal; font-size: clamp(52px, 13vw, 84px); }
-  .ba-character,
-  .ba-player,
-  .ba-features,
+  .ba-hero {
+    height: auto;
+    min-height: 0;
+    /* ヘッダー(72px)ぶんは margin-top で確保済み。ここは中身の余白。
+       下側は共通の追従CTA(.bm-fab 高さ56px)が画面下に固定表示されるぶん＋余裕を確保し、
+       最下部までスクロールしても VOICE/MUSIC/SFX/MOTION が隠れないようにする */
+    padding: clamp(24px, 5vw, 48px) 0 clamp(110px, 24vw, 150px);
+    overflow: hidden;
+  }
+  .ba-hero-inner { height: auto; }
+
+  /* --- 背景: 右上のオレンジ光を強め、縦長画面でも締まって見せる --- */
+  .ba-hero-bg::after {
+    background:
+      radial-gradient(ellipse 90% 42% at 82% 20%, rgba(255,110,0,.34), transparent 62%),
+      radial-gradient(ellipse 70% 34% at 50% 68%, rgba(255,90,0,.16), transparent 66%),
+      linear-gradient(180deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.62) 42%, rgba(0,0,0,.86) 100%);
+  }
+  .ba-hero-vignette { background: radial-gradient(ellipse 90% 62% at 50% 42%, transparent 46%, rgba(0,0,0,.6) 100%); }
+
+  /* --- コピー: 通常フローに戻して縦積みの先頭に --- */
+  .ba-copy {
+    position: static;
+    width: auto;
+    max-width: none;
+    padding: 0 clamp(18px, 5vw, 32px);
+    /* .ba-title の cqw が効くようにコンテナ指定は維持 */
+  }
+  .ba-eyebrow {
+    font-size: clamp(12px, 3.6vw, 17px);
+    gap: 10px;
+    margin-bottom: clamp(10px, 2.6vw, 18px);
+  }
+  .ba-title {
+    white-space: nowrap;
+    /* ⚠️ cqw はパディングを含む幅を返すため、左右padding(最大32px×2)を引いた
+       実際の文字領域で計算する。実測: 100px時の文字幅は copyW の 17.6cqw 相当なので、
+       padding を差し引いた上で 16.6cqw（約6%の安全マージン）に収める。 */
+    font-size: min(clamp(44px, 15vw, 96px), calc((100cqw - clamp(36px, 10vw, 64px)) * 0.172));
+  }
+  .ba-title-ja { letter-spacing: .3em; font-size: clamp(11px, 3.2vw, 15px); }
+  .ba-lead {
+    font-size: clamp(26px, 8.2vw, 52px);
+    line-height: 1.38;
+    margin-top: clamp(14px, 4vw, 26px);
+  }
+  .ba-sub {
+    font-size: clamp(13px, 3.7vw, 18px);
+    line-height: 1.85;
+    margin-top: clamp(10px, 3vw, 18px);
+  }
+
+  /* --- キャラクター: コピーの右に重ねる（目標では右上でコピーと重なる） --- */
+  .ba-character {
+    display: block;
+    position: absolute;
+    /* 目標では頭頂が「BIZ ANIME」の下に来る。タイトルに掛からない位置まで下げる */
+    top: clamp(96px, 26vw, 190px);
+    left: auto;
+    right: -10%;
+    /* 幅基準。高さ基準にすると縦長画面で巨大化する。
+       大きくしすぎると見出しとCTAの文字を覆うので 52% で抑える */
+    width: min(52%, 330px);
+    height: auto;
+    z-index: 2;   /* コピー(z-index:5)より奥。文字を絶対に隠さない */
+    pointer-events: none;
+    filter: drop-shadow(0 0 22px rgba(255,90,0,.24)) drop-shadow(0 16px 34px rgba(0,0,0,.5));
+  }
+
+  /* --- 動画モニター: 中央・ほぼ全幅。傾きは取って正対させる --- */
+  .ba-player {
+    display: block;
+    position: static;
+    width: calc(100% - clamp(36px, 10vw, 64px));
+    margin: clamp(20px, 5vw, 40px) auto 0;
+    transform: none;
+    filter:
+      drop-shadow(0 0 20px rgba(255,110,0,.4))
+      drop-shadow(0 0 52px rgba(255,80,0,.24))
+      drop-shadow(0 18px 36px rgba(0,0,0,.6));
+  }
+
+  /* --- CTA: 横幅いっぱいの縦2本 --- */
+  .ba-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(10px, 2.6vw, 16px);
+    margin: clamp(20px, 5vw, 36px) clamp(18px, 5vw, 32px) 0;
+  }
+  .ba-btn {
+    width: 100%;
+    min-width: 0;
+    /* Androidの文字拡大で中身が膨らんでも溢れないよう、高さは下限だけ決めて伸ばす（鉄則3） */
+    height: auto;
+    min-height: clamp(56px, 14vw, 72px);   /* タップ44px以上を確保 */
+    padding-top: 14px;
+    padding-bottom: 14px;
+    font-size: clamp(15px, 4.2vw, 19px);
+    text-align: left;
+  }
+
+  /* --- 媒体表示: 4つを等間隔で1行に --- */
+  .ba-media {
+    justify-content: space-between;
+    gap: clamp(6px, 2vw, 14px);
+    margin: clamp(16px, 4.4vw, 28px) clamp(18px, 5vw, 32px) 0;
+  }
+  .ba-media li { font-size: clamp(11px, 3.1vw, 15px); gap: 6px; }
+  .ba-media li + li { padding-left: clamp(6px, 2vw, 14px); }
+  .ba-media-icon { width: 15px; height: 15px; }
+
+  /* --- 機能UI: 4列のまま、ひと続きの暗い帯として下に置く --- */
+  .ba-features {
+    position: static;
+    width: auto;
+    margin: clamp(20px, 5vw, 36px) clamp(14px, 4vw, 28px) 0;
+    gap: 0;
+    padding: clamp(14px, 3.6vw, 22px) clamp(6px, 2vw, 14px);
+    border-radius: 16px;
+  }
+  .ba-feature { min-width: 0; }        /* 1fr等分の子は必須（鉄則5・#044対策） */
+  .ba-feature + .ba-feature { border-left: 1px solid rgba(255,255,255,.1); }
+  .ba-feature-icon {
+    width: clamp(34px, 9.5vw, 48px);
+    height: clamp(34px, 9.5vw, 48px);
+    margin-bottom: clamp(6px, 1.8vw, 10px);
+  }
+  .ba-feature-icon svg { width: 60%; height: 60%; }
+  .ba-feature-title { font-size: clamp(12px, 3.5vw, 17px); }
+  .ba-feature-desc {
+    display: block;                     /* PCの狭幅では隠すが、スマホでは出す（目標どおり） */
+    font-size: clamp(9px, 2.5vw, 12px);
+    line-height: 1.5;
+    margin-top: clamp(4px, 1.4vw, 8px);
+    padding: 0 2px;
+  }
+
+  /* 波形装飾は絶対配置前提なので縦積みでは邪魔になる。背景側の光で代用する */
   .ba-wave-deco { display: none; }
-  .ba-cta-row   { flex-wrap: wrap; }
+}
+
+/* 極小幅（〜360px）: 4列の機能UIが潰れるので説明文だけ落として列は維持する */
+@media (max-width: 360px) {
+  .ba-feature-desc { display: none; }
 }
