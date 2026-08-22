@@ -26,44 +26,12 @@ body.ba-page {
   color: var(--ba-white);
 }
 
-/* ヘッダーをHero上で透明化（既存ヘッダーを流用し、見た目だけ上書き）。
-   白背景＋blur を打ち消し、白ロゴ・白文字に反転させる。 */
-body.ba-page .bm-header {
-  background: linear-gradient(180deg, rgba(5,5,5,.92) 0%, rgba(5,5,5,.55) 60%, rgba(5,5,5,0) 100%);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-bottom: none;
-  box-shadow: none;
-}
-body.ba-page .bm-nav-link,
-body.ba-page .bm-nav-megamenu-heading { color: rgba(255,255,255,.88); }
-body.ba-page .bm-nav-link:hover,
-body.ba-page .bm-nav-link.active { color: var(--ba-orange-3); }
-/* ロゴは濃色前提のPNG。黒背景だと沈むので白へ反転させる */
-body.ba-page .bm-logo-img {
-  filter: brightness(0) invert(1);
-}
-/* 言語切替は黒背景に合わせる（既存の白地前提の配色だと浮く）。
-   ヘッダーが密なので、幅・高さも詰めてFAQと干渉しないようにする */
-body.ba-page .bm-lang-btn {
-  width: 50px;
-  height: 32px;
-  font-size: 12px;
-  color: rgba(255,255,255,.72);
-  background: transparent;
-  border-color: rgba(255,255,255,.28);
-}
-body.ba-page .bm-lang-btn.active {
-  color: var(--ba-white);
-  background: rgba(255,90,0,.92);
-  border-color: rgba(255,90,0,.92);
-}
-body.ba-page .bm-lang-btn:not(.active):hover {
-  background: rgba(255,255,255,.1);
-}
-/* Hero上では追従CTA（LINE/問い合わせ/電話）を出さない。
-   左下のCTAと重なり、完成デザインにも存在しないため。 */
-body.ba-page .bm-fab { display: none; }
+/* ヘッダーは他ページと完全に共通（2026-08-22 ユーザー指示）。
+   白背景・ロゴ・ナビ配色・言語切替・追従CTA すべて bizmanga.css のまま使う。
+   ⚠️ ここに body.ba-page 用の上書きを足さないこと。足すとこのページだけ
+      ヘッダーが違う見た目になり、サイト全体の統一が崩れる。
+   ヘッダーは position:fixed で本文に覆いかぶさるため、Hero 側に
+   ヘッダー高ぶんの余白を取って、キャラの頭が白いバーに隠れないようにする。 */
 /* ロゴ横「| BIZ ANIME」— ヘッダー内のサービス名表示 */
 /* ロゴ横のサービス名。
    ⚠️ ヘッダーは [ロゴ][nav flex:1][右CTA] の3分割で、ナビは約480px必要。
@@ -117,6 +85,8 @@ body.ba-page .bm-header-inner { position: relative; }
   /* 目標は16:9のキービジュアル。画面いっぱいを使い切って黒い余白を作らない（§18）。
      ヘッダーを除いたビューポート高を基準にしつつ、16:9より縦長にはしない。 */
   height: clamp(820px, max(calc(100vh - var(--ba-header-h)), 56.25vw), 1040px);
+  /* 共通ヘッダーは position:fixed。その下に潜り込まないよう本体を押し下げる */
+  margin-top: var(--ba-header-h);
   overflow: hidden;
   background-color: var(--ba-black);
   isolation: isolate; /* 内部の mix-blend が外へ漏れないように */
@@ -205,8 +175,9 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-copy {
   position: absolute;
   left: max(4.2vw, 24px);
-  /* 目標ではHero上半分からコピーが始まり、BIZ ANIME とキャラの顔がほぼ同じ高さに並ぶ */
-  top: 11%;
+  /* 目標ではHero上半分からコピーが始まり、BIZ ANIME とキャラの顔がほぼ同じ高さに並ぶ。
+     下端は共通の追従CTA(.bm-fab)と近接するので、少し上げて余裕を持たせる */
+  top: 9%;
   z-index: 5;
   /* キャラの手は画像左端まで届くので box は必ず重なる。実体が隠れないよう、
      CTA など可視要素はキャラの胴体(左端+29%)より手前で終わらせる。 */
