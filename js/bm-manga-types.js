@@ -60,14 +60,33 @@
       });
     });
 
-    // #mt-recruit のようなハッシュで該当章を開く（旧アンカー互換）
-    function selectFromHash() {
+    // #mt-recruit のようなハッシュで該当章を開く（旧アンカー互換 +
+    // ヒーローのチャプター索引からの遷移）。
+    // 非選択章は display:none なので、ブラウザ側のアンカージャンプは効かない。
+    // 章を開いたあとに、こちらで章一覧までスクロールさせる。
+    function scrollToChapters() {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try {
+        root.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      } catch (err) {
+        root.scrollIntoView(true);
+      }
+    }
+    function selectFromHash(scroll) {
       var hash = (window.location.hash || '').replace(/^#/, '');
       if (hash.indexOf('mt-') !== 0) return;
-      select(hash.slice(3), false);
+      if (!select(hash.slice(3), false)) return;
+      if (scroll) scrollToChapters();
     }
-    selectFromHash();
-    window.addEventListener('hashchange', selectFromHash);
+    // 初回ロードはアニメーションなしで位置だけ合わせる。
+    // 画像の読み込みで高さが変わるので load 後にもう一度合わせ直す。
+    selectFromHash(false);
+    if ((window.location.hash || '').indexOf('#mt-') === 0) {
+      var settle = function () { root.scrollIntoView(true); };
+      window.requestAnimationFrame(settle);
+      window.addEventListener('load', settle);
+    }
+    window.addEventListener('hashchange', function () { selectFromHash(true); });
 
     // 何も選択されていなければ先頭（01 創業ストーリー）を開く
     if (!root.querySelector('.mt-chapter-panel.is-active')) {
