@@ -371,6 +371,17 @@
      MP4:     video.muted を切り替え
      Drive:   外部から音量制御できないためボタン自体を隠す（§20: ハックしない） */
   var audioBtn  = document.getElementById('baAudio');
+  var storyBar  = document.getElementById('baDeviceProgress');
+  var storyFill = storyBar ? storyBar.querySelector('i') : null;
+  var storyDur  = 0;
+  if (storyBar) {
+    storyBar.addEventListener('click', function (e) {
+      if (!storyDur || !currentEl || currentEl.tagName !== 'IFRAME') return;
+      var r = storyBar.getBoundingClientRect();
+      var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+      ytCommand(currentEl, 'seekTo', [ratio * storyDur, true]);
+    });
+  }
   var audioOn   = false;
   var currentEl = null;
   var currentV  = null;
@@ -381,6 +392,40 @@
         JSON.stringify({ event: 'command', func: func, args: args || [] }), '*');
     } catch (e) {}
   }
+  /* --- YouTubeプレイヤーの再生情報を受け取る ---
+     enablejsapi=1 のプレイヤーに {event:'listening'} を送ると、以後
+     currentTime / duration / muted 等が message イベントで届く
+     （infoDelivery）。外部スクリプト不要＝CSPに触れない。 */
+  var ytWatchers = [];   // {iframe, onInfo}
+  var listenSeq = 0;
+
+  window.addEventListener('message', function (e) {
+    if (!/^https:\/\/(www\.youtube-nocookie\.com|www\.youtube\.com)$/.test(e.origin)) return;
+    var d;
+    try { d = JSON.parse(e.data); } catch (err) { return; }
+    if (!d || !d.info) return;
+    for (var i = 0; i < ytWatchers.length; i++) {
+      if (ytWatchers[i].iframe.contentWindow === e.source) {
+        ytWatchers[i].onInfo(d.info);
+      }
+    }
+  });
+
+  function watchPlayer(iframe, onInfo) {
+    ytWatchers.push({ iframe: iframe, onInfo: onInfo });
+    function handshake() {
+      try {
+        iframe.contentWindow.postMessage(
+          JSON.stringify({ event: 'listening', id: String(++listenSeq), channel: 'widget' }), '*');
+      } catch (e) {}
+    }
+    iframe.addEventListener('load', function () { setTimeout(handshake, 500); }, { once: true });
+    setTimeout(handshake, 1500);   // 既にloaded時の保険
+  }
+  function unwatchPlayer(iframe) {
+    ytWatchers = ytWatchers.filter(function (w) { return w.iframe !== iframe; });
+  }
+
   /* YouTubeの字幕を消す。動画側が「デフォルトで字幕ON」だと埋め込みにも
      字幕が出るが、URLパラメータでは強制OFFにできない。プレイヤーAPIで
      字幕モジュールごと外す（captions=新プレイヤー / cc=旧プレイヤー）。
@@ -438,10 +483,21 @@
       if (c === el) return;
       if (c.id === 'baPoster') { c.style.opacity = '0'; return; }
       if (c.tagName === 'VIDEO') { try { c.pause(); } catch (e) {} }
+      if (c.tagName === 'IFRAME') unwatchPlayer(c);
       c.remove();
     });
     if (el.parentNode !== screenE) screenE.appendChild(el);
-    if (el.tagName === 'IFRAME' && v.provider === 'youtube') scheduleCaptionsOff(el);
+    if (el.tagName === 'IFRAME' && v.provider === 'youtube') {
+      scheduleCaptionsOff(el);
+      // フルスクリーン時に出す進捗バー（YouTube風の細いバー 2026-08-30 指示）
+      storyDur = 0;
+      watchPlayer(el, function (info) {
+        if (typeof info.duration === 'number' && info.duration > 0) storyDur = info.duration;
+        if (storyFill && storyDur > 0 && typeof info.currentTime === 'number') {
+          storyFill.style.width = Math.min(100, 100 * info.currentTime / storyDur).toFixed(2) + '%';
+        }
+      });
+    }
     currentEl = el;
     currentV  = v;
     updateAudioBtn();
@@ -576,6 +632,7 @@
       el.src = v.src;
       el.controls = true;
       el.autoplay = true;
+      el.muted = false;      // モーダルはクリック起点なので音ありで開始できる
       el.playsInline = true;
       if (v.poster) el.poster = v.poster;
       return el;
@@ -605,12 +662,51 @@
     if (el.tagName === 'IFRAME' && v.provider === 'youtube') scheduleCaptionsOff(el);
     modalPlayer.className = 'ba-modal__player ba-modal__player--' + (v.provider || 'other');
     if (modalTitle) modalTitle.textContent = v.title || '';
-    // 自前バー: 音声トグルはYouTubeのみ（mp4はnativeコントロール/Driveは制御不可）
+
     var mAudio = document.getElementById('baModalAudio');
+    var mBar   = document.getElementById('baModalProgress');
+    var mFill  = mBar ? mBar.querySelector('i') : null;
+    var mDur   = 0;
+    if (mBar) {
+      mBar.hidden = (v.provider !== 'youtube');   // mp4はnativeバー/Driveは情報が取れない
+      if (mFill) mFill.style.width = '0%';
+    }
+
+    if (v.provider === 'youtube') {
+      /* 音ONで開始（2026-08-30 指示）。モーダルはカードのクリック＝ユーザー操作で
+         開くため、ミュート再生を開始した直後に unMute すれば音が出せる。
+         万一ブラウザに拒まれた場合は infoDelivery の muted で検知し、
+         ボタン表示を実態に同期させる。 */
+      var unmute = function () { ytCommand(el, 'unMute'); ytCommand(el, 'setVolume', [100]); };
+      el.addEventListener('load', function () { setTimeout(unmute, 700); }, { once: true });
+      setTimeout(unmute, 1700);
+
+      watchPlayer(el, function (info) {
+        if (typeof info.duration === 'number' && info.duration > 0) mDur = info.duration;
+        if (mFill && mDur > 0 && typeof info.currentTime === 'number') {
+          mFill.style.width = Math.min(100, 100 * info.currentTime / mDur).toFixed(2) + '%';
+        }
+        if (mAudio && typeof info.muted === 'boolean') {
+          mAudio.classList.toggle('is-on', !info.muted);
+          mAudio.setAttribute('aria-pressed', info.muted ? 'false' : 'true');
+        }
+      });
+
+      // バーをクリック/ドラッグ位置へシーク
+      if (mBar) {
+        mBar.onclick = function (e) {
+          if (!mDur) return;
+          var r = mBar.getBoundingClientRect();
+          var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+          ytCommand(el, 'seekTo', [ratio * mDur, true]);
+        };
+      }
+    }
+
     if (mAudio) {
       mAudio.hidden = (v.provider !== 'youtube');
-      mAudio.classList.remove('is-on');        // ミュートで開始（確実に自動再生させるため）
-      mAudio.setAttribute('aria-pressed', 'false');
+      mAudio.classList.add('is-on');             // 音ONで開始する想定の初期表示
+      mAudio.setAttribute('aria-pressed', 'true');
       mAudio.onclick = function () {
         var on = !mAudio.classList.contains('is-on');
         mAudio.classList.toggle('is-on', on);
@@ -619,7 +715,6 @@
         if (on) ytCommand(el, 'setVolume', [100]);
       };
     }
-    // 「元の動画を開く」リンクは 2026-08-30 に削除（YouTubeへ遷移させない方針）
     modal.hidden = false;
     document.body.classList.add('ba-modal-open');
     var closeBtn = document.getElementById('baModalClose');
@@ -630,6 +725,7 @@
   function closeModal() {
     if (!modal || modal.hidden) return;
     // プレイヤーを破棄する＝再生を確実に止める（§27）
+    Array.prototype.slice.call(modalPlayer.querySelectorAll('iframe')).forEach(unwatchPlayer);
     while (modalPlayer.firstChild) modalPlayer.removeChild(modalPlayer.firstChild);
     modal.hidden = true;
     document.body.classList.remove('ba-modal-open');

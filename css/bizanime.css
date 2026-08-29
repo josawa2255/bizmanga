@@ -1108,3 +1108,53 @@ body.ba-modal-open { overflow: hidden; }
 .ba-modal__audio.is-on .ba-audio__icon-on { display: block; }
 .ba-modal__audio.is-on .ba-audio__icon-off { display: none; }
 .ba-modal__audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+
+/* ==========================================================================
+   進捗バー（YouTube標準UIの代わりに残す唯一の要素 2026-08-30 指示）
+   ========================================================================== */
+/* --- モーダル: プレイヤー直下の細いバー。クリックでシーク --- */
+.ba-modal__progress {
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.16);
+  cursor: pointer;
+}
+.ba-modal__progress > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ff5800, #ff7a00);
+  transition: width .25s linear;   /* infoDeliveryは約0.25秒間隔なので繋いで滑らかに */
+}
+.ba-modal__progress:hover { height: 6px; margin-top: 8px; }  /* YouTube風: ホバーで太く */
+
+/* --- 演出: フルスクリーン時だけ画面下端に出る --- */
+.ba-device__progress {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 10px;
+  height: 3px;
+  z-index: 3;               /* screen(1) frame(2) より上 */
+  border-radius: 3px;
+  background: rgba(255,255,255,.18);
+  cursor: pointer;
+  opacity: 0;               /* 通常は隠す。フルスクリーン時のみ表示 */
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.ba-device__progress > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #ff5800, #ff7a00);
+  transition: width .25s linear;
+}
+/* 画面が矩形に開き切った（=フレームが消えた）ときだけ出す */
+.ba-device:has(.ba-device__screen.is-full) .ba-device__progress {
+  opacity: 1;
+  pointer-events: auto;
+}

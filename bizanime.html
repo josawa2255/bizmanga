@@ -211,6 +211,9 @@
                src="/material/images/biz-anime/hero-device-frame.webp"
                alt="" aria-hidden="true"
                width="1536" height="1024" fetchpriority="high" decoding="async">
+          <!-- フルスクリーン時だけ出る進捗バー（クリックでシーク） -->
+          <div class="ba-device__progress" id="baDeviceProgress" role="progressbar"
+               aria-label="再生位置"><i></i></div>
         </div>
 
         <!-- 波形装飾（プレイヤー右上） -->
@@ -270,6 +273,9 @@
         <button type="button" class="ba-modal__close" id="baModalClose"
                 aria-label="閉じる" data-close>&times;</button>
         <div class="ba-modal__player" id="baModalPlayer"></div>
+        <!-- YouTube風の進捗バー（自前実装・クリックでシーク） -->
+        <div class="ba-modal__progress" id="baModalProgress" role="progressbar"
+             aria-label="再生位置"><i></i></div>
         <div class="ba-modal__bar">
           <p class="ba-modal__title" id="baModalTitle"></p>
           <div class="ba-modal__tools">
