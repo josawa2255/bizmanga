@@ -500,22 +500,36 @@
   });
 
   /* メガメニュー自体を離れたらサブメニューも畳む（開いたまま残らないように） */
+  /* メガメニュー(ビズ書庫/サービス)の開閉。
+     CSSの :hover だけだと、カーソルが少し外れた瞬間に閉じ始めてしまい
+     （実測: 外して60msで3分の1まで消えていた）、狙って動かさないと使えない。
+     mouseenter で is-mega-open を付け、離れてから MEGA_CLOSE_DELAY だけ待って外す。
+     ⚠️ ドロワー(モバイル)はアコーディオン方式なので触らない。 */
+  var MEGA_CLOSE_DELAY = 300;
+
   nav.querySelectorAll('.bm-nav-megamenu-wrap').forEach(function(mw) {
+    var megaTimer = null;
+
+    mw.addEventListener('mouseenter', function() {
+      if (nav.classList.contains('open')) return;
+      clearTimeout(megaTimer);
+      mw.classList.add('is-mega-open');
+    });
+
     mw.addEventListener('mouseleave', function() {
       if (nav.classList.contains('open')) return;
-      setTimeout(function() {
-        /* サブメニュー上にカーソルが残っている間は畳まない（誤爆防止） */
+      clearTimeout(megaTimer);
+      megaTimer = setTimeout(function() {
+        /* 戻ってきていたら閉じない。サブメニュー上に残っている場合も同様（誤爆防止） */
         var subHovered = !!mw.querySelector('.bm-nav-submenu:hover');
-        if (!mw.matches(':hover') && !subHovered) {
-          mw.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
-            o.classList.remove('is-sub-open');
-            o.__bmInZone = false;
-          });
-          /* サブメニュー保持のために付けたクラスも必ず外す。
-             ここで外さないとメガメニューが開きっぱなしになる */
-          mw.classList.remove('is-mega-open');
-        }
-      }, 340);
+        if (mw.matches(':hover') || subHovered) return;
+
+        mw.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
+          o.classList.remove('is-sub-open');
+          o.__bmInZone = false;
+        });
+        mw.classList.remove('is-mega-open');
+      }, MEGA_CLOSE_DELAY);
     });
   });
 

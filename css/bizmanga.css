@@ -362,8 +362,10 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
 }
+/* ⚠️ :hover は入れない。入れるとカーソルが外れた瞬間に閉じ始めてしまい、
+   JS側の遅延クローズ(300ms)が効かなくなる。開閉は js/bm-nav.js が
+   is-mega-open を付け外して制御する（:focus-within はキーボード操作用に残す）。 */
 .bm-nav-megamenu-wrap.is-mega-open .bm-nav-megamenu,
-.bm-nav-megamenu-wrap:hover .bm-nav-megamenu,
 .bm-nav-megamenu-wrap:focus-within .bm-nav-megamenu {
   max-height: 80vh;
   opacity: 1;
@@ -377,7 +379,6 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   overflow: visible;
 }
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed.is-mega-open .bm-nav-megamenu,
-.bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:hover .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:focus-within .bm-nav-megamenu {
   max-height: 0 !important;
   opacity: 0 !important;
