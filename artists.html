@@ -151,7 +151,7 @@
         <div class="art-head">
           <p class="art-head__eyebrow">FIND YOUR STYLE</p>
           <h2 class="art-head__title" data-ja="在籍する漫画家から探す" data-en="Browse our artists">在籍する漫画家から探す</h2>
-          <p class="art-head__lead" data-ja="ビズマンガに在籍する漫画家の作例です。気になる作家は記号（A〜K）でご指名いただけます。" data-en="Artists working with BizManga. You can request an artist by their letter (A-K).">ビズマンガに在籍する漫画家の作例です。気になる作家は記号（A〜K）でご指名いただけます。</p>
+          <p class="art-head__lead" data-ja="在籍する漫画家のうち、代表的な画風の作例を掲載しています。気になる作家は記号（A〜K）でご指名ください。ここにない画風もご相談いただけます。" data-en="A selection of representative styles from the artists we work with. Request an artist by their letter (A-K), or ask us about styles not shown here.">在籍する漫画家のうち、代表的な画風の作例を掲載しています。気になる作家は記号（A〜K）でご指名ください。ここにない画風もご相談いただけます。</p>
         </div>
 
         <p class="art-finder__note" data-ja="画風・用途・ジャンルなどで絞り込めます。タグは複数選べます。" data-en="Filter by style, purpose, genre and more. Multiple tags can be selected.">画風・用途・ジャンルなどで絞り込めます。タグは複数選べます。</p>
@@ -160,9 +160,8 @@
         <div class="art-filter" id="artFilter"></div>
 
         <p class="art-result">
-          <span data-ja="該当する漫画家" data-en="Matching artists">該当する漫画家</span>
-          <strong id="artCount">0</strong>
-          <span data-ja="名" data-en="">名</span>
+          <!-- 文言はJSが出し分ける（絞り込み無し=抜粋である旨 / 絞り込み中=該当件数） -->
+          <span id="artResultText" data-ja="在籍作家の一部を掲載しています" data-en="Showing a selection of our artists">在籍作家の一部を掲載しています</span>
           <button type="button" class="art-reset" id="artReset" hidden data-ja="絞り込みを解除" data-en="Clear filters">絞り込みを解除</button>
         </p>
 

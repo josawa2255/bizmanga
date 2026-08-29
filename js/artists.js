@@ -335,7 +335,7 @@
 
   var filterWrap = document.getElementById('artFilter');
   var emptyEl = document.getElementById('artEmpty');
-  var countEl = document.getElementById('artCount');
+  var resultEl = document.getElementById('artResultText');
   var resetBtn = document.getElementById('artReset');
 
   var overlay = document.getElementById('artModal');
@@ -439,7 +439,22 @@
 
     grid.appendChild(frag);
     if (emptyEl) emptyEl.classList.toggle('is-visible', shown === 0);
-    if (countEl) countEl.textContent = String(shown);
+    /* 件数の見せ方。
+       絞り込み無しのときに「11名」と出すと "11人しかいない" と読まれてしまうので、
+       抜粋である旨だけを出す。絞り込み中は何件ヒットしたか分からないと使えないので件数を出す。 */
+    if (resultEl) {
+      var ja, en;
+      if (activeCount() === 0) {
+        ja = '在籍作家の一部を掲載しています';
+        en = 'Showing a selection of our artists';
+      } else {
+        ja = '条件に合う作家 ' + shown + ' 名を表示中';
+        en = shown + ' artist' + (shown === 1 ? '' : 's') + ' match your filters';
+      }
+      resultEl.setAttribute('data-ja', ja);
+      resultEl.setAttribute('data-en', en);
+      resultEl.textContent = isEn() ? en : ja;
+    }
     if (resetBtn) resetBtn.hidden = activeCount() === 0;
   }
 
