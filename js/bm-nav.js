@@ -408,6 +408,117 @@
     });
   }
 
+  /* サブメニュー(第3階層)の開閉。
+     :hover だけだと、項目からサブメニューへ斜めにカーソルを動かす途中で
+     項目の下端を外れた瞬間に閉じてしまう（実測で移動の50%地点で消えた）。
+     閉じる方を少し遅らせて、斜めの移動やわずかな行き過ぎを許容する。
+     ⚠️ ドロワー(モバイル)では常時展開しておりホバーも無いので何もしない。 */
+  nav.querySelectorAll('.bm-nav-submenu-wrap').forEach(function(wrap) {
+    var closeTimer = null;
+    var CLOSE_DELAY = 320;   /* 斜め移動に十分／意図して離れた時は気にならない程度 */
+
+    var open = function() {
+      if (nav.classList.contains('open')) return;   // ドロワー中は触らない
+      clearTimeout(closeTimer);
+      /* 他のサブメニューは閉じる（複数開きっぱなしを防ぐ）。
+         ⚠️ ただし今カーソルがその判定域の中にいる場合は閉じない。
+         項目の真下へ抜けると下の兄弟に入るが、そこで強制的に閉じると
+         斜め移動でサブメニューへ辿り着けなくなるため（実測で確認） */
+      nav.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
+        if (o !== wrap && !o.__bmInZone) o.classList.remove('is-sub-open');
+      });
+      wrap.classList.add('is-sub-open');
+    };
+    var scheduleClose = function() {
+      if (nav.classList.contains('open')) return;
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function() {
+        wrap.classList.remove('is-sub-open');
+        var mw = wrap.closest('.bm-nav-megamenu-wrap');
+        if (mw) mw.classList.remove('is-mega-open');
+      }, CLOSE_DELAY);
+    };
+    /* サブメニュー上に入ったら、予約されている「閉じる」を取り消す */
+    var cancelClose = function() { clearTimeout(closeTimer); };
+
+    wrap.addEventListener('mouseenter', open);
+
+    /* 閉じる判定は座標で行う。
+       wrap は項目1行ぶん(50px)しか無く、サブメニューは position:absolute で
+       その外に出ているため、DOMの mouseleave だけだと項目を1px出た時点で
+       「離れた」扱いになり、斜め移動の途中で閉じてしまう（実測で確認）。
+       項目とサブメニューを内包する矩形＋余白の中にカーソルがある限り開いたままにする。 */
+    var subEl = wrap.querySelector('.bm-nav-submenu');
+    var PAD = 24;   /* 経路のブレを吸収する余白 */
+
+    var insideZone = function(x, y) {
+      var i = wrap.getBoundingClientRect();
+      var boxes = [i];
+      if (subEl) boxes.push(subEl.getBoundingClientRect());
+      var left = Math.min.apply(null, boxes.map(function(b) { return b.left; })) - PAD;
+      var right = Math.max.apply(null, boxes.map(function(b) { return b.right; })) + PAD;
+      var top = Math.min.apply(null, boxes.map(function(b) { return b.top; })) - PAD;
+      var bottom = Math.max.apply(null, boxes.map(function(b) { return b.bottom; })) + PAD;
+      return x >= left && x <= right && y >= top && y <= bottom;
+    };
+
+    /* サブメニューが開いている間は、親のメガメニューも開いたままにする。
+       ⚠️ メガメニューは max-height + overflow:hidden でアニメーションしており、
+       カーソルがメガメニュー本体から離れると縮んで、中にあるサブメニューごと
+       切り取られてしまう（実測: 下側5件がクリック不能、うち1件は誤遷移した）。 */
+    var megaWrap = wrap.closest('.bm-nav-megamenu-wrap');
+
+    var onMove = function(e) {
+      if (!wrap.classList.contains('is-sub-open')) {
+        wrap.__bmInZone = false;
+        /* サブメニューが閉じたら、保持していたメガメニューも解放する。
+           ここで外さないと、離れてもメガメニューが開きっぱなしになる */
+        if (megaWrap && megaWrap.classList.contains('is-mega-open') &&
+            !megaWrap.matches(':hover')) {
+          megaWrap.classList.remove('is-mega-open');
+        }
+        return;
+      }
+      var inside = insideZone(e.clientX, e.clientY);
+      wrap.__bmInZone = inside;   /* 他の項目の open() から参照される */
+      if (inside) {
+        cancelClose();
+        if (megaWrap) megaWrap.classList.add('is-mega-open');
+      } else {
+        scheduleClose();
+        if (megaWrap) megaWrap.classList.remove('is-mega-open');
+      }
+    };
+    document.addEventListener('mousemove', onMove);
+
+    if (subEl) {
+      subEl.addEventListener('mouseenter', cancelClose);
+    }
+    /* キーボード操作でも開けるように */
+    wrap.addEventListener('focusin', open);
+    wrap.addEventListener('focusout', scheduleClose);
+  });
+
+  /* メガメニュー自体を離れたらサブメニューも畳む（開いたまま残らないように） */
+  nav.querySelectorAll('.bm-nav-megamenu-wrap').forEach(function(mw) {
+    mw.addEventListener('mouseleave', function() {
+      if (nav.classList.contains('open')) return;
+      setTimeout(function() {
+        /* サブメニュー上にカーソルが残っている間は畳まない（誤爆防止） */
+        var subHovered = !!mw.querySelector('.bm-nav-submenu:hover');
+        if (!mw.matches(':hover') && !subHovered) {
+          mw.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
+            o.classList.remove('is-sub-open');
+            o.__bmInZone = false;
+          });
+          /* サブメニュー保持のために付けたクラスも必ず外す。
+             ここで外さないとメガメニューが開きっぱなしになる */
+          mw.classList.remove('is-mega-open');
+        }
+      }, 340);
+    });
+  });
+
   // ===== TOPに戻るボタン（フルスクリーンheroがあるページのみ） =====
   var hasFullHero = document.querySelector('.str-hero, .uc-hero, .mt-hero');
   if (hasFullHero) {

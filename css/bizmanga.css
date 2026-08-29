@@ -362,6 +362,7 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
 }
+.bm-nav-megamenu-wrap.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap:hover .bm-nav-megamenu,
 .bm-nav-megamenu-wrap:focus-within .bm-nav-megamenu {
   max-height: 80vh;
@@ -375,6 +376,7 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
      ⚠️ hidden のままだと第3階層(.bm-nav-submenu)が枠外で切れて表示されない（2026-08-30） */
   overflow: visible;
 }
+.bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:hover .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:focus-within .bm-nav-megamenu {
   max-height: 0 !important;
@@ -423,6 +425,7 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 .bm-nav-submenu-wrap {
   position: relative;
 }
+
 .bm-nav-megamenu-item.bm-nav-has-sub {
   display: flex;
   align-items: center;
@@ -444,6 +447,9 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   position: absolute;
   top: -8px;
   left: 100%;
+  /* 左側に不可視のパディングを持たせ、斜め移動の着地点を広げる */
+  border-left: 12px solid transparent;
+  background-clip: padding-box;
   min-width: 200px;
   padding: 8px 0;
   background: #ffffff;
@@ -457,7 +463,11 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   transition: opacity .18s ease, transform .18s ease, visibility .18s;
   z-index: 2;
 }
-.bm-nav-submenu-wrap:hover .bm-nav-submenu,
+/* 開閉は js/bm-nav.js が .is-sub-open を付け外しして制御する。
+   純粋な :hover だと、項目からサブメニューへ斜めに動かす途中で
+   項目の下端を外れた瞬間に閉じてしまうため（実測で50%地点で消えた）。
+   JS側で閉じるのを遅らせて、斜めの移動を許容している。 */
+.bm-nav-submenu-wrap.is-sub-open .bm-nav-submenu,
 .bm-nav-submenu-wrap:focus-within .bm-nav-submenu {
   opacity: 1;
   visibility: visible;
