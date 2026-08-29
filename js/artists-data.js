@@ -4,7 +4,7 @@
 window.BM_ARTISTS = [
   {
     "id": "A",
-    "slug": "isekai-fantasy-2",
+    "slug": "isekai-fantasy",
     "title": "異世界・ファンタジーの縦読み",
     "titleEn": "異世界・ファンタジーの縦読み",
     "summary": "異世界ファンタジーを縦読みで読ませる作家。キャラクターデザインからネームまで一貫して対応できます。",
@@ -60,7 +60,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "B",
-    "slug": "shonen-school-2",
+    "slug": "shonen-school",
     "title": "少年漫画・学園／アクション",
     "titleEn": "少年漫画・学園／アクション",
     "summary": "少年漫画テイストの読み切りを手がける作家。学園もの・アクションの見せゴマに強みがあります。",
@@ -113,7 +113,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "C",
-    "slug": "character-illust-2",
+    "slug": "character-illust",
     "title": "キャラクターイラスト・ビズキャラ開発",
     "titleEn": "キャラクターイラスト・ビズキャラ開発",
     "summary": "カラーのキャラクターイラストが主戦場。自社キャラクターを立てたSNS運用にも対応できます。",
@@ -166,7 +166,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "D",
-    "slug": "retro-pop-2",
+    "slug": "retro-pop",
     "title": "レトロポップ・4コマ／企業広報",
     "titleEn": "レトロポップ・4コマ／企業広報",
     "summary": "レトロポップな色使いで企業広報を描く作家。4コマ・パンフレット漫画・書籍装丁まで対応します。",
@@ -221,7 +221,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "E",
-    "slug": "gekiga-serious-2",
+    "slug": "gekiga-serious",
     "title": "劇画・重厚タッチ／経営者ストーリー",
     "titleEn": "劇画・重厚タッチ／経営者ストーリー",
     "summary": "経営者の評伝や重いテーマを、緻密な劇画タッチで描く作家。実績30年のベテランです。",
@@ -276,7 +276,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "F",
-    "slug": "business-person-2",
+    "slug": "business-person",
     "title": "ビジネス人物描写／採用・研修",
     "titleEn": "ビジネス人物描写／採用・研修",
     "summary": "採用・研修漫画のビジネス人物描写を得意とする作家。短納期の案件にも対応します。",
@@ -329,7 +329,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "G",
-    "slug": "corporate-documentary-2",
+    "slug": "corporate-documentary",
     "title": "実録・企業漫画／ドキュメンタリー",
     "titleEn": "実録・企業漫画／ドキュメンタリー",
     "summary": "実際の出来事をドキュメンタリータッチで再現する作家。単行本の実績もあります。",
@@ -387,7 +387,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "H",
-    "slug": "romance-drama-2",
+    "slug": "romance-drama",
     "title": "恋愛・ドラマ性の縦読み／エッセイ",
     "titleEn": "恋愛・ドラマ性の縦読み／エッセイ",
     "summary": "恋愛やドラマ性で読ませる作家。コミックエッセイの作画も長期連載で担当しています。",
@@ -443,7 +443,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "I",
-    "slug": "anime-3dcg-2",
+    "slug": "anime-3dcg",
     "title": "アニメ品質の作画・3DCG",
     "titleEn": "アニメ品質の作画・3DCG",
     "summary": "アニメの原画・3DCGディレクションまで手がける作家。メカ・背景の描き込みが要る案件に。",
@@ -497,7 +497,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "J",
-    "slug": "romance-comedy-2",
+    "slug": "romance-comedy",
     "title": "女性向け恋愛漫画（横読み）",
     "titleEn": "女性向け恋愛漫画（横読み）",
     "summary": "日常のときめきを描くラブコメ作家。商業連載の実績が複数あります。",
@@ -553,7 +553,7 @@ window.BM_ARTISTS = [
   },
   {
     "id": "K",
-    "slug": "business-versatile-2",
+    "slug": "business-versatile",
     "title": "ビジネスドラマ調〜マスコット4コマ",
     "titleEn": "ビジネスドラマ調〜マスコット4コマ",
     "summary": "ビジネスドラマ調からマスコット4コマまで、幅広いタッチに対応できる作家です。",
