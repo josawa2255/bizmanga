@@ -4590,6 +4590,48 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     align-items: stretch;
     width: 100%;
   }
+  /* メガメニュー(ビズ書庫/サービス)もドロワーでは既存のアコーディオンに乗せる（2026-08-30）。
+     1タップ目で is-open が付いて子リンクが出る、2タップ目で親ページへ遷移、という
+     既存ドロップダウンと同じ操作にそろえる。
+     ⚠️ これが無いと子ページがモバイルから到達不能になる（PCはホバーで開くが
+     モバイルはホバーが無く、親リンクのタップはトグル処理に吸われるため） */
+  .bm-nav.open .bm-nav-megamenu {
+    display: none;
+    position: static;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: #fafafa;
+    padding: 0 0 8px;
+    margin: 0;
+    overflow: visible;
+  }
+  .bm-nav.open .bm-nav-dropdown.is-open .bm-nav-megamenu {
+    display: block;
+  }
+  .bm-nav.open .bm-nav-megamenu-col + .bm-nav-megamenu-col {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .bm-nav.open .bm-nav-megamenu-heading {
+    padding: 12px 24px 4px;
+    font-size: 12px;
+    color: #888;
+  }
+  .bm-nav.open .bm-nav-megamenu-item {
+    padding: 16px 24px 16px 36px;   /* 親より字下げして階層を示す */
+    min-height: 52px;
+    border-bottom: 1px solid #ededed;
+    font-size: 15px;
+  }
   /* モバイル専用CTAリンク: LINE + 電話 (ハンバーガーメニュー末尾) */
   .bm-nav.open .bm-nav-mobile-cta {
     display: flex;

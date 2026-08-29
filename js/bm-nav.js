@@ -5,8 +5,38 @@
 (function() {
   var NAV_ITEMS = [
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
-    { label: '制作事例',   labelEn: 'Works',      href: '/works' },
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    /* ビズ書庫＝実物を読む場所、制作事例＝実績を見る場所。どちらも「作った漫画を見る」
+       入口なので、ビズ書庫のメガメニューに制作事例をまとめている（2026-08-30）。
+       独立していた「制作事例」項目はここへ統合したため削除した（入口の二重化を避ける） */
+    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library', mega: true, columns: [
+      {
+        heading: '漫画を読む',
+        headingEn: 'Read',
+        items: [
+          { label: 'ビズ書庫（全作品）', labelEn: 'Biz Library',   href: '/biz-library' },
+          { label: '制作事例（一覧）',   labelEn: 'All Works',     href: '/works' }
+        ]
+      },
+      {
+        heading: '目的から事例を探す',
+        headingEn: 'Works by Purpose',
+        items: [
+          { label: '採用マンガ',       labelEn: 'Recruit',  href: '/works/category/recruit' },
+          { label: '営業マンガ',       labelEn: 'Sales',    href: '/works/category/sales' },
+          { label: '商品紹介マンガ',   labelEn: 'Product',  href: '/works/category/product' },
+          { label: '会社紹介マンガ',   labelEn: 'Company',  href: '/works/category/company' }
+        ]
+      },
+      {
+        heading: '　',            /* 2列目の続き。見出しは無条件に生成されるので空にせず高さを合わせる */
+        headingEn: '　',
+        items: [
+          { label: '研修マンガ',       labelEn: 'Training', href: '/works/category/training' },
+          { label: 'マンガ広告',       labelEn: 'Manga Ad', href: '/works/category/ad' },
+          { label: 'IR漫画',           labelEn: 'IR',       href: '/works/category/ir' }
+        ]
+      }
+    ]},
     { label: '漫画家紹介', labelEn: 'Artists',    href: '/artists' },
     { label: 'ビズアニメ', labelEn: 'Biz Anime',  href: '/bizanime' },
     { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
