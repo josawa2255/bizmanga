@@ -1,259 +1,346 @@
 /**
  * 漫画家・作品紹介（/artists）
  *
- * このページは「誰が描くか」ではなく「どんな画風があるか」を探すページ。
- * カードは漫画家個人ではなく画風カテゴリ単位で、漫画家名は出さない。
+ * カードは「漫画家1人＝1枚」。画風・ジャンル・用途などのカテゴリは
+ * カードの単位ではなく、あくまで**絞り込みの軸**として使う。
+ *
+ * ── 作家名の扱い ──────────────────────────────────────────
+ * 営業資料『ContentsX_漫画家作品紹介』と同じく、作家は A〜K の記号で指名する運用。
+ * ペンネームは出さない（記号 + 画風 + 作例で選んでもらい、指名は記号で受ける）。
  *
  * ── データの差し替えについて ────────────────────────────────
- * 画風データは下の STYLE_DATA 配列だけに閉じている。ここを差し替えれば
+ * 作家データは下の CREATORS 配列だけに閉じている。ここを差し替えれば
  * HTML/CSS を触らずに追加・削除・並べ替えができる。
- * 将来 WP/CRM 連携する場合も、同じ形の配列を window.bmArtists.setData() に
- * 渡すだけでよい（ファイル末尾）。
+ * 将来 CRM(Supabase creators テーブル)と繋ぐ場合も、同じ形の配列を
+ * window.bmArtists.setData() に渡すだけでよい（ファイル末尾）。
  *
- * 各項目のスキーマ:
- *   id            … 一意キー（DOM の data-style-id に入る）
- *   slug          … 将来の個別URL用。現状は未使用だが CMS 移行時のキーになる
- *   title/titleEn … 画風名
- *   thumbnail     … カード用サムネ（実作品の1ページ目）
- *   summary       … 一言説明
- *   styleTags     … 画風・テイスト
- *   genreTags     … 得意ジャンル（「画風から探す」タブの絞り込み軸）
- *   audienceTags  … 読者層
- *   mediaTags     … 向いている媒体
- *   usecaseTags   … 向いている用途（「用途から探す」タブの絞り込み軸）
- *   gallery       … 詳細モーダルの追加サンプル [{src, alt}]
- *   detail        … この画風の特徴（詳細本文）
+ * 各項目のスキーマ（CRM の creators / creator_tags に対応）:
+ *   id          … 記号（A〜K）。表示ラベル兼キー
+ *   slug        … 将来の個別URL用
+ *   title       … 画風の見出し（営業資料の見出しに準拠）
+ *   summary     … 一言説明
+ *   thumbnail   … カード用サムネ
+ *   gallery[]   … 詳細モーダルの追加サンプル
+ *   styleTags[] … 画風・テイスト   ← CRM creator_tags.category = 'style'
+ *   genreTags[] … ジャンル         ← 同 'genre'
+ *   audienceTags[] … 読者層        ← 同 'audience'
+ *   mediaTags[] … 媒体             ← 同 'medium'
+ *   usecaseTags[] … 向いている用途（CRMには無い。営業資料の記述から付与）
+ *   works       … 代表作（表に出してよいものだけ）
+ *   yearsActive … 活動歴
+ *   detail      … この作家の特徴
  *
  * ⚠️ DOM は createElement + textContent で組む（innerHTML を使わない）。
- *    CMS/CRM 由来の文字列が入っても XSS にならないようにするため。
- * ⚠️ 画像は ContentX 側 (contentsx.jp) を絶対URLで参照している。
- *    移動・削除時は両サイト grep が必要（BUGS #020）。
+ *    CRM 由来の文字列が入っても XSS にならないようにするため。
  */
 (function() {
   'use strict';
 
-  var MANGA_BASE = 'https://contentsx.jp/material/manga/';
+  var IMG = '/material/images/artists/';
 
-  /* ===== 画風データ（差し替えポイント） ===== */
-  var STYLE_DATA = [
+  /* ===== 作家データ（差し替えポイント） ===== */
+  var CREATORS = [
     {
-      id: 'business-drama',
-      slug: 'business-drama',
-      title: 'ビジネス人物描写',
-      titleEn: 'Business Drama',
-      thumbnail: MANGA_BASE + 'seko/01.webp',
-      summary: '実在の人物や現場を等身大で描く、信頼感のあるタッチ。経営者の想いや創業の物語を伝えるのに向いています。',
-      summaryEn: 'A grounded, trustworthy touch for real people and workplaces.',
-      styleTags: ['リアル寄り', '落ち着き', '信頼感'],
-      genreTags: ['ドラマ', '実録'],
-      audienceTags: ['経営層', '取引先', '求職者'],
-      mediaTags: ['会社案内', 'Web', 'パンフレット'],
-      usecaseTags: ['会社紹介', '採用', 'IR・周年史'],
+      id: 'A',
+      slug: 'isekai-fantasy',
+      title: '異世界・ファンタジーの縦読み',
+      titleEn: 'Fantasy Vertical Scroll',
+      summary: '異世界ファンタジーを縦読みで読ませる作家。キャラクターデザインからネームまで一貫して対応できます。',
+      summaryEn: 'Fantasy storytelling built for vertical scroll reading.',
+      thumbnail: IMG + 'creator-a.webp',
       gallery: [
-        { src: MANGA_BASE + 'seko/02.webp', alt: 'ビジネス人物描写の作例2' },
-        { src: MANGA_BASE + 'seko/03.webp', alt: 'ビジネス人物描写の作例3' },
-        { src: MANGA_BASE + 'hamada-masatada/01.webp', alt: 'ビジネス人物描写の作例4' }
+        { src: IMG + 'creator-a-1.webp', alt: '異世界・ファンタジーの作例1' },
+        { src: IMG + 'creator-a-2.webp', alt: '異世界・ファンタジーの作例2' },
+        { src: IMG + 'creator-a-3.webp', alt: '異世界・ファンタジーの作例3' }
       ],
-      detail: '人物の表情と間の取り方で「その人らしさ」を立ち上げる画風です。誇張を抑えた作画のため、経営者インタビューや創業ストーリーなど事実にもとづく内容と相性がよく、読後に信頼が残ります。'
+      styleTags: ['キレイめ・美麗', '可愛い・デフォルメ', 'かっこいい・スタイリッシュ'],
+      genreTags: ['SF・ファンタジー', '少年漫画', '青年漫画', '縦読み漫画'],
+      audienceTags: ['10代', '20代', '30代', '男性'],
+      mediaTags: ['Webコミックサイト/アプリ', '商業誌'],
+      usecaseTags: ['集客・広告', '商品紹介', 'SNS'],
+      works: ['竜宮少女は恩返したい！', 'アインの伝説', '醜いゴブリンは、今度こそ魔王様を死なせない'],
+      yearsActive: '3年',
+      detail: 'キャラクターデザイン・ネーム・作画までを通して担当できる作家です。縦読み（スクロール）の見せ方に慣れているため、スマートフォンで読ませる企画と相性がよく、世界観のあるストーリーを1本立ち上げたいときに向いています。'
     },
     {
-      id: 'corporate-real',
-      slug: 'corporate-real',
-      title: '実録・企業漫画',
-      titleEn: 'Corporate Documentary',
-      thumbnail: MANGA_BASE + 'ichinohe-home/02.webp',
-      summary: '実際の商談や業務の流れを、順を追って分かりやすく再現。営業資料や研修で「自分ごと」にさせたい時に。',
-      summaryEn: 'Reconstructs real deals and workflows step by step.',
-      styleTags: ['すっきり', '説明的', 'ビジネス'],
-      genreTags: ['実録', 'ハウツー'],
-      audienceTags: ['法人担当者', '新入社員'],
-      mediaTags: ['営業資料', 'Web', '研修教材'],
-      usecaseTags: ['営業資料', '研修', '商品紹介'],
-      gallery: [
-        { src: MANGA_BASE + 'ichinohe-home/04.webp', alt: '実録・企業漫画の作例2' },
-        { src: MANGA_BASE + 'ichinohe-home/03.webp', alt: '実録・企業漫画の作例3' },
-        { src: MANGA_BASE + 'ichinohe-home/05.webp', alt: '実録・企業漫画の作例4' }
-      ],
-      detail: '「何が起きて、どう解決したか」を時系列で追う構成に強い画風です。図解や吹き出しでの補足を入れやすく、複雑な商材やオペレーションの説明でも読者が迷いません。'
-    },
-    {
-      id: 'deformed-gag',
-      slug: 'deformed-gag',
-      title: 'デフォルメ・4コマ',
-      titleEn: 'Deformed & 4-Koma',
-      thumbnail: MANGA_BASE + 'omatome-ninja/02.webp',
-      summary: '親しみやすいキャラクターとテンポのよい展開。短い尺で覚えてもらいたい告知やSNSに最適です。',
-      summaryEn: 'Friendly chibi characters with quick comedic timing.',
-      styleTags: ['ポップ', '親しみやすい', 'コミカル'],
-      genreTags: ['ギャグ', '4コマ', 'キャラもの'],
-      audienceTags: ['一般消費者', '若年層'],
-      mediaTags: ['SNS', 'LP', 'チラシ'],
-      usecaseTags: ['商品紹介', '集客・広告', 'SNS'],
-      gallery: [
-        { src: MANGA_BASE + 'omatome-ninja/03.webp', alt: 'デフォルメ・4コマの作例2' },
-        { src: MANGA_BASE + 'omatome-ninja-2/01.webp', alt: 'デフォルメ・4コマの作例3' },
-        { src: MANGA_BASE + 'omatome-ninja-rohto/01.webp', alt: 'デフォルメ・4コマの作例4' }
-      ],
-      detail: '1コマあたりの情報量を絞り、テンポで読ませる画風です。キャラクターを固定してシリーズ展開しやすく、SNSや店頭POPなど「短く何度も接触する」媒体で効果を発揮します。'
-    },
-    {
-      id: 'monochrome-business',
-      slug: 'monochrome-business',
-      title: 'モノクロ・ビジネス実務',
-      titleEn: 'Monochrome Business',
-      thumbnail: MANGA_BASE + 'torutoru-kun/06.webp',
-      summary: '白黒の落ち着いた作画で、担当者の業務と課題を淡々と描く画風。サービス紹介や社内向け資料に。',
-      summaryEn: 'Calm monochrome art for everyday business situations.',
-      styleTags: ['モノクロ', '実務的', '落ち着き'],
-      genreTags: ['実録', 'ハウツー'],
-      audienceTags: ['法人担当者', '一般消費者'],
-      mediaTags: ['Web', '営業資料', 'SNS'],
-      usecaseTags: ['商品紹介', '会社紹介', '営業資料'],
-      gallery: [
-        { src: MANGA_BASE + 'torutoru-kun/03.webp', alt: 'モノクロ・ビジネス実務の作例2' },
-        { src: MANGA_BASE + 'torutoru-kun/08.webp', alt: 'モノクロ・ビジネス実務の作例3' },
-        { src: MANGA_BASE + 'torutoru-kun/05.webp', alt: 'モノクロ・ビジネス実務の作例4' }
-      ],
-      detail: '装飾を抑えた白黒作画で、担当者が抱える課題とサービス導入の流れを順に見せる画風です。印刷しても潰れにくく、営業資料や社内配布物にそのまま使えます。'
-    },
-    {
-      id: 'shonen-school',
+      id: 'B',
       slug: 'shonen-school',
-      title: '少年漫画・学園',
-      titleEn: 'Shonen & School',
-      thumbnail: MANGA_BASE + 'life-school/03.webp',
-      summary: '熱量のある表情と動きで、読者を引き込む王道タッチ。挑戦や成長を描く採用マンガと好相性です。',
-      summaryEn: 'Classic energetic style driven by emotion and motion.',
-      styleTags: ['王道', '熱量', '躍動感'],
-      genreTags: ['青春', 'ドラマ'],
-      audienceTags: ['学生', '若手社会人'],
-      mediaTags: ['採用サイト', 'Web', 'パンフレット'],
+      title: '少年漫画・学園／アクション',
+      titleEn: 'Shonen & School Action',
+      summary: '少年漫画テイストの読み切りを手がける作家。学園もの・アクションの見せゴマに強みがあります。',
+      summaryEn: 'Shonen-style one-shots with strong action framing.',
+      thumbnail: IMG + 'creator-b.webp',
+      gallery: [
+        { src: IMG + 'creator-b-1.webp', alt: '少年漫画・学園の作例1' },
+        { src: IMG + 'creator-b-2.webp', alt: '少年漫画・学園の作例2' },
+        { src: IMG + 'creator-b-3.webp', alt: '少年漫画・学園の作例3' }
+      ],
+      styleTags: ['ポップ・親しみやすい', 'かっこいい・スタイリッシュ'],
+      genreTags: ['少年漫画', '青年漫画', '横読み漫画'],
+      audienceTags: ['10代', '20代', 'どちらも'],
+      mediaTags: ['月刊誌', '隔週/不定期誌', '同人誌'],
       usecaseTags: ['採用', '研修', '集客・広告'],
-      gallery: [
-        { src: MANGA_BASE + 'life-school/02.webp', alt: '少年漫画・学園の作例2' },
-        { src: MANGA_BASE + 'life-school/04.webp', alt: '少年漫画・学園の作例3' },
-        { src: MANGA_BASE + 'life-school/05.webp', alt: '少年漫画・学園の作例4' }
-      ],
-      detail: '主人公の感情の起伏を大きく描き、読者を物語に巻き込む画風です。「入社してからの成長」「仕事のやりがい」といった、共感で動かしたいテーマに向いています。'
+      works: ['ブリュンヒルデ姫学園', 'モナリザの剣（集英社 ジャンプSQ.RISE 掲載）'],
+      yearsActive: '5年',
+      detail: '背景の描き起こしから仕上げ（ベタ・トーン・効果）まで工程を通して対応できる作家です。読み切りの経験があるため、限られたページ数で起承転結を作る構成に慣れています。挑戦や成長を描く採用マンガと好相性です。'
     },
     {
-      id: 'shojo-romance',
-      slug: 'shojo-romance',
-      title: '少女・恋愛',
-      titleEn: 'Shojo & Romance',
-      /* 縦読み作品は1枚が非常に縦長で、上端を切り出すと余白しか映らない。
-         そのため作画部分だけを切り出したサムネを別途用意している */
-      thumbnail: '/material/images/artists/thumb-shojo.webp',
-      summary: '繊細な線と柔らかい表情で、心の機微を丁寧に描く画風。共感を軸にした訴求に向いています。',
-      summaryEn: 'Delicate lines that capture subtle emotion.',
-      styleTags: ['繊細', '柔らかい', '共感'],
-      genreTags: ['恋愛', 'ドラマ'],
-      audienceTags: ['20〜40代', '生活者'],
-      mediaTags: ['Web', 'SNS', 'LP'],
-      usecaseTags: ['商品紹介', '集客・広告', 'SNS'],
+      id: 'C',
+      slug: 'character-illust',
+      title: 'キャラクターイラスト・ビズキャラ開発',
+      titleEn: 'Character Illustration',
+      summary: 'カラーのキャラクターイラストが主戦場。自社キャラクターを立てたSNS運用にも対応できます。',
+      summaryEn: 'Full-color character art for brand mascots and SNS.',
+      thumbnail: IMG + 'creator-c.webp',
       gallery: [
-        { src: '/material/images/artists/gallery-shojo-1.webp', alt: '少女・恋愛の作例2' },
-        { src: '/material/images/artists/gallery-shojo-2.webp', alt: '少女・恋愛の作例3' },
-        { src: '/material/images/artists/gallery-shojo-3.webp', alt: '少女・恋愛の作例4' }
+        { src: IMG + 'creator-c-1.webp', alt: 'キャラクターイラストの作例1' },
+        { src: IMG + 'creator-c-2.webp', alt: 'キャラクターイラストの作例2' },
+        { src: IMG + 'creator-c-3.webp', alt: 'キャラクターイラストの作例3' }
       ],
-      detail: '言葉にしづらい感情を、表情と背景のトーンで見せる画風です。悩みへの共感から入って解決策を示す構成と相性がよく、美容・健康・ライフスタイル系の商材でよく選ばれます。'
+      styleTags: ['アニメ調', '可愛い・デフォルメ', 'キレイめ・美麗'],
+      genreTags: ['かわいい系', 'SF・ファンタジー', '青年漫画'],
+      audienceTags: ['10代', '20代', 'どちらも'],
+      mediaTags: ['Webコミックサイト/アプリ', '同人誌'],
+      usecaseTags: ['集客・広告', 'SNS', '会社紹介'],
+      works: ['男性向け漫画の連載（メディア編集部）', 'キャラクターイラスト多数'],
+      yearsActive: '—',
+      detail: 'アニメ調のカラーイラストとキャラクターデザインを得意とする作家です。立ち絵・表情差分・デフォルメ（SD）まで展開できるため、企業のマスコットキャラクターを作って継続的に発信していく企画に向いています。'
     },
     {
-      id: 'gekiga-serious',
+      id: 'D',
+      slug: 'retro-pop',
+      title: 'レトロポップ・4コマ／企業広報',
+      titleEn: 'Retro Pop & 4-Koma',
+      summary: 'レトロポップな色使いで企業広報を描く作家。4コマ・パンフレット漫画・書籍装丁まで対応します。',
+      summaryEn: 'Retro-pop corporate comms, 4-koma and book covers.',
+      thumbnail: IMG + 'creator-d.webp',
+      gallery: [
+        { src: IMG + 'creator-d-1.webp', alt: 'レトロポップ・4コマの作例1' },
+        { src: IMG + 'creator-d-2.webp', alt: 'レトロポップ・4コマの作例2' },
+        { src: IMG + 'creator-d-3.webp', alt: 'レトロポップ・4コマの作例3' }
+      ],
+      styleTags: ['ポップ・親しみやすい', '可愛い・デフォルメ', 'リアル・劇画調'],
+      genreTags: ['ギャグ・コメディ', '4コマ漫画', 'ビジネス・IT', '日常・ほのぼの'],
+      audienceTags: ['幅広い年代', 'どちらも'],
+      mediaTags: ['商業誌', 'パンフレットなどに載る漫画'],
+      usecaseTags: ['商品紹介', '会社紹介', '集客・広告', 'SNS'],
+      works: ['#うっかり課長物語（SNS連載4コマ）', '企業タイアップWeb漫画', '書籍装丁イラスト'],
+      yearsActive: '—',
+      detail: '限定色とレトロな線で強い印象を残す作家です。4コマの短い尺で要点を伝える構成に慣れており、SNS連載・パンフレット・書籍装丁まで幅広く展開できます。硬くなりがちな企業広報を、親しみやすい絵で軽くしたいときに向いています。'
+    },
+    {
+      id: 'E',
       slug: 'gekiga-serious',
-      title: '劇画・重厚タッチ',
-      titleEn: 'Gekiga & Serious',
-      /* 縦読み作品のため、作画部分を切り出した専用サムネを使う（少女・恋愛と同じ理由） */
-      thumbnail: '/material/images/artists/thumb-gekiga.webp',
-      summary: '陰影を強く効かせた重厚な作画。専門性や緊張感のあるテーマを、真剣に伝えたい時に選ばれます。',
-      summaryEn: 'Heavy shading for weighty, serious subject matter.',
-      styleTags: ['重厚', 'シリアス', '硬派'],
-      genreTags: ['社会派', 'ドラマ'],
-      audienceTags: ['経営層', '専門職'],
-      mediaTags: ['パンフレット', 'Web', '書籍'],
-      usecaseTags: ['会社紹介', '研修', 'IR・周年史'],
+      title: '劇画・重厚タッチ／経営者ストーリー',
+      titleEn: 'Gekiga & Executive Stories',
+      summary: '経営者の評伝や重いテーマを、緻密な劇画タッチで描く作家。実績30年のベテランです。',
+      summaryEn: 'Weighty gekiga art for executive biographies.',
+      thumbnail: IMG + 'creator-e.webp',
       gallery: [
-        { src: '/material/images/artists/gallery-gekiga-1.webp', alt: '劇画・重厚タッチの作例2' },
-        { src: '/material/images/artists/gallery-gekiga-2.webp', alt: '劇画・重厚タッチの作例3' },
-        { src: '/material/images/artists/gallery-gekiga-3.webp', alt: '劇画・重厚タッチの作例4' }
+        { src: IMG + 'creator-e-1.webp', alt: '劇画・重厚タッチの作例1' },
+        { src: IMG + 'creator-e-2.webp', alt: '劇画・重厚タッチの作例2' },
+        { src: IMG + 'creator-e-3.webp', alt: '劇画・重厚タッチの作例3' }
       ],
-      detail: 'コントラストの強い作画で、緊張感と説得力を出す画風です。法務・金融・医療など、扱う内容の重さをそのまま伝えたい領域で選ばれます。軽く見られたくない訴求に向いています。'
+      styleTags: ['リアル・劇画調', 'かっこいい・スタイリッシュ'],
+      genreTags: ['青年漫画', '歴史・時代劇', 'ホラー・サスペンス', 'スポーツ'],
+      audienceTags: ['40代以上', '男性'],
+      mediaTags: ['週刊誌', '月刊誌', '商業誌', '学習教材'],
+      usecaseTags: ['会社紹介', 'IR・周年史', '研修'],
+      works: ['ジョニー・デップ物語', '影を売った男', 'ビリ玉剣士'],
+      yearsActive: '30年',
+      detail: '週刊誌・月刊誌での連載実績が長いベテラン作家です。陰影を強く効かせた緻密な描線で、扱う内容の重さをそのまま伝えられます。創業者の評伝・周年史など、軽く見られたくない訴求に向いています。'
     },
     {
-      id: 'global-multilingual',
-      slug: 'global-multilingual',
-      title: 'グローバル・多言語',
-      titleEn: 'Global & Multilingual',
-      thumbnail: MANGA_BASE + 'tagengo/03.webp',
-      summary: '文化圏を選ばない記号設計で、翻訳しても崩れない画面づくり。インバウンドや海外拠点向けに。',
-      summaryEn: 'Culture-neutral visuals that survive translation.',
-      styleTags: ['ニュートラル', '見やすい', '記号的'],
-      genreTags: ['ハウツー', '実録'],
-      audienceTags: ['訪日外国人', '海外拠点'],
-      mediaTags: ['Web', '掲示物', '営業資料'],
-      usecaseTags: ['インバウンド', '研修', '商品紹介'],
+      id: 'F',
+      slug: 'business-person',
+      title: 'ビジネス人物描写／採用・研修',
+      titleEn: 'Business Character Drawing',
+      summary: '採用・研修漫画のビジネス人物描写を得意とする作家。短納期の案件にも対応します。',
+      summaryEn: 'Business character work for recruiting and training.',
+      thumbnail: IMG + 'creator-f.webp',
       gallery: [
-        { src: MANGA_BASE + 'tagengo/05.webp', alt: 'グローバル・多言語の作例2' },
-        { src: MANGA_BASE + 'tagengo/04.webp', alt: 'グローバル・多言語の作例3' },
-        { src: MANGA_BASE + 'tagengo/06.webp', alt: 'グローバル・多言語の作例4' }
+        { src: IMG + 'creator-f-1.webp', alt: 'ビジネス人物描写の作例1' },
+        { src: IMG + 'creator-f-2.webp', alt: 'ビジネス人物描写の作例2' },
+        { src: IMG + 'creator-f-3.webp', alt: 'ビジネス人物描写の作例3' }
       ],
-      detail: '吹き出しの文字量が言語によって変わることを前提に、余白と絵の情報量を設計する画風です。翻訳版を並行して作る前提の案件で、作り直しのコストを抑えられます。'
+      styleTags: ['キレイめ・美麗', 'ポップ・親しみやすい'],
+      genreTags: ['青年漫画', '女性漫画', '日常・ほのぼの', '縦読み漫画'],
+      audienceTags: ['20代', '30代', 'どちらも'],
+      mediaTags: ['Webコミックサイト/アプリ', '商業誌'],
+      usecaseTags: ['採用', '研修', '会社紹介'],
+      works: ['縦読み週刊連載のネーム担当2作品', '『ねこぱんち』読切10作以上掲載'],
+      yearsActive: '—',
+      detail: '縦読み週刊連載のネームを担当した経験があり、話の設計から任せられる作家です。実在の社員をモデルにした人物描写に慣れているため、採用マンガや研修マンガで「自分ごと」として読ませたい場面に向いています。短納期の相談も可能です。'
+    },
+    {
+      id: 'G',
+      slug: 'corporate-documentary',
+      title: '実録・企業漫画／ドキュメンタリー',
+      titleEn: 'Corporate Documentary',
+      summary: '実際の出来事をドキュメンタリータッチで再現する作家。単行本の実績もあります。',
+      summaryEn: 'Documentary-style retelling of real business events.',
+      thumbnail: IMG + 'creator-g.webp',
+      gallery: [
+        { src: IMG + 'creator-g-1.webp', alt: '実録・企業漫画の作例1' },
+        { src: IMG + 'creator-g-2.webp', alt: '実録・企業漫画の作例2' },
+        { src: IMG + 'creator-g-3.webp', alt: '実録・企業漫画の作例3' }
+      ],
+      styleTags: ['ポップ・親しみやすい', 'リアル・劇画調'],
+      genreTags: ['青年漫画', 'ギャグ・コメディ', 'ホラー・サスペンス', '医療・ヘルスケア', '4コマ漫画'],
+      audienceTags: ['20代', '30代', '40代以上', '男性'],
+      mediaTags: ['月刊誌', 'Webコミックサイト/アプリ', '商業誌'],
+      usecaseTags: ['営業資料', '商品紹介', '会社紹介', '研修'],
+      works: ['私をフォローしないで', 'ノロイゴト', '阿曽山大噴火の面白人間傍聴記'],
+      yearsActive: '—',
+      detail: '「何が起きて、どう解決したか」を時系列で追う構成に強い作家です。キャラクターの表情差分やカラー4コマまで対応できるため、サービスの説明を順を追って理解させたい営業資料・商品紹介と相性がよいです。'
+    },
+    {
+      id: 'H',
+      slug: 'romance-drama',
+      title: '恋愛・ドラマ性の縦読み／エッセイ',
+      titleEn: 'Romance Drama & Essay',
+      summary: '恋愛やドラマ性で読ませる作家。コミックエッセイの作画も長期連載で担当しています。',
+      summaryEn: 'Romance-driven vertical scroll and comic essays.',
+      thumbnail: IMG + 'creator-h.webp',
+      gallery: [
+        { src: IMG + 'creator-h-1.webp', alt: '恋愛・ドラマ性の作例1' },
+        { src: IMG + 'creator-h-2.webp', alt: '恋愛・ドラマ性の作例2' },
+        { src: IMG + 'creator-h-3.webp', alt: '恋愛・ドラマ性の作例3' }
+      ],
+      styleTags: ['キレイめ・美麗', 'ポップ・親しみやすい', '可愛い・デフォルメ'],
+      genreTags: ['少女漫画', '女性漫画', 'TL（ティーンズラブ）', '恋愛', '縦読み漫画'],
+      audienceTags: ['20代', '30代', '女性'],
+      mediaTags: ['Webコミックサイト/アプリ', '商業誌'],
+      usecaseTags: ['商品紹介', '集客・広告', 'SNS'],
+      works: ['異世界系Webtoonのネーム担当（2023年連載／2024年アニメ化）', 'TLコミカライズ 全6巻（作画担当）', 'コミックエッセイ 全52話（作画担当）'],
+      yearsActive: '—',
+      detail: '全52話のコミックエッセイを作画担当した実績があり、長期の連載を安定して走らせられる作家です。悩みへの共感から入って解決策を示す構成に慣れているため、生活者向けの商品紹介やSNS連載に向いています。'
+    },
+    {
+      id: 'I',
+      slug: 'anime-3dcg',
+      title: 'アニメ品質の作画・3DCG',
+      titleEn: 'Anime Quality & 3DCG',
+      summary: 'アニメの原画・3DCGディレクションまで手がける作家。メカ・背景の描き込みが要る案件に。',
+      summaryEn: 'Anime-grade art and 3DCG for mecha and detailed backgrounds.',
+      thumbnail: IMG + 'creator-i.webp',
+      gallery: [
+        { src: IMG + 'creator-i-1.webp', alt: 'アニメ作画・3DCGの作例1' },
+        { src: IMG + 'creator-i-2.webp', alt: 'アニメ作画・3DCGの作例2' },
+        { src: IMG + 'creator-i-3.webp', alt: 'アニメ作画・3DCGの作例3' }
+      ],
+      styleTags: ['アニメ調', 'キレイめ・美麗', '可愛い・デフォルメ'],
+      genreTags: ['SF・ファンタジー', '少年漫画', '青年漫画', '歴史・時代劇'],
+      audienceTags: ['幅広い年代', 'どちらも'],
+      mediaTags: ['Webコミックサイト/アプリ', '同人誌'],
+      usecaseTags: ['商品紹介', '集客・広告', '会社紹介'],
+      works: ['オリジナル漫画『STAR FRIGATE』（合同誌にて連載）', '劇場アニメ・TVアニメの原画', '3DCGディレクション'],
+      yearsActive: '30年以上',
+      detail: '劇場アニメ・TVアニメの原画や3DCGディレクションまで担当できる作家です。メカ・背景の描き込みが必要な題材や、キャラクターを3Dモデル化して動かしたい企画など、通常の漫画制作を超える要求に応えられます。'
+    },
+    {
+      id: 'J',
+      slug: 'romance-comedy',
+      title: '女性向け恋愛漫画（横読み）',
+      titleEn: 'Romance Comedy',
+      summary: '日常のときめきを描くラブコメ作家。商業連載の実績が複数あります。',
+      summaryEn: 'Everyday romantic comedy with commercial credits.',
+      thumbnail: IMG + 'creator-j.webp',
+      gallery: [
+        { src: IMG + 'creator-j-1.webp', alt: '女性向け恋愛漫画の作例1' },
+        { src: IMG + 'creator-j-2.webp', alt: '女性向け恋愛漫画の作例2' },
+        { src: IMG + 'creator-j-3.webp', alt: '女性向け恋愛漫画の作例3' }
+      ],
+      styleTags: ['ポップ・親しみやすい', '可愛い・デフォルメ'],
+      genreTags: ['女性漫画', 'ギャグ・コメディ', '日常・ほのぼの', '横読み漫画'],
+      audienceTags: ['20代', '30代', '40代以上', 'どちらも'],
+      mediaTags: ['月刊誌', 'Webコミックサイト/アプリ', '商業誌'],
+      usecaseTags: ['商品紹介', '集客・広告', 'SNS'],
+      works: ['ご飯つくりすぎ子と完食系男子', '脇役女子は後輩くんに酔わされたい', 'ハッピーアワーガールズ'],
+      yearsActive: '10年',
+      detail: '複数の商業連載を持つ作家です。food や飲みの席など、日常のワンシーンを軸に感情を動かす構成を得意とします。生活者に近い距離感で商品を紹介したいとき、押しつけがましくない訴求ができます。'
+    },
+    {
+      id: 'K',
+      slug: 'business-versatile',
+      title: 'ビジネスドラマ調〜マスコット4コマ',
+      titleEn: 'Versatile Business Manga',
+      summary: 'ビジネスドラマ調からマスコット4コマまで、幅広いタッチに対応できる作家です。',
+      summaryEn: 'From business drama to mascot 4-koma, a wide range.',
+      thumbnail: IMG + 'creator-k.webp',
+      gallery: [
+        { src: IMG + 'creator-k-1.webp', alt: 'ビジネス4コマの作例1' },
+        { src: IMG + 'creator-k-2.webp', alt: 'ビジネス4コマの作例2' },
+        { src: IMG + 'creator-k-3.webp', alt: 'ビジネス4コマの作例3' }
+      ],
+      styleTags: ['ポップ・親しみやすい', '可愛い・デフォルメ', 'キレイめ・美麗'],
+      genreTags: ['ビジネス・IT', '4コマ漫画', '日常・ほのぼの', '教育・学習・育児'],
+      audienceTags: ['幅広い年代', 'どちらも'],
+      mediaTags: ['パンフレットなどに載る漫画', 'Webコミックサイト/アプリ'],
+      usecaseTags: ['営業資料', '研修', '商品紹介', '会社紹介'],
+      works: ['オフィスドラマ調ビジネス漫画', 'マスコットキャラクター4コマ', '制度・サービス紹介インフォグラフィック漫画'],
+      yearsActive: '—',
+      detail: '1人で複数のタッチを描き分けられる作家です。硬めのオフィスドラマ調から、親しみやすいマスコット4コマ、ほのぼのした家族ものまで対応できるため、同じシリーズ内でトーンを変えたい制度説明・サービス紹介に向いています。'
     }
   ];
 
-  /* ===== フィルタ定義 ===== */
-  var FILTER_MODES = {
-    style:   { key: 'genreTags',   chips: ['ドラマ', '実録', 'ギャグ', '4コマ', 'キャラもの', '青春', '恋愛', '社会派', 'ハウツー'] },
-    usecase: { key: 'usecaseTags', chips: ['採用', '会社紹介', '商品紹介', '営業資料', '研修', '集客・広告', 'SNS', 'インバウンド', 'IR・周年史'] }
-  };
+  /* ===== 絞り込み定義 ===== */
+  /* CRM の creator_tags（category = style / genre / audience / medium）に対応。
+     用途(usecase)だけは CRM に無く、営業資料の記述から付与している。 */
+  var FILTERS = [
+    { key: 'styleTags',    label: '画風',   labelEn: 'Style' },
+    { key: 'usecaseTags',  label: '用途',   labelEn: 'Purpose' },
+    { key: 'genreTags',    label: 'ジャンル', labelEn: 'Genre' },
+    { key: 'audienceTags', label: '読者層', labelEn: 'Audience' },
+    { key: 'mediaTags',    label: '媒体',   labelEn: 'Media' }
+  ];
 
-  /* 動的生成テキストの英語。data-ja/data-en は i18n が拾うが、
-     初期表示のテキストノードはこちらで決める */
   var EN = {
     'すべて': 'All',
-    'ドラマ': 'Drama', '実録': 'Documentary', 'ギャグ': 'Comedy', '4コマ': '4-Koma',
-    'キャラもの': 'Character', '青春': 'Youth', '恋愛': 'Romance', '社会派': 'Social', 'ハウツー': 'How-to',
-    '採用': 'Recruitment', '会社紹介': 'Company', '商品紹介': 'Product', '営業資料': 'Sales',
-    '研修': 'Training', '集客・広告': 'Advertising', 'SNS': 'SNS', 'インバウンド': 'Inbound', 'IR・周年史': 'IR',
-    'リアル寄り': 'Realistic', '落ち着き': 'Calm', '信頼感': 'Trustworthy',
-    'すっきり': 'Clean', '説明的': 'Explanatory', 'ビジネス': 'Business',
-    'ポップ': 'Pop', '親しみやすい': 'Friendly', 'コミカル': 'Comical',
-    'モノクロ': 'Monochrome', '実務的': 'Practical',
-    '王道': 'Classic', '熱量': 'Passionate', '躍動感': 'Dynamic',
-    '繊細': 'Delicate', '柔らかい': 'Soft', '共感': 'Empathetic',
-    '重厚': 'Weighty', 'シリアス': 'Serious', '硬派': 'Hard-edged',
-    'ニュートラル': 'Neutral', '見やすい': 'Legible', '記号的': 'Iconic',
-    '経営層': 'Executives', '取引先': 'Partners', '求職者': 'Job seekers',
-    '法人担当者': 'B2B staff', '新入社員': 'New hires', '一般消費者': 'Consumers',
-    '若年層': 'Young adults', 'ファミリー層': 'Families', '学生': 'Students',
-    '若手社会人': 'Young professionals', '20〜40代': 'Ages 20-40', '生活者': 'General public',
-    '専門職': 'Professionals', '訪日外国人': 'Inbound visitors', '海外拠点': 'Overseas offices',
-    '会社案内': 'Company profile', 'Web': 'Web', 'パンフレット': 'Brochure',
-    '営業資料': 'Sales deck', '研修教材': 'Training material', 'LP': 'Landing page',
-    'チラシ': 'Flyer', 'グッズ': 'Merchandise', '採用サイト': 'Careers site',
-    '書籍': 'Book', '掲示物': 'Signage'
+    /* 画風 */
+    'キレイめ・美麗': 'Refined', '可愛い・デフォルメ': 'Cute / Chibi',
+    'かっこいい・スタイリッシュ': 'Stylish', 'ポップ・親しみやすい': 'Pop / Friendly',
+    'リアル・劇画調': 'Realistic / Gekiga', 'アニメ調': 'Anime style',
+    /* 用途 */
+    '採用': 'Recruitment', '会社紹介': 'Company', '商品紹介': 'Product',
+    '営業資料': 'Sales', '研修': 'Training', '集客・広告': 'Advertising',
+    'SNS': 'SNS', 'IR・周年史': 'IR',
+    /* ジャンル */
+    '少年漫画': 'Shonen', '少女漫画': 'Shojo', '青年漫画': 'Seinen', '女性漫画': 'Josei',
+    'TL（ティーンズラブ）': 'Teens Love', '恋愛': 'Romance', 'ギャグ・コメディ': 'Comedy',
+    'SF・ファンタジー': 'SF / Fantasy', 'ホラー・サスペンス': 'Horror', 'スポーツ': 'Sports',
+    '日常・ほのぼの': 'Slice of life', '歴史・時代劇': 'Historical', 'かわいい系': 'Kawaii',
+    '4コマ漫画': '4-Koma', 'ビジネス・IT': 'Business / IT', '医療・ヘルスケア': 'Medical',
+    '教育・学習・育児': 'Education', '横読み漫画': 'Horizontal', '縦読み漫画': 'Vertical scroll',
+    /* 読者層 */
+    '10代': 'Teens', '20代': '20s', '30代': '30s', '40代以上': '40+',
+    '幅広い年代': 'All ages', '男性': 'Male', '女性': 'Female', 'どちらも': 'Both',
+    /* 媒体 */
+    '週刊誌': 'Weekly', '月刊誌': 'Monthly', '隔週/不定期誌': 'Biweekly',
+    '商業誌': 'Commercial', 'Webコミックサイト/アプリ': 'Web / App', '同人誌': 'Doujin',
+    '学習教材': 'Educational', 'パンフレットなどに載る漫画': 'Brochure'
   };
 
   /* ===== DOM ===== */
   var grid = document.getElementById('artGrid');
   if (!grid) return;
 
-  var chipWrap = document.getElementById('artFilter');
-  var tabs = document.querySelectorAll('.art-tab');
+  var filterWrap = document.getElementById('artFilter');
   var emptyEl = document.getElementById('artEmpty');
   var countEl = document.getElementById('artCount');
+  var resetBtn = document.getElementById('artReset');
 
   var overlay = document.getElementById('artModal');
+  var mdLabel = document.getElementById('artModalLabel');
   var mdTitle = document.getElementById('artModalTitle');
   var mdLead = document.getElementById('artModalLead');
   var mdGallery = document.getElementById('artModalGallery');
   var mdDetail = document.getElementById('artModalDetail');
   var mdMeta = document.getElementById('artModalMeta');
-  var mdTags = document.getElementById('artModalTags');
   var closeBtn = document.getElementById('artModalClose');
 
-  var currentMode = 'style';
-  var selected = [];          /* 複数選択。空 = すべて */
+  var selected = {};    /* { styleTags: [...], usecaseTags: [...] } */
+  FILTERS.forEach(function(f) { selected[f.key] = []; });
   var lastFocused = null;
 
   function isEn() {
@@ -264,7 +351,7 @@
     return isEn() ? (EN[ja] || ja) : ja;
   }
 
-  /* 日英ペアを持つ要素を作る。テキストは textContent 固定なので XSS しない */
+  /* 日英ペアを持つ要素。テキストは textContent 固定なので XSS しない */
   function el(tag, cls, ja, en) {
     var node = document.createElement(tag);
     if (cls) node.className = cls;
@@ -276,32 +363,42 @@
     return node;
   }
 
-  /* ===== カード描画 ===== */
+  /* ===== 絞り込み ===== */
   function matches(item) {
-    if (!selected.length) return true;
-    var pool = item[FILTER_MODES[currentMode].key] || [];
-    /* OR 検索: 選んだいずれかに当てはまれば表示（AND だと 0 件になりやすい） */
-    return selected.some(function(tag) { return pool.indexOf(tag) !== -1; });
+    /* 軸をまたぐときは AND、同じ軸の中では OR。
+       （「画風=アニメ調」かつ「用途=採用」を両方満たす人、という直感に合わせる） */
+    return FILTERS.every(function(f) {
+      var sel = selected[f.key];
+      if (!sel.length) return true;
+      var pool = item[f.key] || [];
+      return sel.some(function(tag) { return pool.indexOf(tag) !== -1; });
+    });
   }
 
+  function activeCount() {
+    return FILTERS.reduce(function(n, f) { return n + selected[f.key].length; }, 0);
+  }
+
+  /* ===== カード描画 ===== */
   function renderCards() {
     grid.textContent = '';
     var frag = document.createDocumentFragment();
     var shown = 0;
 
-    STYLE_DATA.forEach(function(item, i) {
+    CREATORS.forEach(function(item) {
       if (!matches(item)) return;
+      shown++;
 
       var card = document.createElement('button');
       card.type = 'button';
       card.className = 'art-card';
-      card.setAttribute('data-style-id', item.id);
+      card.setAttribute('data-creator-id', item.id);
       card.setAttribute('aria-haspopup', 'dialog');
 
       var label = document.createElement('span');
       label.className = 'art-card__label';
       label.setAttribute('aria-hidden', 'true');
-      label.textContent = String.fromCharCode(65 + (shown % 26));  /* A, B, C… の視認ラベル */
+      label.textContent = item.id;
       card.appendChild(label);
 
       var media = document.createElement('span');
@@ -313,7 +410,7 @@
       img.loading = 'lazy';
       img.decoding = 'async';
       img.width = 400;
-      img.height = 560;
+      img.height = 300;
       media.appendChild(img);
       card.appendChild(media);
 
@@ -322,78 +419,98 @@
       body.appendChild(el('span', 'art-card__title', item.title, item.titleEn));
       body.appendChild(el('span', 'art-card__summary', item.summary, item.summaryEn));
 
-      /* 用途タブのときは用途タグを、画風タブのときは画風タグを前に出す */
-      var chipSource = currentMode === 'usecase' ? item.usecaseTags : item.styleTags;
+      /* カードに出すタグは画風（＝この人の絵の方向性）を優先 */
       var tagWrap = document.createElement('span');
       tagWrap.className = 'art-card__tags';
-      (chipSource || []).slice(0, 3).forEach(function(tag) {
+      (item.styleTags || []).slice(0, 3).forEach(function(tag) {
         tagWrap.appendChild(el('span', 'art-card__tag', tag, EN[tag]));
       });
       body.appendChild(tagWrap);
-      body.appendChild(el('span', 'art-card__more', 'この画風を詳しく見る', 'View this style'));
 
+      /* 用途は色を変えて別行に出す（比較の主軸になるため） */
+      var useWrap = document.createElement('span');
+      useWrap.className = 'art-card__uses';
+      (item.usecaseTags || []).slice(0, 3).forEach(function(tag) {
+        useWrap.appendChild(el('span', 'art-card__use', tag, EN[tag]));
+      });
+      body.appendChild(useWrap);
+
+      body.appendChild(el('span', 'art-card__more', 'この作家を詳しく見る', 'View this artist'));
       card.appendChild(body);
+
       card.addEventListener('click', function() { openModal(item); });
       frag.appendChild(card);
-      shown++;
     });
 
     grid.appendChild(frag);
     if (emptyEl) emptyEl.classList.toggle('is-visible', shown === 0);
     if (countEl) countEl.textContent = String(shown);
+    if (resetBtn) resetBtn.hidden = activeCount() === 0;
   }
 
-  /* ===== チップ描画 ===== */
-  function makeChip(label, active) {
-    var btn = el('button', 'art-chip' + (active ? ' is-active' : ''), label, EN[label]);
-    btn.type = 'button';
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-    return btn;
-  }
+  /* ===== フィルタ描画 ===== */
+  function renderFilters() {
+    if (!filterWrap) return;
+    filterWrap.textContent = '';
 
-  function renderChips() {
-    if (!chipWrap) return;
-    chipWrap.textContent = '';
-    var conf = FILTER_MODES[currentMode];
-
-    var allBtn = makeChip('すべて', selected.length === 0);
-    allBtn.addEventListener('click', function() {
-      selected = [];
-      renderChips();
-      renderCards();
-    });
-    chipWrap.appendChild(allBtn);
-
-    conf.chips.forEach(function(tag) {
-      /* 該当0件のタグは出さない（押しても何も起きないチップを作らない） */
-      var hit = STYLE_DATA.some(function(it) { return (it[conf.key] || []).indexOf(tag) !== -1; });
-      if (!hit) return;
-
-      var btn = makeChip(tag, selected.indexOf(tag) !== -1);
-      btn.addEventListener('click', function() {
-        var idx = selected.indexOf(tag);
-        if (idx === -1) selected.push(tag);
-        else selected.splice(idx, 1);
-        renderChips();
-        renderCards();
+    FILTERS.forEach(function(f) {
+      /* データに実在する値だけを、CREATORS の出現順で並べる */
+      var values = [];
+      CREATORS.forEach(function(c) {
+        (c[f.key] || []).forEach(function(v) {
+          if (values.indexOf(v) === -1) values.push(v);
+        });
       });
-      chipWrap.appendChild(btn);
+      if (!values.length) return;
+
+      var row = document.createElement('div');
+      row.className = 'art-filter__row';
+
+      var head = el('span', 'art-filter__label', f.label, f.labelEn);
+      row.appendChild(head);
+
+      var chips = document.createElement('div');
+      chips.className = 'art-filter__chips';
+
+      values.forEach(function(v) {
+        var on = selected[f.key].indexOf(v) !== -1;
+        var btn = el('button', 'art-chip' + (on ? ' is-active' : ''), v, EN[v]);
+        btn.type = 'button';
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.addEventListener('click', function() {
+          var i = selected[f.key].indexOf(v);
+          if (i === -1) selected[f.key].push(v);
+          else selected[f.key].splice(i, 1);
+          renderFilters();
+          renderCards();
+        });
+        chips.appendChild(btn);
+      });
+
+      row.appendChild(chips);
+      filterWrap.appendChild(row);
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      FILTERS.forEach(function(f) { selected[f.key] = []; });
+      renderFilters();
+      renderCards();
     });
   }
 
   /* ===== モーダル ===== */
-  function addMetaRow(dl, labelJa, labelEn, values) {
+  function addMetaRow(dl, labelJa, labelEn, values, translate) {
     if (!values || !values.length) return;
     var row = document.createElement('div');
     row.className = 'art-modal__meta-row';
-
-    var dt = el('dt', 'art-modal__meta-key', labelJa, labelEn);
-    row.appendChild(dt);
+    row.appendChild(el('dt', 'art-modal__meta-key', labelJa, labelEn));
 
     var dd = document.createElement('dd');
     dd.className = 'art-modal__meta-vals';
     values.forEach(function(v) {
-      dd.appendChild(el('span', 'art-modal__meta-val', v, EN[v]));
+      dd.appendChild(el('span', 'art-modal__meta-val', v, translate ? EN[v] : v));
     });
     row.appendChild(dd);
     dl.appendChild(row);
@@ -403,6 +520,7 @@
     if (!overlay) return;
     lastFocused = document.activeElement;
 
+    if (mdLabel) mdLabel.textContent = item.id;
     if (mdTitle) {
       mdTitle.setAttribute('data-ja', item.title);
       mdTitle.setAttribute('data-en', item.titleEn);
@@ -415,7 +533,6 @@
     }
     if (mdDetail) mdDetail.textContent = item.detail || '';
 
-    /* サンプル画像: 代表 + gallery */
     if (mdGallery) {
       mdGallery.textContent = '';
       var shots = [{ src: item.thumbnail, alt: item.title + 'の代表作例' }].concat(item.gallery || []);
@@ -434,17 +551,15 @@
 
     if (mdMeta) {
       mdMeta.textContent = '';
-      addMetaRow(mdMeta, '得意ジャンル', 'Genres', item.genreTags);
-      addMetaRow(mdMeta, '向いている用途', 'Best for', item.usecaseTags);
-      addMetaRow(mdMeta, '読者層', 'Audience', item.audienceTags);
-      addMetaRow(mdMeta, '媒体', 'Media', item.mediaTags);
-    }
-
-    if (mdTags) {
-      mdTags.textContent = '';
-      (item.styleTags || []).forEach(function(tag) {
-        mdTags.appendChild(el('span', 'art-modal__tag', tag, EN[tag]));
-      });
+      addMetaRow(mdMeta, '画風・テイスト', 'Style', item.styleTags, true);
+      addMetaRow(mdMeta, '向いている用途', 'Best for', item.usecaseTags, true);
+      addMetaRow(mdMeta, '得意ジャンル', 'Genres', item.genreTags, true);
+      addMetaRow(mdMeta, '読者層', 'Audience', item.audienceTags, true);
+      addMetaRow(mdMeta, '媒体', 'Media', item.mediaTags, true);
+      if (item.yearsActive && item.yearsActive !== '—') {
+        addMetaRow(mdMeta, '活動歴', 'Experience', [item.yearsActive], false);
+      }
+      addMetaRow(mdMeta, '代表作', 'Works', item.works, false);
     }
 
     overlay.classList.add('is-open');
@@ -471,44 +586,23 @@
     if (e.key === 'Escape' && overlay && overlay.classList.contains('is-open')) closeModal();
   });
 
-  /* ===== タブ切替 ===== */
-  Array.prototype.forEach.call(tabs, function(tab) {
-    tab.addEventListener('click', function() {
-      var mode = tab.getAttribute('data-mode');
-      if (!mode || mode === currentMode) return;
-      currentMode = mode;
-      selected = [];   /* 軸が変わるので選択はリセット */
-
-      Array.prototype.forEach.call(tabs, function(other) {
-        var on = other === tab;
-        other.classList.toggle('is-active', on);
-        other.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-
-      /* 用途タブでは説明文より用途タグを目立たせる（CSS 側で切替） */
-      grid.classList.toggle('art-grid--usecase', mode === 'usecase');
-
-      renderChips();
-      renderCards();
-    });
-  });
-
   /* ===== 初期化 ===== */
-  renderChips();
+  renderFilters();
   renderCards();
 
   /* 言語切替に追従（テキストノードを自前で書いているため再描画する） */
   window.addEventListener('bm-lang-change', function() {
-    renderChips();
+    renderFilters();
     renderCards();
   });
 
-  /* CMS/CRM 連携時の入口。STYLE_DATA と同じ形の配列を渡せば差し替わる */
+  /* CRM 連携時の入口。CREATORS と同じ形の配列を渡せば差し替わる */
   window.bmArtists = {
     setData: function(list) {
       if (!Array.isArray(list) || !list.length) return;
-      STYLE_DATA = list;
-      renderChips();
+      CREATORS = list;
+      FILTERS.forEach(function(f) { selected[f.key] = []; });
+      renderFilters();
       renderCards();
     }
   };
