@@ -25,9 +25,12 @@
   var screenE = document.getElementById('baScreen');
   var poster  = document.getElementById('baPoster');
   var frame   = device ? device.querySelector('.ba-device__frame') : null;
-  var copy      = document.querySelector('.ba-copy');
-  var character = document.querySelector('.ba-character');
   if (!hero || !device || !screenE) return;
+  /* スクロール演出で退場させる要素（キャラ含む）。
+     .ba-copy 自体ではなく子要素を対象にする（スマホの display:contents 対策） */
+  var fadeEls = Array.prototype.slice.call(hero.querySelectorAll(
+    '.ba-eyebrow, .ba-title, .ba-lead, .ba-sub, .ba-cta-row, .ba-media, .ba-character'
+  ));
 
   var reduceMotion = window.matchMedia
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -245,20 +248,17 @@
       screenE.style.setProperty('--ba-clip', fade.toFixed(3));
       screenE.classList.toggle('is-full', fade > 0.98 && shrink === 0);
 
-      // 左コピーはスクロール開始とともに退場
+      // コピーとキャラはスクロール開始とともに退場させる。
+      // ⚠️ .ba-copy はスマホで display:contents（箱を持たない）ため、
+      //    親に opacity を掛けても効かない。個別要素に掛ける。
       var c = Math.min(1, p / (seg * 0.4));
-      if (copy) {
-        copy.style.opacity = (1 - c).toFixed(3);
-        copy.style.transform = 'translate3d(' + (-40 * c).toFixed(1) + 'px,' +
-                               (-20 * c).toFixed(1) + 'px,0)';
-        copy.style.pointerEvents = c > 0.5 ? 'none' : '';
-      }
-      // キャラクターも一緒に退場させる。
-      // 映像が主役になる場面で前面に残っていると動画を隠してしまうため。
-      if (character) {
-        character.style.opacity = (1 - c).toFixed(3);
-        character.style.transform = 'translate3d(' + (40 * c).toFixed(1) + 'px,0,0)';
-      }
+      fadeEls.forEach(function (el) {
+        el.style.opacity = (1 - c).toFixed(3);
+        var dir = el.classList.contains('ba-character') ? 30 : -24;
+        el.style.transform = 'translate3d(' + (dir * c).toFixed(1) + 'px,' +
+                             (-10 * c).toFixed(1) + 'px,0)';
+        el.style.pointerEvents = c > 0.5 ? 'none' : '';
+      });
 
       // 出番の動画を差し替える。
       // 初回(idx=0)だけはページ読込完了まで遅らせ、ポスター表示を先に立たせる（LCP対策 §24）。
@@ -350,7 +350,165 @@
   }
 
   /* ================================================================
-     5. 起動
+     5. CASE STUDIES（制作事例グリッド）
+     ---------------------------------------------------------------
+     一覧はサムネイルのみ（iframeを並べない §26）。
+     クリック時にモーダルでプレイヤーを生成し、閉じたら破棄する（§27）。
+     WPから来る title / category / poster は textContent と
+     検証済みURLでのみ扱う（bmSanitize 併用・XSS鉄則）。
+     ================================================================ */
+  var CAT_LABEL = {
+    ADVERTISING: 'ADVERTISING',
+    VTUBER:      'VTUBER / STREAMING',
+    MUSIC_VIDEO: 'MUSIC VIDEO',
+    IP:          'IP / ORIGINAL ANIME',
+    VFX:         'VFX',
+    OTHER:       'OTHER'
+  };
+
+  /* CSSの url() に入れても安全な形にする（https限定＋引用符類を除去） */
+  function cssUrl(u) {
+    u = String(u || '');
+    if (window.bmSanitize && window.bmSanitize.url) u = window.bmSanitize.url(u);
+    if (!/^https:\/\//.test(u)) return '';
+    return u.replace(/["\\()]/g, '');
+  }
+
+  /* 再生アイコン（静的SVG。DOM APIで生成し、文字列HTMLは使わない） */
+  function buildPlayIcon() {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '18');
+    svg.setAttribute('height', '18');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', 'M8 5v14l11-7z');
+    svg.appendChild(path);
+    return svg;
+  }
+
+  function initCases(list) {
+    var section = document.getElementById('baCases');
+    var grid    = document.getElementById('baCasesGrid');
+    if (!section || !grid) return;
+    list = (list || []).filter(function (v) { return v && (v.embed || v.src); });
+    if (!list.length) return;   // 0件はセクションごと出さない（§34）
+
+    var frag = document.createDocumentFragment();
+    list.forEach(function (v) {
+      var li  = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ba-case';
+
+      var thumb = document.createElement('span');
+      thumb.className = 'ba-case__thumb';
+      var pu = cssUrl(v.poster);
+      if (pu) thumb.style.backgroundImage = 'url("' + pu + '")';
+      var play = document.createElement('span');
+      play.className = 'ba-case__play';
+      play.appendChild(buildPlayIcon());
+      thumb.appendChild(play);
+
+      var cat = document.createElement('span');
+      cat.className = 'ba-case__cat';
+      cat.textContent = CAT_LABEL[v.category] || 'OTHER';   // textContent = XSS安全
+
+      var title = document.createElement('span');
+      title.className = 'ba-case__title';
+      title.textContent = v.title || '';
+
+      btn.appendChild(thumb);
+      btn.appendChild(cat);
+      btn.appendChild(title);
+      btn.addEventListener('click', function () { openModal(v, btn); });
+      li.appendChild(btn);
+      frag.appendChild(li);
+    });
+    grid.appendChild(frag);
+    section.hidden = false;
+  }
+
+  /* ---- モーダル ---- */
+  var modal       = document.getElementById('baModal');
+  var modalPlayer = document.getElementById('baModalPlayer');
+  var modalTitle  = document.getElementById('baModalTitle');
+  var lastFocus   = null;
+
+  function buildModalPlayer(v) {
+    // モーダルはユーザーのクリック起点なので音あり再生でよい
+    if (v.provider === 'mp4' && /^https:\/\/.+\.mp4(\?|$)/i.test(v.src || '')) {
+      var el = document.createElement('video');
+      el.src = v.src;
+      el.controls = true;
+      el.autoplay = true;
+      el.playsInline = true;
+      if (v.poster) el.poster = v.poster;
+      return el;
+    }
+    if (!ALLOWED.test(v.embed || '')) return null;
+    var ifr = document.createElement('iframe');
+    ifr.src = v.embed + (v.provider === 'youtube' ? '?autoplay=1&rel=0&playsinline=1' : '');
+    ifr.title = v.title || '制作事例の動画';
+    ifr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    ifr.setAttribute('frameborder', '0');
+    ifr.setAttribute('allowfullscreen', '');
+    return ifr;
+  }
+
+  function openModal(v, opener) {
+    if (!modal || !modalPlayer) return;
+    var el = buildModalPlayer(v);
+    if (!el) return;
+    lastFocus = opener || null;
+    modalPlayer.appendChild(el);
+    if (modalTitle) modalTitle.textContent = v.title || '';
+    modal.hidden = false;
+    document.body.classList.add('ba-modal-open');
+    var closeBtn = document.getElementById('baModalClose');
+    if (closeBtn) closeBtn.focus();
+    document.addEventListener('keydown', onModalKey);
+  }
+
+  function closeModal() {
+    if (!modal || modal.hidden) return;
+    // プレイヤーを破棄する＝再生を確実に止める（§27）
+    while (modalPlayer.firstChild) modalPlayer.removeChild(modalPlayer.firstChild);
+    modal.hidden = true;
+    document.body.classList.remove('ba-modal-open');
+    document.removeEventListener('keydown', onModalKey);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    lastFocus = null;
+  }
+
+  /* ESCで閉じる + Tabをダイアログ内に閉じ込める（focus trap） */
+  function onModalKey(e) {
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key !== 'Tab') return;
+    var focusables = modal.querySelectorAll(
+      'button, [href], video, iframe, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    var first = focusables[0];
+    var last  = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }
+
+  if (modal) {
+    // 閉じるボタン・バックドロップ（data-close 持ち）で閉じる
+    modal.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) closeModal();
+    });
+  }
+
+  /* ================================================================
+     6. 起動
      ================================================================ */
   fetchVideos().then(function (data) {
     try {
@@ -358,6 +516,11 @@
     } catch (e) {
       // 演出が失敗してもページは壊さない（§34）
       if (window.console && console.warn) console.warn('[bizanime]', e);
+    }
+    try {
+      initCases(data.cases || []);
+    } catch (e2) {
+      if (window.console && console.warn) console.warn('[bizanime cases]', e2);
     }
     window.dispatchEvent(new CustomEvent('bizanime-data', { detail: data }));
   });

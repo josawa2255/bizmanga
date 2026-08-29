@@ -239,6 +239,32 @@
       </div><!-- /.ba-hero-inner -->
     </section>
 
+    <!-- ==========================================================
+         CASE STUDIES — 制作事例グリッド
+         WPの「ビズアニメ動画 › CASE STUDIES」の並び順そのまま。
+         一覧にはサムネイルだけを置き、iframeは置かない（§26）。
+         クリックでモーダルを開いた時に初めてプレイヤーを生成する。
+         0件のときは hidden のまま出さない（§34）。
+         ========================================================== -->
+    <section class="ba-cases" id="baCases" hidden aria-labelledby="baCasesTitle">
+      <div class="ba-cases-head">
+        <p class="ba-cases-eyebrow" data-i18n-skip>CASE STUDIES</p>
+        <h2 class="ba-cases-title" id="baCasesTitle" data-ja="制作事例" data-en="Our Work">制作事例</h2>
+      </div>
+      <ul class="ba-cases-grid" id="baCasesGrid"><!-- JSが生成 --></ul>
+    </section>
+
+    <!-- 動画モーダル（クリック時のみプレイヤー生成・閉じたら破棄 §27） -->
+    <div class="ba-modal" id="baModal" hidden>
+      <div class="ba-modal__backdrop" data-close></div>
+      <div class="ba-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="baModalTitle">
+        <button type="button" class="ba-modal__close" id="baModalClose"
+                aria-label="閉じる" data-close>&times;</button>
+        <div class="ba-modal__player" id="baModalPlayer"></div>
+        <p class="ba-modal__title" id="baModalTitle"></p>
+      </div>
+    </div>
+
   </main>
 
   <!-- ===== 共通スクリプト（順序厳守: i18n → nav。崩すと言語切替が壊れる BUGS #005/#008） ===== -->

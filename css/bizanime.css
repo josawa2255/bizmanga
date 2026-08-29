@@ -770,13 +770,18 @@ body.ba-page { overflow-x: clip; }
     filter: drop-shadow(0 0 22px rgba(255,90,0,.24)) drop-shadow(0 16px 34px rgba(0,0,0,.5));
   }
 
-  /* --- 動画モニター: 中央・ほぼ全幅。傾きは取って正対させる --- */
+  /* --- 動画モニター: 中央・ほぼ全幅 ---
+     ⚠️ transform:none で打ち消してはいけない。スクロール演出のJSは
+        CSS変数(--ba-dev-*)を書き、基底ルールの transform で合成している。
+        none にすると拡大・正面化が一切効かなくなる（実測でハマった）。
+        傾きを浅くしたい場合は変数の初期値の方を上書きする。 */
   .ba-device {
     display: block;
     position: static;
     width: calc(100% - clamp(36px, 10vw, 64px));
     margin: clamp(20px, 5vw, 40px) auto 0;
-    transform: none;
+    --ba-dev-ry: -4deg;    /* スマホは傾きを浅めに（正対まではJSが遷移させる） */
+    --ba-dev-rz: -1.2deg;
     filter:
       drop-shadow(0 0 20px rgba(255,110,0,.4))
       drop-shadow(0 0 52px rgba(255,80,0,.24))
@@ -808,7 +813,7 @@ body.ba-page { overflow-x: clip; }
   /* 波形装飾は絶対配置前提なので縦積みでは邪魔になる。背景側の光で代用する */
   .ba-wave-deco { display: none; }
 
-  /* VOICE/MUSIC/SFX/MOTION はスマホでは出さない（2026-08-22 ユーザー指示）。
+  /* VOICE/MUSIC/SFX/MOTION の4機能カードは 2026-08-29 に完全削除済み */
 }
 
 /* 極小幅（〜360px）: 4列の機能UIが潰れるので説明文だけ落として列は維持する */
@@ -825,4 +830,193 @@ body.ba-page { overflow-x: clip; }
 @media (min-width: 600px) and (max-width: 1024px) {
   .ba-character { width: min(46%, 380px); right: -2%; }
   .ba-sub { margin-right: clamp(80px, 26vw, 200px); }
+}
+
+/* ==========================================================================
+   CASE STUDIES — 制作事例グリッド
+   一覧はサムネのみ（iframeを並べない）。細いラインの控えめなカードで、
+   映像（サムネ）を主役にする。PC3列 / スマホ2列（1列にはしない §29）。
+   ========================================================================== */
+.ba-cases {
+  position: relative;
+  background: #070707;
+  padding: clamp(56px, 8vw, 110px) clamp(18px, 5vw, 48px) clamp(72px, 9vw, 130px);
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.ba-cases-head {
+  max-width: 1280px;
+  margin: 0 auto clamp(28px, 4vw, 52px);
+}
+.ba-cases-eyebrow {
+  margin: 0 0 10px;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 700;
+  letter-spacing: .28em;
+  color: var(--ba-orange-3);
+}
+.ba-cases-title {
+  margin: 0;
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 700;
+  color: var(--ba-white);
+}
+.ba-cases-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));   /* PC: 3列 */
+  gap: clamp(14px, 2vw, 28px);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.ba-cases-grid li { min-width: 0; }   /* 1fr等分の潰れ防止（鉄則5 / #044） */
+
+.ba-case {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.ba-case__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.09);
+  background: #101010 center / cover no-repeat;
+  background-image: radial-gradient(circle at 50% 45%, rgba(255,90,0,.12), transparent 62%);
+  transition: border-color .25s, transform .25s;
+}
+.ba-case__play {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(5,5,5,.62);
+  border: 1px solid rgba(255,120,0,.65);
+  transition: background .25s, transform .25s;
+}
+.ba-case:hover .ba-case__thumb,
+.ba-case:focus-visible .ba-case__thumb {
+  border-color: rgba(255,120,0,.7);
+  transform: translateY(-3px);
+}
+.ba-case:hover .ba-case__play { background: rgba(255,90,0,.92); }
+.ba-case:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; border-radius: 12px; }
+.ba-case__cat {
+  display: block;
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ba-orange-3);
+}
+.ba-case__title {
+  display: block;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 500;
+  color: rgba(255,255,255,.94);
+  line-height: 1.5;
+  word-break: auto-phrase;
+}
+
+/* スマホ: 2列（必須 §29。1列にしない） */
+@media (max-width: 767px) {
+  .ba-cases-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .ba-case__play { width: 32px; height: 32px; }
+  .ba-case__cat { font-size: 10px; margin-top: 8px; }
+  .ba-case__title { font-size: 12.5px; }
+}
+
+/* ==========================================================================
+   動画モーダル
+   開いた時だけプレイヤーを生成し、閉じたら破棄する（JS側 §27）。
+   ========================================================================== */
+.ba-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;   /* ヘッダー(1000)・追従CTA(9500)より上 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(14px, 4vw, 40px);
+}
+.ba-modal[hidden] { display: none; }
+.ba-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.88);
+  cursor: pointer;
+}
+.ba-modal__dialog {
+  position: relative;
+  width: min(960px, 100%);
+}
+.ba-modal__player {
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,120,0,.35);
+  box-shadow: 0 0 60px rgba(255,90,0,.18), 0 30px 70px rgba(0,0,0,.7);
+}
+.ba-modal__player > iframe,
+.ba-modal__player > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.ba-modal__title {
+  margin: 14px 2px 0;
+  font-size: clamp(14px, 1.2vw, 17px);
+  font-weight: 700;
+  color: rgba(255,255,255,.95);
+}
+.ba-modal__close {
+  position: absolute;
+  top: -52px;
+  right: 0;
+  width: 44px;              /* タップ44px以上 */
+  height: 44px;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  background: rgba(5,5,5,.6);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ba-modal__close:hover,
+.ba-modal__close:focus-visible { border-color: var(--ba-orange-3); color: var(--ba-orange-3); }
+/* モーダル表示中は背面のスクロールを止める（モーダルの標準作法。演出のscroll lockとは別物） */
+body.ba-modal-open { overflow: hidden; }
+
+/* ==========================================================================
+   スクロール演出のスマホ対応（〜1024px）
+   Heroの中身は1画面に収まる高さ（実測約700px）なので、PCと同じ
+   sticky 方式がそのまま成立する。倍率や移動量は基準寸法から動的に
+   計算しているため、幅ごとの個別チューニングは不要。
+   ========================================================================== */
+@media (max-width: 1024px) {
+  /* スマホのヘッダーは56px。sticky中の貼り付き位置と初期余白を合わせる */
+  .ba-scroll-wrap { padding-top: 56px; }
+  .ba-hero--sticky {
+    margin-top: 0;
+    height: 100vh;
+    height: 100svh;   /* モバイルブラウザのUIバー分を除いた実表示高 */
+  }
 }

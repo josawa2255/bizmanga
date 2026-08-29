@@ -152,6 +152,16 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 - `.ba-title` の `cqw` は**パディングを含む幅**を返す。左右paddingを引いてから係数を掛けないと折り返す
 - 検証: 320〜1024px の16幅（境界の直上・直下を含む）＋ 文字拡大1.3/1.5倍 ×4幅で、横スクロール・折り返し・文字の覆い・4列の均等・タップ44pxを実測
 
+### スクロール演出＋CASE STUDIES（2026-08-29 実装）
+- **iPad内動画→フルスクリーン演出**: 受領した透過フレーム素材の「画面の穴」（四隅を実測し `clip-path`）に動画レイヤーを重ね、`position:sticky` + transform でスクロール連動。Three.js/GSAP不使用・スクロールは奪わない。動画はWP APIから取得し、0/1/2/3件すべて対応（0件は静止画Hero）
+- **CASE STUDIES**: PC3列/SP2列。一覧はサムネのみ、クリックでモーダル生成・閉じると破棄（ESC/背面クリック/focus trap対応）
+- ⚠️ ハマりどころ（再発防止）:
+  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → このページのみ `clip` に変更
+  - 登場アニメの `animation` はインライン transform より強い → 演出中は `animation:none`
+  - スマホの `.ba-device` に `transform:none` を書くと演出が全滅（CSS変数合成を打ち消すため）→ 変数の初期値で調整する
+  - CSSコメントの閉じ忘れは**ブレース数が合っていても**メディアクエリを飲み込む → 検査はコメント除去後に行う
+- WP側: 管理画面「ビズアニメ動画」（D&D並び替え・URL貼るだけ・provider自動判定）+ GET/POST API（POSTは要認証）。実体は `contentsx-wp-plugin/contentsx-cms/bizanime-videos.php`（デプロイはお名前.com手動・BUGS #002）
+
 ### 未実装（次にやること）
 - Hero より下のセクション全体
 - 制作事例（動画）一覧のWP連携。**運用方針は決定済み**: WPに専用投稿タイプを新設し、YouTube URL を貼るだけで一覧に増える。カード内でそのまま再生（YouTubeへ遷移させない）。プラグインは別リポジトリ(PRIVATE)＋お名前.com手動アップロードが必要（[BUGS #002](../BUGS.md)）
