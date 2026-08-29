@@ -141,9 +141,7 @@
     }
 
     // 1本目のポスターを即表示（iframe はまだ作らない = LCP対策）
-    if (poster && main[0].poster) {
-      poster.style.backgroundImage = 'url("' + main[0].poster.replace(/["\\]/g, '') + '")';
-    }
+    if (poster) setThumbBg(poster, main[0].poster);
 
     if (reduceMotion) {
       // 動きを減らす設定: 拡大も角度変化もせず、1本目をその場で再生するだけ
@@ -435,12 +433,30 @@
     OTHER:       'OTHER'
   };
 
-  /* CSSの url() に入れても安全な形にする（https限定＋引用符類を除去） */
+  /* CSSの url() に入れても安全な形にする（https限定＋引用符類を除去）。
+     ⚠️ bmSanitize.url は使わない。あれは許可ドメイン=contentsx.jp のみの設計で、
+        i.ytimg.com のサムネURLが全部空文字になる（実測でサムネ全滅した）。 */
   function cssUrl(u) {
-    u = String(u || '');
-    if (window.bmSanitize && window.bmSanitize.url) u = window.bmSanitize.url(u);
+    u = String(u || '').trim();
     if (!/^https:\/\//.test(u)) return '';
-    return u.replace(/["\\()]/g, '');
+    return u.replace(/["'\\()\s]/g, '');
+  }
+
+  /* 背景画像を読み込めたら適用する。maxresdefault はHD版が無い動画だと404に
+     なるため、その場合は hqdefault へフォールバックする */
+  function setThumbBg(el, url) {
+    var pu = cssUrl(url);
+    if (!pu) return;
+    var im = new Image();
+    im.onload = function () { el.style.backgroundImage = 'url("' + pu + '")'; };
+    im.onerror = function () {
+      var fb = pu.replace('/maxresdefault.', '/hqdefault.');
+      if (fb === pu) return;
+      var im2 = new Image();
+      im2.onload = function () { el.style.backgroundImage = 'url("' + fb + '")'; };
+      im2.src = fb;
+    };
+    im.src = pu;
   }
 
   /* 再生アイコン（静的SVG。DOM APIで生成し、文字列HTMLは使わない） */
@@ -474,8 +490,7 @@
 
       var thumb = document.createElement('span');
       thumb.className = 'ba-case__thumb';
-      var pu = cssUrl(v.poster);
-      if (pu) thumb.style.backgroundImage = 'url("' + pu + '")';
+      setThumbBg(thumb, v.poster);
       var play = document.createElement('span');
       play.className = 'ba-case__play';
       play.appendChild(buildPlayIcon());
