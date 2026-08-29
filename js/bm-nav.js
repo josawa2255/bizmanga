@@ -7,6 +7,7 @@
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
     { label: '制作事例',   labelEn: 'Works',      href: '/works' },
     { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    { label: '漫画家紹介', labelEn: 'Artists',    href: '/artists' },
     { label: 'ビズアニメ', labelEn: 'Biz Anime',  href: '/bizanime' },
     { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
       {

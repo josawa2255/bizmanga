@@ -261,7 +261,9 @@ def main():
         if thumb_id:
             payload["featured_media"] = thumb_id
         if term_ids:
-            payload["cx_artist_tag"] = term_ids
+            # REST でのキーはタクソノミー名ではなく rest_base（cx-artist-tags）。
+            # 間違えると WordPress が黙って無視してタグが付かない。
+            payload["cx-artist-tags"] = term_ids
 
         if dry:
             print("    [dry] 登録をスキップ\n")
