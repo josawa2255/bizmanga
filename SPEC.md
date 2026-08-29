@@ -50,7 +50,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
+| トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials, bm-videos | Hero + ギャラリー + 制作過程 + 対談動画 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
 | 料金 | `pricing.html` | —（共通JSのみ） | **2026-08-19 全面刷新**: 2プランカード型料金表（フル漫画家プラン ¥33,660/ページ〜・原稿料別途33,660円/10P目安約37.0万円／ハイブリッドプラン ¥25,740/ページ〜・原稿料別途25,740円/10P目安約28.3万円、いずれも税抜）+ 3バッジ + プラン別本数割引ミニ表2枚（7P基準。フル漫画家: 1本33,660/3本30,320/5本28,260円/P、ハイブリッド: 1本25,740/3本23,200/5本21,600円/P。原稿料は各プラン単価と同額を別途）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=full\|hybrid`（§2.2のプリフィル連携）。旧3プラン体系（ライト/スタンダード/プレミアム、2026-07-02版）は廃止。「業界最安値級」表現は削除し「大手の約1/5の価格」に統一（値上げに伴う訴求見直し）。Service JSON-LDのOfferは表示価格と同期（lowPrice 25740 / highPrice 33660） |
@@ -473,6 +473,16 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
 - キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「8月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
+
+### 7.2c 対談・動画セクション（`.bm-videos` / `#videos`）⭐2026-08-29追加
+- 位置: ニュース（`#news`）の直後、コラム（`#columns`）の直前
+- 役割: YouTube公式チャンネルの対談動画をホームで訴求。初回はマクニカ元村氏との対談「BtoB営業で"漫画"が商談を生む理由」（`w_O3iaQKduQ`）1本
+- **遅延埋め込み（LCP対策）**: 初期表示はサムネ（`https://i.ytimg.com/vi/{id}/maxresdefault.jpg`）＋再生ボタンの `<button.bm-video-thumb data-video-id>` のみ。クリック時に [js/bm-videos.js](js/bm-videos.js) が `youtube-nocookie.com/embed` の iframe（`.bm-video-frame`）に差し替える。bizanime.js と同じ方針
+- **動画の追加方法**: index.html の `<article class="bm-video-feature">` ブロックを複製し、`data-video-id` / サムネURL / タイトル・説明（`data-ja`/`data-en`）/ 尺表示を差し替えるだけ。JSは `data-video-id` を英数・`-`・`_` の正規表現で検証してから埋め込むので追加登録は不要
+- レイアウト: PC=動画左（flex:1.25）+テキスト右の2カラム、860px以下で縦積み。文字サイズはclamp()連続スケール、flex子に `min-width:0`
+- i18n: 見出し「対談・インタビュー」/バッジ「対談」/タイトル・説明・リンクすべて `data-ja`/`data-en`
+- CSP: 既存の `frame-src https:` / `img-src https:` の範囲内のため変更不要
+- CSS: [css/bizmanga.css](css/bizmanga.css) の「対談・動画セクション」ブロック（news直後）
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ

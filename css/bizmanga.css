@@ -1666,6 +1666,96 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-news-link:hover { color: var(--bm-accent); }
 
 /* ============================================
+   対談・動画セクション (ホーム / YouTube)
+   初期はサムネのみ描画し、クリック時に bm-videos.js が
+   youtube-nocookie の iframe に差し替える（LCP対策）
+   ============================================ */
+.bm-videos {
+  background: var(--bm-bg);
+  padding: clamp(48px, 6vw, 80px) 0;
+  border-bottom: 1px solid var(--bm-border);
+}
+.bm-videos .bm-section-sub { margin-bottom: clamp(28px, 4vw, 44px); }
+.bm-video-feature {
+  display: flex; align-items: center;
+  gap: clamp(24px, 3.5vw, 48px);
+}
+.bm-video-player { flex: 1.25; min-width: 0; }
+.bm-video-thumb {
+  position: relative; display: block;
+  width: 100%; aspect-ratio: 16 / 9;
+  padding: 0; border: none; margin: 0;
+  border-radius: 12px; overflow: hidden;
+  cursor: pointer; background: #000;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.06),
+    0 18px 44px -14px rgba(0,0,0,0.22);
+}
+.bm-video-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bm-video-thumb:hover img { transform: scale(1.04); }
+.bm-video-play {
+  position: absolute; inset: 0; margin: auto;
+  width: clamp(56px, 6vw, 72px); height: clamp(56px, 6vw, 72px);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--bm-accent); color: #fff;
+  box-shadow: 0 8px 24px rgba(232, 85, 0, 0.45);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.bm-video-play svg { margin-left: 3px; }
+.bm-video-thumb:hover .bm-video-play {
+  background: #d44a00;
+  transform: scale(1.08);
+}
+.bm-video-duration {
+  position: absolute; right: 10px; bottom: 10px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+  color: #fff; background: rgba(0,0,0,0.72);
+  padding: 3px 8px; border-radius: 4px;
+}
+.bm-video-frame {
+  width: 100%; aspect-ratio: 16 / 9;
+  border: none; border-radius: 12px;
+  display: block; background: #000;
+}
+.bm-video-info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  align-items: flex-start; gap: clamp(10px, 1.4vw, 14px);
+}
+.bm-video-tag {
+  display: inline-block;
+  font-size: 10px; font-weight: 800;
+  color: #fff; background: var(--bm-accent);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 4px;
+}
+.bm-video-title {
+  font-size: clamp(17px, 1.8vw, 23px);
+  font-weight: 900; color: #000; line-height: 1.55;
+}
+.bm-video-desc {
+  font-size: clamp(13px, 1.1vw, 15px);
+  color: var(--bm-text-sub); line-height: 1.8;
+}
+.bm-video-yt-link {
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  font-size: 14px; font-weight: 700;
+  color: var(--bm-accent); text-decoration: none;
+  transition: opacity 0.3s;
+}
+.bm-video-yt-link:hover { opacity: 0.7; }
+@media (max-width: 860px) {
+  .bm-video-feature { flex-direction: column; align-items: stretch; }
+  .bm-video-info { gap: 10px; }
+}
+
+/* ============================================
    コラムセクション (ホーム横スクロール + 一覧ページ)
    ============================================ */
 .bm-column-section {
