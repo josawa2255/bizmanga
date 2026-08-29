@@ -558,7 +558,6 @@
     if (modalTitle) modalTitle.textContent = v.title || '';
     // 自前バー: 音声トグルはYouTubeのみ（mp4はnativeコントロール/Driveは制御不可）
     var mAudio = document.getElementById('baModalAudio');
-    var mLink  = document.getElementById('baModalLink');
     if (mAudio) {
       mAudio.hidden = (v.provider !== 'youtube');
       mAudio.classList.remove('is-on');        // ミュートで開始（確実に自動再生させるため）
@@ -571,13 +570,7 @@
         if (on) ytCommand(el, 'setVolume', [100]);
       };
     }
-    if (mLink) {
-      var watch = v.provider === 'youtube'
-        ? 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.video_id)
-        : (v.provider === 'drive' ? v.embed.replace('/preview', '/view') : v.src);
-      mLink.href = watch || '#';
-      mLink.hidden = !watch;
-    }
+    // 「元の動画を開く」リンクは 2026-08-30 に削除（YouTubeへ遷移させない方針）
     modal.hidden = false;
     document.body.classList.add('ba-modal-open');
     var closeBtn = document.getElementById('baModalClose');

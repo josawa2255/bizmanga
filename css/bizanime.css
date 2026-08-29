@@ -1061,8 +1061,20 @@ body.ba-modal-open { overflow: hidden; }
    （タイトルバー自体は132%クロップで最初から枠外に追い出してある） */
 .ba-device__screen > iframe { pointer-events: none; }
 
-/* モーダルのYouTubeも同様に触れなくし、操作は自前バーに寄せる */
-.ba-modal__player--youtube > iframe { pointer-events: none; }
+/* モーダルのYouTubeも同様に触れなくし、操作は自前バーに寄せる。
+   さらに130%に拡大して切り抜き、冒頭に出るタイトルバー（チャンネルアイコンと
+   タイトル＝YouTubeへのリンク）と右下ロゴを最初から表示枠の外に追い出す。
+   タイトルバーは高さの約10%なので、上下15%ずつのクロップで確実に隠れる。 */
+.ba-modal__player--youtube > iframe {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130%;
+  height: 130%;
+  transform: translate(-50%, -50%);
+}
+.ba-modal__player { position: relative; }
 
 /* --- モーダル下部の自前バー --- */
 .ba-modal__bar {
@@ -1096,15 +1108,3 @@ body.ba-modal-open { overflow: hidden; }
 .ba-modal__audio.is-on .ba-audio__icon-on { display: block; }
 .ba-modal__audio.is-on .ba-audio__icon-off { display: none; }
 .ba-modal__audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
-.ba-modal__yt {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  color: rgba(255,255,255,.8);
-  border: 1px solid rgba(255,255,255,.28);
-  border-radius: 100px;
-  padding: 9px 14px;
-  white-space: nowrap;
-}
-.ba-modal__yt:hover,
-.ba-modal__yt:focus-visible { color: var(--ba-orange-3); border-color: var(--ba-orange-3); }
