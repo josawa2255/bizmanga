@@ -1020,3 +1020,35 @@ body.ba-modal-open { overflow: hidden; }
     height: 100svh;   /* モバイルブラウザのUIバー分を除いた実表示高 */
   }
 }
+
+/* ==========================================================================
+   音声トグルボタン
+   自動再生はブラウザ制約でミュート必須のため、タップ起点で音を出す。
+   演出中も見失わないよう Hero 内の右下に固定（sticky中は画面右下に留まる）。
+   ========================================================================== */
+.ba-audio {
+  position: absolute;
+  right: clamp(14px, 2vw, 28px);
+  bottom: clamp(14px, 2.5vw, 28px);
+  z-index: 7;                /* デバイス(3)・コピー(5)より手前 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;               /* タップ44px以上 */
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,120,0,.65);
+  background: rgba(5,5,5,.72);
+  color: #fff;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  transition: background .25s, border-color .25s, transform .2s;
+}
+.ba-audio:hover { transform: scale(1.06); border-color: var(--ba-orange-3); }
+.ba-audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-audio.is-on { background: rgba(255,90,0,.9); border-color: transparent; }
+/* OFF時はミュートアイコン、ON時はスピーカーアイコンを表示 */
+.ba-audio .ba-audio__icon-on  { display: none; }
+.ba-audio.is-on .ba-audio__icon-on  { display: block; }
+.ba-audio.is-on .ba-audio__icon-off { display: none; }

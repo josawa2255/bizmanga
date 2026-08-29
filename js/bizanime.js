@@ -112,9 +112,11 @@
     var ifr = document.createElement('iframe');
     var url = v.embed;
     if (v.provider === 'youtube') {
-      // mute=1 でないとブラウザが自動再生を止める
+      // mute=1 でないとブラウザが自動再生を止める。音は音声ボタン（ユーザー操作）から
+      // postMessage で unMute する。enablejsapi=1 はそのための指定
+      // （iframe_api の外部スクリプトは読まない＝CSPに触れない。BUGS #030 回避）
       url += '?autoplay=1&mute=1&loop=1&playlist=' + encodeURIComponent(v.video_id) +
-             '&controls=0&modestbranding=1&playsinline=1&rel=0';
+             '&controls=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1';
     }
     ifr.src = url;
     ifr.title = v.title || 'ビズアニメの制作事例';
@@ -324,6 +326,52 @@
     return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
   }
 
+  /* ---- 音声トグル ----
+     自動再生はブラウザ制約でミュート必須。音声はボタンのタップ（＝ユーザー操作）を
+     起点に出す。一度ONにしたら動画が切り替わっても引き継ぐ。
+     YouTube: enablejsapi=1 の iframe へ postMessage（外部スクリプトは読まない）
+     MP4:     video.muted を切り替え
+     Drive:   外部から音量制御できないためボタン自体を隠す（§20: ハックしない） */
+  var audioBtn  = document.getElementById('baAudio');
+  var audioOn   = false;
+  var currentEl = null;
+  var currentV  = null;
+
+  function ytCommand(iframe, func, args) {
+    try {
+      iframe.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: func, args: args || [] }), '*');
+    } catch (e) {}
+  }
+  function applyAudio() {
+    if (!currentEl || !currentV) return;
+    if (currentEl.tagName === 'VIDEO') {
+      currentEl.muted = !audioOn;
+    } else if (currentV.provider === 'youtube') {
+      if (audioOn) {
+        ytCommand(currentEl, 'unMute');
+        ytCommand(currentEl, 'setVolume', [100]);
+      } else {
+        ytCommand(currentEl, 'mute');
+      }
+    }
+  }
+  function updateAudioBtn() {
+    if (!audioBtn) return;
+    // Driveは制御できないので隠す。それ以外は動画が出ている間だけ表示
+    audioBtn.hidden = !currentV || currentV.provider === 'drive';
+    audioBtn.setAttribute('aria-pressed', audioOn ? 'true' : 'false');
+    audioBtn.setAttribute('aria-label', audioOn ? '音声をオフにする' : '音声をオンにする');
+    audioBtn.classList.toggle('is-on', audioOn);
+  }
+  if (audioBtn) {
+    audioBtn.addEventListener('click', function () {
+      audioOn = !audioOn;
+      applyAudio();
+      updateAudioBtn();
+    });
+  }
+
   /* 画面の中身を index の動画へ差し替える */
   var built = {};
   function swapVideo(i, list) {
@@ -340,6 +388,19 @@
       c.remove();
     });
     if (el.parentNode !== screenE) screenE.appendChild(el);
+    currentEl = el;
+    currentV  = v;
+    updateAudioBtn();
+    // 音声ONのまま切り替わったら、新しいプレイヤーにも引き継ぐ
+    // （iframeはプレイヤー初期化を待つ必要があるので load 後に少し遅らせる）
+    if (audioOn) {
+      if (el.tagName === 'IFRAME') {
+        el.addEventListener('load', function () { setTimeout(applyAudio, 600); }, { once: true });
+        setTimeout(applyAudio, 1200);   // 既にloadedの場合の保険
+      } else {
+        applyAudio();
+      }
+    }
   }
 
   /* 次の動画を裏で作っておく（DOMには入れない） */
