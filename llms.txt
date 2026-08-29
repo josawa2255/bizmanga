@@ -1,6 +1,6 @@
 # BizManga（ビズマンガ）
-# Last updated: 2026-06-10
-# Version: 1.4
+# Last updated: 2026-08-29
+# Version: 1.5
 
 > マンガの力でビジネスを動かす。業界最安値級のビジネスマンガ制作サービス（大手制作会社の約1/5の価格帯）。採用・営業・研修・会社紹介・創業ストーリーなど、企業の課題解決に特化。Contents X 株式会社が運営。
 
@@ -127,6 +127,12 @@ BizMangaの独自の制作メソッドは、著作権リスクを最小化する
 - [X（Twitter）×ビジネス漫画](https://bizmanga.contentsx.jp/column/x-twitter-business-manga) — SNS×漫画のマーケティング戦略
 - [漫画で営業力・採用力アップ](https://bizmanga.contentsx.jp/column/business-manga-sales-recruiting) — 営業・採用での漫画活用事例
 - [ビジネスマンガ制作の完全ガイド](https://bizmanga.contentsx.jp/column/business-manga-production-guide) — 7つのステップと費用相場
+
+## 対談・インタビュー動画（YouTube）
+
+BizManga公式YouTubeチャンネルで、企業のマーケティング・営業実務者との対談動画を公開しています。トップページの「対談・インタビュー」セクションからも視聴できます。
+
+- [BtoB営業で“漫画”が商談を生む理由｜AI企業マクニカが語る新しいリード獲得戦略](https://www.youtube.com/watch?v=w_O3iaQKduQ) — AI事業を10年以上推進する株式会社マクニカの元村氏との対談（17分、2026-08-11公開）。漫画がBtoBのリード獲得や商談につながる理由、ビジュアルストーリーテリングの効果、商談を生むコンテンツセールスの実践、AIだけでは漫画を作れない理由（創造性が問われる工程は人間のクリエイターが担当）、漫画を企業の資産・購買の入口として活用する方法を議論
 
 ## よくある質問
 

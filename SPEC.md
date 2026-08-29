@@ -483,6 +483,11 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - i18n: 見出し「対談・インタビュー」/バッジ「対談」/タイトル・説明・リンクすべて `data-ja`/`data-en`
 - CSP: 既存の `frame-src https:` / `img-src https:` の範囲内のため変更不要
 - CSS: [css/bizmanga.css](css/bizmanga.css) の「対談・動画セクション」ブロック（news直後）
+- **GEO（AI検索最適化）が本セクションの主目的**（YouTube言及はAI引用と最強相関≒0.737、Ahrefs 2025-12調査。分析正本は [../docs/content/GEO-ANALYSIS.md](../docs/content/GEO-ANALYSIS.md)）:
+  - **VideoObject JSON-LD**: index.html 末尾のJSON-LD群に `#interview-video` を追加（WebPage の `video` からも参照）。uploadDate/duration/contentUrl/embedUrl に加え、**チャプター13本を `hasPart` の Clip**（startOffset/endOffset/`&t=`URL）で記述し、対談の中身を機械可読化。AIクローラーはJS非実行のため、遅延iframe でも動画の存在はこのスキーマと静的HTMLで伝わる
+  - **話題リスト `.bm-video-topics`**: 目に見える引用可能パッセージとして主要トピック4点を `<ul>` で列挙（data-ja/data-en対応）
+  - **llms.txt**: 「対談・インタビュー動画（YouTube）」セクションに動画URL+要約を記載（v1.5）
+  - **動画追加時は3点セット**: HTMLブロック複製 + VideoObject JSON-LD追加 + llms.txt追記
 
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
