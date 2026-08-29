@@ -307,9 +307,15 @@
       var heroTop = parseFloat(getComputedStyle(hero).top) || 0;
       return (window.innerHeight / 2) - (heroTop + base.cy);
     }
-    // 画面を覆うのに必要な倍率（素の寸法から算出するので発散しない）
+    // 「フルスクリーン」時の倍率（素の寸法から算出するので発散しない）。
+    // 横画面(PC): 画面全体を覆う cover
+    // 縦画面(スマホ): 横動画を cover まで広げると左右が大きくはみ出すため、
+    //                 幅フィットで止める（YouTubeの縦画面視聴と同じ。上下は黒帯）
     function coverScale() {
       if (!base || !base.w || !base.h) return 2.4;
+      if (window.innerHeight > window.innerWidth) {
+        return window.innerWidth / base.w;
+      }
       return Math.max(window.innerWidth / base.w, window.innerHeight / base.h) * 1.06;
     }
 
