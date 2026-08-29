@@ -13,27 +13,17 @@
         heading: '漫画を読む',
         headingEn: 'Read',
         items: [
-          { label: 'ビズ書庫（全作品）', labelEn: 'Biz Library',   href: '/biz-library' },
-          { label: '制作事例（一覧）',   labelEn: 'All Works',     href: '/works' }
-        ]
-      },
-      {
-        heading: '目的から事例を探す',
-        headingEn: 'Works by Purpose',
-        items: [
-          { label: '採用マンガ',       labelEn: 'Recruit',  href: '/works/category/recruit' },
-          { label: '営業マンガ',       labelEn: 'Sales',    href: '/works/category/sales' },
-          { label: '商品紹介マンガ',   labelEn: 'Product',  href: '/works/category/product' },
-          { label: '会社紹介マンガ',   labelEn: 'Company',  href: '/works/category/company' }
-        ]
-      },
-      {
-        heading: '　',            /* 2列目の続き。見出しは無条件に生成されるので空にせず高さを合わせる */
-        headingEn: '　',
-        items: [
-          { label: '研修マンガ',       labelEn: 'Training', href: '/works/category/training' },
-          { label: 'マンガ広告',       labelEn: 'Manga Ad', href: '/works/category/ad' },
-          { label: 'IR漫画',           labelEn: 'IR',       href: '/works/category/ir' }
+          { label: 'ビズ書庫（全作品）', labelEn: 'Biz Library', href: '/biz-library' },
+          /* children を持つ項目はホバーで右側にサブメニューが開く（第3階層） */
+          { label: '制作事例（一覧）', labelEn: 'All Works', href: '/works', children: [
+            { label: '採用マンガ',     labelEn: 'Recruit',  href: '/works/category/recruit' },
+            { label: '営業マンガ',     labelEn: 'Sales',    href: '/works/category/sales' },
+            { label: '商品紹介マンガ', labelEn: 'Product',  href: '/works/category/product' },
+            { label: '会社紹介マンガ', labelEn: 'Company',  href: '/works/category/company' },
+            { label: '研修マンガ',     labelEn: 'Training', href: '/works/category/training' },
+            { label: 'マンガ広告',     labelEn: 'Manga Ad', href: '/works/category/ad' },
+            { label: 'IR漫画',         labelEn: 'IR',       href: '/works/category/ir' }
+          ]}
         ]
       }
     ]},
@@ -136,6 +126,34 @@
           ca.setAttribute('data-ja', child.label);
           ca.setAttribute('data-en', child.labelEn);
           ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+
+          /* 第3階層。children があればホバーで右側にサブメニューを開く。
+             項目自体はリンクのままなので、押せば親ページ(/works)へ行ける */
+          if (child.children && child.children.length) {
+            var sub = document.createElement('div');
+            sub.className = 'bm-nav-submenu';
+
+            child.children.forEach(function(gc) {
+              var ga = document.createElement('a');
+              ga.href = gc.href;
+              ga.className = 'bm-nav-dropdown-item bm-nav-submenu-item';
+              if (isCurrent(gc.href)) { ga.className += ' active'; anyActive = true; }
+              ga.setAttribute('data-ja', gc.label);
+              ga.setAttribute('data-en', gc.labelEn);
+              ga.textContent = currentLang === 'en' ? gc.labelEn : gc.label;
+              sub.appendChild(ga);
+            });
+
+            /* サブメニューは項目を包む入れ物側に持たせる（a の中に置くと入れ子リンクになる） */
+            var holder = document.createElement('div');
+            holder.className = 'bm-nav-submenu-wrap';
+            ca.className += ' bm-nav-has-sub';
+            holder.appendChild(ca);
+            holder.appendChild(sub);
+            colEl.appendChild(holder);
+            return;
+          }
+
           colEl.appendChild(ca);
         });
         mega.appendChild(colEl);

@@ -370,6 +370,10 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   padding: 24px 28px;
   gap: 24px;
   transform: translateX(-50%) translateY(0);
+  /* 開いた後だけ overflow を解除する。閉じている間は hidden のままなので
+     max-height のスライドアニメーションは保たれる。
+     ⚠️ hidden のままだと第3階層(.bm-nav-submenu)が枠外で切れて表示されない（2026-08-30） */
+  overflow: visible;
 }
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:hover .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:focus-within .bm-nav-megamenu {
@@ -411,6 +415,82 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 }
 .bm-nav-megamenu-item.active {
   background: rgba(232, 85, 0, 0.08);
+}
+
+/* ===== メガメニュー内のサブメニュー（第3階層・2026-08-30） =====
+   「制作事例（一覧）」にホバーすると右側にカテゴリ7本が開く。
+   項目自体はリンクのままなので、押せば /works へ遷移できる。 */
+.bm-nav-submenu-wrap {
+  position: relative;
+}
+.bm-nav-megamenu-item.bm-nav-has-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* 右向きの矢印で「奥がある」ことを示す */
+.bm-nav-megamenu-item.bm-nav-has-sub::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-left: 10px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: .5;
+  flex: 0 0 auto;
+}
+.bm-nav-submenu {
+  position: absolute;
+  top: -8px;
+  left: 100%;
+  min-width: 200px;
+  padding: 8px 0;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  box-shadow: 0 16px 32px -8px rgba(26, 26, 26, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-4px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+  z-index: 2;
+}
+.bm-nav-submenu-wrap:hover .bm-nav-submenu,
+.bm-nav-submenu-wrap:focus-within .bm-nav-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.bm-nav-submenu-item {
+  display: block;
+  padding: 10px 18px;
+  font-size: 14px;
+  color: var(--bm-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bm-nav-submenu-item:hover {
+  background: rgba(232, 85, 0, 0.05);
+  color: var(--bm-accent);
+}
+.bm-nav-submenu-item.active {
+  background: rgba(232, 85, 0, 0.08);
+  color: var(--bm-accent);
+}
+/* 画面右端で見切れる場合は左側に出す */
+@media (max-width: 1100px) {
+  .bm-nav-submenu {
+    left: auto;
+    right: 100%;
+    transform: translateX(4px);
+  }
+  .bm-nav-submenu-wrap:hover .bm-nav-submenu,
+  .bm-nav-submenu-wrap:focus-within .bm-nav-submenu {
+    transform: translateX(0);
+  }
 }
 @media (max-width: 880px) {
   .bm-nav-megamenu {
@@ -4632,6 +4712,25 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     border-bottom: 1px solid #ededed;
     font-size: 15px;
   }
+  /* サブメニューはドロワーでは畳まず、もう一段字下げして並べる。
+     ホバーが無いうえ、親項目はリンク(/works)なのでタップすると遷移してしまい、
+     開く操作を割り当てられないため常時表示にする */
+  .bm-nav.open .bm-nav-submenu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    min-width: 0;
+    padding: 0;
+  }
+  .bm-nav.open .bm-nav-megamenu-item.bm-nav-has-sub::after {
+    transform: rotate(135deg);   /* 下向き＝この下に続く、を示す */
+  }
   /* モバイル専用CTAリンク: LINE + 電話 (ハンバーガーメニュー末尾) */
   .bm-nav.open .bm-nav-mobile-cta {
     display: flex;
@@ -4714,6 +4813,19 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-nav.open .bm-nav-dropdown-item:active {
     background: rgba(235, 82, 0, 0.06);
+  }
+  /* 第3階層(カテゴリ)は親項目よりさらに字下げして階層を示す。
+     ⚠️ .bm-nav-dropdown-item と同じ詳細度なので、必ずこのルールより後ろに置くこと
+     （前に置くと padding-left:44px に負けて親子が同じ位置に並ぶ・2026-08-30） */
+  .bm-nav.open .bm-nav-submenu-item {
+    padding-left: 62px;
+    min-height: 50px;
+    font-size: 14px;
+  }
+  .bm-nav.open .bm-nav-submenu-item::before {
+    left: 42px;
+    width: 8px;
+    opacity: .55;
   }
   /* メガメニュー: モバイルではドロワー内インライン展開（絶対配置をキャンセル） */
   .bm-nav.open .bm-nav-megamenu {
