@@ -419,22 +419,9 @@
       body.appendChild(el('span', 'art-card__title', item.title, item.titleEn));
       body.appendChild(el('span', 'art-card__summary', item.summary, item.summaryEn));
 
-      /* カードに出すタグは画風（＝この人の絵の方向性）を優先 */
-      var tagWrap = document.createElement('span');
-      tagWrap.className = 'art-card__tags';
-      (item.styleTags || []).slice(0, 3).forEach(function(tag) {
-        tagWrap.appendChild(el('span', 'art-card__tag', tag, EN[tag]));
-      });
-      body.appendChild(tagWrap);
-
-      /* 用途は色を変えて別行に出す（比較の主軸になるため） */
-      var useWrap = document.createElement('span');
-      useWrap.className = 'art-card__uses';
-      (item.usecaseTags || []).slice(0, 3).forEach(function(tag) {
-        useWrap.appendChild(el('span', 'art-card__use', tag, EN[tag]));
-      });
-      body.appendChild(useWrap);
-
+      /* タグはカードに出さず、詳細モーダル内にだけ表示する。
+         一覧は「絵＋画風の見出し」で見比べる場所にして、
+         タグの読み込みは詳細を開いてからにするため */
       body.appendChild(el('span', 'art-card__more', 'この作家を詳しく見る', 'View this artist'));
       card.appendChild(body);
 

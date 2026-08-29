@@ -512,53 +512,30 @@
   min-width: 0;
 }
 
+/* 見出しは1〜2行で揺れるので、2行ぶんの高さを確保して
+   カード下端の「詳しく見る」の位置を全枚で揃える */
 .art-card__title {
   font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
   font-size: var(--fs-lg);
   font-weight: 900;
   line-height: 1.4;
   color: var(--lpv2-ink, #0a0a0a);
+  min-height: calc(1.4em * 2);
 }
 
+/* 説明文は2〜3行で揺れる。flex:1 で下端の「詳しく見る」を揃え、
+   3行を上限にして行数差でカード高さがばらつくのを抑える */
 .art-card__summary {
   font-size: var(--fs-sm);
   line-height: 1.8;
   color: var(--bm-text-muted);
   flex: 1;
-}
-
-.art-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.art-card__tag {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--lpv2-accent-soft, rgba(232,85,0,.12));
-  color: var(--lpv2-accent-deep, #b94100);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-/* 用途は画風タグと色を変えて別行に出す（比較の主軸なので目立たせる） */
-.art-card__uses {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.art-card__use {
-  padding: 4px 10px;
-  border: 1px solid var(--lpv2-accent, #e85500);
-  border-radius: 6px;
-  color: var(--lpv2-accent-deep, #b94100);
-  background: #fff;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  min-height: calc(1.8em * 3);
 }
 
 .art-card__more {
