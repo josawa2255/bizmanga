@@ -424,23 +424,142 @@ body.ba-page .bm-header-inner { position: relative; }
    6. 動画プレイヤー（右の主役）
    キャラの後ろへ少し入り込ませる。歪ませすぎない。
    ========================================================================== */
-.ba-player {
+.ba-device {
   position: absolute;
   /* 目標実測: 枠の x 50.0%〜98.8% / y 12.6%〜87.2%。右端はViewportぎりぎりまで使う */
-  right: -1.5%;
-  top: 12%;
+  right: -3%;
+  top: 14%;
   z-index: 3;
   /* 目標では枠が y12.6%〜87.2% を占める＝高さ約690px。画像比(1366:1009)から幅は約57%W。
      右へ寄せて、キャラが吹き出し（作品のメッセージ）を隠さないようにする。 */
   width: min(56%, 990px);
-  height: auto;
-  transform: perspective(1150px) rotateY(-6deg) rotateZ(-2.2deg);
+  /* 素材(1536×1024)の比率で高さを確保する。中の動画レイヤーが absolute なので
+     height:auto では潰れる */
+  aspect-ratio: 1536 / 1024;
+  /* フレーム素材そのものにオレンジ発光が描かれているため、
+     旧素材向けの強い drop-shadow は外し、地に馴染ませる程度に留める */
+  filter: drop-shadow(0 26px 52px rgba(0,0,0,.6));
+  /* スクロール演出で transform を毎フレーム更新する。JS側は --ba-dev-* を書き換え、
+     ここで合成する（layout を触らず transform だけで動かす §31） */
+  --ba-dev-x: 0px;
+  --ba-dev-y: 0px;
+  --ba-dev-scale: 1;
+  --ba-dev-ry: -6deg;
+  --ba-dev-rz: -2.2deg;
+  transform:
+    translate3d(var(--ba-dev-x), var(--ba-dev-y), 0)
+    perspective(1150px)
+    rotateY(var(--ba-dev-ry))
+    rotateZ(var(--ba-dev-rz))
+    scale(var(--ba-dev-scale));
   transform-origin: center center;
-  /* 映画的な発光。ネオン看板にはしない（§16） */
-  filter:
-    drop-shadow(0 0 26px rgba(255,110,0,.42))
-    drop-shadow(0 0 70px rgba(255,80,0,.28))
-    drop-shadow(0 28px 56px rgba(0,0,0,.62));
+}
+
+/* --- 画面レイヤー: フレームの穴に合わせて切り抜く ---
+   四隅は素材から実測（画像全体に対する%）:
+     左上 17.19,24.41 / 右上 90.04,10.06 / 右下 83.66,84.96 / 左下 7.94,79.98
+   clip-path は要素の矩形に対する%なので、フレーム画像と同じ寸法に置けば一致する。 */
+.ba-device__screen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;              /* フレーム(2)より下 */
+  overflow: hidden;
+  background: #000;
+  /* --ba-clip: 0=フレームの穴の形 / 1=矩形（フルスクリーン）。
+     JSがスクロール進捗でこの値を動かし、四隅が矩形へ開いていく。
+     フレームが消えるのと同時に「画面の穴」から「画面そのもの」へ変わる。 */
+  --ba-clip: 0;
+  -webkit-clip-path: polygon(
+    calc(17.19% - 17.19% * var(--ba-clip)) calc(24.41% - 24.41% * var(--ba-clip)),
+    calc(90.04% + 9.96% * var(--ba-clip))  calc(10.06% - 10.06% * var(--ba-clip)),
+    calc(83.66% + 16.34% * var(--ba-clip)) calc(84.96% + 15.04% * var(--ba-clip)),
+    calc(7.94% - 7.94% * var(--ba-clip))   calc(79.98% + 20.02% * var(--ba-clip))
+  );
+  clip-path: polygon(
+    calc(17.19% - 17.19% * var(--ba-clip)) calc(24.41% - 24.41% * var(--ba-clip)),
+    calc(90.04% + 9.96% * var(--ba-clip))  calc(10.06% - 10.06% * var(--ba-clip)),
+    calc(83.66% + 16.34% * var(--ba-clip)) calc(84.96% + 15.04% * var(--ba-clip)),
+    calc(7.94% - 7.94% * var(--ba-clip))   calc(79.98% + 20.02% * var(--ba-clip))
+  );
+}
+/* 画面内に置く動画/ポスターは、切り抜き四辺形を確実に覆うよう全面に敷く。
+   YouTubeはタイトル・ロゴ・関連動画を映像の外周に描くため、
+   一回り大きく敷いて周辺UIを切り抜きの外へ追い出す。 */
+.ba-device__screen > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 132%;
+  height: 132%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  object-fit: cover;
+}
+.ba-device__poster {
+  background-size: cover;
+  background-position: center;
+  background-color: #0a0a0a;
+}
+/* ==========================================================================
+   スクロール演出（sticky ステージ）
+   Hero を画面に貼り付け、直後の .ba-stage でスクロール距離を稼ぐ。
+   高さは動画の本数から JS が決める。スクロール自体は奪わない。
+   ========================================================================== */
+/* ⚠️ sticky が効かない2つの落とし穴を回避している。
+   ① 祖先の overflow: 共通CSSの html{overflow-x:hidden} がスクロールコンテナを
+      作ってしまい sticky が無効化される。このページだけ clip に変える
+      （clip は overflow-x:hidden と同じく横スクロールを止めるが、
+       スクロールコンテナを作らないので sticky が生きる）。
+   ② スクロール余白: Hero と .ba-stage を1つのラッパーに入れ、その中で貼り付ける。 */
+html:has(body.ba-page) { overflow-x: clip; }
+/* ⚠️ body 側にも overflow-x:hidden が効いており、これもスクロールコンテナを作る。
+      html だけ直しても sticky は効かない（実測で確認）。 */
+body.ba-page { overflow-x: clip; }
+.ba-scroll-wrap { position: relative; }
+/* ⚠️ 登場アニメーション(.ba-anim .ba-device)は transform を animation で設定するため、
+   インラインの transform（スクロール演出）より優先されてしまう。
+   演出が始まったらアニメーションを外し、transform の主導権を JS 側へ渡す。 */
+.ba-hero--sticky .ba-device,
+.ba-hero--sticky .ba-copy,
+.ba-hero--sticky .ba-character { animation: none !important; }
+
+.ba-hero--sticky {
+  position: sticky;
+  /* ⚠️ top はヘッダー高ではなく 0。ヘッダーぶんを引くと
+     「Hero高 = 可動域」になって留まる余地が無くなり、sticky が効かなく見える。 */
+  top: 0;
+  height: 100vh;
+  min-height: 0;
+  /* sticky 時は margin-top を使わない（ラッパー先頭に貼り付ける） */
+  margin-top: 0;
+  /* sticky の間だけ z-index を上げ、後続セクションの上に載せる */
+  z-index: 4;
+}
+/* ヘッダーぶんの余白はラッパー側で確保し、Hero自身は画面いっぱいに貼る */
+.ba-scroll-wrap { padding-top: var(--ba-header-h); }
+.ba-stage { position: relative; pointer-events: none; }
+
+/* 演出で毎フレーム動く要素にだけ will-change を付ける（§32） */
+.ba-device,
+.ba-device__screen,
+.ba-device__frame { will-change: transform, opacity, clip-path; }
+
+.ba-device__frame { transition: opacity .12s linear; }
+
+/* 動画が画面全体になった状態。フレームの発光を消し、余計な影も外す */
+.ba-device__screen.is-full { background: #000; }
+/* 映像が画面全体になる瞬間は、デバイスの影も外して"画面そのもの"に見せる */
+.ba-hero--sticky .ba-device:has(.is-full) { filter: none; }
+
+/* --- フレーム画像: 画面部分が透過した素材を最前面に --- */
+.ba-device__frame {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* 波形装飾（プレイヤー周辺・下部）— 主役にしない */
@@ -464,14 +583,14 @@ body.ba-page .bm-header-inner { position: relative; }
 
 .ba-anim .ba-copy      { animation: ba-fade-up   .9s cubic-bezier(.22,1,.36,1) both; }
 .ba-anim .ba-character { animation: ba-fade-char 1.05s cubic-bezier(.22,1,.36,1) .12s both; }
-.ba-anim .ba-player    { animation: ba-fade-left 1.05s cubic-bezier(.22,1,.36,1) .06s both; }
+.ba-anim .ba-device    { animation: ba-fade-left 1.05s cubic-bezier(.22,1,.36,1) .06s both; }
 .ba-anim .ba-wave-deco--player { animation: ba-pulse 6.5s ease-in-out 1.4s infinite; }
 
 /* 動きを減らす設定を尊重（アクセシビリティ） */
 @media (prefers-reduced-motion: reduce) {
   .ba-anim .ba-copy,
   .ba-anim .ba-character,
-  .ba-anim .ba-player,
+  .ba-anim .ba-device,
 }
 
 /* ==========================================================================
@@ -483,7 +602,7 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-copy      { width: 32%; top: 12%; }
   /* 狭い幅ではキャラを小さく・右へ寄せて、CTAとモニターの居場所を確保する */
   .ba-character { left: 30%; width: 29%; }
-  .ba-player    { width: min(52%, 830px); right: 0.5%; top: 12%; }
+  .ba-device    { width: min(52%, 830px); right: 0.5%; top: 12%; }
 }
 /* 1280px: テキストとキャラが重ならない・CTAが折り返さないことを担保 */
 @media (max-width: 1360px) {
@@ -491,7 +610,7 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-copy      { width: 33%; max-width: 440px; top: 11.5%; }
   .ba-lead      { font-size: clamp(28px, 2.6vw, 38px); }
   .ba-character { left: 31%; width: 29%; }
-  .ba-player    { width: min(51%, 760px); right: 0.5%; top: 12%; }
+  .ba-device    { width: min(51%, 760px); right: 0.5%; top: 12%; }
  /* 狭い幅では説明を落とし、4列の横並びを維持 */
 }
 
@@ -601,7 +720,7 @@ body.ba-page .bm-header-inner { position: relative; }
   .ba-title   { order: 2; container-type: inline-size; }
   .ba-lead    { order: 3; }
   .ba-sub     { order: 4; }
-  .ba-player  { order: 5; }   /* 説明文の直後に動画（最重要） */
+  .ba-device  { order: 5; }   /* 説明文の直後に動画（最重要） */
   .ba-media   { order: 6; }
   .ba-character { order: 0; } /* absolute なので順序は無関係 */
   .ba-eyebrow {
@@ -652,7 +771,7 @@ body.ba-page .bm-header-inner { position: relative; }
   }
 
   /* --- 動画モニター: 中央・ほぼ全幅。傾きは取って正対させる --- */
-  .ba-player {
+  .ba-device {
     display: block;
     position: static;
     width: calc(100% - clamp(36px, 10vw, 64px));

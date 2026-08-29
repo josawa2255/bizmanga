@@ -196,11 +196,22 @@
           </ul>
         </div>
 
-        <!-- ===== 右：動画プレイヤー（キャラクターの後ろに回り込む） ===== -->
-        <img class="ba-player"
-             src="/material/images/biz-anime/hero-player.webp"
-             alt="ビズアニメの制作イメージ。ビジネスシーンの映像が動画プレイヤーで再生されている"
-             width="1366" height="1009" fetchpriority="high" decoding="async">
+        <!-- ===== 右：動画デバイス（キャラクターの後ろに回り込む） =====
+             下: 動画レイヤー（clip-path で画面の四辺形に切り抜く）
+             上: フレーム画像（画面部分が透過したPNG由来のWebP）
+             四隅の座標は素材から実測: 17.19/24.41 → 90.04/10.06 → 83.66/84.96 → 7.94/79.98 (%) -->
+        <div class="ba-device" id="baDevice">
+          <div class="ba-device__screen" id="baScreen">
+            <!-- 動画はJSが必要になった時だけ差し込む（LCP対策・§23/§24）。
+                 それまではポスター画像を表示する。 -->
+            <div class="ba-device__poster" id="baPoster" role="img"
+                 aria-label="ビズアニメの制作事例"></div>
+          </div>
+          <img class="ba-device__frame"
+               src="/material/images/biz-anime/hero-device-frame.webp"
+               alt="" aria-hidden="true"
+               width="1536" height="1024" fetchpriority="high" decoding="async">
+        </div>
 
         <!-- 波形装飾（プレイヤー右上） -->
         <svg class="ba-wave-deco ba-wave-deco--player" viewBox="0 0 300 40" fill="none" aria-hidden="true" preserveAspectRatio="none">
