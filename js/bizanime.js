@@ -177,22 +177,52 @@
     requestAnimationFrame(function () { measureBase(); update(); });
 
     var current = -1;      // いま画面に出している動画の index
-    var ticking = false;
 
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
+    /* --- 慣性スムージング ---
+       スクロール位置へ1:1で即追従させるとトラックパッドの段付きが
+       そのまま見えて機械的な動きになる。目標進捗(target)へ毎フレーム
+       14%ずつ寄せることで、ヌルッとした「気持ちいい」追従にする。
+       スクロール自体は奪っていない（描画だけが柔らかく遅れて付いてくる） */
+    var target = 0;
+    var smooth = 0;
+    var rafId  = null;
+
+    function computeTarget() {
+      /* 進捗はラッパー（Hero+ステージ）全体で測る。
+         ⚠️ ステージ基準にすると、ステージが画面に達するまでの最初の1画面分
+            （約100vh）のスクロールが進捗0のままになり、「スクロールし始めても
+            反応しない」死に区間が生まれる（実際に指摘された）。
+            ラッパー基準なら最初の1pxから進捗が動く。 */
+      var rect = wrap.getBoundingClientRect();
+      var total = wrap.offsetHeight - window.innerHeight;
+      if (total <= 0) return 0;
+      return Math.min(1, Math.max(0, -rect.top / total));
     }
 
-    function update() {
-      ticking = false;
+    function onScroll() {
+      target = computeTarget();
+      if (rafId === null) rafId = requestAnimationFrame(tick);
+    }
 
-      var rect = stage.getBoundingClientRect();
-      var total = stage.offsetHeight - window.innerHeight;
-      if (total <= 0) return;
-      // ステージ内の進捗 0〜1
-      var p = Math.min(1, Math.max(0, -rect.top / total));
+    function tick() {
+      smooth += (target - smooth) * 0.14;
+      if (Math.abs(target - smooth) < 0.0005) {
+        smooth = target;
+        render(smooth);
+        rafId = null;      // 収束したらループを止める（無駄なrAFを回さない）
+        return;
+      }
+      render(smooth);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function update() {           // 互換: 即時反映が必要な箇所（初期化・resize）用
+      target = computeTarget();
+      smooth = target;
+      render(smooth);
+    }
+
+    function render(p) {
 
       // 動画1本あたりの区間長
       var seg = 1 / main.length;
@@ -244,7 +274,7 @@
       device.style.setProperty('--ba-dev-rz', rz.toFixed(2) + 'deg');
 
       // フレームだけを消す（動画は残す）＝ iPad から映像へ移行する瞬間
-      var frameOpacity = 1 - fade;
+      var frameOpacity = 1 - easeInOut(fade);   // フレーム消滅も柔らかく
       if (shrink > 0) frameOpacity = Math.max(frameOpacity, easeInOut(shrink)); // 戻す
       if (frame) frame.style.opacity = frameOpacity.toFixed(3);
 
@@ -255,7 +285,7 @@
       // コピーとキャラはスクロール開始とともに退場させる。
       // ⚠️ .ba-copy はスマホで display:contents（箱を持たない）ため、
       //    親に opacity を掛けても効かない。個別要素に掛ける。
-      var c = Math.min(1, p / (seg * 0.4));
+      var c = easeInOut(Math.min(1, p / (seg * 0.4)));   // 退場も柔らかく
       fadeEls.forEach(function (el) {
         el.style.opacity = (1 - c).toFixed(3);
         var dir = el.classList.contains('ba-character') ? 30 : -24;
