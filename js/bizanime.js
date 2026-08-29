@@ -260,11 +260,17 @@
         character.style.transform = 'translate3d(' + (40 * c).toFixed(1) + 'px,0,0)';
       }
 
-      // 出番の動画を差し替える
+      // 出番の動画を差し替える。
+      // 初回(idx=0)だけはページ読込完了まで遅らせ、ポスター表示を先に立たせる（LCP対策 §24）。
+      // スクロールが始まっていれば読込完了を待たずに生成する（体験優先）。
       if (idx !== current) {
-        current = idx;
-        swapVideo(idx, main);
-        preload(idx + 1, main);   // 次の1本だけ先読み（§23）
+        var deferFirst = (current === -1 && idx === 0 &&
+                          document.readyState !== 'complete' && p === 0);
+        if (!deferFirst) {
+          current = idx;
+          swapVideo(idx, main);
+          preload(idx + 1, main);   // 次の1本だけ先読み（§23）
+        }
       }
     }
 
@@ -308,6 +314,9 @@
       measureBase();   // 幅が変わると素の寸法も変わる
       onScroll();
     }, { passive: true });
+    // 初回の動画生成はページ読込完了まで遅らせている（LCP対策）。
+    // 読込完了時に一度 update を回して、遅延していた生成を発火させる。
+    window.addEventListener('load', onScroll, { passive: true });
     update();
   }
 
