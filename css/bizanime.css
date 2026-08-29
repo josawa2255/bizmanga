@@ -261,7 +261,16 @@ body.ba-page .bm-header-inner { position: relative; }
   /* 日本語の改行を文節で切る（memory feedback_jp_line_break） */
   word-break: auto-phrase;
   line-break: strict;
-  text-shadow: 0 2px 24px rgba(0,0,0,.6);
+  /* 白文字の輪郭に黒フチを纏わせて、背景の絵と分離する（2026-08-29 指示）。
+     ⚠️ -webkit-text-stroke は字の内側も削るため字面が痩せる。paint-order は
+        SVG専用でHTMLテキストには効かない。そこで text-shadow を8方向に重ねて
+        フチを作り、外側にだけ黒を乗せる。最後の2本は背景から浮かせる用。 */
+  text-shadow:
+     2px  0   0 rgba(5,5,5,.95),  -2px  0   0 rgba(5,5,5,.95),
+     0    2px 0 rgba(5,5,5,.95),   0   -2px 0 rgba(5,5,5,.95),
+     2px  2px 0 rgba(5,5,5,.95),  -2px  2px 0 rgba(5,5,5,.95),
+     2px -2px 0 rgba(5,5,5,.95),  -2px -2px 0 rgba(5,5,5,.95),
+     0 2px 18px rgba(0,0,0,.8),    0 0 44px rgba(0,0,0,.55);
 }
 
 /* --- 補足文 --- */
@@ -293,11 +302,11 @@ body.ba-page .bm-header-inner { position: relative; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  /* 目標ではCTAがHeroの主要要素の一つとしてかなり目立つ（§9） */
-  height: clamp(64px, 5vw, 76px);
-  padding: 0 34px;
-  border-radius: 10px;
-  font-size: clamp(16px, 1.2vw, 19px);
+  /* 主役はキービジュアル。CTAは主張しすぎない大きさに抑える（2026-08-29 指示） */
+  height: clamp(50px, 3.6vw, 58px);
+  padding: 0 24px;
+  border-radius: 9px;
+  font-size: clamp(14px, 1vw, 16px);
   font-weight: 700;
   letter-spacing: .02em;
   white-space: nowrap;
@@ -306,10 +315,10 @@ body.ba-page .bm-header-inner { position: relative; }
 }
 /* Primary — オレンジ */
 .ba-btn--primary {
-  min-width: 240px;
+  min-width: 190px;
   color: var(--ba-white);
   background: linear-gradient(135deg, #ff5800, #ff7900);
-  box-shadow: 0 10px 30px rgba(255,88,0,.32);
+  box-shadow: 0 8px 22px rgba(255,88,0,.28);
 }
 .ba-btn--primary:hover {
   transform: translateY(-3px);
@@ -334,8 +343,8 @@ body.ba-page .bm-header-inner { position: relative; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px; height: 30px;
-  flex: 0 0 30px;
+  width: 24px; height: 24px;
+  flex: 0 0 24px;
   border-radius: 50%;
   background: rgba(255,255,255,.2);
 }
