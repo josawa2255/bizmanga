@@ -15,7 +15,7 @@
 }
 
 .art-container {
-  max-width: 1360px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 var(--container-pad);
 }
@@ -88,15 +88,35 @@
   opacity: .96;
 }
 
-/* PCでは画像の縦横比そのままを見せる（見切れゼロ）。
-   min-height はコピー量に合わせた下限として効かせる */
+/* PCでは Hero 枠そのものを画像の縦横比(2000:666)にして、見切れも余白も出さない。
+   ⚠️ .art-hero__bg は absolute のまま（relative に変えると bg と inner の高さが
+   足し算されて Hero が倍近く伸びる）。高さは .art-hero の aspect-ratio が決める。 */
 @media (min-width: 900px) {
+  /* ヘッダーは position:fixed なので、その高さぶん下げないと Hero 上部が隠れる。
+     aspect-ratio は画像部分にだけ効かせたいので、padding-top で押し下げ、
+     box-sizing の都合で高さは calc に含める */
+  .art-hero {
+    /* ヘッダー(position:fixed / 72px)の下から画像を始める。
+       画像部分だけを 2000:666 に保つため、その 72px は padding で足す
+       （box-sizing: border-box なので height に含まれる） */
+    padding-top: 72px;
+    /* 画像部分の高さ = 幅 x 666/2000。100vw 基準にすると縦スクロールバーぶん
+       ずれるので、aspect-ratio は使わず vw で直接指定する */
+    height: calc(100vw * 666 / 2000 + 72px);
+    background: linear-gradient(90deg, #fff 0%, #fff 38%, #fdf6ee 100%);
+  }
+  .art-hero__bg {
+    top: 72px;                       /* 画像もヘッダーの下から */
+  }
   .art-hero__bg img {
     object-fit: contain;
     object-position: right center;
   }
-  .art-hero {
-    background: linear-gradient(90deg, #fff 0%, #fff 38%, #fdf6ee 100%);
+  .art-hero__inner {
+    min-height: 0;               /* 高さは aspect-ratio 側に任せる */
+    height: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
@@ -406,11 +426,9 @@
   .art-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+
 @media (min-width: 1080px) {
-  .art-grid { grid-template-columns: repeat(4, 1fr); }
-  /* 4列は1枚が細くなるので、内側の余白と行間を詰める */
-  .art-card__body { gap: 6px; padding: 14px; }
-  .art-card__title { font-size: var(--fs-md); }
+  .art-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 .art-card {
@@ -839,11 +857,13 @@
   }
 }
 
-/* 極小端末だけ1列（2列だと1枚150px未満になり絵が読めない） */
-@media (max-width: 380px) {
-  .art-grid {
-    grid-template-columns: 1fr;
-  }
+/* スマホは2列を維持する（1列にすると1枚が大きすぎて見比べられない）。
+   極小端末でも2列のまま、余白と文字だけ詰める */
+@media (max-width: 400px) {
+  .art-grid { gap: 10px; }
+  .art-card__body { padding: 10px; gap: 5px; }
+  .art-card__title { font-size: var(--fs-sm); }
+  .art-card__summary { font-size: 11px; line-height: 1.6; }
 }
 
 /* ===== モーション配慮 ===== */
@@ -858,4 +878,80 @@
   .art-btn:hover {
     transform: none;
   }
+}
+
+/* ===== 追従CTA（.bm-fab）をこのページだけ小さくする =====
+   共通コンポーネント（js/bm-nav.js が全ページに生成）だが、幅200px×3個=600pxあり
+   カードの1列目に被って作例が見えなくなる。
+   このページでは既定をアイコンだけの丸ボタンにして、押した時だけラベルを開く。
+   ⚠️ body.art-page でスコープしているので他ページの .bm-fab は一切変わらない
+   （前例: css/bizanime.css の body.ba-page .bm-fab） */
+body.art-page .bm-fab {
+  gap: 10px;
+  left: 16px;
+  bottom: 16px;
+}
+
+/* 既定＝アイコンのみの円形。ラベルは開いた時だけ出す */
+body.art-page .bm-fab__btn {
+  --bm-fab-w: 56px;
+  --bm-fab-h: 56px;
+  border-radius: 50%;
+  transition: width .22s cubic-bezier(.34,1.4,.64,1), border-radius .22s ease;
+  overflow: hidden;
+}
+
+/* 畳んでいる間はアイコンを常時見せる（元CSSは hover で入れ替える作り） */
+body.art-page .bm-fab:not(.is-open) .bm-fab__text { opacity: 0; }
+body.art-page .bm-fab:not(.is-open) .bm-fab__icon-box { top: 0; }
+
+/* 開いた状態＝元の横長ボタンに戻す */
+body.art-page .bm-fab.is-open .bm-fab__btn {
+  --bm-fab-w: 190px;
+  border-radius: 999px;
+}
+body.art-page .bm-fab.is-open .bm-fab__text { opacity: 1; }
+
+/* 開閉トグル */
+.art-fab-toggle {
+  pointer-events: auto;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--lpv2-ink, #0a0a0a);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.art-fab-toggle svg {
+  width: 22px;
+  height: 22px;
+  transition: transform .22s ease;
+}
+
+.art-fab-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.art-fab-toggle:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* SP は画面が狭いので更に小さく */
+@media (max-width: 720px) {
+  body.art-page .bm-fab__btn {
+    --bm-fab-w: 48px;
+    --bm-fab-h: 48px;
+  }
+  body.art-page .bm-fab.is-open .bm-fab__btn {
+    --bm-fab-w: 150px;
+  }
+  .art-fab-toggle { width: 38px; height: 48px; }
 }

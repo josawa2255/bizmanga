@@ -91,10 +91,10 @@
 | 画像 | `material/images/biz-anime/hero-{character,player,bg}.webp` | 生成PNGをトリム＋WebP化（計約540KB） |
 
 ### グリッド
-PC(1080px〜) 4列 → タブレット(720px〜) 3列 → 2列 → 極小(380px以下) 1列。
-⚠️ `auto-fit` + `minmax(268px)` だと 1240px 幅で3列止まりになるため、段階を明示指定している。
-4列でカードが細くなるぶん、1080px以上では `.art-card__body` の余白と見出しサイズを詰めている。
-コンテナは `max-width: 1360px`（4列を成立させるため 1240px から拡張）。
+**PC 3列 / SP 2列**（720px以上=3列、それ未満=2列）。
+4列も試したが1枚が小さく作例が見比べづらいため3列に戻した（2026-08-29）。
+スマホは1列にすると1枚が大きすぎて比較にならないので**2列を維持**し、
+400px以下では余白と文字だけ詰める。
 
 ### Hero 構成（3レイヤーの重なり）
 左コピー（BIZ ANIME / キャッチ / CTA / 媒体）→ 中央キャラクター → 右動画プレイヤー。
@@ -210,11 +210,28 @@ CRM連携するなら用途列の追加が必要。
   タグを全部出すとジャンル19件で画面が埋まり、カードが下に押し出されるため。
   ⚠️ **畳んだ状態でも選択中のタグは必ず表示する**（選んだものが隠れると何で絞ったか分からなくなる）
 
-### Hero
+### Hero ⚠️高さの決め方に注意
 素材は `hero-artists.webp`（2000×666 の横長）。
-⚠️ **`object-fit: cover` だと右端のキャラクターが見切れる**。
-PC（900px以上）は `contain` + `object-position: right center` で全体を見せ、
-背景をグラデーションで埋めている。SPは `cover` + 右寄せ。
+**`object-fit: cover` だと右端のキャラクターが見切れる**ため、PC（900px以上）は
+`contain` + `object-position: right center` で全体を見せる。
+
+高さは **`height: calc(100vw * 666 / 2000 + 72px)`** で決めている（72px = 固定ヘッダー分）。
+ここは3回踏み抜いたので理由を残す:
+- `min-height` を大きめに置くと `contain` の上下に余白が出る（画像480pxに対し枠682px）
+- `.art-hero__bg` を `position: relative` に変えると **bg と inner の高さが足し算**され、
+  Hero が倍近く（1170px）に伸びる。**bg は absolute のまま**にすること
+- `aspect-ratio` と `height` を併記すると競合して画像が潰れる（480px→405px）
+- ヘッダーは `position: fixed` なので、72px ぶん `padding-top` で押し下げないと
+  Hero 上部がヘッダーに隠れる
+
+### 追従CTA（.bm-fab）の縮小
+共通CTA（`js/bm-nav.js` が全ページに生成）は幅200px×3個=600pxあり、
+カードの1列目に被って作例が見えない。このページでは
+**既定をアイコンのみの丸ボタン（56px）に畳み、トグルで開く**。
+- CSSは `body.art-page` にスコープ済み＝**他26ページの .bm-fab は一切変わらない**
+  （前例: `css/bizanime.css` の `body.ba-page .bm-fab`）
+- トグルは `js/artists.js` が生成。`.bm-fab` は bm-nav.js が load 後に body へ挿すため、
+  **MutationObserver で待ってから**差し込む（即時 querySelector だと取り逃す）
 
 ### 画像の作り方（再現手順）
 営業資料PDFから `pdfimages -png` で抽出している。注意点:

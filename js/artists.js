@@ -641,6 +641,58 @@
     renderCards();
   });
 
+  /* ===== 追従CTA（.bm-fab）の開閉 =====
+     共通CTAは幅200px×3個=600pxあり、カードの1列目に被って作例が隠れる。
+     このページでは既定をアイコンのみに畳み、トグルで開くようにする（CSS側は
+     body.art-page にスコープ済みなので他ページの .bm-fab は変わらない）。
+     .bm-fab は bm-nav.js が load 後に body へ挿す＝ここでは未生成のことがあるため待つ。 */
+  function setupFabToggle(fab) {
+    if (!fab || fab.querySelector('.art-fab-toggle')) return;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'art-fab-toggle';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', '相談メニューを開く');
+
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '3');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    poly.setAttribute('points', '9 6 15 12 9 18');   /* > 。開くと180度回って < */
+    svg.appendChild(poly);
+    btn.appendChild(svg);
+
+    btn.addEventListener('click', function() {
+      var open = fab.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.setAttribute('aria-label', open ? '相談メニューを閉じる' : '相談メニューを開く');
+    });
+
+    fab.appendChild(btn);
+  }
+
+  var fabNow = document.querySelector('.bm-fab');
+  if (fabNow) {
+    setupFabToggle(fabNow);
+  } else {
+    /* bm-nav.js の挿入を待つ。取り逃すと巨大なCTAが出たままになるので監視する */
+    var mo = new MutationObserver(function() {
+      var f = document.querySelector('.bm-fab');
+      if (f) { setupFabToggle(f); mo.disconnect(); }
+    });
+    mo.observe(document.body, { childList: true });
+    window.addEventListener('load', function() {
+      var f = document.querySelector('.bm-fab');
+      if (f) { setupFabToggle(f); mo.disconnect(); }
+    });
+  }
+
   /* CRM 連携時の入口。CREATORS と同じ形の配列を渡せば差し替わる */
   window.bmArtists = {
     setData: function(list) {
