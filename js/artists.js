@@ -449,6 +449,13 @@
   }
 
   /* ===== フィルタ描画 ===== */
+  /* タグを全部出すと（特にジャンル19件）画面が埋まって選びづらいので、
+     既定は各軸 VISIBLE_CHIPS 件までにして、残りは「すべて見る」で開く。
+     選択中のタグは畳んだ状態でも必ず見せる（選んだものが隠れると混乱するため）。 */
+  var VISIBLE_CHIPS = 6;
+  var expanded = {};
+  FILTERS.forEach(function(f) { expanded[f.key] = false; });
+
   function renderFilters() {
     if (!filterWrap) return;
     filterWrap.textContent = '';
@@ -463,16 +470,27 @@
       });
       if (!values.length) return;
 
+      var isOpen = expanded[f.key];
+      var shownValues;
+      if (isOpen || values.length <= VISIBLE_CHIPS) {
+        shownValues = values;
+      } else {
+        /* 先頭 N 件 + 選択済み（Nより後ろにあるもの）を必ず含める */
+        shownValues = values.slice(0, VISIBLE_CHIPS);
+        selected[f.key].forEach(function(v) {
+          if (shownValues.indexOf(v) === -1) shownValues.push(v);
+        });
+      }
+      var hiddenCount = values.length - shownValues.length;
+
       var row = document.createElement('div');
       row.className = 'art-filter__row';
-
-      var head = el('span', 'art-filter__label', f.label, f.labelEn);
-      row.appendChild(head);
+      row.appendChild(el('span', 'art-filter__label', f.label, f.labelEn));
 
       var chips = document.createElement('div');
       chips.className = 'art-filter__chips';
 
-      values.forEach(function(v) {
+      shownValues.forEach(function(v) {
         var on = selected[f.key].indexOf(v) !== -1;
         var btn = el('button', 'art-chip' + (on ? ' is-active' : ''), v, EN[v]);
         btn.type = 'button';
@@ -487,6 +505,30 @@
         chips.appendChild(btn);
       });
 
+      /* 開閉ボタン。畳めるものが無ければ出さない */
+      if (hiddenCount > 0 || isOpen) {
+        var more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'art-more';
+        more.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if (isOpen) {
+          more.setAttribute('data-ja', '閉じる');
+          more.setAttribute('data-en', 'Close');
+          more.textContent = isEn() ? 'Close' : '閉じる';
+        } else {
+          var ja = 'すべて見る（+' + hiddenCount + '）';
+          var en = 'Show all (+' + hiddenCount + ')';
+          more.setAttribute('data-ja', ja);
+          more.setAttribute('data-en', en);
+          more.textContent = isEn() ? en : ja;
+        }
+        more.addEventListener('click', function() {
+          expanded[f.key] = !expanded[f.key];
+          renderFilters();
+        });
+        chips.appendChild(more);
+      }
+
       row.appendChild(chips);
       filterWrap.appendChild(row);
     });
@@ -494,7 +536,10 @@
 
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      FILTERS.forEach(function(f) { selected[f.key] = []; });
+      FILTERS.forEach(function(f) {
+        selected[f.key] = [];
+        expanded[f.key] = false;   /* 展開も畳んで初期状態に戻す */
+      });
       renderFilters();
       renderCards();
     });

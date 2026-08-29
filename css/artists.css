@@ -15,7 +15,7 @@
 }
 
 .art-container {
-  max-width: 1240px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 var(--container-pad);
 }
@@ -324,6 +324,34 @@
   outline-offset: 2px;
 }
 
+/* 「すべて見る（+N）」。チップと並ぶがタグではないので枠線を持たせない */
+.art-more {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  background: none;
+  color: var(--lpv2-accent, #e85500);
+  font-family: var(--lpv2-font-sans, 'Noto Sans JP', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .art-more:hover {
+    color: var(--lpv2-accent-deep, #b94100);
+  }
+}
+
+.art-more:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 .art-result {
   text-align: center;
   font-size: var(--fs-sm);
@@ -366,10 +394,23 @@
 /* ===== 4. 画風グリッド ===== */
 /* auto-fit + minmax で、PC 4→3列 / タブレット2列 / SP1列 が
    breakpoint なしで連続的に切り替わる */
+/* PC 4列 → タブレット3→2列 → SP 1列。
+   auto-fit だと 1240px 幅では3列止まりになるため、段階を明示指定する */
 .art-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(268px, 100%), 1fr));
-  gap: clamp(16px, 2vw, 28px);
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 1.6vw, 24px);
+}
+
+@media (min-width: 720px) {
+  .art-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1080px) {
+  .art-grid { grid-template-columns: repeat(4, 1fr); }
+  /* 4列は1枚が細くなるので、内側の余白と行間を詰める */
+  .art-card__body { gap: 6px; padding: 14px; }
+  .art-card__title { font-size: var(--fs-md); }
 }
 
 .art-card {
@@ -798,8 +839,8 @@
   }
 }
 
-/* 2列を維持したい小さめ端末向け（カードが細くなりすぎない下限） */
-@media (max-width: 420px) {
+/* 極小端末だけ1列（2列だと1枚150px未満になり絵が読めない） */
+@media (max-width: 380px) {
   .art-grid {
     grid-template-columns: 1fr;
   }
