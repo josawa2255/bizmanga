@@ -90,6 +90,72 @@
     ]
   }
   </script>
+  <script type="application/ld+json" id="artistsItemList">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": "https://bizmanga.contentsx.jp/artists#artistlist",
+  "name": "ビズマンガ 在籍漫画家一覧",
+  "numberOfItems": 11,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "異世界・ファンタジーの縦読み"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "少年漫画・学園／アクション"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "キャラクターイラスト・ビズキャラ開発"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "レトロポップ・4コマ／企業広報"
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "name": "劇画・重厚タッチ／経営者ストーリー"
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "name": "ビジネス人物描写／採用・研修"
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "name": "実録・企業漫画／ドキュメンタリー"
+    },
+    {
+      "@type": "ListItem",
+      "position": 8,
+      "name": "恋愛・ドラマ性の縦読み／エッセイ"
+    },
+    {
+      "@type": "ListItem",
+      "position": 9,
+      "name": "アニメ品質の作画・3DCG"
+    },
+    {
+      "@type": "ListItem",
+      "position": 10,
+      "name": "女性向け恋愛漫画（横読み）"
+    },
+    {
+      "@type": "ListItem",
+      "position": 11,
+      "name": "ビジネスドラマ調〜マスコット4コマ"
+    }
+  ]
+}
+</script>
 </head>
 <body class="art-page">
   <!-- ===== ヘッダー（共通nav.jsで生成） ===== -->
@@ -168,7 +234,106 @@
         <!-- 漫画家カード（JSで生成） -->
         <div class="art-grid" id="artGrid">
           <!-- BUILD:ARTISTS_GRID -->
-          <!-- /BUILD:ARTISTS_GRID -->
+        <button type="button" class="art-card" data-creator-id="A" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">A</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-a.webp" alt="異世界・ファンタジーの縦読みの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">異世界・ファンタジーの縦読み</span>
+            <span class="art-card__summary">異世界ファンタジーを縦読みで読ませる作家。キャラクターデザインからネームまで一貫して対応できます。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="B" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">B</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-b.webp" alt="少年漫画・学園／アクションの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">少年漫画・学園／アクション</span>
+            <span class="art-card__summary">少年漫画テイストの読み切りを手がける作家。学園もの・アクションの見せゴマに強みがあります。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="C" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">C</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-c.webp" alt="キャラクターイラスト・ビズキャラ開発の作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">キャラクターイラスト・ビズキャラ開発</span>
+            <span class="art-card__summary">カラーのキャラクターイラストが主戦場。自社キャラクターを立てたSNS運用にも対応できます。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="D" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">D</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-d.webp" alt="レトロポップ・4コマ／企業広報の作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">レトロポップ・4コマ／企業広報</span>
+            <span class="art-card__summary">レトロポップな色使いで企業広報を描く作家。4コマ・パンフレット漫画・書籍装丁まで対応します。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="E" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">E</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-e.webp" alt="劇画・重厚タッチ／経営者ストーリーの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">劇画・重厚タッチ／経営者ストーリー</span>
+            <span class="art-card__summary">経営者の評伝や重いテーマを、緻密な劇画タッチで描く作家。実績30年のベテランです。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="F" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">F</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-f.webp" alt="ビジネス人物描写／採用・研修の作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">ビジネス人物描写／採用・研修</span>
+            <span class="art-card__summary">採用・研修漫画のビジネス人物描写を得意とする作家。短納期の案件にも対応します。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="G" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">G</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-g.webp" alt="実録・企業漫画／ドキュメンタリーの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">実録・企業漫画／ドキュメンタリー</span>
+            <span class="art-card__summary">実際の出来事をドキュメンタリータッチで再現する作家。単行本の実績もあります。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="H" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">H</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-h.webp" alt="恋愛・ドラマ性の縦読み／エッセイの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">恋愛・ドラマ性の縦読み／エッセイ</span>
+            <span class="art-card__summary">恋愛やドラマ性で読ませる作家。コミックエッセイの作画も長期連載で担当しています。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="I" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">I</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-i.webp" alt="アニメ品質の作画・3DCGの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">アニメ品質の作画・3DCG</span>
+            <span class="art-card__summary">アニメの原画・3DCGディレクションまで手がける作家。メカ・背景の描き込みが要る案件に。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="J" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">J</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-j.webp" alt="女性向け恋愛漫画（横読み）の作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">女性向け恋愛漫画（横読み）</span>
+            <span class="art-card__summary">日常のときめきを描くラブコメ作家。商業連載の実績が複数あります。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+        <button type="button" class="art-card" data-creator-id="K" aria-haspopup="dialog">
+          <span class="art-card__label" aria-hidden="true">K</span>
+          <span class="art-card__media"><img class="art-card__img" src="https://cms.contentsx.jp/wp-content/uploads/2026/08/creator-k.webp" alt="ビジネスドラマ調〜マスコット4コマの作例" loading="lazy" decoding="async" width="400" height="300"></span>
+          <span class="art-card__body">
+            <span class="art-card__title">ビジネスドラマ調〜マスコット4コマ</span>
+            <span class="art-card__summary">ビジネスドラマ調からマスコット4コマまで、幅広いタッチに対応できる作家です。</span>
+            <span class="art-card__more">この作家を詳しく見る</span>
+          </span>
+        </button>
+      <!-- /BUILD:ARTISTS_GRID -->
         </div>
 
         <div class="art-empty" id="artEmpty" data-ja="条件に合う漫画家が見つかりませんでした。タグを減らしてお試しください。" data-en="No artists matched. Try removing some tags.">条件に合う漫画家が見つかりませんでした。タグを減らしてお試しください。</div>
