@@ -534,7 +534,13 @@
     }
     if (!ALLOWED.test(v.embed || '')) return null;
     var ifr = document.createElement('iframe');
-    ifr.src = v.embed + (v.provider === 'youtube' ? '?autoplay=1&rel=0&playsinline=1' : '');
+    // YouTube: 標準UI（タイトルバー/関連動画/ロゴ）を出さないため controls=0 で埋め込み、
+    // 操作は下の自前バー（音声・元の動画を開く）に寄せる。
+    // ⚠️ ミュート必須。音あり自動再生はブロックされることがあり、その場合
+    //    一時停止のまま止まり、YouTubeのタイトル・関連動画UIが全面に出てしまう
+    //    （まさに消したいUI）。確実に再生を始めてから、音はボタンでONにする。
+    ifr.src = v.embed + (v.provider === 'youtube'
+      ? '?autoplay=1&mute=1&rel=0&playsinline=1&controls=0&enablejsapi=1&iv_load_policy=3' : '');
     ifr.title = v.title || '制作事例の動画';
     ifr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     ifr.setAttribute('frameborder', '0');
@@ -548,7 +554,30 @@
     if (!el) return;
     lastFocus = opener || null;
     modalPlayer.appendChild(el);
+    modalPlayer.className = 'ba-modal__player ba-modal__player--' + (v.provider || 'other');
     if (modalTitle) modalTitle.textContent = v.title || '';
+    // 自前バー: 音声トグルはYouTubeのみ（mp4はnativeコントロール/Driveは制御不可）
+    var mAudio = document.getElementById('baModalAudio');
+    var mLink  = document.getElementById('baModalLink');
+    if (mAudio) {
+      mAudio.hidden = (v.provider !== 'youtube');
+      mAudio.classList.remove('is-on');        // ミュートで開始（確実に自動再生させるため）
+      mAudio.setAttribute('aria-pressed', 'false');
+      mAudio.onclick = function () {
+        var on = !mAudio.classList.contains('is-on');
+        mAudio.classList.toggle('is-on', on);
+        mAudio.setAttribute('aria-pressed', on ? 'true' : 'false');
+        ytCommand(el, on ? 'unMute' : 'mute');
+        if (on) ytCommand(el, 'setVolume', [100]);
+      };
+    }
+    if (mLink) {
+      var watch = v.provider === 'youtube'
+        ? 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.video_id)
+        : (v.provider === 'drive' ? v.embed.replace('/preview', '/view') : v.src);
+      mLink.href = watch || '#';
+      mLink.hidden = !watch;
+    }
     modal.hidden = false;
     document.body.classList.add('ba-modal-open');
     var closeBtn = document.getElementById('baModalClose');

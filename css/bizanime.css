@@ -1052,3 +1052,59 @@ body.ba-modal-open { overflow: hidden; }
 .ba-audio .ba-audio__icon-on  { display: none; }
 .ba-audio.is-on .ba-audio__icon-on  { display: block; }
 .ba-audio.is-on .ba-audio__icon-off { display: none; }
+
+/* ==========================================================================
+   YouTube標準UIの抑制（2026-08-30 指示: タイトルバー/関連動画/ロゴを見せない）
+   ========================================================================== */
+/* 演出中の動画は触れなくする。クリックで一時停止すると
+   YouTube側のタイトル・「その他の動画」が出てしまうため。
+   （タイトルバー自体は132%クロップで最初から枠外に追い出してある） */
+.ba-device__screen > iframe { pointer-events: none; }
+
+/* モーダルのYouTubeも同様に触れなくし、操作は自前バーに寄せる */
+.ba-modal__player--youtube > iframe { pointer-events: none; }
+
+/* --- モーダル下部の自前バー --- */
+.ba-modal__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 12px;
+}
+.ba-modal__bar .ba-modal__title { margin: 0; min-width: 0; }
+.ba-modal__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+.ba-modal__audio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,120,0,.6);
+  background: rgba(5,5,5,.7);
+  color: #fff;
+  cursor: pointer;
+}
+.ba-modal__audio.is-on { background: rgba(255,90,0,.9); border-color: transparent; }
+.ba-modal__audio .ba-audio__icon-on { display: none; }
+.ba-modal__audio.is-on .ba-audio__icon-on { display: block; }
+.ba-modal__audio.is-on .ba-audio__icon-off { display: none; }
+.ba-modal__audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-modal__yt {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: rgba(255,255,255,.8);
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 100px;
+  padding: 9px 14px;
+  white-space: nowrap;
+}
+.ba-modal__yt:hover,
+.ba-modal__yt:focus-visible { color: var(--ba-orange-3); border-color: var(--ba-orange-3); }

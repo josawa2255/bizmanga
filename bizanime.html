@@ -270,7 +270,19 @@
         <button type="button" class="ba-modal__close" id="baModalClose"
                 aria-label="閉じる" data-close>&times;</button>
         <div class="ba-modal__player" id="baModalPlayer"></div>
-        <p class="ba-modal__title" id="baModalTitle"></p>
+        <div class="ba-modal__bar">
+          <p class="ba-modal__title" id="baModalTitle"></p>
+          <div class="ba-modal__tools">
+            <!-- YouTubeの標準UIを消した代わりの最小コントロール -->
+            <button type="button" class="ba-modal__audio" id="baModalAudio"
+                    aria-label="音声の切り替え" aria-pressed="true">
+              <svg class="ba-audio__icon-off" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7z"/></svg>
+              <svg class="ba-audio__icon-on" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-.9 7-4.5 7-8.8s-3-7.9-7-8.8z"/></svg>
+            </button>
+            <a class="ba-modal__yt" id="baModalLink" href="#" target="_blank" rel="noopener"
+               data-ja="元の動画を開く" data-en="Open original">元の動画を開く</a>
+          </div>
+        </div>
       </div>
     </div>
 
