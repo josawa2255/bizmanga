@@ -343,7 +343,12 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
-  width: min(900px, calc(100vw - 32px));
+  /* 列数に応じて幅を決める。固定900pxだと1列しかないビズ書庫で
+     右に635pxの空白ができ、カードが左に寄って見える上に
+     ホバー判定も無駄に広がっていた（2026-08-30）。
+     列は 265px 固定・gap 24px・左右padding 28px で組む。 */
+  width: max-content;
+  max-width: calc(100vw - 32px);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 4px;
@@ -359,7 +364,9 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
               transform 0.25s cubic-bezier(0.2, 0, 0, 1);
   z-index: 1000;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* 列数は中身に追従させる（1列のビズ書庫は狭く、3列のサービスは従来どおり） */
+  grid-auto-flow: column;
+  grid-auto-columns: 265px;
   gap: 0;
 }
 /* ⚠️ :hover は入れない。入れるとカーソルが外れた瞬間に閉じ始めてしまい、

@@ -451,15 +451,53 @@
     var subEl = wrap.querySelector('.bm-nav-submenu');
     var PAD = 24;   /* 経路のブレを吸収する余白 */
 
-    var insideZone = function(x, y) {
-      var i = wrap.getBoundingClientRect();
-      var boxes = [i];
+    /* ① 項目・サブメニューの上にいるか（素直な矩形判定） */
+    var overElements = function(x, y) {
+      var boxes = [wrap.getBoundingClientRect()];
       if (subEl) boxes.push(subEl.getBoundingClientRect());
-      var left = Math.min.apply(null, boxes.map(function(b) { return b.left; })) - PAD;
-      var right = Math.max.apply(null, boxes.map(function(b) { return b.right; })) + PAD;
-      var top = Math.min.apply(null, boxes.map(function(b) { return b.top; })) - PAD;
-      var bottom = Math.max.apply(null, boxes.map(function(b) { return b.bottom; })) + PAD;
-      return x >= left && x <= right && y >= top && y <= bottom;
+      return boxes.some(function(b) {
+        return x >= b.left - PAD && x <= b.right + PAD &&
+               y >= b.top - PAD && y <= b.bottom + PAD;
+      });
+    };
+
+    /* ② サブメニューへ「向かっているか」を進行方向で判定する。
+       Amazon のメガドロップダウンで使われている三角形（prediction cone）方式。
+       現在位置とサブメニューの手前側の上下の角で三角形を作り、
+       次の位置がその中にあれば「サブメニューへ向かっている」とみなして開いたままにする。
+       斜め移動が途中で別の項目の上を通っても閉じないのはこのため。
+       参考: https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown */
+    var headingToSub = function(prevX, prevY, x, y) {
+      if (!subEl) return false;
+      var s = subEl.getBoundingClientRect();
+      if (s.width === 0) return false;
+
+      /* サブメニューが右に出るか左に出るかで、手前側の辺が変わる */
+      var toRight = s.left >= wrap.getBoundingClientRect().right - 1;
+      var edgeX = toRight ? s.left : s.right;
+      var apexTop = { x: edgeX, y: s.top - PAD };
+      var apexBottom = { x: edgeX, y: s.bottom + PAD };
+
+      /* 進行方向が逆（サブメニューから遠ざかる）なら判定しない */
+      if (toRight && x < prevX - 1) return false;
+      if (!toRight && x > prevX + 1) return false;
+
+      var sign = function(ax, ay, bx, by, cx, cy) {
+        return (ax - cx) * (by - cy) - (bx - cx) * (ay - cy);
+      };
+      var d1 = sign(x, y, prevX, prevY, apexTop.x, apexTop.y);
+      var d2 = sign(x, y, apexTop.x, apexTop.y, apexBottom.x, apexBottom.y);
+      var d3 = sign(x, y, apexBottom.x, apexBottom.y, prevX, prevY);
+      var hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+      var hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+      return !(hasNeg && hasPos);   /* 全て同じ符号＝三角形の内側 */
+    };
+
+    var lastX = null, lastY = null;
+    var insideZone = function(x, y) {
+      var ok = overElements(x, y) || headingToSub(lastX == null ? x : lastX, lastY == null ? y : lastY, x, y);
+      lastX = x; lastY = y;
+      return ok;
     };
 
     /* サブメニューが開いている間は、親のメガメニューも開いたままにする。
