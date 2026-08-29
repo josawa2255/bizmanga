@@ -241,10 +241,12 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: max-height 0.25s cubic-bezier(0.2, 0, 0, 1),
-              opacity 0.2s cubic-bezier(0.2, 0, 0, 1),
-              padding 0.25s cubic-bezier(0.2, 0, 0, 1),
-              transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  /* 閉じるときの指定。開くときは下の is-mega-open 側で上書きして速いまま保つ。
+     ゆっくり消えることで、カードへ手を伸ばす時間を稼ぐ（2026-08-30） */
+  transition: max-height 0.45s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.4s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.45s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.45s cubic-bezier(0.2, 0, 0, 1);
   z-index: 1000;
 }
 /* Swiss style: セクションラベル */
@@ -340,7 +342,10 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 }
 .bm-nav-megamenu {
   position: absolute;
-  top: 100%;
+  /* wrap には padding-bottom:24px（ホバーブリッジ）があり、top:100% だと
+     その下端＝ヘッダー下端より9px下から始まって隙間が見える。
+     ブリッジは残したまま、カードだけヘッダー下端まで引き上げる（2026-08-30） */
+  top: calc(100% - 9px);
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
   /* 列数に応じて幅を決める。固定900pxだと1列しかないビズ書庫で
@@ -374,6 +379,11 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
    is-mega-open を付け外して制御する（:focus-within はキーボード操作用に残す）。 */
 .bm-nav-megamenu-wrap.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap:focus-within .bm-nav-megamenu {
+  /* 開くのは速いまま（遅いと反応が鈍く感じるため） */
+  transition: max-height 0.25s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.18s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.25s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.25s cubic-bezier(0.2, 0, 0, 1);
   max-height: 80vh;
   opacity: 1;
   pointer-events: auto;

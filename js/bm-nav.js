@@ -543,7 +543,10 @@
      （実測: 外して60msで3分の1まで消えていた）、狙って動かさないと使えない。
      mouseenter で is-mega-open を付け、離れてから MEGA_CLOSE_DELAY だけ待って外す。
      ⚠️ ドロワー(モバイル)はアコーディオン方式なので触らない。 */
-  var MEGA_CLOSE_DELAY = 300;
+  /* CSS側の消えるアニメーション(0.45s)と合わせて体感を作る。
+     待機を長くしすぎると「閉じない」と感じるので、待機は短め・
+     フェードを長めにして、カードへ手を伸ばす時間を確保する。 */
+  var MEGA_CLOSE_DELAY = 160;
 
   nav.querySelectorAll('.bm-nav-megamenu-wrap').forEach(function(mw) {
     var megaTimer = null;
