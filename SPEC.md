@@ -187,6 +187,32 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 | JS | `js/artists.js` | `CREATORS` 配列 + カード/フィルタ描画 + モーダル。DOMは `createElement`+`textContent`（`innerHTML` 不使用＝CRM文字列が来てもXSSにならない） |
 | 画像 | `material/images/artists/` | Hero 1枚 + 作家11名 ×（サムネ1 + 作例3）＝45枚。約4MB |
 
+### WordPress 連携（2026-08-29 追加）⭐
+WP から追加・編集・並べ替えできる。**方式は works/column と同じ「静的ビルド」**。
+
+| 層 | 実体 |
+|---|---|
+| WP CPT | `cx_artist`（ビズマンガ親メニュー配下）。タイトル=画風の見出し、アイキャッチ=カードのサムネ |
+| WP タグ | `cx_artist_tag` を階層化し 親=分類(画風/用途/ジャンル/読者層/媒体) 子=実タグ |
+| WP メタ | 記号(A〜K) / 表示順 / 一言説明 / 特徴 / 代表作 / 活動歴 / 作例画像 |
+| API | `GET /wp-json/contentsx/v1/artists`（タグは分類ごとに振り分けて返す） |
+| ビルド | `tools/build-artists.py` → `js/artists-data.js` 生成 + `artists.html` に静的カードと ItemList JSON-LD を展開 |
+| 読み込み | `artists-data.js`（`window.BM_ARTISTS`）を `artists.js` より先に読む。空なら内蔵データにフォールバック |
+
+**並べ替え**: 編集画面の「表示順」に数値を入れる（10,20,30…）。
+同じ番号を入れると以降を自動で1つずつ後ろにずらすので、手で振り直す必要はない。
+管理画面の一覧にも「順」「記号」列を出し、既定の並びを表示順に揃えてある。
+
+⚠️ **ビルドは WP が空・不通のとき既存の出力を残して正常終了する**（終了コード0）。
+ビルド失敗で公開ページが空になる事故を防ぐため。0件で上書きしない。
+
+⚠️ **プラグインの本番反映は git push では行われない**。お名前.comのファイルマネージャーで
+`contentsx-cms.php` を手動アップロードする（BUGS #002）。リポジトリは
+`~/Documents/contentX/web/contentsx-wp-plugin/`（**このワークスペース外・PRIVATE**）。
+
+移行スクリプト: `tools/migrate-artists-to-wp.py`（内蔵データ11名と画像44枚をWPへ一括登録。
+`--dry-run` あり。同じ記号があれば更新するので再実行しても重複しない）。
+
 ### データ構造（差し替えポイント）⭐
 作家データは `js/artists.js` の **`CREATORS` 配列だけに閉じている**。
 1件のスキーマ: `id`(A〜K) / `slug` / `title` / `summary` / `thumbnail` / `gallery[]` /

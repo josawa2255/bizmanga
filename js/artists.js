@@ -284,6 +284,14 @@
     }
   ];
 
+  /* WordPress 由来のデータがあれば差し替える。
+     js/artists-data.js（tools/build-artists.py が生成）が先に読み込まれ
+     window.BM_ARTISTS を置いている。無ければ上の内蔵データで動く＝
+     WP が落ちてもページは白紙にならない。 */
+  if (Array.isArray(window.BM_ARTISTS) && window.BM_ARTISTS.length) {
+    CREATORS = window.BM_ARTISTS;
+  }
+
   /* ===== 絞り込み定義 ===== */
   /* CRM の creator_tags（category = style / genre / audience / medium）に対応。
      用途(usecase)だけは CRM に無く、営業資料の記述から付与している。 */
