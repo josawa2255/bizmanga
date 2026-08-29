@@ -381,6 +381,21 @@
         JSON.stringify({ event: 'command', func: func, args: args || [] }), '*');
     } catch (e) {}
   }
+  /* YouTubeの字幕を消す。動画側が「デフォルトで字幕ON」だと埋め込みにも
+     字幕が出るが、URLパラメータでは強制OFFにできない。プレイヤーAPIで
+     字幕モジュールごと外す（captions=新プレイヤー / cc=旧プレイヤー）。
+     プレイヤー初期化前のpostMessageは無視されるので、少し遅らせて2回送る。 */
+  function disableCaptions(iframe) {
+    ytCommand(iframe, 'unloadModule', ['captions']);
+    ytCommand(iframe, 'unloadModule', ['cc']);
+  }
+  function scheduleCaptionsOff(iframe) {
+    iframe.addEventListener('load', function () {
+      setTimeout(function () { disableCaptions(iframe); }, 600);
+    }, { once: true });
+    setTimeout(function () { disableCaptions(iframe); }, 1600);  // 既にloaded時の保険
+  }
+
   function applyAudio() {
     if (!currentEl || !currentV) return;
     if (currentEl.tagName === 'VIDEO') {
@@ -426,6 +441,7 @@
       c.remove();
     });
     if (el.parentNode !== screenE) screenE.appendChild(el);
+    if (el.tagName === 'IFRAME' && v.provider === 'youtube') scheduleCaptionsOff(el);
     currentEl = el;
     currentV  = v;
     updateAudioBtn();
@@ -586,6 +602,7 @@
     if (!el) return;
     lastFocus = opener || null;
     modalPlayer.appendChild(el);
+    if (el.tagName === 'IFRAME' && v.provider === 'youtube') scheduleCaptionsOff(el);
     modalPlayer.className = 'ba-modal__player ba-modal__player--' + (v.provider || 'other');
     if (modalTitle) modalTitle.textContent = v.title || '';
     // 自前バー: 音声トグルはYouTubeのみ（mp4はnativeコントロール/Driveは制御不可）
