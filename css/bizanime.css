@@ -1694,3 +1694,24 @@ body.ba-modal-open { overflow: hidden; }
   .ba-range-tile, .ba-range-tile.is-active { transition: none; transform: none; }
   .ba-faq-a { transition: none; }
 }
+
+/* ==========================================================================
+   タッチ端末のタップ対象を44px以上に（監査で32〜38pxだった。鉄則）
+   PCのコンパクトな見た目は維持し、粗いポインタ/SP幅でのみ底上げする
+   ========================================================================== */
+@media (max-width: 1024px), (pointer: coarse) {
+  .ba-chip {
+    min-height: 44px;
+    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .ba-mini-cta { min-height: 44px; }
+  .ba-range-view {
+    min-height: 44px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .ba-why-thumb { min-height: 60px; }   /* 16:9のまま十分なタップ面を確保 */
+}
