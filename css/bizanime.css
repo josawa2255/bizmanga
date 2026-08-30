@@ -10,9 +10,14 @@
   --ba-black:    #050505;
   --ba-ink:      #090909;
   --ba-charcoal: #111111;
-  --ba-orange:   #ff5a00;
-  --ba-orange-2: #ff6500;
-  --ba-orange-3: #ff7a00;
+  /* アクセント=黄色（2026-08-30 指示: このページだけオレンジではなく黄色）。
+     glow系のrgba()は --ba-accent-rgb を使う。
+     塗り（背景が黄色）になる場所の文字は必ず暗色（--ba-on-accent）にする */
+  --ba-accent:     #ffc400;
+  --ba-accent-2:   #ffd21a;
+  --ba-accent-3:   #ffdf4d;
+  --ba-accent-rgb: 255, 200, 20;
+  --ba-on-accent:  #171204;
   --ba-white:    #ffffff;
   /* 既存ヘッダー高（bizmanga.css .bm-header = 72px）と揃える */
   --ba-header-h: 72px;
@@ -109,8 +114,8 @@ body.ba-page .bm-header-inner { position: relative; }
   inset: 0;
   /* 目標は右側からオレンジ光が中央へ差し込む。現状より明確に強くする（§15） */
   background:
-    radial-gradient(ellipse 55% 70% at 96% 48%, rgba(255,110,0,.40), transparent 62%),
-    radial-gradient(circle at 72% 45%, rgba(255,90,0,.20), transparent 45%),
+    radial-gradient(ellipse 55% 70% at 96% 48%, rgba(var(--ba-accent-rgb),.40), transparent 62%),
+    radial-gradient(circle at 72% 45%, rgba(var(--ba-accent-rgb),.20), transparent 45%),
     linear-gradient(90deg, rgba(0,0,0,.97) 0%, rgba(0,0,0,.78) 40%, rgba(0,0,0,.34) 100%);
 }
 /* vignette（四隅を締めて中央へ視線を集める） */
@@ -138,7 +143,7 @@ body.ba-page .bm-header-inner { position: relative; }
   z-index: 2;
   pointer-events: none;
   opacity: .13;
-  background-image: radial-gradient(rgba(255,120,0,.9) 1px, transparent 1.6px);
+  background-image: radial-gradient(rgba(var(--ba-accent-rgb),.9) 1px, transparent 1.6px);
   background-size: 7px 7px;
   -webkit-mask-image: linear-gradient(105deg, transparent 30%, #000 58%, transparent 94%);
           mask-image: linear-gradient(105deg, transparent 30%, #000 58%, transparent 94%);
@@ -203,7 +208,7 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-eyebrow > span { white-space: nowrap; flex: 0 0 auto; }
 .ba-eyebrow em {
   font-style: normal;
-  color: var(--ba-orange-3);
+  color: var(--ba-accent-3);
 }
 /* コピー右へ伸びる音声波形（装飾。CSSのみ＝画像不要） */
 .ba-eyebrow-wave {
@@ -211,7 +216,7 @@ body.ba-page .bm-header-inner { position: relative; }
   min-width: 0; /* Flex子の潰れ防止（STYLE-GUIDE 鉄則） */
   height: 22px;
   opacity: .55;
-  color: var(--ba-orange);
+  color: var(--ba-accent);
 }
 
 /* --- ブランドタイトル BIZ ANIME --- */
@@ -235,9 +240,9 @@ body.ba-page .bm-header-inner { position: relative; }
 }
 .ba-title-biz   { color: var(--ba-white); }
 .ba-title-anime {
-  color: var(--ba-orange);
+  color: var(--ba-accent);
   /* 白→オレンジの視線移動を強調する、ごく淡いglow */
-  text-shadow: 0 0 38px rgba(255,90,0,.34);
+  text-shadow: 0 0 38px rgba(var(--ba-accent-rgb),.34);
 }
 .ba-title-ja {
   display: block;
@@ -316,13 +321,13 @@ body.ba-page .bm-header-inner { position: relative; }
 /* Primary — オレンジ */
 .ba-btn--primary {
   min-width: 190px;
-  color: var(--ba-white);
-  background: linear-gradient(135deg, #ff5800, #ff7900);
-  box-shadow: 0 8px 22px rgba(255,88,0,.28);
+  color: var(--ba-on-accent);   /* 黄色地に白文字はコントラスト不足 */
+  background: linear-gradient(135deg, var(--ba-accent), var(--ba-accent-2));
+  box-shadow: 0 8px 22px rgba(var(--ba-accent-rgb),.28);
 }
 .ba-btn--primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(255,88,0,.5), 0 0 28px rgba(255,110,0,.35);
+  box-shadow: 0 16px 40px rgba(var(--ba-accent-rgb),.5), 0 0 28px rgba(var(--ba-accent-rgb),.35);
 }
 /* Secondary — 透明＋オレンジ枠 */
 .ba-btn--ghost {
@@ -331,13 +336,13 @@ body.ba-page .bm-header-inner { position: relative; }
   background: rgba(9,9,9,.9);
   -webkit-backdrop-filter: blur(3px);
           backdrop-filter: blur(3px);
-  border: 1px solid rgba(255,110,0,.75);
+  border: 1px solid rgba(var(--ba-accent-rgb),.75);
 }
 .ba-btn--ghost:hover {
   transform: translateY(-3px);
-  background: rgba(255,110,0,.14);
-  border-color: var(--ba-orange-3);
-  box-shadow: 0 12px 32px rgba(255,90,0,.22);
+  background: rgba(var(--ba-accent-rgb),.14);
+  border-color: var(--ba-accent-3);
+  box-shadow: 0 12px 32px rgba(var(--ba-accent-rgb),.22);
 }
 .ba-btn-icon {
   display: inline-flex;
@@ -348,7 +353,7 @@ body.ba-page .bm-header-inner { position: relative; }
   border-radius: 50%;
   background: rgba(255,255,255,.2);
 }
-.ba-btn--ghost .ba-btn-icon { background: rgba(255,110,0,.18); }
+.ba-btn--ghost .ba-btn-icon { background: rgba(var(--ba-accent-rgb),.18); }
 .ba-btn-arrow { opacity: .8; }
 
 /* ==========================================================================
@@ -375,7 +380,7 @@ body.ba-page .bm-header-inner { position: relative; }
   white-space: nowrap;
 }
 .ba-media li + li { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.18); }
-.ba-media-icon { color: var(--ba-orange-3); flex: 0 0 auto; }
+.ba-media-icon { color: var(--ba-accent-3); flex: 0 0 auto; }
 .ba-media-badge {
   display: inline-flex;
   align-items: center;
@@ -416,7 +421,7 @@ body.ba-page .bm-header-inner { position: relative; }
   user-select: none;
   /* 薄いオレンジのリムライト。光らせすぎない（§9） */
   filter:
-    drop-shadow(0 0 26px rgba(255,90,0,.22))
+    drop-shadow(0 0 26px rgba(var(--ba-accent-rgb),.22))
     drop-shadow(0 18px 40px rgba(0,0,0,.55));
 }
 
@@ -545,6 +550,9 @@ body.ba-page { overflow-x: clip; }
 .ba-device__frame { will-change: transform, opacity, clip-path; }
 
 .ba-device__frame { transition: opacity .12s linear; }
+/* フレーム素材はオレンジ発光が焼き込まれている。黒は色相の影響を受けないため、
+   hue-rotate で発光だけを黄色へ寄せる（+24°: オレンジ~25°→イエロー~49°） */
+.ba-device__frame { filter: hue-rotate(24deg) saturate(1.05); }
 
 /* 動画が画面全体になった状態。フレームの発光を消し、余計な影も外す */
 .ba-device__screen.is-full { background: #000; }
@@ -567,7 +575,7 @@ body.ba-page { overflow-x: clip; }
   position: absolute;
   z-index: 2;
   pointer-events: none;
-  color: var(--ba-orange);
+  color: var(--ba-accent);
 }
 .ba-wave-deco--player { right: 6vw; top: 13%;  width: min(20vw, 300px); opacity: .5; }
 .ba-wave-deco--bottom { left: 42%;  bottom: 8%; width: min(26vw, 380px); opacity: .22; }
@@ -673,8 +681,8 @@ body.ba-page { overflow-x: clip; }
   /* 黒を主体にし、オレンジはキャラ背後と動画まわりだけに絞る */
   .ba-hero-bg::after {
     background:
-      radial-gradient(ellipse 62% 26% at 86% 16%, rgba(255,110,0,.30), transparent 66%),
-      radial-gradient(ellipse 76% 20% at 50% 54%, rgba(255,90,0,.14), transparent 70%),
+      radial-gradient(ellipse 62% 26% at 86% 16%, rgba(var(--ba-accent-rgb),.30), transparent 66%),
+      radial-gradient(ellipse 76% 20% at 50% 54%, rgba(var(--ba-accent-rgb),.14), transparent 70%),
       linear-gradient(180deg, rgba(0,0,0,.94) 0%, rgba(0,0,0,.8) 38%, rgba(0,0,0,.93) 100%);
   }
   .ba-hero-vignette { background: radial-gradient(ellipse 90% 62% at 50% 42%, transparent 46%, rgba(0,0,0,.6) 100%); }
@@ -767,7 +775,7 @@ body.ba-page { overflow-x: clip; }
        （画像は縦1513pxの全身。上から約50%＝腰の位置で切る） */
     -webkit-mask-image: linear-gradient(180deg, #000 40%, rgba(0,0,0,.6) 50%, transparent 60%);
             mask-image: linear-gradient(180deg, #000 40%, rgba(0,0,0,.6) 50%, transparent 60%);
-    filter: drop-shadow(0 0 22px rgba(255,90,0,.24)) drop-shadow(0 16px 34px rgba(0,0,0,.5));
+    filter: drop-shadow(0 0 22px rgba(var(--ba-accent-rgb),.24)) drop-shadow(0 16px 34px rgba(0,0,0,.5));
   }
 
   /* --- 動画モニター: 中央・ほぼ全幅 ---
@@ -783,8 +791,8 @@ body.ba-page { overflow-x: clip; }
     --ba-dev-ry: -4deg;    /* スマホは傾きを浅めに（正対まではJSが遷移させる） */
     --ba-dev-rz: -1.2deg;
     filter:
-      drop-shadow(0 0 20px rgba(255,110,0,.4))
-      drop-shadow(0 0 52px rgba(255,80,0,.24))
+      drop-shadow(0 0 20px rgba(var(--ba-accent-rgb),.4))
+      drop-shadow(0 0 52px rgba(var(--ba-accent-rgb),.24))
       drop-shadow(0 18px 36px rgba(0,0,0,.6));
   }
 
@@ -852,7 +860,7 @@ body.ba-page { overflow-x: clip; }
   font-size: clamp(11px, 1vw, 13px);
   font-weight: 700;
   letter-spacing: .28em;
-  color: var(--ba-orange-3);
+  color: var(--ba-accent-3);
 }
 .ba-cases-title {
   margin: 0;
@@ -891,7 +899,7 @@ body.ba-page { overflow-x: clip; }
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.09);
   background: #101010 center / cover no-repeat;
-  background-image: radial-gradient(circle at 50% 45%, rgba(255,90,0,.12), transparent 62%);
+  background-image: radial-gradient(circle at 50% 45%, rgba(var(--ba-accent-rgb),.12), transparent 62%);
   transition: border-color .25s, transform .25s;
 }
 .ba-case__play {
@@ -906,23 +914,23 @@ body.ba-page { overflow-x: clip; }
   border-radius: 50%;
   color: #fff;
   background: rgba(5,5,5,.62);
-  border: 1px solid rgba(255,120,0,.65);
+  border: 1px solid rgba(var(--ba-accent-rgb),.65);
   transition: background .25s, transform .25s;
 }
 .ba-case:hover .ba-case__thumb,
 .ba-case:focus-visible .ba-case__thumb {
-  border-color: rgba(255,120,0,.7);
+  border-color: rgba(var(--ba-accent-rgb),.7);
   transform: translateY(-3px);
 }
-.ba-case:hover .ba-case__play { background: rgba(255,90,0,.92); }
-.ba-case:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; border-radius: 12px; }
+.ba-case:hover .ba-case__play { background: rgba(var(--ba-accent-rgb),.94); color: var(--ba-on-accent); }
+.ba-case:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 3px; border-radius: 12px; }
 .ba-case__cat {
   display: block;
   margin: 12px 0 4px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .14em;
-  color: var(--ba-orange-3);
+  color: var(--ba-accent-3);
 }
 .ba-case__title {
   display: block;
@@ -970,8 +978,8 @@ body.ba-page { overflow-x: clip; }
   background: #000;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255,120,0,.35);
-  box-shadow: 0 0 60px rgba(255,90,0,.18), 0 30px 70px rgba(0,0,0,.7);
+  border: 1px solid rgba(var(--ba-accent-rgb),.35);
+  box-shadow: 0 0 60px rgba(var(--ba-accent-rgb),.18), 0 30px 70px rgba(0,0,0,.7);
 }
 .ba-modal__player > iframe,
 .ba-modal__player > video {
@@ -1001,7 +1009,7 @@ body.ba-page { overflow-x: clip; }
   cursor: pointer;
 }
 .ba-modal__close:hover,
-.ba-modal__close:focus-visible { border-color: var(--ba-orange-3); color: var(--ba-orange-3); }
+.ba-modal__close:focus-visible { border-color: var(--ba-accent-3); color: var(--ba-accent-3); }
 /* モーダル表示中は背面のスクロールを止める（モーダルの標準作法。演出のscroll lockとは別物） */
 body.ba-modal-open { overflow: hidden; }
 
@@ -1037,7 +1045,7 @@ body.ba-modal-open { overflow: hidden; }
   width: 48px;               /* タップ44px以上 */
   height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(255,120,0,.65);
+  border: 1px solid rgba(var(--ba-accent-rgb),.65);
   background: rgba(5,5,5,.72);
   color: #fff;
   cursor: pointer;
@@ -1045,9 +1053,9 @@ body.ba-modal-open { overflow: hidden; }
           backdrop-filter: blur(6px);
   transition: background .25s, border-color .25s, transform .2s;
 }
-.ba-audio:hover { transform: scale(1.06); border-color: var(--ba-orange-3); }
-.ba-audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
-.ba-audio.is-on { background: rgba(255,90,0,.9); border-color: transparent; }
+.ba-audio:hover { transform: scale(1.06); border-color: var(--ba-accent-3); }
+.ba-audio:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 3px; }
+.ba-audio.is-on { background: rgba(var(--ba-accent-rgb),.92); border-color: transparent; color: var(--ba-on-accent); }
 /* OFF時はミュートアイコン、ON時はスピーカーアイコンを表示 */
 .ba-audio .ba-audio__icon-on  { display: none; }
 .ba-audio.is-on .ba-audio__icon-on  { display: block; }
@@ -1098,16 +1106,16 @@ body.ba-modal-open { overflow: hidden; }
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid rgba(255,120,0,.6);
+  border: 1px solid rgba(var(--ba-accent-rgb),.6);
   background: rgba(5,5,5,.7);
   color: #fff;
   cursor: pointer;
 }
-.ba-modal__audio.is-on { background: rgba(255,90,0,.9); border-color: transparent; }
+.ba-modal__audio.is-on { background: rgba(var(--ba-accent-rgb),.92); border-color: transparent; color: var(--ba-on-accent); }
 .ba-modal__audio .ba-audio__icon-on { display: none; }
 .ba-modal__audio.is-on .ba-audio__icon-on { display: block; }
 .ba-modal__audio.is-on .ba-audio__icon-off { display: none; }
-.ba-modal__audio:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-modal__audio:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 3px; }
 
 /* ==========================================================================
    進捗バー（YouTube標準UIの代わりに残す唯一の要素 2026-08-30 指示）
@@ -1125,7 +1133,7 @@ body.ba-modal-open { overflow: hidden; }
   height: 100%;
   width: 0%;
   border-radius: 4px;
-  background: linear-gradient(90deg, #ff5800, #ff7a00);
+  background: linear-gradient(90deg, var(--ba-accent), var(--ba-accent-2));
   transition: width .25s linear;   /* infoDeliveryは約0.25秒間隔なので繋いで滑らかに */
 }
 .ba-modal__progress:hover { height: 6px; margin-top: 8px; }  /* YouTube風: ホバーで太く */
@@ -1151,7 +1159,7 @@ body.ba-modal-open { overflow: hidden; }
   height: 100%;
   width: 0%;
   border-radius: 3px;
-  background: linear-gradient(90deg, #ff5800, #ff7a00);
+  background: linear-gradient(90deg, var(--ba-accent), var(--ba-accent-2));
   transition: width .25s linear;
 }
 /* 画面が矩形に開き切った（=フレームが消えた）ときだけ出す */
@@ -1169,7 +1177,7 @@ body.ba-modal-open { overflow: hidden; }
 .ba-modal__badge {
   margin: 0;
   padding: 9px 16px 9px 13px;
-  border-left: 3px solid var(--ba-orange-3);
+  border-left: 3px solid var(--ba-accent-3);
   border-radius: 0 8px 8px 0;
   background: rgba(5,5,5,.72);
   -webkit-backdrop-filter: blur(6px);
@@ -1213,7 +1221,7 @@ body.ba-modal-open { overflow: hidden; }
   bottom: 8px;
   max-width: 70%;
   padding: 4px 9px 4px 7px;
-  border-left: 2px solid var(--ba-orange-3);
+  border-left: 2px solid var(--ba-accent-3);
   border-radius: 0 6px 6px 0;
   background: rgba(5,5,5,.78);
   color: rgba(255,255,255,.95);
@@ -1264,7 +1272,7 @@ body.ba-modal-open { overflow: hidden; }
   font-size: clamp(11px, 1vw, 13px);
   font-weight: 700;
   letter-spacing: .28em;
-  color: var(--ba-orange-3);
+  color: var(--ba-accent-3);
 }
 .ba-sec-title {
   margin: 0 0 14px;
@@ -1313,7 +1321,7 @@ body.ba-modal-open { overflow: hidden; }
   padding: 4px 9px;
   border-radius: 4px;
   background: rgba(5,5,5,.72);
-  border-left: 2px solid var(--ba-orange-3);
+  border-left: 2px solid var(--ba-accent-3);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -1322,7 +1330,7 @@ body.ba-modal-open { overflow: hidden; }
   transition: opacity 200ms;
   pointer-events: none;
 }
-.ba-now--idx { left: auto; right: 10px; border-left: 0; border-right: 2px solid var(--ba-orange-3); opacity: 1; }
+.ba-now--idx { left: auto; right: 10px; border-left: 0; border-right: 2px solid var(--ba-accent-3); opacity: 1; }
 .is-playing > .ba-now, .ba-vhost.is-playing .ba-now { opacity: 1; }
 
 /* --- ミニCTA共通 --- */
@@ -1332,9 +1340,9 @@ body.ba-modal-open { overflow: hidden; }
   gap: 6px;
   padding: 9px 16px;
   border-radius: 100px;
-  border: 1px solid rgba(255,120,0,.7);
-  background: rgba(255,90,0,.9);
-  color: #fff;
+  border: 1px solid rgba(var(--ba-accent-rgb),.7);
+  background: rgba(var(--ba-accent-rgb),.92);
+  color: var(--ba-on-accent);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .04em;
@@ -1344,9 +1352,9 @@ body.ba-modal-open { overflow: hidden; }
 }
 .ba-mini-cta:hover { transform: translateY(-2px); }
 .ba-mini-cta:active { transform: translateY(0); }
-.ba-mini-cta:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
-.ba-mini-cta--ghost { background: rgba(5,5,5,.5); border-color: rgba(255,255,255,.3); }
-.ba-mini-cta--ghost:hover { border-color: var(--ba-orange-3); color: var(--ba-orange-3); }
+.ba-mini-cta:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 3px; }
+.ba-mini-cta--ghost { background: rgba(5,5,5,.5); border-color: rgba(255,255,255,.3); color: #fff; }
+.ba-mini-cta--ghost:hover { border-color: var(--ba-accent-3); color: var(--ba-accent-3); }
 
 /* ==========================================================================
    USE CASE — 4パネル
@@ -1368,8 +1376,8 @@ body.ba-modal-open { overflow: hidden; }
 }
 .ba-uc-panel.is-active {
   flex-grow: var(--uc-active-grow);
-  border-color: rgba(255,120,0,.55);
-  box-shadow: 0 0 28px rgba(255,90,0,.14);
+  border-color: rgba(var(--ba-accent-rgb),.55);
+  box-shadow: 0 0 28px rgba(var(--ba-accent-rgb),.14);
 }
 .ba-uc-hit {
   display: block;
@@ -1382,7 +1390,7 @@ body.ba-modal-open { overflow: hidden; }
   cursor: pointer;
   font: inherit;
 }
-.ba-uc-hit:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: -2px; }
+.ba-uc-hit:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: -2px; }
 .ba-uc-media {
   display: block;
   aspect-ratio: 16 / 10;
@@ -1391,10 +1399,10 @@ body.ba-modal-open { overflow: hidden; }
 }
 .ba-uc-panel.is-active .ba-uc-media { filter: none; }
 .ba-uc-panel.is-empty .ba-uc-media {
-  background-image: radial-gradient(circle at 50% 40%, rgba(255,90,0,.14), transparent 70%);
+  background-image: radial-gradient(circle at 50% 40%, rgba(var(--ba-accent-rgb),.14), transparent 70%);
 }
 .ba-uc-info { display: block; padding: 14px 16px 6px; }
-.ba-uc-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-orange-3); margin-right: 8px; }
+.ba-uc-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-accent-3); margin-right: 8px; }
 .ba-uc-en { display: inline-block; font-size: clamp(12px, 1vw, 14px); font-weight: 700; letter-spacing: .08em; color: #fff; }
 .ba-uc-ja { display: block; margin-top: 2px; font-size: 11px; color: rgba(255,255,255,.6); }
 .ba-uc-copy {
@@ -1447,11 +1455,11 @@ body.ba-modal-open { overflow: hidden; }
 }
 .ba-why-item.is-active {
   opacity: 1;
-  border-left-color: var(--ba-orange-3);
+  border-left-color: var(--ba-accent-3);
   background: rgba(255,255,255,.03);
 }
-.ba-why-item:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 2px; }
-.ba-why-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-orange-3); margin-right: 10px; }
+.ba-why-item:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 2px; }
+.ba-why-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-accent-3); margin-right: 10px; }
 .ba-why-en { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: rgba(255,255,255,.85); }
 .ba-why-title { display: block; margin-top: 8px; font-size: clamp(15px, 1.25vw, 18px); font-weight: 700; color: #fff; line-height: 1.6; }
 .ba-why-sub { display: block; margin-top: 6px; font-size: 12.5px; color: rgba(255,255,255,.6); }
@@ -1472,7 +1480,7 @@ body.ba-modal-open { overflow: hidden; }
   padding: 0;
   transition: border-color 200ms, transform 200ms;
 }
-.ba-why-thumb:hover, .ba-why-thumb:focus-visible { border-color: var(--ba-orange-3); transform: translateY(-2px); }
+.ba-why-thumb:hover, .ba-why-thumb:focus-visible { border-color: var(--ba-accent-3); transform: translateY(-2px); }
 .ba-why-view { margin-top: 14px; }
 
 /* ==========================================================================
@@ -1499,10 +1507,10 @@ body.ba-modal-open { overflow: hidden; }
 }
 .ba-chip.is-on, .ba-chip[aria-pressed="true"] {
   color: #fff;
-  border-color: var(--ba-orange-3);
-  background: rgba(255,90,0,.18);
+  border-color: var(--ba-accent-3);
+  background: rgba(var(--ba-accent-rgb),.18);
 }
-.ba-chip:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-chip:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 3px; }
 .ba-range-wall {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1531,10 +1539,10 @@ body.ba-modal-open { overflow: hidden; }
   transition: border-color 240ms, box-shadow 240ms;
 }
 .ba-range-tile.is-active .ba-range-hit {
-  border-color: rgba(255,120,0,.6);
-  box-shadow: 0 0 26px rgba(255,90,0,.16);
+  border-color: rgba(var(--ba-accent-rgb),.6);
+  box-shadow: 0 0 26px rgba(var(--ba-accent-rgb),.16);
 }
-.ba-range-hit:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 2px; }
+.ba-range-hit:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: 2px; }
 .ba-range-cap {
   position: absolute;
   left: 10px;
@@ -1549,7 +1557,7 @@ body.ba-modal-open { overflow: hidden; }
   padding: 3px 8px;
   border-radius: 4px;
   background: rgba(5,5,5,.72);
-  color: var(--ba-orange-3);
+  color: var(--ba-accent-3);
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: .1em;
@@ -1598,7 +1606,7 @@ body.ba-modal-open { overflow: hidden; }
   background: rgba(255,255,255,.015);
   transition: border-color 220ms, background 220ms;
 }
-.ba-faq-item.is-open { border-color: rgba(255,120,0,.45); background: var(--faq-open-bg); }
+.ba-faq-item.is-open { border-color: rgba(var(--ba-accent-rgb),.45); background: var(--faq-open-bg); }
 .ba-faq-q { margin: 0; }
 .ba-faq-q button {
   display: flex;
@@ -1616,8 +1624,8 @@ body.ba-modal-open { overflow: hidden; }
   cursor: pointer;
   line-height: 1.6;
 }
-.ba-faq-q button:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: -2px; border-radius: 10px; }
-.ba-faq-num { flex: 0 0 auto; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--ba-orange-3); }
+.ba-faq-q button:focus-visible { outline: 2px solid var(--ba-accent-3); outline-offset: -2px; border-radius: 10px; }
+.ba-faq-num { flex: 0 0 auto; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--ba-accent-3); }
 .ba-faq-icon { flex: 0 0 auto; margin-left: auto; position: relative; width: 14px; height: 14px; }
 .ba-faq-icon::before, .ba-faq-icon::after {
   content: '';
@@ -1626,7 +1634,7 @@ body.ba-modal-open { overflow: hidden; }
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--ba-orange-3);
+  background: var(--ba-accent-3);
   transform: translateY(-50%);
   transition: transform var(--faq-anim);
 }
@@ -1662,7 +1670,7 @@ body.ba-modal-open { overflow: hidden; }
     max-width: 1280px;
     margin: 14px auto 0;
   }
-  .ba-uc-stage__media { aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid rgba(255,120,0,.4); }
+  .ba-uc-stage__media { aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid rgba(var(--ba-accent-rgb),.4); }
   .ba-uc-stage__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
   .ba-uc-stage__copy { margin: 0; font-size: 12.5px; color: rgba(255,255,255,.8); line-height: 1.6; }
 
