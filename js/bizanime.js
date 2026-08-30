@@ -778,7 +778,520 @@
   }
 
   /* ================================================================
-     6. 起動
+     6. 追加セクション共通基盤（USE CASE / WHY / RANGE / FAQ）
+     ---------------------------------------------------------------
+     方針:
+       - 動画は poster first。iframe/videoは active になった時だけ生成
+       - ページ全体で自動プレビューは同時1本（preview マネージャで強制）
+       - hover は (hover:hover) and (pointer:fine) の端末のみ
+       - reduced-motion / saveData では自動プレビューをしない
+     ================================================================ */
+
+  /* --- 調整ノブ（window.BA_TUNE から実行時に変更できる） --- */
+  var TUNE = {
+    USECASE_PREVIEW_DELAY: 160,   // hover後にプレビューを始めるまでのms
+    USECASE_EXPAND_RATIO:  2,     // activeパネルのflex-grow（2 → 40/20/20/20）
+    WHY_TRANSITION_MS:     340,   // WHYのステージ切替ms
+    RANGE_MAX_TILES:       12,    // RANGEに並べる最大枚数
+    FAQ_ANIMATION_MS:      220,   // アコーディオン開閉ms
+    SECTION_REVEAL_MS:     600    // セクション出現ms
+  };
+  window.BA_TUNE = TUNE;
+  document.documentElement.style.setProperty('--uc-active-grow', TUNE.USECASE_EXPAND_RATIO);
+  document.documentElement.style.setProperty('--why-transition', TUNE.WHY_TRANSITION_MS + 'ms');
+  document.documentElement.style.setProperty('--faq-anim', TUNE.FAQ_ANIMATION_MS + 'ms');
+  document.documentElement.style.setProperty('--sec-reveal', TUNE.SECTION_REVEAL_MS + 'ms');
+
+  var MQ_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var MQ_SP    = window.matchMedia('(max-width: 1024px)');
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
+  var noAutoPreview = reduceMotion || saveData;   // 軽量モード: 自動プレビュー禁止
+
+  /* --- プレビューマネージャ: ページ全体で同時1本を強制する --- */
+  var preview = {
+    host: null,
+    el:   null,
+    play: function (host, v) {
+      if (!host || !v || noAutoPreview) return;
+      if (v.provider === 'drive') return;   // DriveのプレビューUIは消せないので出さない
+      if (this.host === host) return;
+      this.stop();
+      var el = buildPlayer(v);              // muted autoplay（既存の安全経路を再利用）
+      if (!el) return;
+      if (el.tagName === 'IFRAME') scheduleCaptionsOff(el);
+      el.classList.add('ba-preview-player');
+      host.appendChild(el);
+      host.classList.add('is-playing');
+      this.host = host;
+      this.el = el;
+    },
+    stop: function () {
+      if (this.el) {
+        if (this.el.tagName === 'IFRAME') unwatchPlayer(this.el);
+        if (this.el.tagName === 'VIDEO') { try { this.el.pause(); } catch (e) {} }
+        try { this.el.remove(); } catch (e) {}
+      }
+      if (this.host) this.host.classList.remove('is-playing');
+      this.host = null;
+      this.el = null;
+    }
+  };
+
+  /* --- セクション可視管理: 画面外に出たらそのセクションのプレビューを止める --- */
+  var visibleSecs = {};
+  function watchSection(sec, onShow) {
+    if (!('IntersectionObserver' in window)) {
+      visibleSecs[sec.id] = true;
+      sec.classList.add('is-in');
+      if (onShow) onShow();
+      return;
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        visibleSecs[sec.id] = en.isIntersecting;
+        if (en.isIntersecting) {
+          sec.classList.add('is-in');
+          if (onShow) onShow();            // 見えたら現在activeのプレビューを起こす
+        } else if (preview.host && sec.contains(preview.host)) {
+          preview.stop();
+        }
+      });
+    }, { threshold: 0.12 });
+    io.observe(sec);
+  }
+
+  /* --- Hero演出の動画は、Heroが画面外に出たら一時停止する（同時再生の抑制） --- */
+  if ('IntersectionObserver' in window) {
+    var heroIO = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!currentEl) return;
+        if (currentEl.tagName === 'IFRAME') {
+          ytCommand(currentEl, en.isIntersecting ? 'playVideo' : 'pauseVideo');
+        } else if (currentEl.tagName === 'VIDEO') {
+          try { en.isIntersecting ? currentEl.play() : currentEl.pause(); } catch (e) {}
+        }
+      });
+    }, { threshold: 0.05 });
+    heroIO.observe(hero);
+  }
+
+  /* --- データ整形 --- */
+  function dedupePool(data) {
+    var seen = {};
+    var out = [];
+    (data.main || []).concat(data.cases || []).forEach(function (v) {
+      if (!v || !(v.embed || v.src)) return;
+      var key = v.video_id || v.src || v.embed;
+      if (seen[key]) return;
+      seen[key] = 1;
+      out.push(v);
+    });
+    return out;
+  }
+  function byCat(pool, cat) {
+    return pool.filter(function (v) { return v.category === cat; });
+  }
+  function pickBy(pool, regs, cat, used) {
+    for (var i = 0; i < regs.length; i++) {
+      var hit = pool.filter(function (v) {
+        return regs[i].test(v.title || '') && used.indexOf(v) === -1;
+      })[0];
+      if (hit) return hit;
+    }
+    return byCat(pool, cat).filter(function (v) { return used.indexOf(v) === -1; })[0] || null;
+  }
+
+  /* ================================================================
+     6a. USE CASE — 4パネル・シネマティック
+     ================================================================ */
+  var UC_DEFS = [
+    { cat: 'ADVERTISING', en: 'ADVERTISING',        ja: '広告',
+      copy: '広告導線に合わせて、つい見てしまう動きを設計。' },
+    { cat: 'VTUBER',      en: 'VTUBER / STREAMING', ja: '配信・VTuber',
+      copy: '待機時間まで、世界観の一部に。' },
+    { cat: 'MUSIC_VIDEO', en: 'MUSIC VIDEO',        ja: 'ミュージックビデオ',
+      copy: '音楽の印象を、動きで増幅する。' },
+    { cat: 'IP',          en: 'IP / ORIGINAL ANIME', ja: 'オリジナルアニメ',
+      copy: 'キャラクターと世界観を、ゼロから立ち上げる。' }
+  ];
+
+  function initUseCase(pool) {
+    var sec = document.getElementById('baUseCase');
+    var wrapP = document.getElementById('baUcPanels');
+    var stage = document.getElementById('baUcStage');
+    var stageMedia = document.getElementById('baUcStageMedia');
+    var stageCopy = document.getElementById('baUcStageCopy');
+    var stagePlay = document.getElementById('baUcStagePlay');
+    if (!sec || !wrapP || !pool.length) return;
+
+    var videos = UC_DEFS.map(function (d) { return byCat(pool, d.cat)[0] || null; });
+    var lockIdx = 0;
+    for (var i = 0; i < videos.length; i++) { if (videos[i]) { lockIdx = i; break; } }
+    var activeIdx = -1;
+    var hoverTimer = null;
+    var panels = [];
+
+    UC_DEFS.forEach(function (d, i) {
+      var v = videos[i];
+      var panel = document.createElement('div');
+      panel.className = 'ba-uc-panel' + (v ? '' : ' is-empty');
+
+      var hit = document.createElement('button');
+      hit.type = 'button';
+      hit.className = 'ba-uc-hit';
+      hit.setAttribute('aria-label', d.en + ' を選択');
+
+      var media = document.createElement('span');
+      media.className = 'ba-vhost ba-uc-media';
+      if (v) setThumbBg(media, v.poster);
+      var now = document.createElement('span');
+      now.className = 'ba-now';
+      now.textContent = 'NOW PLAYING';
+      media.appendChild(now);
+      hit.appendChild(media);
+
+      var info = document.createElement('span');
+      info.className = 'ba-uc-info';
+      var num = document.createElement('span');
+      num.className = 'ba-uc-num';
+      num.textContent = '0' + (i + 1);
+      var en = document.createElement('span');
+      en.className = 'ba-uc-en';
+      en.textContent = d.en;
+      var ja = document.createElement('span');
+      ja.className = 'ba-uc-ja';
+      ja.textContent = d.ja;
+      var copy = document.createElement('span');
+      copy.className = 'ba-uc-copy';
+      copy.textContent = v ? d.copy : '事例は現在準備中です。';
+      info.appendChild(num); info.appendChild(en); info.appendChild(ja); info.appendChild(copy);
+      hit.appendChild(info);
+      panel.appendChild(hit);
+
+      var ctas = document.createElement('span');
+      ctas.className = 'ba-uc-ctas';
+      if (v) {
+        var b1 = document.createElement('button');
+        b1.type = 'button';
+        b1.className = 'ba-mini-cta';
+        b1.textContent = 'プレビューを見る';
+        b1.addEventListener('click', function (e) { e.stopPropagation(); openModal(v, b1); });
+        var b2 = document.createElement('a');
+        b2.className = 'ba-mini-cta ba-mini-cta--ghost';
+        b2.href = '#baCases';
+        b2.textContent = '事例を見る';
+        ctas.appendChild(b1); ctas.appendChild(b2);
+      } else {
+        var b3 = document.createElement('a');
+        b3.className = 'ba-mini-cta ba-mini-cta--ghost';
+        b3.href = '/contact';
+        b3.textContent = '相談する';
+        ctas.appendChild(b3);
+      }
+      panel.appendChild(ctas);
+
+      hit.addEventListener('click', function () { lockIdx = i; setActive(i); });
+      hit.addEventListener('focus', function () { setActive(i); });
+      if (MQ_HOVER.matches) {
+        panel.addEventListener('mouseenter', function () { setActive(i); });
+      }
+      wrapP.appendChild(panel);
+      panels.push({ panel: panel, media: media, def: d, video: v });
+    });
+
+    if (MQ_HOVER.matches) {
+      wrapP.addEventListener('mouseleave', function () { setActive(lockIdx); });
+    }
+
+    function setActive(i) {
+      if (i === activeIdx) return;
+      activeIdx = i;
+      panels.forEach(function (p, n) { p.panel.classList.toggle('is-active', n === i); });
+      var v = videos[i];
+      clearTimeout(hoverTimer);
+      if (MQ_SP.matches) {
+        // SP: 下のステージに集約（同時1本）
+        if (stage && v) {
+          stage.hidden = false;
+          setThumbBg(stageMedia, v.poster);
+          stageCopy.textContent = UC_DEFS[i].copy;
+          stagePlay.onclick = function () { openModal(v, stagePlay); };
+          preview.play(stageMedia, v);   // tap起点なのでmutedプレビュー即時
+        }
+      } else if (v && visibleSecs[sec.id]) {
+        hoverTimer = setTimeout(function () {
+          if (activeIdx === i) preview.play(panels[i].media, v);
+        }, TUNE.USECASE_PREVIEW_DELAY);
+      }
+      if (!v) preview.stop();
+    }
+
+    sec.hidden = false;
+    watchSection(sec, function () {
+      var i = activeIdx;
+      activeIdx = -1;        // 同値ガードを外して再適用
+      setActive(i === -1 ? lockIdx : i);
+    });
+    setActive(lockIdx);
+  }
+
+  /* ================================================================
+     6b. WHY BIZ ANIME — editorial split（stickyは使わない判断）
+     ================================================================ */
+  var WHY_DEFS = [
+    { en: 'AI VIDEO TECHNOLOGY', title: '生成技術の進化を、制作のスピードへ。',
+      sub: '生成技術を、制作効率だけで終わらせない',
+      pick: [/式法戦線/, /存在しないアニメ/], cat: 'IP' },
+    { en: 'CREATIVE DIRECTION', title: 'ただ生成するのではなく、目的に合わせて演出を設計する。',
+      sub: '目的に合わせて、動きの意味まで設計する',
+      pick: [/I eye/i], cat: 'MUSIC_VIDEO' },
+    { en: 'MULTI FORMAT', title: 'ひとつの表現に縛られず、媒体や目的に合わせて形を変える。',
+      sub: '広告も、配信も、MVも、同じ型にはめない',
+      pick: [/カミツギ.*一話/, /カミツギ/], cat: 'IP' }
+  ];
+
+  function initWhy(pool) {
+    var sec = document.getElementById('baWhy');
+    var nav = document.getElementById('baWhyNav');
+    var stageHost = document.getElementById('baWhyStage');
+    var idxLabel = document.getElementById('baWhyIdx');
+    var altWrap = document.getElementById('baWhyAlt');
+    var viewBtn = document.getElementById('baWhyView');
+    if (!sec || !nav || !pool.length) return;
+
+    var used = [];
+    var items = WHY_DEFS.map(function (d) {
+      var v = pickBy(pool, d.pick, d.cat, used);
+      if (v) used.push(v);
+      return { def: d, video: v };
+    }).filter(function (it) { return it.video; });
+    if (!items.length) return;
+
+    var cur = 0;
+    var curVideo = items[0].video;
+    var btns = [];
+
+    items.forEach(function (it, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ba-why-item';
+      var num = document.createElement('span');
+      num.className = 'ba-why-num';
+      num.textContent = '0' + (i + 1);
+      var tl = document.createElement('span');
+      tl.className = 'ba-why-en';
+      tl.textContent = it.def.en;
+      var tt = document.createElement('span');
+      tt.className = 'ba-why-title';
+      tt.textContent = it.def.title;
+      var sub = document.createElement('span');
+      sub.className = 'ba-why-sub';
+      sub.textContent = it.def.sub;
+      b.appendChild(num); b.appendChild(tl); b.appendChild(tt); b.appendChild(sub);
+      b.addEventListener('click', function () { setWhy(i); });
+      if (MQ_HOVER.matches) b.addEventListener('mouseenter', function () { setWhy(i); });
+      nav.appendChild(b);
+      btns.push(b);
+    });
+
+    function renderAlt() {
+      while (altWrap.firstChild) altWrap.removeChild(altWrap.firstChild);
+      var alts = byCat(pool, items[cur].def.cat).filter(function (v) {
+        return v !== curVideo;
+      }).slice(0, 2);
+      alts.forEach(function (v) {
+        var t = document.createElement('button');
+        t.type = 'button';
+        t.className = 'ba-vhost ba-why-thumb';
+        t.setAttribute('aria-label', (v.title || '関連作品') + ' に切り替え');
+        setThumbBg(t, v.poster);
+        t.addEventListener('click', function () { swapStage(v); });
+        altWrap.appendChild(t);
+      });
+    }
+
+    function swapStage(v) {
+      curVideo = v;
+      stageHost.classList.add('is-swap');
+      setTimeout(function () {
+        setThumbBg(stageHost, v.poster);
+        preview.stop();
+        if (!MQ_SP.matches && visibleSecs[sec.id]) preview.play(stageHost, v);
+        stageHost.classList.remove('is-swap');
+      }, TUNE.WHY_TRANSITION_MS / 2);
+      renderAlt();
+    }
+
+    function setWhy(i) {
+      if (i === cur && curVideo === items[i].video) return;
+      cur = i;
+      btns.forEach(function (b, n) {
+        b.classList.toggle('is-active', n === i);
+        b.setAttribute('aria-pressed', n === i ? 'true' : 'false');
+      });
+      if (idxLabel) idxLabel.textContent = '0' + (i + 1) + ' / 0' + items.length;
+      swapStage(items[i].video);
+    }
+
+    if (viewBtn) viewBtn.addEventListener('click', function () { openModal(curVideo, viewBtn); });
+
+    sec.hidden = false;
+    watchSection(sec, function () {
+      if (!MQ_SP.matches && !preview.host) preview.play(stageHost, curVideo);
+    });
+    btns[0].classList.add('is-active');
+    btns[0].setAttribute('aria-pressed', 'true');
+    if (idxLabel) idxLabel.textContent = '01 / 0' + items.length;
+    setThumbBg(stageHost, curVideo.poster);
+    renderAlt();
+  }
+
+  /* ================================================================
+     6c. PRODUCTION RANGE — モニターウォール
+     フォーマット断定はしない（全ソースが16:9のため）。実在カテゴリの
+     チップ＋大小タイルで「幅」を見せる。
+     ================================================================ */
+  var RANGE_LABEL = {
+    ADVERTISING: 'ADVERTISING',
+    VTUBER:      'VTUBER / STREAMING',
+    MUSIC_VIDEO: 'MUSIC VIDEO',
+    IP:          'IP / ORIGINAL ANIME',
+    OTHER:       'SHORT & EXPERIMENTAL'
+  };
+  var RANGE_SIZES = ['t-w', 't-s', 't-t', 't-s', 't-s', 't-t', 't-w', 't-s', 't-s', 't-t', 't-s', 't-s'];
+
+  function initRange(pool) {
+    var sec = document.getElementById('baRange');
+    var chipsWrap = document.getElementById('baRangeChips');
+    var wall = document.getElementById('baRangeWall');
+    if (!sec || !wall || !pool.length) return;
+
+    var tiles = pool.slice(0, TUNE.RANGE_MAX_TILES);
+    var cats = ['ADVERTISING', 'VTUBER', 'MUSIC_VIDEO', 'IP', 'OTHER'].filter(function (c) {
+      return tiles.some(function (v) { return v.category === c; });
+    });
+
+    /* chips */
+    var chipBtns = [];
+    ['ALL'].concat(cats).forEach(function (c) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'ba-chip';
+      chip.textContent = c === 'ALL' ? 'ALL' : RANGE_LABEL[c];
+      chip.setAttribute('aria-pressed', c === 'ALL' ? 'true' : 'false');
+      chip.addEventListener('click', function () { setFilter(c); });
+      chipsWrap.appendChild(chip);
+      chipBtns.push({ btn: chip, cat: c });
+    });
+
+    var tileEls = [];
+    tiles.forEach(function (v, i) {
+      var li = document.createElement('li');
+      li.className = 'ba-range-tile ' + RANGE_SIZES[i % RANGE_SIZES.length];
+      li.dataset.cat = v.category;
+
+      var hit = document.createElement('button');
+      hit.type = 'button';
+      hit.className = 'ba-vhost ba-range-hit';
+      hit.setAttribute('aria-label', (v.title || '作品') + ' をプレビュー');
+      setThumbBg(hit, v.poster);
+
+      var cap = document.createElement('span');
+      cap.className = 'ba-range-cap';
+      var cc = document.createElement('span');
+      cc.className = 'ba-range-cat';
+      cc.textContent = RANGE_LABEL[v.category] || 'OTHER';
+      var tt = document.createElement('span');
+      tt.className = 'ba-range-title';
+      tt.textContent = v.title || '';
+      cap.appendChild(cc); cap.appendChild(tt);
+      hit.appendChild(cap);
+
+      var cta = document.createElement('button');
+      cta.type = 'button';
+      cta.className = 'ba-mini-cta ba-range-view';
+      cta.textContent = 'VIEW WORK';
+      cta.addEventListener('click', function (e) { e.stopPropagation(); openModal(v, cta); });
+
+      function act() {
+        tileEls.forEach(function (t) { t.li.classList.remove('is-active'); });
+        li.classList.add('is-active');
+        if (visibleSecs[sec.id] && !li.classList.contains('is-dim')) preview.play(hit, v);
+      }
+      hit.addEventListener('click', act);
+      hit.addEventListener('focus', act);
+      if (MQ_HOVER.matches) li.addEventListener('mouseenter', act);
+
+      li.appendChild(hit);
+      li.appendChild(cta);
+      wall.appendChild(li);
+      tileEls.push({ li: li, hit: hit, video: v });
+    });
+
+    function setFilter(cat) {
+      chipBtns.forEach(function (c) {
+        c.btn.setAttribute('aria-pressed', c.cat === cat ? 'true' : 'false');
+        c.btn.classList.toggle('is-on', c.cat === cat);
+      });
+      tileEls.forEach(function (t) {
+        var dim = cat !== 'ALL' && t.video.category !== cat;
+        t.li.classList.toggle('is-dim', dim);
+        if (dim && preview.host === t.hit) preview.stop();
+      });
+    }
+    setFilter('ALL');
+
+    sec.hidden = false;
+    watchSection(sec);
+  }
+
+  /* ================================================================
+     6d. FAQ — 1項目ずつ開くアコーディオン（WAI-ARIA）
+     ================================================================ */
+  function initFaq() {
+    var sec = document.getElementById('baFaq');
+    if (!sec) return;
+    var items = Array.prototype.slice.call(sec.querySelectorAll('.ba-faq-item'));
+
+    items.forEach(function (item) {
+      var btn = item.querySelector('.ba-faq-q button');
+      var panel = item.querySelector('.ba-faq-a');
+      if (!btn || !panel) return;
+      panel.style.height = '0px';
+
+      btn.addEventListener('click', function () {
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        // 他を閉じる（1つだけopen方式）
+        items.forEach(function (other) {
+          if (other === item) return;
+          var ob = other.querySelector('.ba-faq-q button');
+          var op = other.querySelector('.ba-faq-a');
+          if (ob && ob.getAttribute('aria-expanded') === 'true') {
+            ob.setAttribute('aria-expanded', 'false');
+            other.classList.remove('is-open');
+            op.style.height = op.scrollHeight + 'px';
+            requestAnimationFrame(function () { op.style.height = '0px'; });
+          }
+        });
+        btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        item.classList.toggle('is-open', !isOpen);
+        if (isOpen) {
+          panel.style.height = panel.scrollHeight + 'px';
+          requestAnimationFrame(function () { panel.style.height = '0px'; });
+        } else {
+          panel.style.height = panel.scrollHeight + 'px';
+          panel.addEventListener('transitionend', function fin() {
+            panel.removeEventListener('transitionend', fin);
+            if (btn.getAttribute('aria-expanded') === 'true') panel.style.height = 'auto';
+          });
+        }
+      });
+    });
+    watchSection(sec);
+  }
+
+  /* ================================================================
+     7. 起動
      ================================================================ */
   fetchVideos().then(function (data) {
     try {
@@ -791,6 +1304,17 @@
       initCases(data.cases || []);
     } catch (e2) {
       if (window.console && console.warn) console.warn('[bizanime cases]', e2);
+    }
+    try {
+      var pool = dedupePool(data);
+      initUseCase(pool);
+      initWhy(pool);
+      initRange(pool);
+    } catch (e3) {
+      if (window.console && console.warn) console.warn('[bizanime sections]', e3);
+    }
+    try { initFaq(); } catch (e4) {
+      if (window.console && console.warn) console.warn('[bizanime faq]', e4);
     }
     window.dispatchEvent(new CustomEvent('bizanime-data', { detail: data }));
   });

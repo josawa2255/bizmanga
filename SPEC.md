@@ -162,6 +162,26 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
   - CSSコメントの閉じ忘れは**ブレース数が合っていても**メディアクエリを飲み込む → 検査はコメント除去後に行う
 - WP側: 管理画面「ビズアニメ動画」（D&D並び替え・URL貼るだけ・provider自動判定）+ GET/POST API（POSTは要認証）。実体は `contentsx-wp-plugin/contentsx-cms/bizanime-videos.php`（デプロイはお名前.com手動・BUGS #002）
 
+### 追加4セクション（2026-08-30 実装）
+Hero下に USE CASE / WHY BIZ ANIME / PRODUCTION RANGE / FAQ を追加。
+**全セクションがWP動画APIのデータ駆動**（動画をハードコードしない）。
+
+- 共通: poster first・activeのみプレイヤー生成・**ページ全体で自動プレビュー同時1本**
+  （previewマネージャで強制）・セクション画面外でプレビュー破棄・Hero動画も画面外で一時停止・
+  hoverは `(hover:hover) and (pointer:fine)` のみ・reduced-motion/saveDataは自動プレビュー無し
+- USE CASE: 4パネル（広告/VTuber/MV/IP）。activeがflex-growで拡幅・160ms遅延プレビュー・
+  クリックでロック。**動画が無いカテゴリは静的パネル**（架空動画は出さない。
+  現在 ADVERTISING/VTUBER が空 → CoolGirl等の登録で自動的に埋まる）。SPは2×2セレクタ＋下部ステージ
+- WHY: editorial split(40/60)。3軸=式法戦線OP(AI技術)/I eye(演出)/カミツギ(マルチフォーマット)、
+  割当は正規表現＋カテゴリfallbackで設定変更可。補助サムネ2枚でステージ差替。stickyは不採用
+- RANGE: 実在カテゴリのみのチップ＋大小タイルのモニターウォール。
+  **フォーマット表記(16:9/VERTICAL等)は断定しない**（全ソース16:9のため。フォーマット情報が
+  入ったら差し替え）。フィルタは減光方式（レイアウト移動なし）
+- FAQ: 30/70の静かなアコーディオン(WAI-ARIA・1つだけopen)。回答は断定できる事項のみ断定、
+  条件依存は「ご相談」。末尾に主CTA1つ(/contact)
+- 調整ノブ: CSS変数(:root `--uc-active-grow` `--range-tile-gap` 等) + `window.BA_TUNE`
+  (USECASE_PREVIEW_DELAY / WHY_TRANSITION_MS / RANGE_MAX_TILES / FAQ_ANIMATION_MS 等)
+
 ### 未実装（次にやること）
 - Hero より下のセクション全体
 - 制作事例（動画）一覧のWP連携。**運用方針は決定済み**: WPに専用投稿タイプを新設し、YouTube URL を貼るだけで一覧に増える。カード内でそのまま再生（YouTubeへ遷移させない）。プラグインは別リポジトリ(PRIVATE)＋お名前.com手動アップロードが必要（[BUGS #002](../BUGS.md)）

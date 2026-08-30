@@ -1231,3 +1231,466 @@ body.ba-modal-open { overflow: hidden; }
   .ba-device__progress { bottom: 14px; }
   .ba-device__badge    { bottom: 32px; }
 }
+
+/* ==========================================================================
+   追加セクション共通（USE CASE / WHY / RANGE / FAQ）2026-08-30
+   調整ノブは :root の変数と window.BA_TUNE（JS側）に集約している。
+   ========================================================================== */
+:root {
+  --uc-active-grow: 2;          /* activeパネルのflex-grow（JSが同期） */
+  --uc-radius: 14px;
+  --why-transition: 340ms;      /* JSが同期 */
+  --why-nav-gap: 18px;
+  --why-stage-radius: 16px;
+  --range-tile-gap: 14px;
+  --range-radius: 12px;
+  --range-active-scale: 1.02;
+  --faq-anim: 220ms;            /* JSが同期 */
+  --faq-item-gap: 10px;
+  --faq-item-padding: 22px;
+  --faq-open-bg: rgba(255,255,255,.04);
+  --sec-reveal: 600ms;          /* JSが同期 */
+}
+
+.ba-sec {
+  position: relative;
+  background: #070707;
+  padding: clamp(56px, 8vw, 110px) clamp(18px, 5vw, 48px);
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.ba-sec-head { max-width: 1280px; margin: 0 auto clamp(28px, 4vw, 48px); }
+.ba-sec-eyebrow {
+  margin: 0 0 10px;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 700;
+  letter-spacing: .28em;
+  color: var(--ba-orange-3);
+}
+.ba-sec-title {
+  margin: 0 0 14px;
+  font-family: "Noto Serif JP", serif;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 700;
+  color: var(--ba-white);
+}
+.ba-sec-lead {
+  margin: 0;
+  font-size: clamp(13px, 1.1vw, 16px);
+  line-height: 1.9;
+  color: rgba(255,255,255,.72);
+}
+
+/* 出現アニメ（IntersectionObserverで .is-in 付与） */
+.ba-sec > * { transition: opacity var(--sec-reveal), transform var(--sec-reveal); }
+.ba-sec:not(.is-in) > * { opacity: 0; transform: translateY(22px); }
+.ba-sec.is-in > * { opacity: 1; transform: none; }
+.ba-faq:not(.is-in) > *, .ba-faq.is-in > * { transition-duration: 320ms; } /* FAQは控えめ */
+
+/* --- 動画ホスト共通: poster背景 + プレビューは135%クロップ（YouTube UIを枠外へ） --- */
+.ba-vhost {
+  position: relative;
+  overflow: hidden;
+  background: #0d0d0d center / cover no-repeat;
+}
+.ba-vhost > .ba-preview-player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 135%;
+  height: 135%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* --- 小さな現在地ラベル --- */
+.ba-now {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: rgba(5,5,5,.72);
+  border-left: 2px solid var(--ba-orange-3);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+.ba-now--idx { left: auto; right: 10px; border-left: 0; border-right: 2px solid var(--ba-orange-3); opacity: 1; }
+.is-playing > .ba-now, .ba-vhost.is-playing .ba-now { opacity: 1; }
+
+/* --- ミニCTA共通 --- */
+.ba-mini-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,120,0,.7);
+  background: rgba(255,90,0,.9);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 180ms, background 180ms, border-color 180ms;
+}
+.ba-mini-cta:hover { transform: translateY(-2px); }
+.ba-mini-cta:active { transform: translateY(0); }
+.ba-mini-cta:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-mini-cta--ghost { background: rgba(5,5,5,.5); border-color: rgba(255,255,255,.3); }
+.ba-mini-cta--ghost:hover { border-color: var(--ba-orange-3); color: var(--ba-orange-3); }
+
+/* ==========================================================================
+   USE CASE — 4パネル
+   ========================================================================== */
+.ba-uc-panels {
+  display: flex;
+  gap: 10px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.ba-uc-panel {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: var(--uc-radius);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  transition: flex-grow 340ms cubic-bezier(.3,.8,.3,1), border-color 260ms, box-shadow 260ms;
+}
+.ba-uc-panel.is-active {
+  flex-grow: var(--uc-active-grow);
+  border-color: rgba(255,120,0,.55);
+  box-shadow: 0 0 28px rgba(255,90,0,.14);
+}
+.ba-uc-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.ba-uc-hit:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: -2px; }
+.ba-uc-media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  filter: brightness(.82) saturate(.9);
+  transition: filter 300ms;
+}
+.ba-uc-panel.is-active .ba-uc-media { filter: none; }
+.ba-uc-panel.is-empty .ba-uc-media {
+  background-image: radial-gradient(circle at 50% 40%, rgba(255,90,0,.14), transparent 70%);
+}
+.ba-uc-info { display: block; padding: 14px 16px 6px; }
+.ba-uc-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-orange-3); margin-right: 8px; }
+.ba-uc-en { display: inline-block; font-size: clamp(12px, 1vw, 14px); font-weight: 700; letter-spacing: .08em; color: #fff; }
+.ba-uc-ja { display: block; margin-top: 2px; font-size: 11px; color: rgba(255,255,255,.6); }
+.ba-uc-copy {
+  display: block;
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.78);
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 300ms 80ms, max-height 300ms;
+  overflow: hidden;
+}
+.ba-uc-panel.is-active .ba-uc-copy { opacity: 1; max-height: 4em; }
+.ba-uc-ctas {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 16px;
+  opacity: 0;
+  transition: opacity 300ms 120ms;
+  pointer-events: none;
+}
+.ba-uc-panel.is-active .ba-uc-ctas { opacity: 1; pointer-events: auto; }
+.ba-uc-stage { display: none; }
+
+/* ==========================================================================
+   WHY BIZ ANIME — editorial split
+   ========================================================================== */
+.ba-why-grid {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: clamp(24px, 3.5vw, 56px);
+  max-width: 1280px;
+  margin: 0 auto;
+  align-items: start;
+}
+.ba-why-nav { display: flex; flex-direction: column; gap: var(--why-nav-gap); }
+.ba-why-item {
+  position: relative;
+  padding: 16px 18px 16px 22px;
+  border: 0;
+  border-left: 3px solid rgba(255,255,255,.14);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  opacity: .55;
+  transition: opacity 260ms, border-color 260ms, background 260ms;
+}
+.ba-why-item.is-active {
+  opacity: 1;
+  border-left-color: var(--ba-orange-3);
+  background: rgba(255,255,255,.03);
+}
+.ba-why-item:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 2px; }
+.ba-why-num { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: var(--ba-orange-3); margin-right: 10px; }
+.ba-why-en { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: rgba(255,255,255,.85); }
+.ba-why-title { display: block; margin-top: 8px; font-size: clamp(15px, 1.25vw, 18px); font-weight: 700; color: #fff; line-height: 1.6; }
+.ba-why-sub { display: block; margin-top: 6px; font-size: 12.5px; color: rgba(255,255,255,.6); }
+.ba-why-stage {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--why-stage-radius);
+  border: 1px solid rgba(255,255,255,.1);
+  transition: opacity var(--why-transition);
+}
+.ba-why-stage.is-swap { opacity: .25; }
+.ba-why-alt { display: flex; gap: 10px; margin-top: 12px; }
+.ba-why-thumb {
+  width: 132px;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 200ms, transform 200ms;
+}
+.ba-why-thumb:hover, .ba-why-thumb:focus-visible { border-color: var(--ba-orange-3); transform: translateY(-2px); }
+.ba-why-view { margin-top: 14px; }
+
+/* ==========================================================================
+   PRODUCTION RANGE — モニターウォール
+   ========================================================================== */
+.ba-range-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 1280px;
+  margin: 0 auto clamp(20px, 3vw, 32px);
+}
+.ba-chip {
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: none;
+  color: rgba(255,255,255,.75);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: color 180ms, border-color 180ms, background 180ms;
+}
+.ba-chip.is-on, .ba-chip[aria-pressed="true"] {
+  color: #fff;
+  border-color: var(--ba-orange-3);
+  background: rgba(255,90,0,.18);
+}
+.ba-chip:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 3px; }
+.ba-range-wall {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 110px;
+  grid-auto-flow: dense;
+  gap: var(--range-tile-gap);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.ba-range-tile { position: relative; min-width: 0; transition: opacity 300ms, transform 300ms; }
+.ba-range-tile.t-w { grid-column: span 2; grid-row: span 2; }
+.ba-range-tile.t-t { grid-row: span 2; }
+.ba-range-tile.is-dim { opacity: .16; pointer-events: none; }
+.ba-range-tile.is-active { transform: scale(var(--range-active-scale)); z-index: 2; }
+.ba-range-hit {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: var(--range-radius);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 240ms, box-shadow 240ms;
+}
+.ba-range-tile.is-active .ba-range-hit {
+  border-color: rgba(255,120,0,.6);
+  box-shadow: 0 0 26px rgba(255,90,0,.16);
+}
+.ba-range-hit:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: 2px; }
+.ba-range-cap {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  text-align: left;
+  pointer-events: none;
+}
+.ba-range-cat {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(5,5,5,.72);
+  color: var(--ba-orange-3);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+.ba-range-title {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,.95);
+  text-shadow: 0 1px 8px rgba(0,0,0,.9);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.ba-range-view {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+  padding: 6px 12px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 220ms;
+}
+.ba-range-tile.is-active .ba-range-view { opacity: 1; }
+.ba-range-view:focus-visible { opacity: 1; }
+
+/* ==========================================================================
+   FAQ — quiet editorial accordion
+   ========================================================================== */
+.ba-faq { background: #0a0a0a; }
+.ba-faq-grid {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  gap: clamp(24px, 4vw, 64px);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.ba-faq-list { display: flex; flex-direction: column; gap: var(--faq-item-gap); }
+.ba-faq-item {
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 10px;
+  background: rgba(255,255,255,.015);
+  transition: border-color 220ms, background 220ms;
+}
+.ba-faq-item.is-open { border-color: rgba(255,120,0,.45); background: var(--faq-open-bg); }
+.ba-faq-q { margin: 0; }
+.ba-faq-q button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: var(--faq-item-padding);
+  border: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  font-size: clamp(14px, 1.15vw, 16px);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.ba-faq-q button:focus-visible { outline: 2px solid var(--ba-orange-3); outline-offset: -2px; border-radius: 10px; }
+.ba-faq-num { flex: 0 0 auto; font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--ba-orange-3); }
+.ba-faq-icon { flex: 0 0 auto; margin-left: auto; position: relative; width: 14px; height: 14px; }
+.ba-faq-icon::before, .ba-faq-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--ba-orange-3);
+  transform: translateY(-50%);
+  transition: transform var(--faq-anim);
+}
+.ba-faq-icon::after { transform: translateY(-50%) rotate(90deg); }
+.ba-faq-item.is-open .ba-faq-icon::after { transform: translateY(-50%) rotate(0deg); }
+.ba-faq-a {
+  height: 0;
+  overflow: hidden;
+  transition: height var(--faq-anim) ease;
+}
+.ba-faq-a p {
+  margin: 0;
+  padding: 0 var(--faq-item-padding) var(--faq-item-padding) calc(var(--faq-item-padding) + 26px);
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.95;
+  color: rgba(255,255,255,.78);
+}
+.ba-faq-cta { margin-top: 22px; text-align: right; }
+.ba-faq-cta__btn { display: inline-flex; }
+
+/* ==========================================================================
+   SP（〜1024px）
+   ========================================================================== */
+@media (max-width: 1024px) {
+  /* USE CASE: 2×2セレクタ + 下に大きなステージ */
+  .ba-uc-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ba-uc-panel, .ba-uc-panel.is-active { flex: none; }
+  .ba-uc-media { aspect-ratio: 16 / 9; }
+  .ba-uc-copy, .ba-uc-ctas { display: none; }   /* コピーとCTAはステージ側に集約 */
+  .ba-uc-panel .ba-now { display: none; }
+  .ba-uc-stage {
+    display: block;
+    max-width: 1280px;
+    margin: 14px auto 0;
+  }
+  .ba-uc-stage__media { aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid rgba(255,120,0,.4); }
+  .ba-uc-stage__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+  .ba-uc-stage__copy { margin: 0; font-size: 12.5px; color: rgba(255,255,255,.8); line-height: 1.6; }
+
+  /* WHY: 縦積み */
+  .ba-why-grid { grid-template-columns: 1fr; }
+  .ba-why-nav { flex-direction: row; overflow-x: auto; gap: 10px; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+  .ba-why-item { flex: 0 0 78%; border-left-width: 3px; }
+  .ba-why-thumb { width: 104px; }
+
+  /* RANGE: 2列ベース */
+  .ba-range-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 96px; }
+  .ba-range-chips { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+  .ba-chip { flex: 0 0 auto; }
+  .ba-range-view { opacity: 1; }   /* タッチではhover非依存: 常時表示 */
+
+  /* FAQ: 1列 */
+  .ba-faq-grid { grid-template-columns: 1fr; }
+  .ba-faq-cta { text-align: center; }
+}
+
+/* ==========================================================================
+   reduced motion: 動きを最小化（コンテンツは消さない）
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ba-sec > *, .ba-sec:not(.is-in) > * { opacity: 1; transform: none; transition: none; }
+  .ba-uc-panel { transition: none; }
+  .ba-uc-panel.is-active { flex-grow: 1.3; }   /* 幅変化を小さく */
+  .ba-why-stage, .ba-why-stage.is-swap { transition: none; opacity: 1; }
+  .ba-range-tile, .ba-range-tile.is-active { transition: none; transform: none; }
+  .ba-faq-a { transition: none; }
+}

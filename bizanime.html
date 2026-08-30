@@ -254,6 +254,66 @@
     </section>
 
     <!-- ==========================================================
+         USE CASE — 何に使えるか（4パネル・シネマティック）
+         中身はJSがWPの動画データから生成する。カテゴリに動画が無い場合は
+         静的パネル（架空動画は出さない）。データが1件も無ければ非表示。
+         ========================================================== -->
+    <section class="ba-sec ba-uc" id="baUseCase" aria-labelledby="baUcTitle" hidden>
+      <div class="ba-sec-head">
+        <p class="ba-sec-eyebrow" data-i18n-skip>USE CASE</p>
+        <h2 class="ba-sec-title" id="baUcTitle" data-ja="何に使えるか" data-en="Use Cases">何に使えるか</h2>
+        <p class="ba-sec-lead" data-ja="動かしたいものは、ひとつじゃない。広告から配信、MV、IPまで。目的に合わせて、映像の形を設計します。" data-en="From ads and streaming to music videos and IP — we design motion for your goal.">動かしたいものは、ひとつじゃない。<br>広告から配信、MV、IPまで。目的に合わせて、映像の形を設計します。</p>
+      </div>
+      <div class="ba-uc-panels" id="baUcPanels"><!-- JSが生成 --></div>
+      <!-- SP: 上のパネルはセレクタ化し、こちらの大きなステージで再生する -->
+      <div class="ba-uc-stage" id="baUcStage" hidden>
+        <div class="ba-vhost ba-uc-stage__media" id="baUcStageMedia"></div>
+        <div class="ba-uc-stage__bar">
+          <p class="ba-uc-stage__copy" id="baUcStageCopy"></p>
+          <button type="button" class="ba-mini-cta" id="baUcStagePlay"
+                  data-ja="プレビューを見る" data-en="Watch preview">プレビューを見る</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         WHY BIZ ANIME — なぜ、ビズアニメなのか（editorial split）
+         ========================================================== -->
+    <section class="ba-sec ba-why" id="baWhy" aria-labelledby="baWhyTitle" hidden>
+      <div class="ba-sec-head">
+        <p class="ba-sec-eyebrow" data-i18n-skip>WHY BIZ ANIME</p>
+        <h2 class="ba-sec-title" id="baWhyTitle" data-ja="なぜ、ビズアニメなのか。" data-en="Why BIZ ANIME">なぜ、ビズアニメなのか。</h2>
+        <p class="ba-sec-lead" data-ja="AI動画生成技術 × クリエイターの演出力。" data-en="AI video technology, directed by human creators.">AI動画生成技術 × クリエイターの演出力。</p>
+      </div>
+      <div class="ba-why-grid">
+        <div class="ba-why-nav" id="baWhyNav"><!-- JSが生成 --></div>
+        <div class="ba-why-stagewrap">
+          <div class="ba-vhost ba-why-stage" id="baWhyStage">
+            <span class="ba-now" id="baWhyNow" data-i18n-skip>NOW VIEWING</span>
+            <span class="ba-now ba-now--idx" id="baWhyIdx" data-i18n-skip>01 / 03</span>
+          </div>
+          <div class="ba-why-alt" id="baWhyAlt"><!-- 補助サムネ（JS生成・最大2） --></div>
+          <button type="button" class="ba-mini-cta ba-why-view" id="baWhyView"
+                  data-ja="この作品を見る" data-en="View selected work">この作品を見る</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         PRODUCTION RANGE — 表現の幅（モニターウォール）
+         フォーマット断定はせず、実在カテゴリのチップ＋大小タイルで見せる
+         ========================================================== -->
+    <section class="ba-sec ba-range" id="baRange" aria-labelledby="baRangeTitle" hidden>
+      <div class="ba-sec-head">
+        <p class="ba-sec-eyebrow" data-i18n-skip>PRODUCTION RANGE</p>
+        <h2 class="ba-sec-title" id="baRangeTitle" data-ja="表現の幅。" data-en="Production Range">表現の幅。</h2>
+        <p class="ba-sec-lead" data-ja="ひとつのスタイルに、閉じない。媒体、尺、世界観に合わせて、最適な映像表現を組み立てます。" data-en="Never boxed into one style — we build the right expression for each medium.">ひとつのスタイルに、閉じない。<br>媒体、尺、世界観に合わせて、最適な映像表現を組み立てます。</p>
+      </div>
+      <div class="ba-range-chips" id="baRangeChips" role="group" aria-label="カテゴリで絞り込み"></div>
+      <ul class="ba-range-wall" id="baRangeWall"><!-- JSが生成 --></ul>
+    </section>
+
+    <!-- ==========================================================
          CASE STUDIES — 制作事例グリッド
          WPの「ビズアニメ動画 › CASE STUDIES」の並び順そのまま。
          一覧にはサムネイルだけを置き、iframeは置かない（§26）。
@@ -266,6 +326,63 @@
         <h2 class="ba-cases-title" id="baCasesTitle" data-ja="制作事例" data-en="Our Work">制作事例</h2>
       </div>
       <ul class="ba-cases-grid" id="baCasesGrid"><!-- JSが生成 --></ul>
+    </section>
+
+    <!-- ==========================================================
+         FAQ — よくあるご質問（quiet editorial accordion / WAI-ARIA）
+         動画は使わない。可読性最優先。
+         ========================================================== -->
+    <section class="ba-sec ba-faq" id="baFaq" aria-labelledby="baFaqTitle">
+      <div class="ba-faq-grid">
+        <div class="ba-faq-head">
+          <p class="ba-sec-eyebrow" data-i18n-skip>FAQ</p>
+          <h2 class="ba-sec-title" id="baFaqTitle" data-ja="よくあるご質問" data-en="FAQ">よくあるご質問</h2>
+          <p class="ba-sec-lead" data-ja="制作の流れや対応範囲について、よくいただくご質問をまとめました。" data-en="Common questions about our process and scope.">制作の流れや対応範囲について、<br>よくいただくご質問をまとめました。</p>
+        </div>
+        <div class="ba-faq-list" id="baFaqList">
+          <!-- 回答は確定できる事項のみ断定し、条件が案件依存のものは「ご相談」とする -->
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA1" id="faqQ1"><span class="ba-faq-num" data-i18n-skip>01</span><span data-ja="企画段階から相談できますか？" data-en="Can we consult from the planning stage?">企画段階から相談できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA1" role="region" aria-labelledby="faqQ1"><p>可能です。「何を作るか」が固まっていない段階からの壁打ちにも対応します。目的と媒体を伺いながら、映像の形から一緒に設計します。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA2" id="faqQ2"><span class="ba-faq-num" data-i18n-skip>02</span><span data-ja="キャラクターや素材がなくても制作できますか？" data-en="Can you produce without existing characters or assets?">キャラクターや素材がなくても制作できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA2" role="region" aria-labelledby="faqQ2"><p>できます。キャラクターデザインや世界観づくりを含め、ゼロからの立ち上げに対応しています。既存IPをお持ちの場合は、その世界観を活かした展開も可能です。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA3" id="faqQ3"><span class="ba-faq-num" data-i18n-skip>03</span><span data-ja="縦型・短尺動画にも対応できますか？" data-en="Do you support vertical and short-form video?">縦型・短尺動画にも対応できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA3" role="region" aria-labelledby="faqQ3"><p>対応します。配信面（SNS・広告枠・サイネージ等）に合わせて、比率・尺・テンポを設計します。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA4" id="faqQ4"><span class="ba-faq-num" data-i18n-skip>04</span><span data-ja="実写とAI映像・VFXを組み合わせることはできますか？" data-en="Can you combine live action with AI video and VFX?">実写とAI映像・VFXを組み合わせることはできますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA4" role="region" aria-labelledby="faqQ4"><p>組み合わせを前提とした設計が可能です。素材の状態や表現の方向性によって最適な手法が変わるため、案件に応じてご相談ください。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA5" id="faqQ5"><span class="ba-faq-num" data-i18n-skip>05</span><span data-ja="BGM・効果音・ナレーションも依頼できますか？" data-en="Can you handle music, SFX and narration?">BGM・効果音・ナレーションも依頼できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA5" role="region" aria-labelledby="faqQ5"><p>映像とあわせた音まわりの設計にも対応します。既存音源の使用可否や権利処理を含め、案件に応じてご相談ください。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA6" id="faqQ6"><span class="ba-faq-num" data-i18n-skip>06</span><span data-ja="制作期間はどれくらいですか？" data-en="How long does production take?">制作期間はどれくらいですか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA6" role="region" aria-labelledby="faqQ6"><p>内容・尺・表現手法によって変わります。お急ぎの配信日程がある場合は、逆算したスケジュールをご提案しますので、まずは希望時期をお聞かせください。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA7" id="faqQ7"><span class="ba-faq-num" data-i18n-skip>07</span><span data-ja="修正には対応できますか？" data-en="Do you handle revisions?">修正には対応できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA7" role="region" aria-labelledby="faqQ7"><p>対応します。行き違いを防ぐため、修正の回数・範囲は着手前にすり合わせのうえ進行します。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA8" id="faqQ8"><span class="ba-faq-num" data-i18n-skip>08</span><span data-ja="AIを使用した映像は商用利用できますか？" data-en="Can AI-generated video be used commercially?">AIを使用した映像は商用利用できますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA8" role="region" aria-labelledby="faqQ8"><p>商用でのご利用を前提にお受けしています。利用範囲・期間・媒体は、お見積り時に取り決めます。</p></div>
+          </div>
+          <div class="ba-faq-item">
+            <h3 class="ba-faq-q"><button type="button" aria-expanded="false" aria-controls="faqA9" id="faqQ9"><span class="ba-faq-num" data-i18n-skip>09</span><span data-ja="AI生成物の権利関係はどうなりますか？" data-en="How are rights handled for AI-generated content?">AI生成物の権利関係はどうなりますか？</span><span class="ba-faq-icon" aria-hidden="true"></span></button></h3>
+            <div class="ba-faq-a" id="faqA9" role="region" aria-labelledby="faqQ9"><p>使用する生成モデルや素材によって扱いが異なるため、案件ごとに権利関係を整理し、契約前にご説明します。不明点は遠慮なくお尋ねください。</p></div>
+          </div>
+          <div class="ba-faq-cta">
+            <a href="/contact" class="ba-btn ba-btn--primary ba-faq-cta__btn"
+               data-ja="制作について相談する" data-en="Talk to us">制作について相談する</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 動画モーダル（クリック時のみプレイヤー生成・閉じたら破棄 §27） -->
