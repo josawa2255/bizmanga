@@ -269,6 +269,8 @@
         if (wdDots) wdDots.style.display = 'none';
         if (wdPrev) wdPrev.style.display = 'none';
         if (wdNext) wdNext.style.display = 'none';
+        // スマホ縦読みは上下2ペインに分割（漫画を読み切らないと詳細に届かない問題の解消）
+        if (window.bmWdSplit) window.bmWdSplit.apply();
       }
       function applyCarouselMode() {
         wdCarousel.classList.remove('vertical-scroll');
@@ -288,6 +290,8 @@
         }
         if (wdPrev) wdPrev.style.display = '';
         if (wdNext) wdNext.style.display = '';
+        // 横読みは従来どおり一体スクロール（前回の縦読みの分割状態を残さない）
+        if (window.bmWdSplit) window.bmWdSplit.reset();
       }
       // 共通ヘルパーで判定（works.js / bm-works-page.js と同ロジック）
       if (window.bmViewType && window.bmViewType.isForcedVertical(work)) {
@@ -327,6 +331,7 @@
     if (wdOverlay) wdOverlay.classList.remove('active');
     document.body.style.overflow = '';
     hideWdLoader();
+    if (window.bmWdSplit) window.bmWdSplit.reset();
   }
 
   if (wdPrev) wdPrev.addEventListener('click', function() {

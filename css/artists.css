@@ -1,0 +1,934 @@
+/**
+ * 漫画家・作品紹介（/artists）
+ *
+ * 命名: .art-*（Artists）。既存 bizmanga.css / bm-lp-v2.css とは衝突しない。
+ * ルール:
+ *   - 全セレクタを body.art-page 配下にスコープし、他ページに影響させない
+ *   - 色・フォント・余白は bizmanga.css / bm-lp-v2.css のトークンを使う
+ *   - 幅は clamp/vw の連続スケールを第一候補にし、breakpoint 上書きは最小限
+ */
+
+/* ===== ページ土台 ===== */
+.art-page {
+  background: var(--bm-bg);
+  color: var(--bm-text);
+}
+
+.art-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--container-pad);
+}
+
+.art-section {
+  padding: var(--section-py) 0;
+}
+
+.art-section--cream {
+  background: var(--lpv2-cream, #fff8ed);
+}
+
+/* 見出し */
+.art-head {
+  text-align: center;
+  margin-bottom: var(--sp-lg);
+}
+
+.art-head__eyebrow {
+  display: inline-block;
+  font-family: var(--lpv2-font-mono, 'Public Sans', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  letter-spacing: .14em;
+  color: var(--lpv2-accent, #e85500);
+  margin-bottom: var(--sp-xs);
+}
+
+.art-head__title {
+  font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
+  font-size: var(--fs-3xl);
+  font-weight: 900;
+  line-height: 1.35;
+  margin: 0 0 var(--sp-sm);
+}
+
+.art-head__lead {
+  font-size: var(--fs-md);
+  line-height: 1.9;
+  color: var(--bm-text-muted);
+  max-width: 46em;
+  margin: 0 auto;
+}
+
+/* ===== 1. HERO ===== */
+/* 左=コピー / 中央=作例コマ / 右=ビズちゃん の3分割。
+   SP では縦積みにして、コピー→ビジュアル→CTA の順に読ませる */
+.art-hero {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  border-bottom: 3px solid var(--lpv2-rule, #0a0a0a);
+}
+
+.art-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Hero素材は 2000x666 の横長。cover だと左右のコマ（特に右端のキャラ）が
+   切れてしまうため、右端を基準に合わせて絵柄を残す。
+   高さは下の aspect-ratio 側で画像に追従させる。 */
+.art-hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  opacity: .96;
+}
+
+/* PCでは Hero 枠そのものを画像の縦横比(2000:666)にして、見切れも余白も出さない。
+   ⚠️ .art-hero__bg は absolute のまま（relative に変えると bg と inner の高さが
+   足し算されて Hero が倍近く伸びる）。高さは .art-hero の aspect-ratio が決める。 */
+@media (min-width: 900px) {
+  /* ヘッダーは position:fixed なので、その高さぶん下げないと Hero 上部が隠れる。
+     aspect-ratio は画像部分にだけ効かせたいので、padding-top で押し下げ、
+     box-sizing の都合で高さは calc に含める */
+  .art-hero {
+    /* ヘッダー(position:fixed / 72px)の下から画像を始める。
+       画像部分だけを 2000:666 に保つため、その 72px は padding で足す
+       （box-sizing: border-box なので height に含まれる） */
+    padding-top: 72px;
+    /* 画像部分の高さ = 幅 x 666/2000。100vw 基準にすると縦スクロールバーぶん
+       ずれるので、aspect-ratio は使わず vw で直接指定する */
+    height: calc(100vw * 666 / 2000 + 72px);
+    background: linear-gradient(90deg, #fff 0%, #fff 38%, #fdf6ee 100%);
+  }
+  .art-hero__bg {
+    top: 72px;                       /* 画像もヘッダーの下から */
+  }
+  .art-hero__bg img {
+    object-fit: contain;
+    object-position: right center;
+  }
+  .art-hero__inner {
+    min-height: 0;               /* 高さは aspect-ratio 側に任せる */
+    height: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* 左側のコピーを読ませるため、背景の上に白グラデを重ねる */
+.art-hero__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg,
+    rgba(255,255,255,.97) 0%,
+    rgba(255,255,255,.93) 28%,
+    rgba(255,255,255,.55) 46%,
+    rgba(255,255,255,0) 62%);
+}
+
+.art-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 104px) var(--container-pad);
+  /* 画像(2000x666=約1/3)に合わせた高さ。下限はコピーが収まる値 */
+  min-height: clamp(360px, 33.3vw, 520px);
+  display: flex;
+  align-items: center;
+}
+
+.art-hero__text {
+  max-width: min(560px, 100%);
+  min-width: 0;
+}
+
+.art-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .6em;
+  font-family: var(--lpv2-font-mono, 'Public Sans', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  letter-spacing: .16em;
+  color: var(--lpv2-accent, #e85500);
+  margin: 0 0 var(--sp-sm);
+}
+
+.art-hero__eyebrow::before {
+  content: "";
+  width: clamp(24px, 4vw, 44px);
+  height: 3px;
+  background: var(--lpv2-accent, #e85500);
+}
+
+.art-hero__title {
+  font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
+  font-size: var(--fs-4xl);
+  font-weight: 900;
+  line-height: 1.28;
+  letter-spacing: .01em;
+  margin: 0 0 var(--sp-md);
+}
+
+.art-hero__title em {
+  font-style: normal;
+  position: relative;
+  color: var(--lpv2-accent, #e85500);
+  white-space: nowrap;
+}
+
+/* 漫画的な強調: 下線ではなくマーカー風の帯 */
+.art-hero__title em::after {
+  content: "";
+  position: absolute;
+  left: -.04em;
+  right: -.04em;
+  bottom: .06em;
+  height: .28em;
+  background: var(--lpv2-yellow, #ffd54a);
+  z-index: -1;
+}
+
+.art-hero__sub {
+  font-size: var(--fs-md);
+  line-height: 1.95;
+  color: var(--bm-text);
+  margin: 0 0 var(--sp-md);
+}
+
+.art-hero__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+
+/* ===== ボタン ===== */
+.art-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5em;
+  min-height: 52px;
+  padding: 14px clamp(20px, 2.6vw, 34px);
+  border-radius: 999px;
+  border: 3px solid var(--lpv2-rule, #0a0a0a);
+  font-family: var(--lpv2-font-sans, 'Noto Sans JP', sans-serif);
+  font-size: var(--fs-sm);
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s ease, background .16s ease, color .16s ease;
+}
+
+.art-btn--primary {
+  background: var(--lpv2-accent, #e85500);
+  color: #fff;
+  box-shadow: 4px 4px 0 var(--lpv2-rule, #0a0a0a);
+}
+
+.art-btn--ghost {
+  background: #fff;
+  color: var(--lpv2-ink, #0a0a0a);
+  box-shadow: 4px 4px 0 var(--lpv2-rule, #0a0a0a);
+}
+
+/* hover は装飾のみ。触覚デバイスでは :active で同じ手応えを返す */
+@media (hover: hover) {
+  .art-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--lpv2-rule, #0a0a0a);
+  }
+}
+
+.art-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--lpv2-rule, #0a0a0a);
+}
+
+.art-btn:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 3px;
+}
+
+/* ===== 2〜3. 絞り込み ===== */
+.art-finder {
+  padding-top: var(--sp-xl);
+}
+
+.art-finder__note {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--bm-text-muted);
+  margin: 0 0 var(--sp-md);
+}
+
+/* 軸（画風/用途/ジャンル/読者層/媒体）ごとに1行。
+   ラベルを左に固定して、どの軸で絞っているかを常に見せる */
+.art-filter {
+  max-width: 1100px;
+  margin: 0 auto var(--sp-md);
+  padding: clamp(14px, 2vw, 22px);
+  background: #fff;
+  border: 2px solid #eadfd0;
+  border-radius: 16px;
+}
+
+.art-filter__row {
+  display: grid;
+  grid-template-columns: 5.5em 1fr;
+  gap: 8px 14px;
+  align-items: start;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee4d6;
+}
+
+.art-filter__row:last-child {
+  border-bottom: 0;
+}
+
+.art-filter__label {
+  font-size: var(--fs-sm);
+  font-weight: 900;
+  color: var(--lpv2-ink, #0a0a0a);
+  padding-top: 9px;
+}
+
+.art-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.art-chip {
+  min-height: 44px;              /* タップ領域の下限 */
+  padding: 10px 15px;
+  border: 2px solid #d8d0c6;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bm-text);
+  font-family: var(--lpv2-font-sans, 'Noto Sans JP', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .14s ease, color .14s ease, border-color .14s ease, transform .14s ease;
+}
+
+.art-chip.is-active {
+  background: var(--lpv2-accent, #e85500);
+  border-color: var(--lpv2-accent, #e85500);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .art-chip:hover {
+    border-color: var(--lpv2-accent, #e85500);
+    color: var(--lpv2-accent, #e85500);
+  }
+  .art-chip.is-active:hover {
+    color: #fff;
+    transform: translateY(-1px);
+  }
+}
+
+.art-chip:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+}
+
+/* 「すべて見る（+N）」。チップと並ぶがタグではないので枠線を持たせない */
+.art-more {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  background: none;
+  color: var(--lpv2-accent, #e85500);
+  font-family: var(--lpv2-font-sans, 'Noto Sans JP', sans-serif);
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .art-more:hover {
+    color: var(--lpv2-accent-deep, #b94100);
+  }
+}
+
+.art-more:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.art-result {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--bm-text-muted);
+  margin: 0 0 var(--sp-md);
+}
+
+.art-result strong {
+  color: var(--lpv2-accent, #e85500);
+  font-size: var(--fs-lg);
+  font-weight: 900;
+  margin: 0 .2em;
+}
+
+.art-reset {
+  margin-left: 12px;
+  min-height: 36px;
+  padding: 7px 16px;
+  border: 2px solid #d8d0c6;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bm-text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .art-reset:hover {
+    border-color: var(--lpv2-accent, #e85500);
+    color: var(--lpv2-accent, #e85500);
+  }
+}
+
+.art-reset:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+}
+
+/* ===== 4. 画風グリッド ===== */
+/* auto-fit + minmax で、PC 4→3列 / タブレット2列 / SP1列 が
+   breakpoint なしで連続的に切り替わる */
+/* PC 4列 → タブレット3→2列 → SP 1列。
+   auto-fit だと 1240px 幅では3列止まりになるため、段階を明示指定する */
+.art-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 1.6vw, 24px);
+}
+
+@media (min-width: 720px) {
+  .art-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+
+@media (min-width: 1080px) {
+  .art-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.art-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;                  /* Flex/Grid 子の潰れ防止 */
+  padding: 0;
+  border: 3px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 18px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 5px 5px 0 var(--lpv2-rule, #0a0a0a);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  font-family: inherit;
+}
+
+@media (hover: hover) {
+  .art-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--lpv2-rule, #0a0a0a);
+  }
+  .art-card:hover .art-card__img {
+    transform: scale(1.04);
+  }
+}
+
+.art-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--lpv2-rule, #0a0a0a);
+}
+
+.art-card:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 3px;
+}
+
+.art-card__label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 8px;
+  background: var(--lpv2-yellow, #ffd54a);
+  font-family: var(--lpv2-font-mono, 'Public Sans', sans-serif);
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--lpv2-ink, #0a0a0a);
+}
+
+.art-card__media {
+  display: block;
+  overflow: hidden;
+  background: var(--lpv2-cream, #fff8ed);
+  border-bottom: 3px solid var(--lpv2-rule, #0a0a0a);
+  aspect-ratio: 400 / 300;       /* 1ページ目の上部を見せる */
+}
+
+.art-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;   /* 漫画は上部にコマの情報が集中する */
+  display: block;
+  transition: transform .3s ease;
+}
+
+.art-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(14px, 1.6vw, 20px);
+  flex: 1;
+  min-width: 0;
+}
+
+/* 見出しは1〜2行で揺れるので、2行ぶんの高さを確保して
+   カード下端の「詳しく見る」の位置を全枚で揃える */
+.art-card__title {
+  font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
+  font-size: var(--fs-lg);
+  font-weight: 900;
+  line-height: 1.4;
+  color: var(--lpv2-ink, #0a0a0a);
+  min-height: calc(1.4em * 2);
+}
+
+/* 説明文は2〜3行で揺れる。flex:1 で下端の「詳しく見る」を揃え、
+   3行を上限にして行数差でカード高さがばらつくのを抑える */
+.art-card__summary {
+  font-size: var(--fs-sm);
+  line-height: 1.8;
+  color: var(--bm-text-muted);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  min-height: calc(1.8em * 3);
+}
+
+.art-card__more {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddd3c6;
+  font-size: var(--fs-xs);
+  font-weight: 900;
+  color: var(--lpv2-accent, #e85500);
+}
+
+.art-card__more::after {
+  content: " →";
+}
+
+/* 0件表示 */
+.art-empty {
+  display: none;
+  text-align: center;
+  padding: var(--sp-xl) var(--sp-md);
+  border: 3px dashed #d8d0c6;
+  border-radius: 18px;
+  color: var(--bm-text-muted);
+  font-size: var(--fs-md);
+}
+
+.art-empty.is-visible {
+  display: block;
+}
+
+/* ===== 5. 詳細モーダル ===== */
+.art-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 40px);
+  background: rgba(10, 8, 4, .72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.art-modal.is-open {
+  display: flex;
+}
+
+.art-modal__panel {
+  position: relative;
+  width: min(1080px, 100%);
+  max-height: calc(100dvh - 2 * clamp(12px, 3vw, 40px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+  border: 3px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 20px;
+  box-shadow: 10px 10px 0 rgba(0,0,0,.35);
+}
+
+.art-modal__close {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 10px 10px 0 0;
+  border: 3px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 50%;
+  background: #fff;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.art-modal__close:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+}
+
+.art-modal__body {
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.art-modal__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 var(--sp-xs);
+}
+
+/* カードと同じ A〜K の記号。どの作家を見ているかを見失わせない */
+.art-modal__label {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 9px;
+  background: var(--lpv2-yellow, #ffd54a);
+  font-family: var(--lpv2-font-mono, 'Public Sans', sans-serif);
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--lpv2-ink, #0a0a0a);
+}
+
+.art-modal__title {
+  font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
+  font-size: var(--fs-2xl);
+  font-weight: 900;
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+}
+
+.art-modal__lead {
+  font-size: var(--fs-md);
+  line-height: 1.9;
+  color: var(--bm-text-muted);
+  margin: 0 0 var(--sp-md);
+}
+
+/* サンプル画像: 横スクロールではなくグリッドで一覧性を出す */
+.art-modal__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 12px;
+  margin: 0 0 var(--sp-md);
+}
+
+.art-modal__shot {
+  margin: 0;
+  border: 2px solid var(--lpv2-rule, #0a0a0a);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  aspect-ratio: 3 / 4;
+}
+
+/* 作例は縦長(原稿)と横長(イラスト)が混在する。cover だと上下に黒帯が出たり
+   絵が切れたりするため、全体を収めて余白は白で埋める */
+.art-modal__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  background: #fff;
+}
+
+.art-modal__detail {
+  font-size: var(--fs-md);
+  line-height: 2;
+  margin: 0 0 var(--sp-md);
+}
+
+.art-modal__meta {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 var(--sp-md);
+  padding: clamp(14px, 2vw, 22px);
+  background: var(--lpv2-cream, #fff8ed);
+  border-radius: 14px;
+}
+
+.art-modal__meta-row {
+  display: grid;
+  grid-template-columns: minmax(7em, 9em) 1fr;
+  gap: 10px 14px;
+  align-items: start;
+}
+
+.art-modal__meta-key {
+  font-size: var(--fs-sm);
+  font-weight: 900;
+  color: var(--lpv2-ink, #0a0a0a);
+}
+
+.art-modal__meta-vals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+
+.art-modal__meta-val {
+  padding: 4px 12px;
+  border: 1px solid #ddd3c6;
+  border-radius: 999px;
+  background: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.art-modal__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+  padding-top: var(--sp-md);
+  border-top: 2px solid #eee4d6;
+}
+
+/* ===== 6. 下部CTA ===== */
+.art-cta {
+  background: var(--lpv2-ink, #0a0a0a);
+  color: #fff;
+  text-align: center;
+}
+
+.art-cta__title {
+  font-family: var(--lpv2-font-display, 'Noto Serif JP', serif);
+  font-size: var(--fs-3xl);
+  font-weight: 900;
+  line-height: 1.4;
+  margin: 0 0 var(--sp-sm);
+}
+
+.art-cta__lead {
+  font-size: var(--fs-md);
+  line-height: 1.95;
+  color: rgba(255,255,255,.82);
+  max-width: 40em;
+  margin: 0 auto var(--sp-md);
+}
+
+.art-cta .art-btn--ghost {
+  background: transparent;
+  color: #fff;
+  border-color: #fff;
+  box-shadow: 4px 4px 0 rgba(255,255,255,.35);
+}
+
+@media (hover: hover) {
+  .art-cta .art-btn--ghost:hover {
+    background: #fff;
+    color: var(--lpv2-ink, #0a0a0a);
+  }
+}
+
+.art-cta__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+  justify-content: center;
+}
+
+/* ===== SP 調整 ===== */
+/* 連続スケールで大半は成立するので、構造の組み替えが要る箇所だけ上書きする */
+@media (max-width: 720px) {
+  /* Hero: 背景の人物を隠さないよう、コピーの背面だけ白を強める */
+  .art-hero__bg::after {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.95) 0%,
+      rgba(255,255,255,.88) 42%,
+      rgba(255,255,255,.35) 72%,
+      rgba(255,255,255,0) 100%);
+  }
+
+  .art-hero__inner {
+    min-height: clamp(420px, 88vw, 560px);
+    align-items: flex-start;
+  }
+
+  .art-hero__cta-row .art-btn {
+    flex: 1 1 100%;
+  }
+
+  /* 軸ラベルを上に出して、チップに横幅を渡す */
+  .art-filter__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .art-filter__label {
+    padding-top: 0;
+  }
+
+  /* min-height は 44px を割らない（タップ領域の下限）。横 padding だけ詰める */
+  .art-chip {
+    padding: 10px 16px;
+  }
+
+  .art-modal__meta-row {
+    grid-template-columns: 1fr;   /* ラベルと値を縦積み */
+    gap: 6px;
+  }
+
+  .art-modal__cta .art-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* スマホは2列を維持する（1列にすると1枚が大きすぎて見比べられない）。
+   極小端末でも2列のまま、余白と文字だけ詰める */
+@media (max-width: 400px) {
+  .art-grid { gap: 10px; }
+  .art-card__body { padding: 10px; gap: 5px; }
+  .art-card__title { font-size: var(--fs-sm); }
+  .art-card__summary { font-size: 11px; line-height: 1.6; }
+}
+
+/* ===== モーション配慮 ===== */
+@media (prefers-reduced-motion: reduce) {
+  .art-card,
+  .art-card__img,
+  .art-btn,
+  .art-chip {
+    transition: none;
+  }
+  .art-card:hover,
+  .art-btn:hover {
+    transform: none;
+  }
+}
+
+/* ===== 追従CTA（.bm-fab）をこのページだけ小さくする =====
+   共通コンポーネント（js/bm-nav.js が全ページに生成）だが、幅200px×3個=600pxあり
+   カードの1列目に被って作例が見えなくなる。
+   このページでは既定をアイコンだけの丸ボタンにして、押した時だけラベルを開く。
+   ⚠️ body.art-page でスコープしているので他ページの .bm-fab は一切変わらない
+   （前例: css/bizanime.css の body.ba-page .bm-fab） */
+body.art-page .bm-fab {
+  gap: 10px;
+  left: 16px;
+  bottom: 16px;
+}
+
+/* 既定＝アイコンのみの円形。ラベルは開いた時だけ出す */
+body.art-page .bm-fab__btn {
+  --bm-fab-w: 56px;
+  --bm-fab-h: 56px;
+  border-radius: 50%;
+  transition: width .22s cubic-bezier(.34,1.4,.64,1), border-radius .22s ease;
+  overflow: hidden;
+}
+
+/* 畳んでいる間はアイコンを常時見せる（元CSSは hover で入れ替える作り） */
+body.art-page .bm-fab:not(.is-open) .bm-fab__text { opacity: 0; }
+body.art-page .bm-fab:not(.is-open) .bm-fab__icon-box { top: 0; }
+
+/* 開いた状態＝元の横長ボタンに戻す */
+body.art-page .bm-fab.is-open .bm-fab__btn {
+  --bm-fab-w: 190px;
+  border-radius: 999px;
+}
+body.art-page .bm-fab.is-open .bm-fab__text { opacity: 1; }
+
+/* 開閉トグル */
+.art-fab-toggle {
+  pointer-events: auto;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--lpv2-ink, #0a0a0a);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.art-fab-toggle svg {
+  width: 22px;
+  height: 22px;
+  transition: transform .22s ease;
+}
+
+.art-fab-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.art-fab-toggle:focus-visible {
+  outline: 3px solid var(--lpv2-accent, #e85500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* SP は画面が狭いので更に小さく */
+@media (max-width: 720px) {
+  body.art-page .bm-fab__btn {
+    --bm-fab-w: 48px;
+    --bm-fab-h: 48px;
+  }
+  body.art-page .bm-fab.is-open .bm-fab__btn {
+    --bm-fab-w: 150px;
+  }
+  .art-fab-toggle { width: 38px; height: 48px; }
+}

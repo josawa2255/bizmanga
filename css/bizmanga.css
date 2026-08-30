@@ -133,24 +133,37 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
 .bm-header-inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 16px;
+  /* 2026-08-29「漫画家紹介」追加でナビが9項目になり、JAで13px溢れて
+     FAQ が言語切替の下に潜った（BUGS #003/#014 の再発）。
+     gap(12px)も文字サイズも既に詰めきっているため、ヘッダーだけ
+     1200→1280px に広げて回収した（本文コンテナ1200pxはそのまま）。
+     ⚠️ これ以上ナビ項目を増やす場合はメガメニューへ入れること */
+  max-width: 1280px; margin: 0 auto; padding: 0 16px;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; /* ナビと言語切替/CTAが接触するのを防ぐ最低間隔 */
+  gap: 12px; /* ナビと言語切替/CTAが接触するのを防ぐ最低間隔 */
   height: 100%;
   min-width: 0; /* flex overflow 防止 */
 }
 /* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
 .bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
 .bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; max-width: none; flex-shrink: 0; aspect-ratio: 1316 / 370; }
+/* ナビ8項目(ホーム/制作事例/ビズ書庫/ビズアニメ/サービス/料金/コラム/FAQ)＋言語切替＋CTA＋
+   アイコン2個で横幅がぎりぎり。gapを詰めないと FAQ が言語切替の下に潜る(BUGS #003/#014)。
+   2026-08-22 ビズアニメ追加時に 24px→14px。1280〜1920px・日英両方で溢れゼロを実測済み。 */
 .bm-nav {
-  display: flex; align-items: center; gap: 24px;
+  /* 2026-08-29「漫画家紹介」追加でナビが8→9項目になり、JAで58px/ENで19px 溢れて
+     コラム・FAQ が言語切替の下に潜った（BUGS #003/#014 の再発）。
+     gap は既に14pxまで詰めていて10箇所ぶんでは足りないため、
+     gap 14→11px + 文字 15→14.5px + 字送りの圧縮で回収している。
+     ⚠️ これ以上ナビ項目を増やす場合はメガメニューへ入れること（gapの余地はもう無い） */
+  display: flex; align-items: center; gap: 11px;
   min-width: 0; flex-shrink: 1;
 }
 /* モバイル専用CTA(.bm-nav-mobile-cta)はデスクトップでは常に非表示 */
 .bm-nav-mobile-cta { display: none; }
 /* EN モードは英単語が日本語より幅広い (Services / Pricing / Column) ため、
    ナビ間隔と文字サイズをわずかに圧縮して言語スイッチ・CTAとの被りを回避 */
-html[lang="en"] .bm-nav { gap: 18px; }
+html[lang="en"] .bm-nav { gap: 9px; }
 html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 .bm-header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bm-nav-link {
@@ -228,10 +241,12 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: max-height 0.25s cubic-bezier(0.2, 0, 0, 1),
-              opacity 0.2s cubic-bezier(0.2, 0, 0, 1),
-              padding 0.25s cubic-bezier(0.2, 0, 0, 1),
-              transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  /* 閉じるときの指定。開くときは下の is-mega-open 側で上書きして速いまま保つ。
+     ゆっくり消えることで、カードへ手を伸ばす時間を稼ぐ（2026-08-30） */
+  transition: max-height 0.45s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.4s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.45s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.45s cubic-bezier(0.2, 0, 0, 1);
   z-index: 1000;
 }
 /* Swiss style: セクションラベル */
@@ -327,10 +342,18 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 }
 .bm-nav-megamenu {
   position: absolute;
-  top: 100%;
+  /* wrap には padding-bottom:24px（ホバーブリッジ）があり、top:100% だと
+     その下端＝ヘッダー下端より9px下から始まって隙間が見える。
+     ブリッジは残したまま、カードだけヘッダー下端まで引き上げる（2026-08-30） */
+  top: calc(100% - 9px);
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
-  width: min(900px, calc(100vw - 32px));
+  /* 列数に応じて幅を決める。固定900pxだと1列しかないビズ書庫で
+     右に635pxの空白ができ、カードが左に寄って見える上に
+     ホバー判定も無駄に広がっていた（2026-08-30）。
+     列は 265px 固定・gap 24px・左右padding 28px で組む。 */
+  width: max-content;
+  max-width: calc(100vw - 32px);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 4px;
@@ -346,19 +369,33 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
               transform 0.25s cubic-bezier(0.2, 0, 0, 1);
   z-index: 1000;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* 列数は中身に追従させる（1列のビズ書庫は狭く、3列のサービスは従来どおり） */
+  grid-auto-flow: column;
+  grid-auto-columns: 265px;
   gap: 0;
 }
-.bm-nav-megamenu-wrap:hover .bm-nav-megamenu,
+/* ⚠️ :hover は入れない。入れるとカーソルが外れた瞬間に閉じ始めてしまい、
+   JS側の遅延クローズ(300ms)が効かなくなる。開閉は js/bm-nav.js が
+   is-mega-open を付け外して制御する（:focus-within はキーボード操作用に残す）。 */
+.bm-nav-megamenu-wrap.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap:focus-within .bm-nav-megamenu {
+  /* 開くのは速いまま（遅いと反応が鈍く感じるため） */
+  transition: max-height 0.25s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.18s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.25s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.25s cubic-bezier(0.2, 0, 0, 1);
   max-height: 80vh;
   opacity: 1;
   pointer-events: auto;
   padding: 24px 28px;
   gap: 24px;
   transform: translateX(-50%) translateY(0);
+  /* 開いた後だけ overflow を解除する。閉じている間は hidden のままなので
+     max-height のスライドアニメーションは保たれる。
+     ⚠️ hidden のままだと第3階層(.bm-nav-submenu)が枠外で切れて表示されない（2026-08-30） */
+  overflow: visible;
 }
-.bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:hover .bm-nav-megamenu,
+.bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:focus-within .bm-nav-megamenu {
   max-height: 0 !important;
   opacity: 0 !important;
@@ -398,6 +435,90 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 }
 .bm-nav-megamenu-item.active {
   background: rgba(232, 85, 0, 0.08);
+}
+
+/* ===== メガメニュー内のサブメニュー（第3階層・2026-08-30） =====
+   「制作事例（一覧）」にホバーすると右側にカテゴリ7本が開く。
+   項目自体はリンクのままなので、押せば /works へ遷移できる。 */
+.bm-nav-submenu-wrap {
+  position: relative;
+}
+
+.bm-nav-megamenu-item.bm-nav-has-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* 右向きの矢印で「奥がある」ことを示す */
+.bm-nav-megamenu-item.bm-nav-has-sub::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-left: 10px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: .5;
+  flex: 0 0 auto;
+}
+.bm-nav-submenu {
+  position: absolute;
+  top: -8px;
+  left: 100%;
+  /* 左側に不可視のパディングを持たせ、斜め移動の着地点を広げる */
+  border-left: 12px solid transparent;
+  background-clip: padding-box;
+  min-width: 200px;
+  padding: 8px 0;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  box-shadow: 0 16px 32px -8px rgba(26, 26, 26, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-4px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+  z-index: 2;
+}
+/* 開閉は js/bm-nav.js が .is-sub-open を付け外しして制御する。
+   純粋な :hover だと、項目からサブメニューへ斜めに動かす途中で
+   項目の下端を外れた瞬間に閉じてしまうため（実測で50%地点で消えた）。
+   JS側で閉じるのを遅らせて、斜めの移動を許容している。 */
+.bm-nav-submenu-wrap.is-sub-open .bm-nav-submenu,
+.bm-nav-submenu-wrap:focus-within .bm-nav-submenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.bm-nav-submenu-item {
+  display: block;
+  padding: 10px 18px;
+  font-size: 14px;
+  color: var(--bm-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bm-nav-submenu-item:hover {
+  background: rgba(232, 85, 0, 0.05);
+  color: var(--bm-accent);
+}
+.bm-nav-submenu-item.active {
+  background: rgba(232, 85, 0, 0.08);
+  color: var(--bm-accent);
+}
+/* 画面右端で見切れる場合は左側に出す */
+@media (max-width: 1100px) {
+  .bm-nav-submenu {
+    left: auto;
+    right: 100%;
+    transform: translateX(4px);
+  }
+  .bm-nav-submenu-wrap:hover .bm-nav-submenu,
+  .bm-nav-submenu-wrap:focus-within .bm-nav-submenu {
+    transform: translateX(0);
+  }
 }
 @media (max-width: 880px) {
   .bm-nav-megamenu {
@@ -4696,6 +4817,67 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     align-items: stretch;
     width: 100%;
   }
+  /* メガメニュー(ビズ書庫/サービス)もドロワーでは既存のアコーディオンに乗せる（2026-08-30）。
+     1タップ目で is-open が付いて子リンクが出る、2タップ目で親ページへ遷移、という
+     既存ドロップダウンと同じ操作にそろえる。
+     ⚠️ これが無いと子ページがモバイルから到達不能になる（PCはホバーで開くが
+     モバイルはホバーが無く、親リンクのタップはトグル処理に吸われるため） */
+  .bm-nav.open .bm-nav-megamenu {
+    display: none;
+    position: static;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: #fafafa;
+    padding: 0 0 8px;
+    margin: 0;
+    overflow: visible;
+  }
+  .bm-nav.open .bm-nav-dropdown.is-open .bm-nav-megamenu {
+    display: block;
+  }
+  .bm-nav.open .bm-nav-megamenu-col + .bm-nav-megamenu-col {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .bm-nav.open .bm-nav-megamenu-heading {
+    padding: 12px 24px 4px;
+    font-size: 12px;
+    color: #888;
+  }
+  .bm-nav.open .bm-nav-megamenu-item {
+    padding: 16px 24px 16px 36px;   /* 親より字下げして階層を示す */
+    min-height: 52px;
+    border-bottom: 1px solid #ededed;
+    font-size: 15px;
+  }
+  /* サブメニューはドロワーでは畳まず、もう一段字下げして並べる。
+     ホバーが無いうえ、親項目はリンク(/works)なのでタップすると遷移してしまい、
+     開く操作を割り当てられないため常時表示にする */
+  .bm-nav.open .bm-nav-submenu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    min-width: 0;
+    padding: 0;
+  }
+  .bm-nav.open .bm-nav-megamenu-item.bm-nav-has-sub::after {
+    transform: rotate(135deg);   /* 下向き＝この下に続く、を示す */
+  }
   /* モバイル専用CTAリンク: LINE + 電話 (ハンバーガーメニュー末尾) */
   .bm-nav.open .bm-nav-mobile-cta {
     display: flex;
@@ -4778,6 +4960,19 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-nav.open .bm-nav-dropdown-item:active {
     background: rgba(235, 82, 0, 0.06);
+  }
+  /* 第3階層(カテゴリ)は親項目よりさらに字下げして階層を示す。
+     ⚠️ .bm-nav-dropdown-item と同じ詳細度なので、必ずこのルールより後ろに置くこと
+     （前に置くと padding-left:44px に負けて親子が同じ位置に並ぶ・2026-08-30） */
+  .bm-nav.open .bm-nav-submenu-item {
+    padding-left: 62px;
+    min-height: 50px;
+    font-size: 14px;
+  }
+  .bm-nav.open .bm-nav-submenu-item::before {
+    left: 42px;
+    width: 8px;
+    opacity: .55;
   }
   /* メガメニュー: モバイルではドロワー内インライン展開（絶対配置をキャンセル） */
   .bm-nav.open .bm-nav-megamenu {
@@ -4995,6 +5190,85 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .work-detail-right { max-height: none; overflow-y: visible; padding: 20px; }
   .work-detail-close { position: fixed; top: 8px; right: 8px; z-index: 10001; }
+
+  /* --- 縦読みのみ: 上下2ペイン分割（上=漫画 / 下=詳細） ---
+     縦読みは漫画が非常に長く、一体スクロールだと詳細まで到達できないため
+     ペインを分けて両方を同時に見せる。JS(bm-wd-split.js)が --wd-split を
+     読んでいる側に応じて 0.75 / 0.5 / 0.25 に切り替える。
+     横読み(.wd-split が付かない)は従来どおり一体スクロール。 */
+  .work-detail-overlay.wd-split {
+    overflow: hidden;
+    height: 100dvh;
+  }
+  .work-detail-overlay.wd-split .work-detail-content {
+    height: 100dvh;
+    min-height: 0;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+  /* 上ペイン: 漫画。--wd-split の比率で高さを取り、内部だけスクロール */
+  .work-detail-overlay.wd-split .work-detail-left {
+    flex: 0 0 auto;
+    height: calc(100dvh * var(--wd-split, 0.75));
+    min-height: 0;
+    overflow: hidden;
+    transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* ドラッグ中は指に追従させる（トランジションが遅延に見えるため切る） */
+  .work-detail-overlay.wd-split.wd-split-dragging .work-detail-left {
+    transition: none;
+  }
+  .work-detail-overlay.wd-split .work-detail-carousel-wrap.has-vertical-scroll {
+    height: 100%;
+    max-height: none;
+    overflow: hidden;
+  }
+  .work-detail-overlay.wd-split .work-detail-carousel.vertical-scroll {
+    height: 100%;
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* 親へスクロールを伝播させない＝下ペインが動かない */
+    background: #fff;
+  }
+  /* 画像同士の隙間を消す（inline 由来の余白でコマが分断されて見えるのを防ぐ） */
+  .work-detail-overlay.wd-split .work-detail-carousel.vertical-scroll img {
+    display: block;
+    vertical-align: top;
+  }
+  /* 下ペイン: 詳細。残り高さを占め、内部だけスクロール */
+  .work-detail-overlay.wd-split .work-detail-right {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 16px 20px 24px;
+    border-top: 1px solid #eee;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+  /* 下ペインの掴み手（ドラッグで手動リサイズ） */
+  .wd-split-handle { display: none; }
+  .work-detail-overlay.wd-split .wd-split-handle {
+    display: block;
+    flex: 0 0 auto;
+    height: 22px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    position: relative;
+    cursor: row-resize;
+    touch-action: none;
+  }
+  .work-detail-overlay.wd-split .wd-split-handle::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%;
+    transform: translateX(-50%);
+    width: 40px; height: 4px;
+    border-radius: 2px;
+    background: #ccc;
+  }
 }
 
 /* ===== 制作過程セクション (ホーム用) ===== */
