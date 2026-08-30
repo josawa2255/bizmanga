@@ -1135,7 +1135,8 @@ body.ba-modal-open { overflow: hidden; }
   position: absolute;
   left: 4%;
   right: 4%;
-  bottom: 10px;
+  /* PCは左下に追従CTA(高さ約72px)が固定表示されるため、その上に置く */
+  bottom: 84px;
   height: 3px;
   z-index: 3;               /* screen(1) frame(2) より上 */
   border-radius: 3px;
@@ -1157,4 +1158,76 @@ body.ba-modal-open { overflow: hidden; }
 .ba-device:has(.ba-device__screen.is-full) .ba-device__progress {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* ==========================================================================
+   実績バッジ（WPの「実績」欄。動画の左下に表示 2026-08-30 指示）
+   例:「MV 450万インプレッション」「コンテスト最優秀賞」
+   ========================================================================== */
+/* --- 共通の見た目: 黒地×オレンジの左罫。シネマティックに寄せる --- */
+.ba-device__badge,
+.ba-modal__badge {
+  margin: 0;
+  padding: 9px 16px 9px 13px;
+  border-left: 3px solid var(--ba-orange-3);
+  border-radius: 0 8px 8px 0;
+  background: rgba(5,5,5,.72);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: clamp(12px, 1vw, 15px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.4;
+  pointer-events: none;
+  max-width: 70%;
+}
+
+/* --- 演出: フルスクリーン時のみ左下に（進捗バーの上） --- */
+.ba-device__badge {
+  position: absolute;
+  left: 4%;
+  bottom: 102px;   /* 進捗バー(84px)のすぐ上 */
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .4s, transform .4s;
+}
+.ba-device:has(.ba-device__screen.is-full) .ba-device__badge:not([hidden]) {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- モーダル: プレイヤー左下のオーバーレイ --- */
+.ba-modal__badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;          /* iframe より上 */
+}
+
+/* --- 事例カード: サムネ左下の小さなチップ --- */
+.ba-case__badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  max-width: 70%;
+  padding: 4px 9px 4px 7px;
+  border-left: 2px solid var(--ba-orange-3);
+  border-radius: 0 6px 6px 0;
+  background: rgba(5,5,5,.78);
+  color: rgba(255,255,255,.95);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  line-height: 1.35;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .ba-case__badge { font-size: 9px; padding: 3px 7px 3px 6px; }
+}
+/* スマホは追従CTAを出していないので、バーとバッジは画面下端に寄せる */
+@media (max-width: 1024px) {
+  .ba-device__progress { bottom: 14px; }
+  .ba-device__badge    { bottom: 32px; }
 }

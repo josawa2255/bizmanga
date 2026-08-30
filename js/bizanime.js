@@ -500,6 +500,12 @@
     }
     currentEl = el;
     currentV  = v;
+    // 実績バッジ（フルスクリーン時にCSSが表示する）
+    var sBadge = document.getElementById('baDeviceBadge');
+    if (sBadge) {
+      sBadge.textContent = v.achievement || '';
+      sBadge.hidden = !v.achievement;
+    }
     updateAudioBtn();
     // 音声ONのまま切り替わったら、新しいプレイヤーにも引き継ぐ
     // （iframeはプレイヤー初期化を待つ必要があるので load 後に少し遅らせる）
@@ -599,6 +605,12 @@
       play.className = 'ba-case__play';
       play.appendChild(buildPlayIcon());
       thumb.appendChild(play);
+      if (v.achievement) {
+        var badge = document.createElement('span');
+        badge.className = 'ba-case__badge';
+        badge.textContent = v.achievement;   // textContent = XSS安全
+        thumb.appendChild(badge);
+      }
 
       var cat = document.createElement('span');
       cat.className = 'ba-case__cat';
@@ -662,6 +674,11 @@
     if (el.tagName === 'IFRAME' && v.provider === 'youtube') scheduleCaptionsOff(el);
     modalPlayer.className = 'ba-modal__player ba-modal__player--' + (v.provider || 'other');
     if (modalTitle) modalTitle.textContent = v.title || '';
+    var mBadge = document.getElementById('baModalBadge');
+    if (mBadge) {
+      mBadge.textContent = v.achievement || '';
+      mBadge.hidden = !v.achievement;
+    }
 
     var mAudio = document.getElementById('baModalAudio');
     var mBar   = document.getElementById('baModalProgress');
@@ -726,7 +743,9 @@
     if (!modal || modal.hidden) return;
     // プレイヤーを破棄する＝再生を確実に止める（§27）
     Array.prototype.slice.call(modalPlayer.querySelectorAll('iframe')).forEach(unwatchPlayer);
-    while (modalPlayer.firstChild) modalPlayer.removeChild(modalPlayer.firstChild);
+    // バッジ(p要素)は残し、プレイヤー(iframe/video)だけ破棄する
+    Array.prototype.slice.call(modalPlayer.querySelectorAll('iframe, video'))
+      .forEach(function (n) { n.remove(); });
     modal.hidden = true;
     document.body.classList.remove('ba-modal-open');
     document.removeEventListener('keydown', onModalKey);

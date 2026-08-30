@@ -214,6 +214,8 @@
           <!-- フルスクリーン時だけ出る進捗バー（クリックでシーク） -->
           <div class="ba-device__progress" id="baDeviceProgress" role="progressbar"
                aria-label="再生位置"><i></i></div>
+          <!-- 実績バッジ（WPの「実績」欄。フルスクリーン時に左下へ表示） -->
+          <p class="ba-device__badge" id="baDeviceBadge" hidden></p>
         </div>
 
         <!-- 波形装飾（プレイヤー右上） -->
@@ -272,7 +274,10 @@
       <div class="ba-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="baModalTitle">
         <button type="button" class="ba-modal__close" id="baModalClose"
                 aria-label="閉じる" data-close>&times;</button>
-        <div class="ba-modal__player" id="baModalPlayer"></div>
+        <div class="ba-modal__player" id="baModalPlayer">
+          <!-- 実績バッジ（動画左下のオーバーレイ） -->
+          <p class="ba-modal__badge" id="baModalBadge" hidden></p>
+        </div>
         <!-- YouTube風の進捗バー（自前実装・クリックでシーク） -->
         <div class="ba-modal__progress" id="baModalProgress" role="progressbar"
              aria-label="再生位置"><i></i></div>
