@@ -230,9 +230,10 @@ body.ba-page .bm-header-inner { position: relative; }
           text-size-adjust: 100%;
   /* 「BIZ ANIME」を必ず1行で収める。コンテナ幅(34%)基準の cqw を使い、
      幅が変わっても改行しないサイズへ自動追随させる（vw基準だと親幅と噛み合わず折り返す） */
-  /* 実測: "BIZ ANIME" は font-size 100px で幅572px = 17.4cqw が1行の上限。
-     目標では左エリアを大胆に使うので上限いっぱい(17.2cqw)まで攻める（§7） */
-  font-size: min(clamp(64px, 6vw, 122px), 17.2cqw);
+  /* 実測: 「ビズアニメ」は font-size 100px で幅499px = 20.0cqw が1行の上限
+     （2026-08-30 カタカナ化。英字 BIZ ANIME=572px より詰まるので大きくできる）。
+     3%の安全率を見て 19.4cqw まで攻める（§7） */
+  font-size: min(clamp(64px, 6vw, 122px), 19.4cqw);
   font-weight: 700;
   line-height: .9;
   letter-spacing: .01em;
@@ -741,7 +742,7 @@ body.ba-page { overflow-x: clip; }
     /* ⚠️ cqw はパディングを含む幅を返すため、左右padding(最大32px×2)を引いた
        実際の文字領域で計算する。実測: 100px時の文字幅は copyW の 17.6cqw 相当なので、
        padding を差し引いた上で 16.6cqw（約6%の安全マージン）に収める。 */
-    font-size: min(clamp(38px, 12.5vw, 78px), calc((100cqw - clamp(36px, 10vw, 64px)) * 0.155));
+    font-size: min(clamp(38px, 13.5vw, 84px), calc((100cqw - clamp(36px, 10vw, 64px)) * 0.194));  /* カタカナ実測499px/100px 基準 */
   }
   .ba-title-ja { letter-spacing: .3em; font-size: clamp(11px, 3.2vw, 15px); }
   .ba-lead {
