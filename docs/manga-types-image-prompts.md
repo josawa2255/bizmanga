@@ -371,6 +371,36 @@ icon-style, not corporate clip art, not photorealistic.
 Absolutely no text, no numbers, no letters, no logos anywhere in the image.
 ```
 
+### #11 保存パス: `images/manga-types/format-vertical.png` — 縦読み（2026-08-31追加。#08〜#10と同じ「いつも通り」の汎用人物）
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges and
+  all four corners must stay plain white with nothing painted on them.
+- Cool low-saturation palette: dusty blue-gray, navy, neutral light gray. No sepia, no
+  beige, no warm cream tint anywhere in the background. Only small wooden objects may
+  carry a pale warm tone.
+- Orange (#E85500) appears only as a few short emphasis strokes or one tiny highlight.
+
+Scene: a young Japanese person in casual clothes holds their smartphone upright in
+portrait orientation with one hand, thumb mid-swipe scrolling upward on the screen, a
+focused, engaged half-smile. The phone screen shows three simple plain
+rounded-rectangle panels stacked vertically (do not draw any content inside them, keep
+them plain pale-blue-gray watercolor rectangles), with the top one partly cut off at
+the top edge of the screen to suggest continuous scrolling. A short orange stroke sits
+near their thumb.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
 ---
 
 ## 生成しないもの（既存流用）
@@ -381,3 +411,458 @@ Absolutely no text, no numbers, no letters, no logos anywhere in the image.
 | OG 画像 | `material/images/og/og-manga-types.webp` | 既存のまま。新規生成は不要 |
 
 新規カットを足すときは**必ず recruit-manga の画像を基準**にしてください（サイト全体の画風の正本）。
+
+---
+
+## C. 「映画館」リデザイン (2026-08-31) で追加したプレースホルダー
+
+### C-1. プロローグの3コマ予告編（ファーストビュー右側）
+
+現在は実写イラストではなく、**インラインSVGのピクトグラム**（吹き出し+×／電球／吹き出し+チェック）で
+仮組みしています。`manga-types.html` 側は既に差し替え前提の構造になっており、404を避けるため
+実在しない画像への `<img>` 参照は置いていません（`<picture>` ブロックはHTMLコメントとして
+あらかじめ用意してあります）。
+
+**差し替え手順**: `manga-types.html` の `.mt-trailer-frame__art` 内、各 `.mt-trailer-frame__glyph`
+の直前にあるHTMLコメント（`<!-- 画像差し替え用（未生成）: ... -->`）のコメントを外し、
+その下の既存 `<span class="mt-trailer-frame__glyph">…SVG…</span>` を削除するだけで反映されます
+（クラス名 `mt-trailer-frame__glyph` を `<picture>` 側に付け替えて使うため、CSSの追加変更は不要。
+`img` には `object-fit:cover` が既に効くようにしてあるので、枠内に自動でトリミング表示されます）。
+
+| # | 保存パス（未生成） | 表示箇所 | 推奨比率・サイズ |
+|---|---|---|---|
+| 1 | `images/manga-types/trailer-01-problem.png` / `.webp` | プロローグ CUT 01（悩んでいる） | 横長 3:2（例 384×256 以上） |
+| 2 | `images/manga-types/trailer-02-idea.png` / `.webp` | プロローグ CUT 02（気づく） | 横長 3:2（例 384×256 以上） |
+| 3 | `images/manga-types/trailer-03-result.png` / `.webp` | プロローグ CUT 03（伝わる） | 横長 3:2（例 384×256 以上） |
+
+内容案（このドキュメントのA節と同じ画風で。**画像そのものはこの追記時点では生成しない**）:
+
+1. 悩んでいる: 資料や商品を前に困惑・説明に苦戦している企業担当者
+2. 気づく: マンガの原稿やコマ割りを見て表情が明るくなる瞬間
+3. 伝わる: 相手（顧客・候補者など）が納得・行動している場面
+
+3枚とも横長 1536×1024 で生成し、3:2に中央トリミングされる前提でA節と同じ画風指定を使ってください。
+
+### C-2. SCREENING FORMAT（上映形式）のプレビュー
+
+1コマ/4コマ/ストーリー型/縦読みのプレビューは、あえて実写を使わず**CSSのみ**でコマ割りの形を
+表現しています（`.mt-ticket-preview--*`）。実写化は必須ではありません。もし将来 `format-1koma.png` /
+`format-4koma.png` / `format-story.png`（既存・未使用のまま残置）を使いたくなった場合は、
+`.mt-ticket-preview` 内に `<picture>` を追加して差し替えてください。縦読み用の実写素材はまだ
+存在しないため、追加する場合は新規生成が必要です。
+
+### C-3. 最終CTAの「COMING NEXT」ポスター
+
+キャラクターの詳細を確定させたくないため、頭部+胴体のシルエットのみをCSSで描画しています
+（`.mt-cta-poster__figure`）。将来、実際のキャラクターイラスト（後ろ姿・シルエット寄りの構図）に
+差し替える場合も、文字（YOUR STORY / COMING NEXT / Produced with BIZMANGA）はHTML側にあるため
+画像に文字を焼き込む必要はありません。
+
+---
+
+## D. プロローグ予告編カット（3枚・2026-08-31追加）— ChatGPTにそのまま送れるプロンプト
+
+C-1で必要な3枚（`trailer-01-problem` / `trailer-02-idea` / `trailer-03-result`）の生成手順です。
+A・B節と**同じ画風**に揃えるため、送信の流れも同じです。
+
+| 送信 | 内容 |
+|---|---|
+| 1通目 | 画風を指定する文章（+画像2枚を添付） |
+| 2通目 | #D-01（悩んでいる） |
+| 3通目 | #D-02（気づく・#D-01と同一人物） |
+| 4通目 | #D-03（伝わる・#D-01/02の人物+新しい登場人物） |
+
+> すでにA・B節（#01〜#10）を生成した**同じチャットが残っている場合**は、送信1をやり直す必要はありません。そのまま #D-01 から続けて送ってください。新しいチャットで始める場合のみ、下の送信1から行ってください。
+
+### 送信1（画風指定）— 新しいチャットで始める場合のみ
+
+まず次の2枚をチャットに添付してください（テキストはまだ送らない）。
+
+| 添付するファイル | 役割 |
+|---|---|
+| `images/recruit-manga/merit-01.png` | 画風・配色の基準（横長カット） |
+| `images/product-manga/merit-01.png` | 画風・配色の基準（横長カット・別アングル確認用） |
+
+👇 **ここから下の枠の中身だけ**をコピーして、画像といっしょに送信してください。
+
+```
+添付した2枚は、あるWebサイトで使っている既存イラストです。
+これから3枚のイラストを作ります。すべてこの2枚と同じ画風・配色・線のタッチに
+厳密に揃えてください。特に次の4点を守ってください。
+
+1. 人物はアニメ・マンガ調。目・鼻・口は簡略化し、肌と髪の陰影は最小限、
+   黒に近いインクの輪郭線をはっきり出す。実写寄りの水彩ポートレートにはしない。
+2. 背景は白。キャンバスの7割以上を紙の白のまま残し、水彩のにじみは人物のすぐ
+   後ろに雲のように少し置くだけ。四隅と画面の縁には何も塗らない。
+3. 配色は彩度の低い青灰色・ネイビー・ニュートラルグレー。セピアやベージュの
+   暖色を背景にかけない。木製の小物だけ淡い木の色でよい。
+4. オレンジは集中線や小さなハイライトなど、ごく一部にだけ使う。
+
+フラットベクター・アイコン調・企業クリップアート調にはしないでください。
+画像内に文字・数字・ロゴは一切入れないでください。
+了解したら「OK」とだけ返してください。
+```
+
+ChatGPTから「OK」と返事が来たら、下の #D-01 に進んでください。
+
+### 送信2〜4（3枚の絵の内容）— #D-01から順番に
+
+1個ずつ、同じチャットに貼り付けて送信してください。コピーするのは灰色の枠の中身だけです。
+生成されたPNGは、見出しに書かれた**保存パスのファイル名で** `images/manga-types/` に保存してください。
+全3枚とも横長 **1536×1024** で生成し、ページ上では **3:2に中央トリミング**されます。
+
+#### D-01 保存パス: `images/manga-types/trailer-01-problem.png` — CUT 01「悩んでいる」
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges and
+  all four corners must stay plain white with nothing painted on them.
+- Cool low-saturation palette: dusty blue-gray, navy, neutral light gray. No sepia, no
+  beige, no warm cream tint anywhere in the background. Only small wooden objects may
+  carry a pale warm tone.
+- Orange (#E85500) appears only as a few short emphasis strokes or one tiny highlight.
+
+Scene: a Japanese businessperson in their 30s, in a simple gray-blue blazer, sits at a
+desk cluttered with papers and an open laptop, one hand resting on their forehead,
+brows furrowed in a troubled, searching expression, as if struggling to explain
+something clearly. Beside them, a faint pale-blue watercolor cloud shows a loosely
+tangled scribble-like shape (soft looping lines only, not readable text or symbols),
+suggesting a jumbled, unclear message. A short orange stroke marks a small tense
+accent near their temple.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+#### D-02 保存パス: `images/manga-types/trailer-02-idea.png` — CUT 02「気づく」（D-01と同一人物）
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges and
+  all four corners must stay plain white with nothing painted on them.
+- Cool low-saturation palette: dusty blue-gray, navy, neutral light gray. No sepia, no
+  beige, no warm cream tint anywhere in the background. Only small wooden objects may
+  carry a pale warm tone.
+- Orange (#E85500) appears only as a few short emphasis strokes or one tiny highlight.
+
+Scene: the same Japanese businessperson as the previous image (keep the exact same
+hairstyle and the same gray-blue blazer), now sitting up straight at the same desk,
+holding a blank manga storyboard sheet with both hands (draw it as a plain sheet with
+a few empty rounded-rectangle panel outlines — do not draw any artwork or text inside
+the panels), eyes wide open with a bright expression of sudden realization, as if a
+good idea just struck them. Behind them, a faint pale-blue watercolor cloud shows a
+simple lightbulb silhouette. A short orange spark-like stroke sits just above the
+storyboard sheet.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+#### D-03 保存パス: `images/manga-types/trailer-03-result.png` — CUT 03「伝わる」（D-01/02の人物+新しい登場人物）
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges and
+  all four corners must stay plain white with nothing painted on them.
+- Cool low-saturation palette: dusty blue-gray, navy, neutral light gray. No sepia, no
+  beige, no warm cream tint anywhere in the background. Only small wooden objects may
+  carry a pale warm tone.
+- Orange (#E85500) appears only as a few short emphasis strokes or one tiny highlight.
+
+Scene: the same Japanese businessperson from the previous two images (keep the exact
+same hairstyle and the same gray-blue blazer) holds up a printed manga page toward a
+second person — a client or job candidate, seen mostly from behind or in
+three-quarter profile, in neutral casual-business clothing. The second person nods
+with a convinced, satisfied smile and one hand raised slightly in a small approving
+gesture. Behind them, a faint pale-blue watercolor cloud shows a simple upward arrow
+shape, suggesting a positive change ahead. A short orange stroke highlights near the
+arrow.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+### 生成後の手順
+
+1. 生成された3枚のPNGを、それぞれ上記の保存パス名で `images/manga-types/` に保存する
+2. 「PNG保存したので.webpも作ってください」と伝えてもらえれば、こちらで `.webp` を作成する
+3. `manga-types.html` 内の該当コメント（`<!-- 画像差し替え用（未生成）: ... -->`）を外し、
+   直後の `<span class="mt-trailer-frame__glyph">`（SVG版）を削除する
+
+> **2026-08-31 更新**: D-01〜D-03は実際に生成・差し替え済み（登場人物は汎用のビジネスパーソン）。
+> 下のE節で、この人物を**ビズマンガの公式マスコットキャラクター**に差し替えるプロンプトを用意した。
+
+---
+
+
+## E. マスコットキャラクター — 予告編 + 最終CTAポスターのみ（2026-08-31 III/IV）
+
+**2026-08-31 III 変更**: マスコットキャラクターを使うのは**予告編3枚 + 最終CTAポスター用の人物1枚**
+だけに限定しました。「物語に合う形式を選ぶ」（SCREENING FORMAT）の形式プレビュー4枚は、
+マスコットを使わず**いつも通りの汎用人物**（A・B節と同じ方針、カットごとに別の人物）に戻しています。
+形式プレビュー4枚のプロンプトは **B節の #08〜#11** を参照してください（#11「縦読み」はB節に新規
+追加済み）。
+
+**2026-08-31 IV 変更**: 最終CTAポスター用の人物（E-04）だけ、**水彩+インク調にしない**方針に変更。
+「次に予告編になるのは、御社の物語。」のCTAは大々的で迫力のある見せ場にしたいため、E-04は
+E-01〜E-03と別の画風（マスコット自身の実際のセルシェーディング画風をベースに、より劇的でパワフルな
+ポスター調のレンダリング）にする。E-01〜E-03（予告編3枚）は引き続き水彩+インク調のまま。
+
+`material/images/character.webp` / `character-cta.webp` の公式マスコットキャラクター（栗色の髪・
+緑の瞳・赤いリボン・オレンジのニットベスト）を登場させます。E-01〜E-03は**A・B・D節と同じ水彩+インク
+の簡略画風**、E-04だけは**マスコット自身の画風をベースにした、より劇的でパワフルなポスター調**で
+描きます（詳細はE-04のプロンプト参照。別チャットで生成することを推奨）。
+
+対象は次の4枚:
+
+| 区分 | 内容 | 保存パス（**上書き**に注意） |
+|---|---|---|
+| 予告編（再生成） | CUT 01 悩んでいる | `images/manga-types/trailer-01-problem.png` |
+| 予告編（再生成） | CUT 02 気づく | `images/manga-types/trailer-02-idea.png` |
+| 予告編（再生成） | CUT 03 伝わる | `images/manga-types/trailer-03-result.png` |
+| 最終CTA | COMING NEXTポスター用の人物（新規） | `images/manga-types/cta-poster-character.png` |
+
+### 送信1（画風+キャラクター指定）— 新しいチャットで行う
+
+まず次の4枚を**この順番で**チャットに添付してください（テキストはまだ送らない）。
+
+| 添付するファイル | 役割 |
+|---|---|
+| `images/recruit-manga/merit-01.png` | ①画風の基準（水彩+インク） |
+| `images/product-manga/merit-01.png` | ②画風の基準（水彩+インク・別アングル確認用） |
+| `material/images/character.webp` | ③キャラクターの見た目の基準（全身） |
+| `material/images/character-cta.webp` | ④キャラクターの見た目の基準（バストアップ） |
+
+👇 **ここから下の枠の中身だけ**をコピーして、画像4枚と一緒に送信してください。
+
+```
+添付した4枚のうち、①②は「あるWebサイト」で使っている既存イラストの画風見本、③④はこの
+Webサイトの公式マスコットキャラクターです。
+これから4枚のイラストを作ります。画風は①②に、キャラクターの見た目は③④に、それぞれ
+厳密に揃えてください。
+
+【画風（①②を基準に）】
+1. 人物はアニメ・マンガ調。目・鼻・口は簡略化し、肌と髪の陰影は最小限、
+   黒に近いインクの輪郭線をはっきり出す。実写寄りの水彩ポートレートにはしない。
+2. 背景は白。キャンバスの7割以上を紙の白のまま残し、水彩のにじみは人物のすぐ
+   後ろに雲のように少し置くだけ。四隅と画面の縁には何も塗らない。
+3. 背景ににじみをつける場合の配色は、彩度の低い青灰色・ネイビー・ニュートラル
+   グレー。セピアやベージュの暖色を背景にかけない。
+4. オレンジは集中線や小さなハイライトなど、ごく一部にだけ使う（ただし下記の
+   キャラクター自身の服の色はこの制限の対象外）。
+
+【キャラクターの見た目（③④を基準に、①②の画風で描く）】
+5. 髪型: 肩に触れるくらいの明るい栗色（チェスナットブラウン）の髪。頭頂に
+   跳ねた毛（アホ毛）が2〜3本立っている。前髪は横に流れる。
+6. 目: 緑色の瞳。頬にほんのり赤みのチーク。
+7. 髪飾り: 向かって右側に赤いリボン。
+8. 服装: 白の襟付きシャツの上に、オレンジ〜レンガ色のノースリーブ・ニット
+   ベスト（Vネック）。線と塗りは①②のように簡略化してよいが、色味自体は
+   オレンジ〜レンガ色のまま変えないでください。
+9. ③④のような精細なセルシェーディング・きらきらした星形ハイライト・
+   グラデーションの多用はせず、①②と同じ簡略化されたタッチで描いてください。
+
+フラットベクター・アイコン調・企業クリップアート調にはしないでください。
+画像内に文字・数字・ロゴは一切入れないでください。
+了解したら「OK」とだけ返してください。
+```
+
+ChatGPTから「OK」と返事が来たら、下の #E-01 から順番に送信してください。
+
+### 送信2〜4（予告編3枚の絵の内容）— #E-01から順番に
+
+1個ずつ、同じチャットに貼り付けて送信してください。コピーするのは灰色の枠の中身だけです。
+全3枚とも横長 **1536×1024** で生成してください。
+
+#### E-01 保存パス（上書き）: `images/manga-types/trailer-01-problem.png` — CUT 01「悩んでいる」
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration. Do NOT use glossy cel-shading,
+  sparkling star-shaped catchlights, or heavy gradient rendering — keep the line and
+  wash technique as flat and simple as the style reference images.
+- The character is BizManga's mascot: shoulder-length light chestnut-brown hair with
+  2-3 short cowlick strands standing up at the crown, side-swept bangs. Green eyes,
+  soft pink blush on the cheeks. A red ribbon bow on her right side (viewer's right).
+  She wears a white collared shirt under a sleeveless orange/rust-colored knit vest,
+  V-neck. Render her in the same simplified ink-and-wash technique as the style
+  reference images, not in a glossy, detailed digital-illustration style.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges
+  and all four corners must stay plain white with nothing painted on them.
+- Any background wash uses a cool low-saturation palette: dusty blue-gray, navy,
+  neutral light gray. No sepia, no beige, no warm cream tint anywhere in the
+  background (her orange knit vest keeps its own color — this cool-palette rule is
+  for the background only, not her outfit).
+
+Scene: she sits at a desk cluttered with papers and an open laptop, one hand resting
+near her cheek, eyebrows drawn together in a worried, puzzled pout, mouth in a small
+flat line, as if struggling to explain something clearly. Beside her, a faint
+pale-blue watercolor cloud shows a loosely tangled scribble-like shape (soft looping
+lines only, not readable text or symbols). A short orange stroke marks a small tense
+accent near her temple.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+#### E-02 保存パス（上書き）: `images/manga-types/trailer-02-idea.png` — CUT 02「気づく」（E-01と同一人物）
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration. Do NOT use glossy cel-shading,
+  sparkling star-shaped catchlights, or heavy gradient rendering — keep the line and
+  wash technique as flat and simple as the style reference images.
+- The character is BizManga's mascot: shoulder-length light chestnut-brown hair with
+  2-3 short cowlick strands standing up at the crown, side-swept bangs. Green eyes,
+  soft pink blush on the cheeks. A red ribbon bow on her right side (viewer's right).
+  She wears a white collared shirt under a sleeveless orange/rust-colored knit vest,
+  V-neck. Render her in the same simplified ink-and-wash technique as the style
+  reference images, not in a glossy, detailed digital-illustration style.
+- Watercolor washes appear ONLY as small soft patches directly behind the subject.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges
+  and all four corners must stay plain white with nothing painted on them.
+- Any background wash uses a cool low-saturation palette: dusty blue-gray, navy,
+  neutral light gray. No sepia, no beige, no warm cream tint anywhere in the
+  background (her orange knit vest keeps its own color — this cool-palette rule is
+  for the background only, not her outfit).
+
+Scene: at the same desk, she now sits up straight holding a blank manga storyboard
+sheet with both hands (a plain sheet with a few empty rounded-rectangle panel
+outlines — do not draw any artwork or text inside the panels), her eyes wide, mouth
+open in a bright delighted smile, as if a great idea just struck her. Behind her, a
+faint pale-blue watercolor cloud shows a simple lightbulb silhouette. A short orange
+spark-like stroke sits just above the storyboard sheet.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+#### E-03 保存パス（上書き）: `images/manga-types/trailer-03-result.png` — CUT 03「伝わる」（E-01/02の人物+新しい登場人物）
+
+```
+Create a horizontal illustration (1536x1024).
+
+Style — match the attached reference images exactly:
+- Japanese anime / manga character design: simplified facial features, clean dark ink
+  outlines, flat minimal shading on skin and hair. NOT a realistic watercolor portrait,
+  NOT painterly rendering, NOT a detailed illustration. Do NOT use glossy cel-shading,
+  sparkling star-shaped catchlights, or heavy gradient rendering — keep the line and
+  wash technique as flat and simple as the style reference images.
+- The main character is BizManga's mascot: shoulder-length light chestnut-brown hair
+  with 2-3 short cowlick strands standing up at the crown, side-swept bangs. Green
+  eyes, soft pink blush on the cheeks. A red ribbon bow on her right side (viewer's
+  right). She wears a white collared shirt under a sleeveless orange/rust-colored
+  knit vest, V-neck. Render her in the same simplified ink-and-wash technique as the
+  style reference images.
+- Watercolor washes appear ONLY as small soft patches directly behind the subjects.
+  Keep the background PURE WHITE across at least 70% of the canvas — all four edges
+  and all four corners must stay plain white with nothing painted on them.
+- Any background wash uses a cool low-saturation palette: dusty blue-gray, navy,
+  neutral light gray. No sepia, no beige, no warm cream tint anywhere in the
+  background (her orange knit vest keeps its own color — this cool-palette rule is
+  for the background only, not her outfit).
+
+Scene: the mascot holds up a printed manga page toward a second person — a business
+client, seen mostly from behind or in three-quarter profile, in simple neutral
+business-casual clothing, drawn in the same simplified ink-and-wash style. The second
+person nods with a pleased smile and a small raised hand. Behind them, a faint
+pale-blue watercolor cloud shows a simple upward arrow shape. A short orange stroke
+highlights near the arrow.
+
+Keep all key elements within the central 80% of the frame. Not flat vector, not
+icon-style, not corporate clip art, not photorealistic.
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+#### E-04（2026-08-31 IV改訂）: 最終CTA「COMING NEXT」ポスター用の人物 — 水彩ではなく、劇的でパワフルなポスター調
+
+保存パス（新規）: `images/manga-types/cta-poster-character.png`
+
+このカットは①②（水彩+インクの画風見本）を使わず、**マスコット自身の画風**
+（`character.webp`のような、きちんと描き込まれたアニメ調）をベースに、より劇的・パワフルな
+ポスターらしいレンダリングにします。**E-01〜E-04とは別の、新しいチャットで**行ってください
+（同じチャットで続けると、直前の水彩指示に引っ張られやすいため）。
+
+まず次の2枚を添付してください（テキストはまだ送らない）。
+
+| 添付するファイル | 役割 |
+|---|---|
+| `material/images/character.webp` | キャラクターデザイン・画風の基準（全身） |
+| `material/images/character-cta.webp` | キャラクターデザイン・画風の基準（バストアップ） |
+
+👇 **ここから下の枠の中身だけ**をコピーして、画像2枚と一緒に送信してください。
+
+```
+Create a vertical illustration (1024x1536), full body, centered in the frame.
+
+Style — use the attached reference images for her exact character design (hair,
+face, ribbon, outfit), but push the rendering toward a bold, dramatic movie-poster
+key visual — NOT a watercolor-and-ink illustration, NOT a flat simple sketch:
+- Keep her exact design: shoulder-length light chestnut-brown hair with 2-3 short
+  cowlick strands at the crown, side-swept bangs, green eyes, soft cheek blush, a red
+  ribbon bow on her right side (viewer's right), white collared shirt under a
+  sleeveless orange/rust-colored knit vest.
+- Render her with rich, high-quality anime/digital-painting quality: strong
+  directional lighting, deep contrast, dynamic rim light wrapping her silhouette,
+  more painterly and dramatic than a flat cel-shaded sticker — closer to a theatrical
+  movie poster key visual.
+- Background: plain flat white, completely clean, no scenery, no gradient, no
+  lighting effects painted into the background. (This image will be composited onto
+  a separate dark, spotlighted poster background afterward, so all of the drama
+  should come from her pose, the lighting ON her, and the rendering quality — not
+  from a painted background. Keep the background pure flat white for easy removal.)
+
+Scene: she stands in a bold, confident, larger-than-life hero pose — chin slightly
+raised, one hand raised in a strong triumphant gesture (fist-pump or a wide open
+"ta-da"-style reveal), chest open toward the viewer, as if she is the star of a big
+theatrical reveal. Her hair and the hem of her vest sweep slightly as if caught in a
+dramatic gust of wind. Fill most of the vertical frame with her figure (only a small
+margin above her head) so she reads as big and powerful, not small or timid.
+
+This should look like a poster-worthy hero shot, not a plain standing greeting pose.
+
+Absolutely no text, no numbers, no letters, no logos anywhere in the image.
+```
+
+### 生成後の手順
+
+1. 4枚のPNGを、上の表の保存パス名で `images/manga-types/` に保存する（E-01〜E-03は**上書き**、
+   E-04は新規ファイル）
+2. 「PNG保存したので.webpも作ってください」と伝えてもらえれば、こちらで `.webp` を作成する
+   （E-04は背景の白を透明化する処理もあわせて行う）
+3. 形式プレビュー4枚（1コマ/4コマ/ストーリー型/縦読み）は、**B節の #08〜#11**（汎用人物・
+   マスコットなし）を別途生成する
+4. コード側の反映（形式プレビューをCSS図形から実写画像に差し替え、CTAポスターに人物を合成）は、
+   画像が揃った時点でこちらで対応する
