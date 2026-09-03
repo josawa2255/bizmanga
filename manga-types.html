@@ -108,8 +108,8 @@
 </head>
 <!-- LP-DESIGN — manga-types「企業の物語を上映する映画館」版 (2026-08-31)。
      LP v2 の共通トークン (css/bm-lp-v2.css) を土台に、このページ固有のパーツは
-     css/manga-types.css に `.mt-v2` スコープで実装。大きな黒背景は使わず、
-     白 / 生成り (--lpv2-cream) / オレンジ (--lpv2-accent) の3色で構成する。
+     css/manga-types.css に `.mt-v2` スコープで実装。基調は白 / 生成り (--lpv2-cream) /
+     オレンジ (--lpv2-accent) の3色。最終CTAだけはポスターと同じダーク (--mt-ink) 背景。
      PROLOGUE（予告編ヒーロー）→ 7つの物語を巡る（現行維持）→ 相談 →
      SCREENING FORMAT（上映形式・チケットUI）→ AFTER TALK（FAQ）→
      NOW SHOWING（目的別LP）→ NEXT PRODUCTION MEETING（最終CTA）という
@@ -164,7 +164,7 @@
             </ol>
           </nav>
           <p class="mt-hero-label">PROLOGUE / 00</p>
-          <h1 class="mt-hero-title" id="mt-hero-title" data-i18n-html data-ja="御社の「伝わらない」を、<br><em>物語の予告編</em>に。" data-en="Turn what your company can't get across<br>into <em>a story's trailer</em>.">御社の「伝わらない」を、<br><em>物語の予告編</em>に。</h1>
+          <h1 class="mt-hero-title" id="mt-hero-title" data-i18n-html data-ja="御社の<br>「伝わらない」を、<br><em>物語の予告編</em>に。" data-en="Turn what your company can't get across<br>into <em>a story's trailer</em>.">御社の<br>「伝わらない」を、<br><em>物語の予告編</em>に。</h1>
           <p class="mt-hero-kicker" data-ja="ビジネス漫画の種類・7ジャンルの選び方ガイド" data-en="Business manga types: a guide to choosing among 7 genres">ビジネス漫画の種類・7ジャンルの選び方ガイド</p>
           <p class="mt-hero-sub" data-i18n-html data-ja="まだ名前のない課題にも、物語の入口があります。<br>3コマのプロローグから、7つのチャプターへ。" data-en="Even a problem you can't quite name yet has a way in.<br>From a 3-panel prologue to 7 chapters.">まだ名前のない課題にも、物語の入口があります。<br>3コマのプロローグから、7つのチャプターへ。</p>
           <div class="mt-hero-cta">
@@ -187,7 +187,7 @@
                 <span class="mt-trailer-frame__cut" aria-hidden="true">CUT 01</span>
                 <picture class="mt-trailer-frame__glyph">
                   <source type="image/webp" srcset="/images/manga-types/trailer-01-problem.webp">
-                  <img src="/images/manga-types/trailer-01-problem.png" alt="" aria-hidden="true" loading="lazy" decoding="async" width="768" height="512">
+                  <img src="/images/manga-types/trailer-01-problem.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async" width="768" height="512">
                 </picture>
               </div>
               <p class="mt-trailer-frame__cap" data-ja="伝えたいのに、伝わらない。" data-en="You want to say it, but it isn't landing.">伝えたいのに、伝わらない。</p>
@@ -740,7 +740,7 @@
           <span class="mt-cta-poster__spot"></span>
           <picture class="mt-cta-poster__figure">
             <source type="image/webp" srcset="/images/manga-types/cta-poster-character.webp">
-            <img src="/images/manga-types/cta-poster-character.png" alt="" loading="lazy" decoding="async" width="1024" height="1536">
+            <img src="/images/manga-types/cta-poster-character.png" alt="" loading="lazy" decoding="async" width="768" height="1152">
           </picture>
           <p class="mt-cta-poster__eyebrow">YOUR STORY</p>
           <p class="mt-cta-poster__title">COMING<br>NEXT</p>

@@ -10,7 +10,8 @@
  *   - 全セレクタを .mt-v2 でスコープし、他ページに影響させない
  *   - 色・フォントは bm-lp-v2.css の --lpv2-* トークンを使う
  *     （下の --mt-* はブランド指定色 → 既存トークンへのエイリアス）
- *   - 大きな黒背景は使わない。白 / 生成り / オレンジの3色で構成する
+ *   - 基調は白 / 生成り / オレンジの3色。例外は最終CTA（NEXT PRODUCTION MEETING）だけで、
+ *     2026-08-31 からポスターと同じダーク（--mt-ink）の全幅セクションにしている
  * =================================================================== */
 
 .mt-v2 {
@@ -174,7 +175,10 @@
   padding: 68px 52px 44px;
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.76fr);
-  gap: 32px; align-items: center;
+  /* 右の予告編ストリップが約900pxと高いため、center だとコピーとCTAが下に押し出され
+     1366x768 / 1440x900 で主CTAがファーストビュー外・フローティングCTAの下に隠れる
+     （2026-09-03 レビュー実測）。コピーは上寄せにする。 */
+  gap: 32px; align-items: start;
   min-height: clamp(480px, 40vw, 600px);
 }
 .mt-v2 .mt-hero-text { max-width: 660px; }
@@ -208,7 +212,9 @@
 .mt-v2 .mt-hero-title {
   font-family: var(--lpv2-font-display);
   font-weight: 900;
-  font-size: clamp(34px, 5.4vw, 76px);
+  /* 上限 76px だと2行目「「伝わらない」を、」(8文字) が 660px 列に入らず「を、」が孤立行になる
+     （1366px以上で実測 677px）。72px なら 641px で収まる。 */
+  font-size: clamp(34px, 5.4vw, 72px);
   line-height: 1.2; letter-spacing: -0.01em;
   color: var(--mt-ink);
   margin: 0 0 28px;
@@ -262,8 +268,8 @@
   display: flex; align-items: center; gap: 12px;
   font-family: var(--lpv2-font-mono);
   font-size: 11px; font-weight: 900; letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--lpv2-yellow);
-  -webkit-text-stroke: 0.4px rgba(36, 29, 24, 0.35);
+  /* 黄色(--lpv2-yellow)は白/生成り地で約1.4:1しか出ず判読不能だったため accent-deep に（他ラベルと同基準） */
+  color: var(--mt-accent-deep);
   margin: 0 0 12px;
 }
 .mt-v2 .mt-hero-trailer__label::after { content: ""; height: 1px; flex: 1 1 auto; background: var(--mt-line-strong); }
@@ -274,8 +280,8 @@
   background: #fff;
   border: 1px solid var(--mt-line-strong);
 }
-/* 画像を置く枠。将来ここに横長3:2の実写カットが入る想定でアスペクト比を固定してあるため、
-   画像に差し替えてもレイアウトが動かない（CLSなし）。 */
+/* 画像を置く枠。実写カット(1536x1024=3:2)を入れる前提でアスペクト比を固定してあるため、
+   画像を同名で差し替えてもレイアウトが動かない（CLSなし）。 */
 .mt-v2 .mt-trailer-frame__art {
   position: relative;
   aspect-ratio: 3 / 2;
@@ -305,7 +311,7 @@
   padding: 3px 7px;
   border-radius: 2px;
 }
-/* SVGプレースホルダーは中央に小さく。実写差し替え後は img が枠いっぱいに広がる */
+/* <picture> を枠いっぱいに敷く（クラス名は SVG プレースホルダー時代の名残） */
 .mt-v2 .mt-trailer-frame__glyph {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -659,6 +665,33 @@
   width: 100%; height: auto; display: block;
   filter: drop-shadow(0 18px 30px rgba(36, 29, 24, 0.16));
 }
+/* 吹き出し（相談セクションで使用）。2026-09-03 レビューで復元:
+   ヒーローのキャラ撤去時に基本ルールごと削除され、.mt-bubble--right の尻尾指定だけが
+   残って「まだ決まっていなくて大丈夫！」が無装飾のテキストになっていた（PR #26 指摘）。 */
+.mt-v2 .mt-bubble {
+  position: relative;
+  align-self: flex-start;
+  background: #fff;
+  border: 2px solid var(--mt-accent);
+  border-radius: 20px;
+  padding: 15px 21px;
+  margin: 0 0 22px;
+  font-size: clamp(13.5px, 1.05vw, 15px); font-weight: 700; line-height: 1.8;
+  color: var(--mt-ink);
+  box-shadow: 0 12px 26px -12px rgba(36, 29, 24, 0.42);
+}
+.mt-v2 .mt-bubble::before,
+.mt-v2 .mt-bubble::after { content: ""; position: absolute; left: 30px; }
+.mt-v2 .mt-bubble::before {
+  bottom: -15px; width: 26px; height: 15px;
+  background: var(--mt-accent);
+  clip-path: polygon(0 0, 100% 0, 22% 100%);
+}
+.mt-v2 .mt-bubble::after {
+  bottom: -11px; width: 20px; height: 13px; left: 33px;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, 22% 100%);
+}
 /* 吹き出しの尻尾を右向き（キャラが右にいるので左から話しかける形） */
 .mt-v2 .mt-bubble--right {
   align-self: flex-start;
@@ -692,6 +725,8 @@
   .mt-v2 .mt-bubble--right { align-self: stretch; max-width: none; margin: 0 0 16px; }
 }
 @media (max-width: 420px) {
+  /* PC向けの強制改行を外す（後半20文字に折返し点が無く、375/390pxで途中で割れる） */
+  .mt-v2 .mt-consult-lead br { display: none; }
   .mt-v2 .mt-consult-cta { align-items: stretch; }
   .mt-v2 .mt-consult .mt-btn { width: 100%; }
   .mt-v2 .mt-consult-tel { align-items: center; }
@@ -699,7 +734,7 @@
 
 /* ------------------------------------------------------------------
  * 5. SCREENING FORMAT — 上映プログラムのチケットUI
- *    左: 4枚のチケット状ボタン / 右: 選択中の形式の詳細（プレビューはCSS描画）。
+ *    左: 4枚のチケット状ボタン / 右: 選択中の形式の詳細（プレビューは実写4枚 format-*.webp）。
  *    章セレクタ (3.) と同じ設計: JS無効時は4形式すべてが縦に並ぶ。
  * ------------------------------------------------------------------ */
 .mt-v2 .mt-formats { background: var(--mt-paper); position: relative; overflow: hidden; }
@@ -791,7 +826,7 @@
 @media (min-width: 561px) {
   .mt-v2 .mt-ticket-panel { flex-direction: row; align-items: stretch; }
 }
-/* JS無効時: 4形式すべてを縦に並べて残す（区切り線つき） */
+/* JS無効時: 4形式すべてを縦に並べて残す（パネル間は余白のみ） */
 .mt-v2 .mt-ticket-panel + .mt-ticket-panel { margin-top: 22px; }
 /* JS有効時のみ、選択中の1形式だけを表示 */
 .mt-v2 .mt-tickets.is-js .mt-ticket-panel { display: none; margin-top: 0; }
@@ -809,7 +844,10 @@
   border: 1px solid var(--mt-line-strong);
   overflow: hidden;
 }
-@media (min-width: 561px) { .mt-v2 .mt-ticket-preview { margin: 0; } }
+/* 行方向の flex では align-items:stretch が aspect-ratio より優先され、プレビューが
+   詳細列の高さまで縦に伸びて cover で左右が切れる（2026-09-03 レビューで実測 260x359）。
+   align-self:flex-start で 3:2 を維持する。 */
+@media (min-width: 561px) { .mt-v2 .mt-ticket-preview { margin: 0; align-self: flex-start; } }
 .mt-v2 .mt-ticket-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* 章一覧と同じ「上端2px黒罫」のエディトリアル motif をチケット一覧にも */
@@ -870,10 +908,11 @@
 
 @media (max-width: 900px) {
   .mt-v2 .mt-tickets { grid-template-columns: 1fr; gap: 24px; }
-  .mt-v2 .mt-ticket-list { flex-direction: row; flex-wrap: wrap; }
+  /* 横gapは「もぎり跡」(枠外に7pxはみ出す半円) が隣と重ならない幅にする（12pxだと重なる） */
+  .mt-v2 .mt-ticket-list { flex-direction: row; flex-wrap: wrap; gap: 12px 24px; }
   /* 実際のflexアイテムは <li>（.mt-ticketはその中の button）なので、
      幅指定は <li> 側に付ける */
-  .mt-v2 .mt-ticket-list > li { flex: 1 1 calc(50% - 6px); }
+  .mt-v2 .mt-ticket-list > li { flex: 1 1 calc(50% - 12px); }
 }
 @media (max-width: 560px) {
   .mt-v2 .mt-ticket-list { flex-direction: column; }
@@ -883,7 +922,7 @@
 }
 
 /* ------------------------------------------------------------------
- * 6. NEXT PRODUCTION MEETING — 最終CTA（オレンジ背景 + COMING NEXTポスター）
+ * 6. NEXT PRODUCTION MEETING — 最終CTA（ダーク背景 --mt-ink + COMING NEXTポスター）
  * ------------------------------------------------------------------ */
 /* 2026-08-31 V: セクション全体をポスターと同じダーク（--mt-ink）に統一し、
    オレンジの全面背景をやめる。ポスター側は枠を保ちつつ背景色が地続きになるため
@@ -1078,3 +1117,6 @@
 .mt-v2 .lpv2-related-card__arrow { position: relative; z-index: 1; }
 .mt-v2 .lpv2-related-card__arrow { margin-top: auto; padding-top: 14px; }
 .mt-v2 .lpv2-related-card:hover { box-shadow: 0 20px 34px -20px rgba(36, 29, 24, 0.45); }
+/* ホバー時は共通カードが黒地(--lpv2-ink)になるため、accent-deep のままだと FILM 0X が 3.6:1 に落ちる。
+   他8LPと同じ #e85500（黒地で 5.4:1）に戻す。 */
+.mt-v2 .lpv2-related-card:hover .lpv2-related-card__num { color: var(--lpv2-accent); }

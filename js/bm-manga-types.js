@@ -75,14 +75,16 @@
     }
     function selectFromHash(scroll) {
       var hash = (window.location.hash || '').replace(/^#/, '');
-      if (hash.indexOf('mt-') !== 0) return;
-      if (!select(hash.slice(3), false)) return;
+      if (hash.indexOf('mt-') !== 0) return false;
+      if (!select(hash.slice(3), false)) return false;
       if (scroll) scrollToChapters();
+      return true;
     }
     // 初回ロードはアニメーションなしで位置だけ合わせる。
     // 画像の読み込みで高さが変わるので load 後にもう一度合わせ直す。
-    selectFromHash(false);
-    if ((window.location.hash || '').indexOf('#mt-') === 0) {
+    // 章に一致したときだけ動かす（#mt-format-* / #mt-hero-title 等、章以外の mt- id で
+    // CHAPTERS までスクロールしてしまわないように。2026-09-03）
+    if (selectFromHash(false)) {
       var settle = function () { root.scrollIntoView(true); };
       window.requestAnimationFrame(settle);
       window.addEventListener('load', settle);
