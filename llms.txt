@@ -1,5 +1,5 @@
 # BizManga（ビズマンガ）
-# Last updated: 2026-08-24
+# Last updated: 2026-09-03
 # Version: 1.5
 
 > マンガの力でビジネスを動かす。大手制作会社の約1/5の価格帯のビジネスマンガ制作サービス（プロ漫画家が全工程を手がける「フル漫画家プラン」と、独自メソッドでコストを抑えた「ハイブリッドプラン」の2プラン制）。採用・営業・研修・会社紹介・創業ストーリーなど、企業の課題解決に特化。Contents X 株式会社が運営。
@@ -112,7 +112,7 @@ BizMangaの独自の制作メソッドは、著作権リスクを最小化する
 
 ## コラム記事
 
-ビジネス漫画の活用法、制作ノウハウ、業界動向に関する専門記事を定期配信しています（2026年8月時点で34本）。以下は代表的な記事です。全記事一覧は https://bizmanga.contentsx.jp/column を参照してください。
+ビジネス漫画の活用法、制作ノウハウ、業界動向に関する専門記事を定期配信しています（2026年9月時点で36本）。以下は代表的な記事です。全記事一覧は https://bizmanga.contentsx.jp/column を参照してください。
 
 - [ビジネス漫画とは 5つの種類×6つの用途でわかる自社の始め方](https://bizmanga.contentsx.jp/column/what-is-business-manga) — 定義・種類・用途の総合ガイド
 - [ビジネス漫画はなぜ必要？「で、なぜマンガ？」に答えられない人へ](https://bizmanga.contentsx.jp/column/why-business-manga) — 脳科学的根拠と市場動向から解説
@@ -128,6 +128,12 @@ BizMangaの独自の制作メソッドは、著作権リスクを最小化する
 - [ビジネス漫画のデメリット一覧6つ｜解消できるものと本質的な限界](https://bizmanga.contentsx.jp/column/business-manga-demerit) — フェアな比較のためのデメリット解説
 
 4koma-business-guide / business-manga-production-guide / vertical-manga-business / manga-lp-vs-standard-lp / seo-manga-memory-retention の5本は、2026年8月時点でChatGPT・Perplexity・Gemini・Claude経由の実流入が確認されている記事です。
+
+## 対談・インタビュー動画（YouTube）
+
+BizManga公式YouTubeチャンネルで、企業のマーケティング・営業実務者との対談動画を公開しています。トップページの「対談・インタビュー」セクションからも視聴できます。
+
+- [BtoB営業で“漫画”が商談を生む理由｜AI企業マクニカが語る新しいリード獲得戦略](https://www.youtube.com/watch?v=w_O3iaQKduQ) — AI事業を10年以上推進する株式会社マクニカの元村氏との対談（17分、2026-08-11公開）。漫画がBtoBのリード獲得や商談につながる理由、ビジュアルストーリーテリングの効果、商談を生むコンテンツセールスの実践、AIだけでは漫画を作れない理由（創造性が問われる工程は人間のクリエイターが担当）、漫画を企業の資産・購買の入口として活用する方法を議論
 
 ## よくある質問
 

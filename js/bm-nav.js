@@ -5,8 +5,30 @@
 (function() {
   var NAV_ITEMS = [
     { label: 'ホーム',     labelEn: 'Home',       href: '/' },
-    { label: '制作事例',   labelEn: 'Works',      href: '/works' },
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library' },
+    /* ビズ書庫＝実物を読む場所、制作事例＝実績を見る場所。どちらも「作った漫画を見る」
+       入口なので、ビズ書庫のメガメニューに制作事例をまとめている（2026-08-30）。
+       独立していた「制作事例」項目はここへ統合したため削除した（入口の二重化を避ける） */
+    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library', mega: true, columns: [
+      {
+        heading: '漫画を読む',
+        headingEn: 'Read',
+        items: [
+          { label: 'ビズ書庫（全作品）', labelEn: 'Biz Library', href: '/biz-library' },
+          /* children を持つ項目はホバーで右側にサブメニューが開く（第3階層） */
+          { label: '制作事例（一覧）', labelEn: 'All Works', href: '/works', children: [
+            { label: '採用マンガ',     labelEn: 'Recruit',  href: '/works/category/recruit' },
+            { label: '営業マンガ',     labelEn: 'Sales',    href: '/works/category/sales' },
+            { label: '商品紹介マンガ', labelEn: 'Product',  href: '/works/category/product' },
+            { label: '会社紹介マンガ', labelEn: 'Company',  href: '/works/category/company' },
+            { label: '研修マンガ',     labelEn: 'Training', href: '/works/category/training' },
+            { label: 'マンガ広告',     labelEn: 'Manga Ad', href: '/works/category/ad' },
+            { label: 'IR漫画',         labelEn: 'IR',       href: '/works/category/ir' }
+          ]}
+        ]
+      }
+    ]},
+    { label: '漫画家紹介', labelEn: 'Artists',    href: '/artists' },
+    { label: 'ビズアニメ', labelEn: 'Biz Anime',  href: '/bizanime' },
     { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
       {
         heading: 'マーケ・広報部門向け',
@@ -104,6 +126,34 @@
           ca.setAttribute('data-ja', child.label);
           ca.setAttribute('data-en', child.labelEn);
           ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+
+          /* 第3階層。children があればホバーで右側にサブメニューを開く。
+             項目自体はリンクのままなので、押せば親ページ(/works)へ行ける */
+          if (child.children && child.children.length) {
+            var sub = document.createElement('div');
+            sub.className = 'bm-nav-submenu';
+
+            child.children.forEach(function(gc) {
+              var ga = document.createElement('a');
+              ga.href = gc.href;
+              ga.className = 'bm-nav-dropdown-item bm-nav-submenu-item';
+              if (isCurrent(gc.href)) { ga.className += ' active'; anyActive = true; }
+              ga.setAttribute('data-ja', gc.label);
+              ga.setAttribute('data-en', gc.labelEn);
+              ga.textContent = currentLang === 'en' ? gc.labelEn : gc.label;
+              sub.appendChild(ga);
+            });
+
+            /* サブメニューは項目を包む入れ物側に持たせる（a の中に置くと入れ子リンクになる） */
+            var holder = document.createElement('div');
+            holder.className = 'bm-nav-submenu-wrap';
+            ca.className += ' bm-nav-has-sub';
+            holder.appendChild(ca);
+            holder.appendChild(sub);
+            colEl.appendChild(holder);
+            return;
+          }
+
           colEl.appendChild(ca);
         });
         mega.appendChild(colEl);
@@ -358,6 +408,172 @@
     });
   }
 
+  /* サブメニュー(第3階層)の開閉。
+     :hover だけだと、項目からサブメニューへ斜めにカーソルを動かす途中で
+     項目の下端を外れた瞬間に閉じてしまう（実測で移動の50%地点で消えた）。
+     閉じる方を少し遅らせて、斜めの移動やわずかな行き過ぎを許容する。
+     ⚠️ ドロワー(モバイル)では常時展開しておりホバーも無いので何もしない。 */
+  nav.querySelectorAll('.bm-nav-submenu-wrap').forEach(function(wrap) {
+    var closeTimer = null;
+    var CLOSE_DELAY = 320;   /* 斜め移動に十分／意図して離れた時は気にならない程度 */
+
+    var open = function() {
+      if (nav.classList.contains('open')) return;   // ドロワー中は触らない
+      clearTimeout(closeTimer);
+      /* 他のサブメニューは閉じる（複数開きっぱなしを防ぐ）。
+         ⚠️ ただし今カーソルがその判定域の中にいる場合は閉じない。
+         項目の真下へ抜けると下の兄弟に入るが、そこで強制的に閉じると
+         斜め移動でサブメニューへ辿り着けなくなるため（実測で確認） */
+      nav.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
+        if (o !== wrap && !o.__bmInZone) o.classList.remove('is-sub-open');
+      });
+      wrap.classList.add('is-sub-open');
+    };
+    var scheduleClose = function() {
+      if (nav.classList.contains('open')) return;
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function() {
+        wrap.classList.remove('is-sub-open');
+        var mw = wrap.closest('.bm-nav-megamenu-wrap');
+        if (mw) mw.classList.remove('is-mega-open');
+      }, CLOSE_DELAY);
+    };
+    /* サブメニュー上に入ったら、予約されている「閉じる」を取り消す */
+    var cancelClose = function() { clearTimeout(closeTimer); };
+
+    wrap.addEventListener('mouseenter', open);
+
+    /* 閉じる判定は座標で行う。
+       wrap は項目1行ぶん(50px)しか無く、サブメニューは position:absolute で
+       その外に出ているため、DOMの mouseleave だけだと項目を1px出た時点で
+       「離れた」扱いになり、斜め移動の途中で閉じてしまう（実測で確認）。
+       項目とサブメニューを内包する矩形＋余白の中にカーソルがある限り開いたままにする。 */
+    var subEl = wrap.querySelector('.bm-nav-submenu');
+    var PAD = 24;   /* 経路のブレを吸収する余白 */
+
+    /* ① 項目・サブメニューの上にいるか（素直な矩形判定） */
+    var overElements = function(x, y) {
+      var boxes = [wrap.getBoundingClientRect()];
+      if (subEl) boxes.push(subEl.getBoundingClientRect());
+      return boxes.some(function(b) {
+        return x >= b.left - PAD && x <= b.right + PAD &&
+               y >= b.top - PAD && y <= b.bottom + PAD;
+      });
+    };
+
+    /* ② サブメニューへ「向かっているか」を進行方向で判定する。
+       Amazon のメガドロップダウンで使われている三角形（prediction cone）方式。
+       現在位置とサブメニューの手前側の上下の角で三角形を作り、
+       次の位置がその中にあれば「サブメニューへ向かっている」とみなして開いたままにする。
+       斜め移動が途中で別の項目の上を通っても閉じないのはこのため。
+       参考: https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown */
+    var headingToSub = function(prevX, prevY, x, y) {
+      if (!subEl) return false;
+      var s = subEl.getBoundingClientRect();
+      if (s.width === 0) return false;
+
+      /* サブメニューが右に出るか左に出るかで、手前側の辺が変わる */
+      var toRight = s.left >= wrap.getBoundingClientRect().right - 1;
+      var edgeX = toRight ? s.left : s.right;
+      var apexTop = { x: edgeX, y: s.top - PAD };
+      var apexBottom = { x: edgeX, y: s.bottom + PAD };
+
+      /* 進行方向が逆（サブメニューから遠ざかる）なら判定しない */
+      if (toRight && x < prevX - 1) return false;
+      if (!toRight && x > prevX + 1) return false;
+
+      var sign = function(ax, ay, bx, by, cx, cy) {
+        return (ax - cx) * (by - cy) - (bx - cx) * (ay - cy);
+      };
+      var d1 = sign(x, y, prevX, prevY, apexTop.x, apexTop.y);
+      var d2 = sign(x, y, apexTop.x, apexTop.y, apexBottom.x, apexBottom.y);
+      var d3 = sign(x, y, apexBottom.x, apexBottom.y, prevX, prevY);
+      var hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+      var hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+      return !(hasNeg && hasPos);   /* 全て同じ符号＝三角形の内側 */
+    };
+
+    var lastX = null, lastY = null;
+    var insideZone = function(x, y) {
+      var ok = overElements(x, y) || headingToSub(lastX == null ? x : lastX, lastY == null ? y : lastY, x, y);
+      lastX = x; lastY = y;
+      return ok;
+    };
+
+    /* サブメニューが開いている間は、親のメガメニューも開いたままにする。
+       ⚠️ メガメニューは max-height + overflow:hidden でアニメーションしており、
+       カーソルがメガメニュー本体から離れると縮んで、中にあるサブメニューごと
+       切り取られてしまう（実測: 下側5件がクリック不能、うち1件は誤遷移した）。 */
+    var megaWrap = wrap.closest('.bm-nav-megamenu-wrap');
+
+    var onMove = function(e) {
+      if (!wrap.classList.contains('is-sub-open')) {
+        wrap.__bmInZone = false;
+        /* サブメニューが閉じたら、保持していたメガメニューも解放する。
+           ここで外さないと、離れてもメガメニューが開きっぱなしになる */
+        if (megaWrap && megaWrap.classList.contains('is-mega-open') &&
+            !megaWrap.matches(':hover')) {
+          megaWrap.classList.remove('is-mega-open');
+        }
+        return;
+      }
+      var inside = insideZone(e.clientX, e.clientY);
+      wrap.__bmInZone = inside;   /* 他の項目の open() から参照される */
+      if (inside) {
+        cancelClose();
+        if (megaWrap) megaWrap.classList.add('is-mega-open');
+      } else {
+        scheduleClose();
+        if (megaWrap) megaWrap.classList.remove('is-mega-open');
+      }
+    };
+    document.addEventListener('mousemove', onMove);
+
+    if (subEl) {
+      subEl.addEventListener('mouseenter', cancelClose);
+    }
+    /* キーボード操作でも開けるように */
+    wrap.addEventListener('focusin', open);
+    wrap.addEventListener('focusout', scheduleClose);
+  });
+
+  /* メガメニュー自体を離れたらサブメニューも畳む（開いたまま残らないように） */
+  /* メガメニュー(ビズ書庫/サービス)の開閉。
+     CSSの :hover だけだと、カーソルが少し外れた瞬間に閉じ始めてしまい
+     （実測: 外して60msで3分の1まで消えていた）、狙って動かさないと使えない。
+     mouseenter で is-mega-open を付け、離れてから MEGA_CLOSE_DELAY だけ待って外す。
+     ⚠️ ドロワー(モバイル)はアコーディオン方式なので触らない。 */
+  /* CSS側の消えるアニメーション(0.45s)と合わせて体感を作る。
+     待機を長くしすぎると「閉じない」と感じるので、待機は短め・
+     フェードを長めにして、カードへ手を伸ばす時間を確保する。 */
+  var MEGA_CLOSE_DELAY = 160;
+
+  nav.querySelectorAll('.bm-nav-megamenu-wrap').forEach(function(mw) {
+    var megaTimer = null;
+
+    mw.addEventListener('mouseenter', function() {
+      if (nav.classList.contains('open')) return;
+      clearTimeout(megaTimer);
+      mw.classList.add('is-mega-open');
+    });
+
+    mw.addEventListener('mouseleave', function() {
+      if (nav.classList.contains('open')) return;
+      clearTimeout(megaTimer);
+      megaTimer = setTimeout(function() {
+        /* 戻ってきていたら閉じない。サブメニュー上に残っている場合も同様（誤爆防止） */
+        var subHovered = !!mw.querySelector('.bm-nav-submenu:hover');
+        if (mw.matches(':hover') || subHovered) return;
+
+        mw.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
+          o.classList.remove('is-sub-open');
+          o.__bmInZone = false;
+        });
+        mw.classList.remove('is-mega-open');
+      }, MEGA_CLOSE_DELAY);
+    });
+  });
+
   // ===== TOPに戻るボタン（フルスクリーンheroがあるページのみ） =====
   var hasFullHero = document.querySelector('.str-hero, .uc-hero, .mt-hero');
   if (hasFullHero) {
@@ -466,4 +682,63 @@
 
   // グローバルに公開
   window.bmSwitchLang = switchLang;
+})();
+
+/* =====================================================================
+ * Google広告 コンバージョン「LINEお問い合わせ」「電話お問い合わせ」
+ * （2026-09-03 / Issue #27）
+ * ---------------------------------------------------------------------
+ * サイト内の「LINEで相談」「電話」リンク（ヘッダー丸アイコン・ハンバーガー末尾・
+ * 追従FAB・共通CTA(bm-cta.js)・LP内ボタン・制作事例カテゴリ）は全て同じ
+ * LINE公式URL／同じ電話番号を指すので、個別に onclick を付けず document で
+ * クリックを委譲して拾う。静的HTML／このファイルや bm-cta.js が生成する
+ * CTA／build-columns・build-works が今後生成するページ、全て自動で対象。
+ *
+ * Google発行スニペット（gtag_report_conversion）は「遷移を止めて
+ * event_callback で window.location」する作りだが、LINE は target="_blank"、
+ * 電話は tel: で元ページが残るため、その方式は使わない（新規タブがポップアップ
+ * ブロックに掛かる／return false で遷移しなくなる）。
+ * クリック時に event だけ送り、遷移はブラウザ標準に任せる。
+ *
+ * ⚠️ ラベルは Google広告管理画面「タグを設定する」の send_to をコピペした値。
+ *    l(エル)/I(アイ)/1(イチ) の取り違えで計測が死ぬ（BUGS #025）。手入力しない。
+ * ⚠️ 上の main IIFE は #bmNav が無いページで早期 return するので、ここは独立させる。
+ * ⚠️ capture 段階で拾う: メニュー側の stopPropagation に巻き込まれないため。
+ * ===================================================================== */
+(function () {
+  // CVを増やす時はこの表に1行足すだけ（selector=対象リンク, sendTo=管理画面のラベル）
+  var CONVERSIONS = [
+    // 「LINEで相談」= LINE公式アカウントURL。シェアボタン(social-plugins.line.me)は当たらない
+    { name: 'LINEお問い合わせ', selector: 'a[href*="line.me/R/ti/p/"]', sendTo: 'AW-18108125426/LX7_CMndmO0cEPKh0LpD' },
+    // 電話はビズマンガ専用番号 tel:03-6261-0764 の1本のみ（2026-09-03 時点）
+    { name: '電話お問い合わせ', selector: 'a[href^="tel:"]',             sendTo: 'AW-18108125426/Cf7LCMzdmO0cEPKh0LpD' }
+  ];
+
+  // Google例の gtag_report_conversion 相当。url を渡した時だけ送信後にそこへ遷移する
+  function reportConversion(sendTo, url) {
+    var callback = function () {
+      if (typeof(url) != 'undefined') {
+        window.location = url;
+      }
+    };
+    if (typeof gtag !== 'function') { callback(); return false; }
+    gtag('event', 'conversion', {
+      'send_to': sendTo,
+      'event_callback': callback
+    });
+    return false;
+  }
+  window.bmReportConversion = reportConversion;
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || typeof t.closest !== 'function') return;
+    for (var i = 0; i < CONVERSIONS.length; i++) {
+      if (t.closest(CONVERSIONS[i].selector)) {
+        // url を渡さない = event_callback は何もしない。遷移(新規タブ/電話アプリ)はブラウザに任せる
+        reportConversion(CONVERSIONS[i].sendTo);
+        return;
+      }
+    }
+  }, true);
 })();
