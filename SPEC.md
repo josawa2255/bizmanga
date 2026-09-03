@@ -601,7 +601,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
 | `js/bm-cta.js` | 共通CTAセクション生成 | `<section id="bmCtaMount"></section>` を置く |
-| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページで読込（defer） |
+| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（ファイル末尾の独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④） | 全ページで読込（defer） |
 | `js/bm-i18n.js` | i18nエンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
@@ -635,10 +635,10 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
 | Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `contact.html` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信とサンクス表示は従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#bmWebsite`**（画面外・aria-hidden）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は【4箇所】を同時に更新する**（①CRM側 Vercel の環境変数 `INBOUND_SECRET`＝更新後に再デプロイ ②本サイトの `contact.html` ③ContentsXの `js/contact.js` ④イチオシ採用の `js/main.js`＝別リポジトリ josawa2255/recruitx のため `crm-token-sync` フックでは検知できない。2026-08-04 追加）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付とサンクス表示は正常に動き続けるため気づきにくい。commit時に警告する `crm-token-sync` フックあり |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
-| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） |
+| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） / ③「LINEお問い合わせ」(`LX7_CMndmO0cEPKh0LpD`) ④「電話お問い合わせ」(`Cf7LCMzdmO0cEPKh0LpD`)（いずれも 2026-09-03 Issue #27）= `js/bm-nav.js` 末尾の独立IIFEにある `CONVERSIONS` 表（selector→ラベル）。`document` の click を **capture** で委譲監視し、③は `a[href*="line.me/R/ti/p/"]`、④は `a[href^="tel:"]` に当たるクリックで `gtag('event','conversion')` を発火。対象はヘッダー丸アイコン／ハンバーガー末尾／追従FAB／共通CTA(bm-cta.js)／LP内ボタン／制作事例カテゴリなど**LINE公式URL・電話番号を指す全リンク**（静的HTML・JS生成・ビルド生成を問わず自動で対象。HTML側に onclick は付けない。CVを増やす時は表に1行足す）。LINEは `target="_blank"`・電話は `tel:` で元ページが残るため、Google例の「遷移を止めて `event_callback` で `window.location`」は使わず遷移はブラウザ標準に任せる（同等の関数は `window.bmReportConversion(sendTo, url)` として公開）。シェア用 `social-plugins.line.me` は対象外。**ラベルは管理画面の `send_to` をコピペ・手入力禁止**（BUGS #025） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
-| LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
-| 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開） |
+| LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831`（クリックは Google Ads CV③「LINEお問い合わせ」として計測。上記 Google Ads 行参照） |
+| 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開。クリックは Google Ads CV④「電話お問い合わせ」として計測、上記 Google Ads 行参照） |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
 
 ### 5.1 お問い合わせフォームの二重送信ガード ⭐再発防止（2026-08-05 / BUGS #046）
