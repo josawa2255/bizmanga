@@ -119,7 +119,7 @@ BizMangaの独自の制作メソッドは、著作権リスクを最小化する
 - [4コマ漫画の簡単な作り方とビジネス活用法](https://bizmanga.contentsx.jp/column/4koma-howto) — AI・スマホ対策まで
 - [漫画の「プロット」とは？](https://bizmanga.contentsx.jp/column/manga-plot-guide) — あらすじとの違い、作り方
 - [BtoB漫画でCVR改善（SaaS編）](https://bizmanga.contentsx.jp/column/btob-manga-cvr-saas) — SaaS企業の漫画活用戦略
-- [BtoB漫画でCVR改善戦略](https://bizmanga.contentsx.jp/column/btob-manga-cvr-strategy) — 業界別CVR改善データ
+- [BtoB漫画でCVR改善戦略](https://contentsx.jp/column/btob-manga-cvr-strategy) — 業界別CVR改善データ
 - [BtoB漫画LPでリード獲得](https://bizmanga.contentsx.jp/column/btob-manga-lp-lead-generation) — LP×漫画の相乗効果
 - [BtoB 4コマ漫画でリード獲得](https://bizmanga.contentsx.jp/column/btob-4koma-lead-generation) — 4コマ×リードジェネレーション
 - [パラパラ漫画動画のROI](https://bizmanga.contentsx.jp/column/btob-video-parapara-manga-roi) — 動画×漫画のROI分析
