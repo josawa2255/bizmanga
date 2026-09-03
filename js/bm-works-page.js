@@ -372,7 +372,10 @@
     }
     if (wdSpec) {
       var spec = work.spec || {};
-      var pagesV = escM(spec.pages || '—');
+      // spec.pages(WP手入力の表示文字列)より実galleryの枚数を優先する
+      // (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
+      var galleryLenForSpec = (work.gallery && work.gallery.length) || 0;
+      var pagesV = escM(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
       var periodV = escM(spec.period || '—');
       var periodEn = escM(spec.period_en || spec.period || '—');
       wdSpec.innerHTML =
@@ -394,7 +397,10 @@
     // 「詳細を見る」→ 個別作品ページ
     if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
 
-    var previewPages = Math.min(work.pages || 5, 5);
+    // gallery実枚数があればwork.pages(WP手入力)より優先する
+    // (BUGS #049/#050と同種。手入力が実枚数より多いと壊れたURLをプレビューに表示しかねない)
+    var galleryLenForPreview = (work.gallery && work.gallery.length) || 0;
+    var previewPages = Math.min(galleryLenForPreview > 0 ? galleryLenForPreview : (work.pages || 5), 5);
     wdTotalPages = previewPages;
     wdCurrentPage = 0;
 
@@ -432,6 +438,8 @@
         if (wdDots) wdDots.style.display = 'none';
         if (wdPrev) wdPrev.style.display = 'none';
         if (wdNext) wdNext.style.display = 'none';
+        // スマホ縦読みは上下2ペインに分割（漫画を読み切らないと詳細に届かない問題の解消）
+        if (window.bmWdSplit) window.bmWdSplit.apply();
       } else {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
@@ -450,6 +458,8 @@
         }
         if (wdPrev) wdPrev.style.display = '';
         if (wdNext) wdNext.style.display = '';
+        // 横読みは従来どおり一体スクロール（前回の縦読みの分割状態を残さない）
+        if (window.bmWdSplit) window.bmWdSplit.reset();
       }
     }
 
@@ -472,6 +482,7 @@
     if (wdOverlay) wdOverlay.classList.remove('active');
     document.body.style.overflow = '';
     hideWdLoader();
+    if (window.bmWdSplit) window.bmWdSplit.reset();
   }
 
   // モーダル操作

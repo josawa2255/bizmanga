@@ -250,13 +250,20 @@ p{margin:0 0 16px;}
       if (plan) {
         var msgField = document.getElementById('bmMessage');
         if (msgField) {
-          var planNames = { light: 'ライトプラン', standard: 'スタンダードプラン', premium: 'プレミアムプラン' };
+          var planNames = { full: 'フル漫画家プラン', hybrid: 'ハイブリッドプラン' };
           msgField.value = '【' + (planNames[plan] || plan) + 'について】\n\n';
         }
       }
 
+// 二重送信ガード: ボタンの disabled だけだと、Enter や requestSubmit() など
+      // ボタンを経由しない送信経路をすり抜ける。フォーム単位のフラグで塞ぐ（BUGS #046）
+      var bmIsSubmitting = false;
+
 document.getElementById('bmContactForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        if (bmIsSubmitting) return;
+        bmIsSubmitting = true;
 
         var submitBtn = e.target.querySelector('.bm-form-submit');
         submitBtn.disabled = true;
@@ -356,9 +363,12 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
         })
         .catch(function(err) {
           console.error('HubSpot submission error:', err);
+          bmIsSubmitting = false;
           submitBtn.disabled = false;
           submitBtn.classList.remove('is-sending');
-          alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
+          // 応答が取れなかっただけで送信自体は届いている場合がある（送信後の通信断など）。
+          // 「もう一度お試しください」と促すと、届いているのに再送されて重複する（BUGS #046）
+          alert('送信結果を確認できませんでした。\n通信状況によっては、すでに送信が完了している場合があります。\n重複を避けるため、しばらく経ってからもう一度お試しいただくか、お電話（03-6261-0764）にてご連絡ください。');
         });
       });
     })();

@@ -218,14 +218,20 @@
     if (wdMedia) wdMedia.innerHTML = (work.media || []).map(function(m) { return '<li>' + esc(m) + '</li>'; }).join('');
     if (wdSpec) {
       var spec = work.spec || {};
-      wdSpec.innerHTML = '<li>ページ数：' + esc(spec.pages || '—') + '</li><li>納期：' + esc(spec.period || '—') + '</li>';
+      // spec.pages(WP手入力の表示文字列)より実galleryの枚数を優先する
+      // (BUGS #049/#050と同種。bm-works-page.jsと同ロジック、必ず両方直す)
+      var galleryLenForSpec = (work.gallery && work.gallery.length) || 0;
+      var pagesV = esc(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
+      wdSpec.innerHTML = '<li>ページ数：' + pagesV + '</li><li>納期：' + esc(spec.period || '—') + '</li>';
     }
     if (wdPoint) wdPoint.textContent = work.point || '';
     if (wdComment) wdComment.textContent = work.comment || '';
     // 「詳細を見る」→ 個別作品ページ
     if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
 
-    var previewPages = Math.min(work.pages || 5, 5);
+    // gallery実枚数があればwork.pages(WP手入力)より優先する(BUGS #049/#050と同種)
+    var galleryLenForPreview = (work.gallery && work.gallery.length) || 0;
+    var previewPages = Math.min(galleryLenForPreview > 0 ? galleryLenForPreview : (work.pages || 5), 5);
     wdTotalPages = previewPages;
     wdCurrentPage = 0;
 
@@ -263,6 +269,8 @@
         if (wdDots) wdDots.style.display = 'none';
         if (wdPrev) wdPrev.style.display = 'none';
         if (wdNext) wdNext.style.display = 'none';
+        // スマホ縦読みは上下2ペインに分割（漫画を読み切らないと詳細に届かない問題の解消）
+        if (window.bmWdSplit) window.bmWdSplit.apply();
       }
       function applyCarouselMode() {
         wdCarousel.classList.remove('vertical-scroll');
@@ -282,6 +290,8 @@
         }
         if (wdPrev) wdPrev.style.display = '';
         if (wdNext) wdNext.style.display = '';
+        // 横読みは従来どおり一体スクロール（前回の縦読みの分割状態を残さない）
+        if (window.bmWdSplit) window.bmWdSplit.reset();
       }
       // 共通ヘルパーで判定（works.js / bm-works-page.js と同ロジック）
       if (window.bmViewType && window.bmViewType.isForcedVertical(work)) {
@@ -321,6 +331,7 @@
     if (wdOverlay) wdOverlay.classList.remove('active');
     document.body.style.overflow = '';
     hideWdLoader();
+    if (window.bmWdSplit) window.bmWdSplit.reset();
   }
 
   if (wdPrev) wdPrev.addEventListener('click', function() {

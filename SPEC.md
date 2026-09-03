@@ -50,11 +50,15 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials | Hero + ギャラリー + 制作過程 + CTA |
+| トップ | `index.html` | bm-i18n, bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials, bm-videos | Hero + ギャラリー + 制作過程 + 対談動画 + CTA |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
-| 料金 | `pricing.html` | —（共通JSのみ） | **2026-07-02 全面刷新**: 3プランカード型料金表（ライト¥166,000〜/スタンダード¥181,000〜人気No.1/プレミアム¥246,000〜、いずれも10P×1本モデル・税抜）+ 3バッジ + 本数割引ミニ表（1本16,600/3本14,800/5本13,800円/P・原稿料0円）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=light\|standard\|premium`（§2.2のプリフィル連携）。旧プラン診断クイズ（bm-pricing-quiz.js）と長文解説・非表示FAQPage JSON-LDは廃止。Service JSON-LDのOfferは表示価格と同期（lowPrice 166000 / highPrice 246000） |
-| 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚(FORMATSスロット拡張)→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + 薄いアドオン `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**強みインデックスは他LPの4枚1行(1枚277px)に対し5枚1行(1枚235px)**（グリッド幅を1320pxまで拡張。旧3+2段組は1枚377pxで他ページより36%大きかった）。**本文は他LPよりワンサイズ大きい**（悩み16px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)）。**2026-08-19 「5つの強み」「お悩み」の2セクションを独自レイアウトへ刷新**: 強みインデックスは他LPの FORMATS カード型を廃止し `.str-panels`（1コマ=1つの強みのコマ割り。PC上段2枚(大)+下段3枚・SP1列、左上にオレンジ三角ナンバー `.str-panel__num`、右にイラスト）に変更。見出し「5つの強み」の右横に半分カットの吹き出し `.lpv2-h2 em::before`（SVGを`viewBox`+`clipPath`で右半分だけ切り出し、断面はセクション地色`#fff8ed`から始まり右端でブランド黄`#ffd76a`になるグラデーション。文字幅にシュリンクラップする `.str-head__hl` で装飾位置を文字の実寸に追従させ、980px以下・見出し2行幅では非表示）。お悩み3件は `.str-pain`（大きな数字「3倍/2〜3ヶ月/権利?」を主役にした横並び行、左に薄いゴースト番号 `.str-pain__ghost`、行間はオレンジ細罫）に変更し、下部に黒/オレンジの斜め割りバナー `.str-problem__banner` を追加。**⭐EN崩れは幅ではなく `html[lang="en"]` で切ること**: ①吹き出しは「980px以下で非表示」の幅ガードだけでは足りない（EN見出しは幅に関係なく2行になるためPC全幅で2行目に被る）。②`.str-pain__figure` は `nth-child(2)` の個別縮小だけでは漏れる（EN の "Rights?" が270px列を突き抜けて本文に重なる）。EN用ルールは `html[lang="en"] .str-v2 .str-pain .str-pain__figure` のように**`.str-pain` を挟んで詳細度(0,4,1)を確保する** — `html[lang]` を足すだけでは (0,3,1) で `nth-child` ルール (0,4,0) に負け、2行目だけ効かない。言語切替は `bm-i18n.js` が `document.documentElement.lang` を書き換えるため `html[lang]` セレクタで捕捉できる。 |
+| **ビズアニメ**（AI動画制作） | `bizanime.html` | `bm-i18n` + `bm-nav` + `bizanime.js` | **Hero のみ実装（作業中）**。AI動画技術×クリエイターの演出力で、広告・VTuber・MV・IPまで手掛ける動画制作サービスの紹介ページ。詳細は §1b |
+| **漫画家・作品紹介** | `artists.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `artists.js` | **2026-08-29 新規作成**。**カード＝漫画家1人**（A〜Kの11名）。画風・用途・ジャンル等は**カードの単位ではなく絞り込みの軸**として使う。作家名は出さず記号で指名する運用（営業資料『ContentsX_漫画家作品紹介』に準拠）。詳細は §1c |
+| 料金 | `pricing.html` | —（共通JSのみ） | **2026-08-19 全面刷新**: 2プランカード型料金表（フル漫画家プラン ¥33,660/ページ〜・原稿料別途33,660円/10P目安約37.0万円／ハイブリッドプラン ¥25,740/ページ〜・原稿料別途25,740円/10P目安約28.3万円、いずれも税抜）+ 3バッジ + プラン別本数割引ミニ表2枚（7P基準。フル漫画家: 1本33,660/3本30,320/5本28,260円/P、ハイブリッド: 1本25,740/3本23,200/5本21,600円/P。原稿料は各プラン単価と同額を別途）+ 特徴ストリップ4項目 + 比較ガイドaside。カードCTAは `/contact?plan=full\|hybrid`（§2.2のプリフィル連携）。旧3プラン体系（ライト/スタンダード/プレミアム、2026-07-02版）は廃止。「業界最安値級」表現は削除し「大手の約1/5の価格」に統一（値上げに伴う訴求見直し）。Service JSON-LDのOfferは表示価格と同期（lowPrice 25740 / highPrice 33660） |
+| マンガの種類 | `manga-types.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` + **`bm-manga-types.js`** | **2026-08-24 「7つの物語を巡る」エディトリアル版へ全面刷新**（2026-08-19版の LP v2 流用構成 — `lpv2-hero`(recruit-hero-v2背景) / CH01 目的で選ぶ早見表 `.mt-quickfind` / CH02 7ジャンル `.mt-genre-grid` / CH03 `.mt-length-card` / 黒の `lpv2-bridge` / 黒の `lpv2-end` — をすべて廃止）。コンセプトは「7つのビジネス漫画を、映画のチャプターを選ぶように巡るページ」。**大きな黒背景を使わず、白 `--lpv2-paper` / 生成り `--lpv2-cream` / オレンジ `--lpv2-accent` の3色**で構成する。CSSは共通 `css/bm-lp-v2.css` のトークンを土台に、ページ固有パーツを `css/manga-types.css` に全面再実装（全セレクタを `body.mt-v2` でスコープ、`mt-*` 名前空間。ブランド指定色は `.mt-v2 { --mt-* }` で既存 `--lpv2-*` へのエイリアスとして定義）。<br>構成: **Hero**（`.mt-hero`。左=パンくず `.mt-breadcrumb`（BreadcrumbList JSON-LD と対応）+ 英字ラベル SEVEN BUSINESS STORIES + 明朝 `--lpv2-font-display` の大見出し「企業の数だけ、/ 伝えるべき物語がある。」（`<em>` をオレンジ）+ 補足 + CTA 2本。右=公式キャラ `material/images/character.webp`（`height` 基準サイズ指定 `clamp(400px,44vw,620px)` + `width:auto` で縦横比維持）+ 吹き出し `.mt-bubble`。背景は白→生成りの縦グラデ + 薄いオレンジの巨大「07」`.mt-hero-deco__num` + `repeating-linear-gradient` の細い斜線。100vh 不使用）<br>**2026-08-24 追加強化（ユーザーから「質素」との指摘）**: ① 見出しを `clamp(30px,4.4vw,58px)`→`clamp(34px,5.4vw,76px)` に拡大し `em`「伝えるべき物語」に薄橙の下敷き `--mt-accent-wash` + 3px下線。② キャラを `clamp(430px,49vw,700px)` に拡大（元画像 352x927 なので拡大にはならない）+ 足元に生成りの円形土台 `.mt-hero-figure::before` で浮きを解消。③ 「07」を `clamp(240px,34vw,560px)` + 塗り8.5%/輪郭16% にしてグラフィックとして読ませる。斜線も 20%→26%。④ `.mt-hero-frame` = 映画のフレーム枠（1px枠 + 四隅トンボ）。**`.mt-hero-inner` の内側に置くのがポイント**（`.mt-hero-deco` 側に置くと下の索引帯を横切る）。⑤ **`.mt-hero-index` を新設** = ヒーロー下端の「CHAPTER INDEX」帯。7章への `#mt-*` 直リンク（PC7列 / ~1100px 4列 / ~820px 2列）。JS無効でも7章の名称が残り、リンクとして機能する。→**CHAPTERS 01–07**（`#chapters`。デスクトップ2カラム: 左=映画のチャプター一覧風の横長行 `button.mt-chapter-row`×7（番号/タイトル/短い説明/矢印、選択中・ホバーともオレンジ背景+白文字）／右=選択中の詳細 `article.mt-chapter-panel`（薄い背景数字 `.mt-chapter-panel__num`、7ジャンル挿絵 `images/manga-types/type-*.png` を 2:1 バンドで流用、タイトル、短い説明、本文（既存SEO本文と内部リンクを継承）、`伝えられること`／`主な活用シーン` の定義リスト、`/contact` への「この物語について相談する」）。**2026-08-24: 当初あった詳細枠下部のキャラ差し込み `.mt-chapter-peek` は、顔が枠下端で切れてバランスが悪く下部に約124pxの死に余白を生んでいたためユーザー指摘により削除**（公式キャラの使用箇所は Hero と相談セクションの2つに限定。`.mt-chapter-stage` の padding も 30px 均等に戻した）。デスクトップでは詳細枠を `position:sticky`。SPは1カラム＋短い説明を非表示）。**2026-08-24: ヒーロー索引・`#mt-*` 直リンクからの遷移では、非選択章が `display:none` のためブラウザのアンカージャンプが効かない**（章は切り替わるがスクロール位置がヒーロー内で止まる）。`bm-manga-types.js` の `selectFromHash` で章を開いた後に `root.scrollIntoView`（`prefers-reduced-motion` 時は `auto`）を実行して補正し、`[data-mt-chapters]` に `scroll-margin-top:96px` を付与。初回ロード時は画像読み込みで高さが変わるので `load` 後にもう一度位置を合わせ直す→**相談セクション**（`.mt-consult`。生成り背景、右から `material/images/character-cta.webp` が上半身だけのぞく＝グリッド列に置いて負のマージンでセクション下端に食い込ませ `overflow:hidden` でトリミング。文字と重ならない。**2026-08-24 追加強化（同じく「質素」との指摘）**: ラベル+見出し+1行+ボタン1個だけの平坦な帯で中央が完全に空いていたため、① 白い「招待状」パネル `.mt-consult-panel`（上辺4pxオレンジ + 影）に載せて骨格を作り、② 見出しを `clamp(25px,3.1vw,42px)` にして `em`「課題だけ」に下敷き、③ **数値3件 `.mt-consult-facts`**（30分 オンライン無料相談 / 1ページ から発注可能 / 0円 相談・お見積もり〈発注義務なし〉）を追加。**いずれもサイト共通の既存表記**（「30分の無料相談」「発注義務はありません」は他9LPにも存在、「1ページから発注可能」は本ページの形式セクションとFAQに存在）で、新規の訴求を作っていない。④ 相談導線を3つに（`/contact` + LINE + `tel:` の `.mt-consult-tel`）。⑤ キャラを `clamp(230px,25vw,330px)` に拡大し吹き出し `.mt-bubble--right`（尻尾は下向き）を追加。**公式キャラの使用は Hero の `character.webp` と当セクションの `character-cta.webp` の別カット2種類のみ**。SPは吹き出しを全幅にしてキャラをその下に右寄せ（細い列に押し込むと5行に折り返して潰れる）。なお `.mt-bubble` の尻尾指定はヒーロー側 SP ルールが相談側にも漏れていたため `.mt-hero-figure .mt-bubble` にスコープ済み）→**形式4つ**（`#formats` `.mt-format-list`。01 1コマ / 02 4コマ / 03 ストーリー型 / 04 縦読み。カードを並べず、上端2px罫 + 列間1px罫の編集的レイアウト。SPは2列。旧 BRIDGE の縦読み・多言語・インバウンド導線と「1ページから発注可能」+料金ページ導線をここに集約）→**FAQ**（`lpv2-faq` を流用、4問。既存 FAQPage JSON-LD と同一文言。比較ガイド aside も維持）→**RELATED**（`lpv2-related` を流用、用途別LP 8本）→**最終CTA**（`.mt-cta`。FREE CONSULTATION + 「御社が伝えるべき物語を、いっしょに見つけます。」+ `/contact` と LINE の2ボタン）。<br>**a11y**: 章選択は `button` + `aria-pressed`、詳細枠に `aria-live="polite"`、↑↓←→キーで章移動（フォーカスも追従）、フォーカスリングは白／オレンジ両方で見える `#241d18` の3px outline、キャラは `alt=""` + `aria-hidden`、`prefers-reduced-motion` で transition/transform を無効化。**JS無効・JSエラー時も7章すべてが縦に並んで読める**（JS が動いたときだけコンテナに `.is-js` を付け、非選択章をCSSで隠す設計）。**コントラスト方針（2026-08-24 全文走査して整理）**: ページ内テキスト179要素を機械的に走査したところ #e85500 系で22件が WCAG AA 未達だったため、新色を作らず既存トークン `--lpv2-accent-deep` #b94100 に寄せて解消した。① **白抜き文字を敷く面はすべて accent-deep**（最終CTA `.mt-cta` / 選択中・ホバーの章行 `.mt-chapter-row` / `.mt-btn--primary`。#e85500 に白文字は 3.66:1 → 5.50:1）。② **18.66px未満のオレンジ文字も accent-deep**（`.mt-head__label` `.mt-hero-label` `.mt-hero-index__num/__label` `.mt-chapter-row__num` `.mt-chapter-panel__desc/__link` `.mt-consult-facts__unit` `.mt-format__num` 各種本文中リンク等）。③ **大きい文字は #e85500 のまま**（見出しの `em`、`.mt-consult-facts__num` 30–42px。大文字サイズ基準 3:1 を満たす）。④ 未選択の章行の矢印は `--mt-line-strong` #d3c0ad で 1.76:1 と薄すぎたため `--mt-mute` に変更。⑤ 共通 `bm-lp-v2.css` の `lpv2-guide__eyebrow` / `lpv2-related-card__num` / `__arrow` は**他8LPに影響するので本体を触らず、`.mt-v2` スコープで上書き**。⑥ **残る AA 未達は共通フッターの3件のみ**（`.bm-footer-address` 2.60:1 / copyright 2.60:1 / `.bm-footer-parent` 3.34:1 = `css/bizmanga.css`・全27ページ共有のため本ページでは対応せず）。結果として、このページのオレンジ面色は他LP（`.lpv2-btn` は #e85500 のまま）より一段濃い。サイト全体で揃える場合は別途検討。<br>**未参照になった素材**: 形式セクションをテキスト主体にしたため `images/manga-types/format-{1koma,4koma,story}.png`（+webp）はどこからも参照されない（ファイルは削除せず残置。再利用する場合は `.mt-format` に挿絵を足す）。7ジャンルの挿絵 `type-*.png` は引き続き使用。生成プロンプトの正本は [docs/manga-types-image-prompts.md](docs/manga-types-image-prompts.md)。 |
+| 活用場面 | `use-cases.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` + `js/bm-use-cases.js` | **2026-08-24 「10の接点を巡る」エディトリアル版へ全面刷新**（未コミット・作業中、ブランチ `feat/manga-types-redesign`）。2026-08-21版のLP v2流用構成（統計バー`.lpv2-hero-stats-bar`+4問クイズ`.lpv2-related-card`流用+3列カード`.uc-scene-grid`+KPIストリップ`.lpv2-kpi-strip`）を廃止し、先行実装した manga-types.html（「7つの物語を巡る」章選択UI）と同じ設計思想でページ固有パーツを `css/use-cases.css`（`body.uc-v2` スコープ、`uc-*` 名前空間）に全面再実装。構成: Hero（左=コピー、右=公式キャラ）→TOUCHPOINTS 01–10（左に9場面の横長リスト`button.uc-scene-row`〈名刺/HP・LP(02–03)/SNS/採用面接/サプライズ/マニュアル/提案資料/メルマガ/展示会〉、右に選択中の詳細`article.uc-scene-panel`。切替は`js/bm-use-cases.js`が`aria-pressed`+`aria-live="polite"`で担当、`#uc-meishi`等のハッシュ深リンク対応、**JS無効時は9グループすべて縦並びで残る**設計はmanga-types.jsと同じ）→ONE STORY, MANY TOUCHPOINTS（`.uc-spread`、中心の「1 STORY」から6接点へ細線で分岐する図）→WHY MANGA WORKS（`.uc-why`、旧末尾インラインstyle長文を効果データ`.uc-why-data`付きの本文プローズに再構成、BtoB系コラム3本・比較ガイドへの内部リンクは維持）→FAQ(4問、既存FAQPage JSON-LDと同一文言)+比較ガイドaside→RELATED(用途別LP 8本、manga-types等と同一ブロック)→END CTA `.uc-cta`。**白抜き文字を敷く面・小さいオレンジ文字（18.66px未満）はすべて`--uc-accent-deep`に統一**（`.uc-btn--primary`/選択中の場面行`.uc-scene-row.is-active`/各種ラベル・番号・本文中リンク等。`--uc-accent` #e85500に白文字だと3.95:1でWCAG AA未達のため、manga-types.htmlで確立した既存トークンで5.50:1を確保。このページ限定で`lpv2-guide__eyebrow`/`lpv2-related-card__num`/`__arrow`も`.uc-v2`スコープで上書き）。9シーンの挿絵`material/images/use-cases/*.webp`は当初チビキャラ風の独自画風（既存画像を流用）だったが、他ページとのブランド統一のため水彩+ink画風（manga-types/strength/recruit-manga系）へ作り直し予定。生成プロンプトは[docs/use-cases-image-prompts.md](docs/use-cases-image-prompts.md)（ChatGPTでの生成はユーザーが実施）。 |
+| 強み | `strength.html` | `bm-i18n` + `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。本文は他LPよりワンサイズ大きく、中央揃えの字送り補正あり。画像13枚は `images/strength/` に配置（生成プロンプトは [docs/strength-image-prompts.md](docs/strength-image-prompts.md)）。**2026-08-19 セクション刷新**: 「5つの強み」はFORMATSカード型から `.str-panels`（PC上段2枚+下段3枚／タブレット2列／SP1列）のコマ割りへ変更。「お悩み」は `.str-pain`（大きな数値を主役にした横並び行）へ変更し、黒/オレンジの斜め割りバナーを追加。見出し横の半分カット吹き出しは、EN見出しが2行になるため `html[lang="en"]` で非表示。ENの `.str-pain__figure` も同言語セレクタで縮小し、`nth-child` より高い詳細度を確保する。料金表記は現行の1ページ25,740円〜を維持。 |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役 |
@@ -67,6 +71,315 @@
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
 | **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-i18n` + `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**【旧】共通テンプレ `css/bm-lp-template.css`（`pm-*` クラス）— 7LPで現役**。**【新】v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）— 2026-05-13 `recruit-manga.html` でパイロット導入**。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 | **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-i18n` + `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加。**2026-05-12 SEO内部リンクハブ化**: 公開後ナビ登録のみで本文中リンクゼロ→Google重要度低判定→順位獲得未達という分析を踏まえ、pricing/faq/works/8用途LP の計11 HTML から `.bm-related-guide` aside で本文中アンカーテキスト付き内部リンクを集中投下。各LP固有のKW（採用マンガ対応の〜/IR漫画対応の〜 等）でアンカー多様化、ペナルティ回避と複合KW強化を両立。共通CSSは `css/bizmanga.css` 末尾。**ホーム(index.html)のバナー(`.bm-home-comparison-banner`)はCV重視で `/strength`（強み5選ページ）に流す方針** — 比較ガイド本体のコンテンツ完成度を訪問者向けに磨き上げるまで、検索流入経由でしか比較ガイドに到達しない設計にして他社情報経由のCV離脱を防ぐ。**2026-05-26 デザイン全面刷新 進行中(editorial路線へピボット)**: オレンジ全面のポップ路線から、アイボリー地＋黒セリフ見出し＋オレンジ差し色の上品なエディトリアル路線へ転換する方針。キービジュアルは手描きスケッチ調の天秤(¥コインvs時計)＋薄いマンガ絵コンテ背景(=ユーザーが用意した別デザイン、ビズちゃんは不使用)。**ヒーロー(TOP)から着手済み**。**一度作ったビズちゃん版①「漫画制作会社は何で選べばいいのか」セクション(mpc-choose)とそのCSSは削除済み**。**比較表(主要5社)は削除方針は維持**。**2026-05-26 ヒーローv3に全面刷新済み(`.mpc-hero-v3`、旧 `.mpc-hero-v2`+ビズちゃんbg/B案は廃止)**: editorial構成 = 比較ガイドpill→H1「漫画制作会社 比較ガイド」(SEO優先で漢字)→リード→**インタラクティブ天秤**→4比較ポイント(業界最安値/最短2週間/8用途/料金透明性)カードリスト→オレンジCTA「無料で比較してみる」→サブリンク。**天秤はユーザー生成の手描きスケッチ画像をパーツ分離して使用**(支柱固定/横棒回転/左右皿が上下、¥コイン・時計は皿画像に内包され連動)。素材は `material/images/mpc/scale-{stand,beam,pan-yen,pan-clock}-crop.webp`(4レイヤーをCSS%で絶対配置、配置座標はPython合成で確定→%化、横棒の `transform-origin:50% 27.8%`=支点)。※元画像 `images/scale_*_transparent_verified.png` 等はアルファ無し(透過プレビューを市松ごとRGB焼込み)だったため、こちらで「明るい・低彩度画素を透明化」(白ヒーロー上でコイン面/時計盤は白く見える)処理して webp 化。挙動JS=`js/mpc-scale.js`(`.comparison-scale`にホバー/タップで `is-tilt-left/right`、離脱で中央、初回0.6sアイドルスイング `is-idle-swing`、`prefers-reduced-motion`配慮、`(hover:hover)`でPC/スマホ分岐)。傾き角±7deg・transition `cubic-bezier(.2,.8,.2,1)`。色 #FF6A00/#111/#E8E1D8。CSSは `css/mpc.css` 末尾。**全サイズ崩れない設計**: 枠 `.comparison-scale` を `aspect-ratio:840/760` 固定＋内部は全%/deg なので、画面比率に関係なく相対配置(鎖↔皿連結)を維持し拡縮するだけ(320px〜超ワイドで検証済)。ヒーロー背景に薄いマンガ絵コンテ素材(白地に馴染む)を**PC/スマホで出し分け**: PCは縦長素材の中央スケッチ帯を切り出した横長版 `hero-bg-sketch-pc.webp` を `100% auto/center top`(左右のスケッチが天秤を挟む。**2026-06-01 `center`→`center top` に変更: 4ポイントQ&Aアコーディオン展開でヒーローが縦に伸びても背景が再センタリングされてズレないよう上端基準に固定**)、スマホ(≤640px)は縦長素材 `hero-bg-sketch.webp` を `100% auto/center top`(上部にスケッチを表示。元から上端基準で不動)。**※旧 `.mpc-hero-v2-*` CSS(~330行)と未使用画像 `material/images/mpc/hero-bg-{pc,sp}.webp` はデッドコード化(要掃除)**。**2026-05-27 ②セクション実装＝旧PAIN(失敗の3パターン)と旧8選定基準セクションをHTMLごと削除し、editorialの「依頼先を判断する基準」セクション(`#sec-choose`/`.mpc-choose`)に統合**: client-logos直下に配置。eyebrow `HOW TO CHOOSE`→H2「依頼先は、<em>何で見極めるか</em>」→リード→(keyfacts数値バンドは2026-05-27に削除)→`.mpc-choose-list`(付箋チェックリストの`<ol>`6項目=①料金が公開されているか ②用途への専門性 ③「伝わる構成」設計力 ④契約条件の明文化 ⑤サンプル&レスポンス速度 ⑥実績&アフターサポート)→末尾に比較表(`#comparison`)への導線。各項目末尾に `.mpc-choose-check`(「見極めポイント」callout)。CSSは `css/mpc.css` の旧criteria直後に `.mpc-choose-*` を追加(各項目は付箋カード(`#fffdf6`+影+折れ角dog-ear)で、チェックボックス `.mpc-choose-tick` を持つ。≤600pxは48px→38px列に縮小。**ワイド画面(≥881px)はコンテナ幅を `clamp(880px,76vw,1440px)` で画面幅連動拡大＋見出し/本文/余白も clamp+vw でスケールし、モニターでの左右余白を圧縮（単一列維持・チェック演出はそのまま）**)。**※クラス名 `mpc-choose` は旧ビズちゃん版から再利用だが完全に別物(editorialの判断基準セクション)**。i18nは data-ja/data-en(HTML入りは bm-i18n が `<` 検知で innerHTML 適用)。アニメは見出し/keyfacts/本文=共通 `data-fuwa-auto`(bm-fuwa.js→`.is-fuwa-in`)、`.mpc-choose-item`=`data-fadeup`(mpc.js→`.is-visible`)で既存criteriaと同じ二重リビールパターン。**チェックは別系統**: `js/mpc.js` の `initChecklist()` が IntersectionObserver(`rootMargin:-45% 0 -40%`=画面中央の薄い帯)でカードが中央付近に来た時に `.is-checked` を付与→チェックボックスがオレンジに塗られチェックが弾けて出る。スクロールで上から1枚ずつ点く演出(フェードアップとは分離。IO非対応は全チェックfallback)。**旧 `.mpc-pain-*`/`.mpc-criteria-*` CSSはデッドコード化(要掃除)**。**現フロー: Hero→Logoマーキー→依頼先を判断する基準(NEW)→ビズマンガはどうなのか(NEW)→比較表→用途別マップ→FAQ→最終CTA**。**2026-05-27「では、ビズマンガはどうなのか」セクション追加**(`#sec-bizanswer`、判断基準と比較表の間): 判断基準6項目に1つずつ"答える"構成。**ビズちゃん(マスコット)＋参考イラストで分かりやすく**＝トップの `bm-reasons` コンポーネント(`.bm-reason-card` Z字交互カード)を流用し、`material/images/reasons/reason-0X-*.webp`(既存8枚から6枚)を各基準に割当(①料金=01-price/②用途=07-use-cases/③構成=08-artists/④契約=06-copyright/⑤速度=02-speed/⑥実績=04-multimedia)。各カードに `.bm-reason-kicker`「見極め基準｜◯◯」を追加し判断基準と1対1対応。**editorial路線の中でこの1セクションのみビズちゃん復活**(ユーザー指示)。背景は `.mpc-bizanswer` で白固定に上書き。CSSは `css/mpc.css` の choose 直後**。**2026-05-27 比較表(`#comparison`)を刷新**: 旧「主要5社(A〜E社)＋ビズマンガ」の6列横長表(`.mpc-table`)を廃止し、`/strength`の「まとめると!」と同じ **`bm-pricing-table`(他社 vs ビズマンガ の2列)** に置換。行は上の判断基準6項目(料金の透明性/用途への専門性/「伝わる構成」設計力/契約条件/サンプル・レスポンス速度/実績・アフター)に統一し、チェックリスト→比較表の流れを接続。「一般的な制作会社」列はグレー地、「ビズマンガ」列は薄オレンジ地＋オレンジ太字。`bm-pricing-table`はbizmanga.css共通クラス(pricing/strengthと共用)。**※2026-05-27に各社プロフィール(`#sec-profiles`、競合5社個別紹介セクション)を削除。整合のためJSON-LD ItemList(6社)も併せて除去**。旧 `.mpc-table*` CSSと `mpc.js initStickyTable`(if(!table)return でno-op)はデッドコード化(要掃除)。**2026-06-01 ヒーロー4ポイント(`.mpc-hero-v3-points`、業界最安値クラス/最短2週間納品/8用途の専門編集/料金の透明性)を「クリックでその場にQ&A展開」するアコーディオンに変更**: 旧 `<a href="#comparison">`(4枚とも比較表ジャンプ・末尾→)を廃止し、各行を `<button class="mpc-hero-v3-point" aria-expanded>` ＋直下の回答パネル `.mpc-hero-v3-panel`(`.mpc-hero-v3-item` で包む)に。末尾の→は開閉シェブロン `.mpc-hero-v3-point-toggle`(aria-expanded=trueで180°回転)。パネル内は質問 `.mpc-hero-v3-panel-q`(オレンジ)＋回答 `.mpc-hero-v3-panel-a`＋深掘りリンク `.mpc-hero-v3-panel-link`(価格→#comparison/速度→#sec-bizanswer/用途→#sec-usecase/透明性→/pricing)で、即答とナビ導線を両立。開閉JSは `js/mpc.js` の `initHeroPoints()`(max-height transition＋hidden属性トグル、prefers-reduced-motion配慮)。複数同時開き可。i18nはdata-ja/data-en。**2026-06-01「8用途の専門編集」Q&Aは8用途を省略せず列挙(採用・IR・研修・商品紹介・営業・インバウンド・会社紹介・広告)し、文中の各用途語を専用LPへの文中インラインリンク `.mpc-hero-v3-inlink`(オレンジ下線)に**(採用=/recruit-manga, IR=/ir-manga, 研修=/training-manga, 商品紹介=/product-manga, 営業=/sales-manga, インバウンド=/inbound-manga, 会社紹介=/company-manga, 広告=/manga-ad-lp)。data-ja/data-en にも同じ `<a>` を内包し bm-i18n の `<`検知innerHTML適用で日英ともリンク保持(EN=recruiting/training/product等)。※当初チップ(`.mpc-hero-v3-panel-uses`)で実装→ユーザー要望で文字リンクに変更。パネル max-height はPC460/SP560 |
+
+## 1b. ビズアニメ（BIZ ANIME / AI動画制作）⭐進行中
+
+**AI動画技術 × クリエイターの演出力**で、アイデアを動くコンテンツに変える動画制作サービスの紹介ページ。
+対応領域は**広告・VTuber・MV・IP**。ビズマンガのブランド × 映像制作スタジオのシネマティック感で見せる。他ページと違い**このページだけ黒基調**。
+**アクセントカラーは黄色**（BLACK / CHARCOAL / **YELLOW #ffc400系** / WHITE。2026-08-30 指示でオレンジから変更）。
+- 色は `css/bizanime.css` の `--ba-accent*` に集約（rgbaは `--ba-accent-rgb`）。**直書き禁止**
+- 黄色塗りの上の文字は必ず `--ba-on-accent`（暗色）。白文字はコントラスト不足
+- フレーム素材の焼き込みオレンジ発光は `hue-rotate(24deg)` で黄色に寄せている。
+  キャラ（オレンジ制服）と背景webpは画像のため対象外（差し替えは素材再生成が必要）
+
+⚠️ **ボイスコミックとは別サービス**。当初「漫画に声を入れた動画＝ボイスコミック」と誤解して実装し、
+2026-08-29 にコピー・メタ情報を全面差し替えた。ボイスコミックは料金ページ等にある動画化オプションで、
+ビズアニメはAI動画制作サービス。**混同しないこと**。
+
+**現状: Hero セクションのみ実装。PC・スマホとも対応済み。**
+
+### ファイル
+| 種別 | パス | 備考 |
+|---|---|---|
+| HTML | `bizanime.html` | URL は `/bizanime` |
+| CSS | `css/bizanime.css` | 全セレクタ `.ba-*` / 黒地は `body.ba-page` にスコープし他ページへ非干渉 |
+| JS | `js/bizanime.js` | 画像ロード後に `.ba-anim` を付与して登場演出を開始するだけ。GSAPは不使用 |
+| 画像 | `material/images/biz-anime/hero-{character,player,bg}.webp` | 生成PNGをトリム＋WebP化（計約540KB） |
+
+### グリッド
+**PC 3列 / SP 2列**（720px以上=3列、それ未満=2列）。
+4列も試したが1枚が小さく作例が見比べづらいため3列に戻した（2026-08-29）。
+スマホは1列にすると1枚が大きすぎて比較にならないので**2列を維持**し、
+400px以下では余白と文字だけ詰める。
+
+### Hero 構成（3レイヤーの重なり）
+左コピー（BIZ ANIME / キャッチ / CTA / 媒体）→ 中央キャラクター → 右動画プレイヤー。
+単純な3カラムにせず absolute で意図的に重ねる。
+※ 右下にあった VOICE / MUSIC / SFX / MOTION の4機能カードは **2026-08-29 に削除**（HTML・CSSとも撤去済み）。内容はHeroより下のセクションで扱う。
+
+### 目標デザインへの寄せ込み（2026-08-22）
+初回実装は各要素が小さく independent に並び、Hero内に黒い空白が多かった。
+完成デザイン画像から座標を実測し、1640×920 を基準に一致させた。実測値は以下（Hero比）:
+
+| 要素 | 目標 | 合わせ方 |
+|---|---|---|
+| キャラ 頭頂 | 10.1%H | `top: 9%` で固定（`bottom` 基準は高さがHeroを超えると破綻する） |
+| キャラ 幅 | 33.9%W | `width: 34%` ＝ 高さ約1368px。**Hero高を超えて脚が切れるのが正** |
+| キャラ 左端 | 32.1%W | `left: 27.5%`（吹き出しを隠さない位置を優先して目標より左） |
+| モニター | y12.6〜87.2% | `width: min(56%, 990px)` / `top: 12%` / `right: -1.5%` |
+| 機能UI | モニター直下 | `top: 82%` ＋ 半透明の暗いUI帯（4枚のカードには見せない） |
+
+- **キャラは幅基準で指定する**。高さ基準だとHero高に依存して構図が崩れる
+- **吹き出し「伝えたい想いが、動画で動き出す！」は隠さない**。作品のメッセージそのもの
+- **ゴーストCTAの背景は不透明の黒**（`rgba(9,9,9,.9)`）。スカートが透けて文字が沈むため
+- メインコピーは Noto Serif JP。太さで押さず字面で見せる
+
+### 実装上の必須ルール（触る前に読む）
+- **テキストは画像化しない**。BIZ ANIME・キャッチ・CTA はすべてHTML。画像素材はキャラ・プレイヤー・背景・波形装飾のみ（SEO/a11y/レスポンシブのため）
+- **キャラの高さは `%` で指定する**。`clamp(...px)` を混ぜると Hero が低い幅で急に小さくなり、頭の位置が下がって左コピーと重なる（実測: 92% → 69% に落ちた）
+- **`BIZ ANIME` は `17cqw` で1行維持**。実測で font-size 100px 時の文字幅が 572px = 17.4cqw が上限。`vw` 基準だと親（`.ba-copy` 34%）と噛み合わず2行に折り返す。`.ba-copy` の `container-type: inline-size` とセット
+- **ヘッダーは他ページと完全に共通**（2026-08-22 ユーザー指示）。白背景・通常ロゴ・標準ナビ配色・言語切替・追従CTA(`.bm-fab`)をそのまま使う。
+  当初は黒地Heroに合わせて透明化＋ロゴ白反転＋FAB非表示にしていたが、サイト全体の統一を優先して**全ての上書きを削除**した。
+  ⚠️ `body.ba-page` でヘッダーを上書きしないこと。このページだけ見た目が変わる
+- **ヘッダーは `position: fixed`**。Heroに `margin-top: var(--ba-header-h)`(72px) を入れないと、キャラの頭が白いバーの下に潜る
+- **ヘッダーにサービス名を足さない**。ナビ8項目＋言語切替＋CTA＋アイコン2個で余白がない。要素を差し込むとナビが溢れて言語切替の下に潜る（#003/#014と同種の事故）。`.ba-header-brand` は実装済みだが `display:none` で封印してある
+- **左コピーの下端は追従CTA(`.bm-fab`)と近接する**。`.ba-copy` の `top` を下げすぎると媒体表示（YouTube/SNS/Web）に重なる
+- キャラの脚は画像幅の93%まで及ぶので、バッジ列を余白で逃がすことはできない。`z-index` と `text-shadow` で可読性を確保する
+
+### スマホ・タブレット（〜1024px）2026-08-22 実装済み
+PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が足りず成立しないため、縦積みに組み替えている。
+
+**表示順（重要）**: 見出し → メインコピー → 説明文 → **動画** → 媒体表示
+（**VOICE/MUSIC/SFX/MOTION の4機能カードは 2026-08-29 に完全削除**。HTML・CSSとも撤去済み。内容はHeroより下のセクションで扱う）
+動画をファーストビュー直後に見せるのが狙い。HTMLの並びは「コピー(CTA/媒体を内包) → 動画 → …」だが、
+`.ba-copy` を `display: contents` にして子を親のflexへ引き上げ、`order` で並べ替えている
+（**HTMLを書き換えずに順序だけ変える**手法。PCの構図には影響しない）。
+
+- ⚠️ `display: contents` にすると `.ba-copy` の**矩形が0になる**。左右余白と `container-type` は子要素側へ移すこと
+- **Hero内のCTA 2本はスマホでは非表示**（ユーザー指示）。ビジュアルに集中させる
+- **追従CTA(`.bm-fab`)もスマホでは非表示**。Heroのスクロール量が少なく、画面下に固定表示するとHero末尾の要素に重なるため（当時は4機能カードが被った。余白調整では回避不能と実測で確認）。連絡手段はハンバーガー内のLINE/電話で確保。`/contact` `/biz-library` にも同じ前例あり
+- **ヘッダーはスマホだけ黒・56px・言語切替なし**にして Hero と一体化させ、ロゴ横に「BIZ ANIME」を併記する（PCはナビと衝突するため非表示のまま）
+- **キャラは上半分の右側・腰から下をマスクでフェード**。全身は見せない
+
+- **キャラは `width` 基準・`z-index: 2`**。高さ基準だと縦長画面で巨大化する。またコピー(z-index:5)より奥に置き、**文字を絶対に隠さない**
+- **`BIZ ANIME` に `text-size-adjust: 100%`**。Androidの文字拡大(1.3〜1.6倍)で折り返してブランド表記が壊れるため（鉄則3 / BUGS #045）。**本文には使わない**
+- **CTAは `height: auto` + `min-height`**。文字拡大で中身が膨らんでも溢れないようにする
+- **Heroの下paddingは詰めすぎない**。PCでは共通の追従CTA(`.bm-fab`)が画面下に固定されるため、削るとHero末尾の要素が隠れる
+- `.ba-title` の `cqw` は**パディングを含む幅**を返す。左右paddingを引いてから係数を掛けないと折り返す
+- 検証: 320〜1024px の16幅（境界の直上・直下を含む）＋ 文字拡大1.3/1.5倍 ×4幅で、横スクロール・折り返し・文字の覆い・4列の均等・タップ44pxを実測
+
+### スクロール演出＋CASE STUDIES（2026-08-29 実装）
+- **iPad内動画→フルスクリーン演出**: 受領した透過フレーム素材の「画面の穴」（四隅を実測し `clip-path`）に動画レイヤーを重ね、`position:sticky` + transform でスクロール連動。Three.js/GSAP不使用・スクロールは奪わない。動画はWP APIから取得し、0/1/2/3件すべて対応（0件は静止画Hero）
+- **区間内フェーズ配分（1本あたり t=0〜1）**: `0.00-0.58`移動・拡大 → `0.58-0.70`フレーム消滅 → **`0.70-0.88`フルスクリーン静止滞在** → `0.88-1.00`縮小（最後の動画は縮小なし）。vhは1本目180vh／2本目以降170vh（2026-08-30、150vh→170vhに拡張）。**静止滞在区間はフレーム消滅直後に新設**：以前はフレーム消滅(16%)の直後に縮小(18%)へ入り、「普通の枠になった瞬間すぐ次へ流れてほぼ見れない」状態だった（ユーザー指摘で発覚）。滞在中は `grow=1,fade=1,shrink=0` を完全固定し、スクロールしても動画位置・サイズが一切動かない「止め」を作る。詳細コメントは `js/bizanime.js` の `render()` 内
+- **CASE STUDIES**: PC3列/SP2列。一覧はサムネのみ、クリックでモーダル生成・閉じると破棄（ESC/背面クリック/focus trap対応）
+- ⚠️ ハマりどころ（再発防止）:
+  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → このページのみ `clip` に変更
+  - 登場アニメの `animation` はインライン transform より強い → 演出中は `animation:none`
+  - スマホの `.ba-device` に `transform:none` を書くと演出が全滅（CSS変数合成を打ち消すため）→ 変数の初期値で調整する
+  - CSSコメントの閉じ忘れは**ブレース数が合っていても**メディアクエリを飲み込む → 検査はコメント除去後に行う
+- WP側: 管理画面「ビズアニメ動画」（D&D並び替え・URL貼るだけ・provider自動判定）+ GET/POST API（POSTは要認証）。実体は `contentsx-wp-plugin/contentsx-cms/bizanime-videos.php`（デプロイはお名前.com手動・BUGS #002）
+
+### 追加4セクション（2026-08-30 実装）
+Hero下に USE CASE / WHY BIZ ANIME / PRODUCTION RANGE / FAQ を追加。
+**全セクションがWP動画APIのデータ駆動**（動画をハードコードしない）。
+
+- 共通: poster first・activeのみプレイヤー生成・**ページ全体で自動プレビュー同時1本**
+  （previewマネージャで強制）・セクション画面外でプレビュー破棄・Hero動画も画面外で一時停止・
+  hoverは `(hover:hover) and (pointer:fine)` のみ・reduced-motion/saveDataは自動プレビュー無し
+- USE CASE: 4パネル（広告/VTuber/MV/IP）。activeがflex-growで拡幅・160ms遅延プレビュー・
+  クリックでロック。**動画が無いカテゴリは静的パネル**（架空動画は出さない。
+  現在 ADVERTISING/VTUBER が空 → CoolGirl等の登録で自動的に埋まる）。SPは2×2セレクタ＋下部ステージ
+- WHY: editorial split(40/60)。3軸=式法戦線OP(AI技術)/I eye(演出)/カミツギ(マルチフォーマット)、
+  割当は正規表現＋カテゴリfallbackで設定変更可。補助サムネ2枚でステージ差替。stickyは不採用
+- RANGE: 実在カテゴリのみのチップ＋大小タイルのモニターウォール。
+  **フォーマット表記(16:9/VERTICAL等)は断定しない**（全ソース16:9のため。フォーマット情報が
+  入ったら差し替え）。フィルタは減光方式（レイアウト移動なし）
+- FAQ: 30/70の静かなアコーディオン(WAI-ARIA・1つだけopen)。回答は断定できる事項のみ断定、
+  条件依存は「ご相談」。末尾に主CTA1つ(/contact)
+- 調整ノブ: CSS変数(:root `--uc-active-grow` `--range-tile-gap` 等) + `window.BA_TUNE`
+  (USECASE_PREVIEW_DELAY / WHY_TRANSITION_MS / RANGE_MAX_TILES / FAQ_ANIMATION_MS 等)
+
+### 未実装（次にやること）
+- Hero より下のセクション全体
+- 制作事例（動画）一覧のWP連携。**運用方針は決定済み**: WPに専用投稿タイプを新設し、YouTube URL を貼るだけで一覧に増える。カード内でそのまま再生（YouTubeへ遷移させない）。プラグインは別リポジトリ(PRIVATE)＋お名前.com手動アップロードが必要（[BUGS #002](../BUGS.md)）
+  ※ 当初は「ボイスコミック一覧」として設計したが、サービス定義の訂正によりAI動画の制作事例一覧として作り直す
+- **Hero内CTA「制作事例を見る」の遷移先が仮**（現在 `/contact`）。旧定義の名残で `/biz-library`（漫画ギャラリー）を指していたため暫定変更。制作事例セクション or 動画一覧ページができたら差し替える
+- **Heroのタブレット画像が漫画のまま**。AI動画サービスの実態に合う素材へ差し替えたい（`material/images/biz-anime/hero-player.webp`）
+- ~~ナビへの導線追加~~ → ✅ 2026-08-22 完了。`js/bm-nav.js` の `NAV_ITEMS` でビズ書庫の直後に配置（全27ページ共通）
+
+### ナビ8項目化に伴うヘッダー調整（2026-08-22）⚠️
+ビズアニメ追加でナビが7→**8項目**になり、リンク列が `.bm-nav` の箱から溢れて
+**FAQ が言語切替の下に潜る**状態になった（全ページで発生。BUGS #003/#014 と同じ壊れ方）。
+`css/bizmanga.css` の `.bm-nav` の `gap` を **24px→14px**（EN は 18px→12px）に詰めて解消。
+
+- 溢れ量は実測で JA 59px / EN 25px。gap 8箇所ぶんで回収している
+- **これ以上ナビ項目を増やす余地はほぼ無い**。次に増やすならメガメニューへ入れるか、既存項目を畳むこと
+- **2026-08-30 追記**: 「制作事例」を**ビズ書庫のメガメニューへ統合**し、独立項目を廃止（9→8項目）。
+  ビズ書庫にホバーすると「漫画を読む（ビズ書庫/制作事例一覧）」＋「目的から事例を探す（カテゴリ7本）」が開く。
+  ⚠️ **メガメニューはモバイルでは既存のアコーディオン（`.bm-nav-dropdown.is-open`）に載せること**。
+  PCはホバーで開くが、モバイルはホバーが無く親リンクのタップもトグル処理に吸われるため、
+  CSSで `.bm-nav.open .bm-nav-dropdown.is-open .bm-nav-megamenu { display:block }` を当てないと
+  **子ページが一切到達不能になる**（サービス配下も同じ状態だったのを併せて解消）。
+  操作は「1タップ目で展開 → 2タップ目で親ページへ遷移」で既存ドロップダウンと同じ。
+  さらに **第3階層**（`children`）に対応: 「制作事例（一覧）」にホバーすると
+  右側にカテゴリ7本のサブメニューが開く。項目自体はリンクのままなので押せば `/works` へ行ける。
+  **ヘッダーとカードの隙間**: `.bm-nav-dropdown` に `padding-bottom:24px`（ホバーブリッジ）が
+  あるため `top:100%` だとヘッダー下端より9px下から始まり、隙間が見えていた。
+  `top: calc(100% - 9px)` でヘッダー下端に密着させている（ブリッジ自体は残す）。
+
+  **開閉の速度は非対称にする**: 開くのは速く(0.25s)、閉じるのは遅く(0.45s)。
+  ゆっくり消えることでカードへ手を伸ばす時間を稼ぐ。開くのまで遅くすると反応が鈍く感じる。
+  JS側の待機(`MEGA_CLOSE_DELAY`)は160msに抑え、待機を長くするのではなく
+  フェードを長くして体感を作っている（待機が長いと「閉じない」と感じるため）。
+
+  **メガメニュー自体の閉じ遅延**: カーソルが外れた瞬間に閉じ始めると狙って動かす必要があり使いづらい
+  （実測: 外して60msで3分の1まで消えていた）。`js/bm-nav.js` の `MEGA_CLOSE_DELAY = 300`ms で、
+  離れてから0.3秒は開いたまま保持する。一瞬外して戻れば閉じない／別のメニューへ移れば前のは閉じる。
+  ⚠️ **CSSの `.bm-nav-megamenu-wrap:hover` は入れないこと**。入れると外れた瞬間に閉じ始めて
+  JS側の遅延が効かなくなる（`:focus-within` はキーボード操作用に残す）。
+
+  **カード幅は中身に追従させる**: `width: max-content` + `grid-auto-columns: 265px`。
+  以前は固定 900px だったため、1列しかないビズ書庫では右に635pxの空白ができ、
+  カードが左に寄って見えるうえホバー判定も無駄に広がっていた（2026-08-30 修正）。
+  サービス(3列=901px)は従来どおり。
+
+  **ホバーの操作性**: 項目からサブメニューへ「斜めに」カーソルを動かすと閉じてしまうため、
+  `js/bm-nav.js` で①閉じるのを320ms遅らせる ②**三角形（prediction cone）判定** ③開いている間は
+  親メガメニューに `is-mega-open` を付けて保持する、の3点で対処。
+  ②は Amazon のメガドロップダウンで知られる手法で、現在位置とサブメニュー手前側の上下の角で
+  三角形を作り、その内側へ動いていれば「向かっている」とみなして開いたままにする
+  （途中で別項目の上を通っても閉じない）。矩形＋余白だけの判定より誤爆が少ない。
+  参考: https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown
+  ⚠️ ③が要るのは、メガメニューが `max-height + overflow:hidden` でアニメーションしており、
+  カーソルが本体から離れると縮んで**中のサブメニューごと切り取られる**ため
+  （実測でカテゴリ7件中5件がクリック不能、うち1件は別ページへ誤遷移した）。
+  ⚠️ 実装時の落とし穴2点:
+  ①メガメニューは `overflow: hidden` + `max-height` でアニメーションしているため、
+  **開いた状態のルールに `overflow: visible` を足さないとサブメニューが枠外で切れる**。
+  ②モバイルの字下げ指定は `.bm-nav.open .bm-nav-dropdown-item`（padding-left:44px）より
+  **後ろに書くこと**。前に置くと同詳細度で負けて親子が同じ位置に並ぶ。
+- **2026-08-29 追記**: 「漫画家紹介」追加で9項目になり JA が13px 再度溢れた。
+  gap(14→11px / EN 12→9px)でも足りず、**`.bm-header-inner` を 1200→1280px に拡張**して解消。
+  文字サイズは15pxのまま維持（削ると可読性が落ちるため）。本文コンテナ1200pxは変えていない。
+  ⚠️ **溢れ判定は nav 要素の幅ではなく「各リンクの右端が `.bm-header-right` の左端を越えていないか」で見ること**。
+  nav の幅だけ見ると余裕があるように誤検出する（実際にこれで見落とした）
+- 変更後は 7ページ×4幅(1280/1440/1600/1920)×日英=56通りで溢れゼロ、
+  スマホ3幅×3ページでハンバーガー開閉を実測済み
+
+## 1c. 漫画家・作品紹介（/artists）2026-08-29 新規
+
+### このページの立ち位置
+**カードは「漫画家1人＝1枚」**。画風・用途・ジャンル・読者層・媒体は
+**カードの単位ではなく、あくまで絞り込みの軸**として使う（ここを取り違えないこと）。
+
+作家名（ペンネーム）は出さず、**A〜K の記号で指名してもらう**運用。
+営業資料『ContentsX_漫画家作品紹介_11名版.pdf』と同じ記号体系で、資料とページで指名が食い違わないようにしている。
+
+### ファイル
+| 種別 | パス | 備考 |
+|---|---|---|
+| HTML | `artists.html` | URL は `/artists`。ヘッダー/フッターは product-manga と同型 |
+| CSS | `css/artists.css` | 全セレクタ `.art-*` / `body.art-page` にスコープし他ページへ非干渉 |
+| JS | `js/artists.js` | `CREATORS` 配列 + カード/フィルタ描画 + モーダル。DOMは `createElement`+`textContent`（`innerHTML` 不使用＝CRM文字列が来てもXSSにならない） |
+| 画像 | `material/images/artists/` | Hero 1枚 + 作家11名 ×（サムネ1 + 作例3）＝45枚。約4MB |
+
+### WordPress 連携（2026-08-29 追加）⭐
+WP から追加・編集・並べ替えできる。**方式は works/column と同じ「静的ビルド」**。
+
+| 層 | 実体 |
+|---|---|
+| WP CPT | `cx_artist`（ビズマンガ親メニュー配下）。タイトル=画風の見出し、アイキャッチ=カードのサムネ |
+| WP タグ | `cx_artist_tag` を階層化し 親=分類(画風/用途/ジャンル/読者層/媒体) 子=実タグ |
+| WP メタ | 記号(A〜K) / 表示順 / 一言説明 / 特徴 / 代表作 / 活動歴 / 作例画像 |
+| API | `GET /wp-json/contentsx/v1/artists`（タグは分類ごとに振り分けて返す） |
+| ビルド | `tools/build-artists.py` → `js/artists-data.js` 生成 + `artists.html` に静的カードと ItemList JSON-LD を展開 |
+| 読み込み | `artists-data.js`（`window.BM_ARTISTS`）を `artists.js` より先に読む。空なら内蔵データにフォールバック |
+
+**並べ替え**: 編集画面の「表示順」に数値を入れる（10,20,30…）。
+同じ番号を入れると以降を自動で1つずつ後ろにずらすので、手で振り直す必要はない。
+管理画面の一覧にも「順」「記号」列を出し、既定の並びを表示順に揃えてある。
+
+⚠️ **ビルドは WP が空・不通のとき既存の出力を残して正常終了する**（終了コード0）。
+ビルド失敗で公開ページが空になる事故を防ぐため。0件で上書きしない。
+
+⚠️ **プラグインの本番反映は git push では行われない**。お名前.comのファイルマネージャーで
+`contentsx-cms.php` を手動アップロードする（BUGS #002）。リポジトリは
+`~/Documents/contentX/web/contentsx-wp-plugin/`（**このワークスペース外・PRIVATE**）。
+
+移行スクリプト: `tools/migrate-artists-to-wp.py`（内蔵データ11名と画像44枚をWPへ一括登録。
+`--dry-run` あり。同じ記号があれば更新するので再実行しても重複しない）。
+
+### データ構造（差し替えポイント）⭐
+作家データは `js/artists.js` の **`CREATORS` 配列だけに閉じている**。
+1件のスキーマ: `id`(A〜K) / `slug` / `title` / `summary` / `thumbnail` / `gallery[]` /
+`styleTags[]` / `genreTags[]` / `audienceTags[]` / `mediaTags[]` / `usecaseTags[]` /
+`works[]` / `yearsActive` / `detail`
+
+**CRM（Supabase）との対応**: tag 4種は `creator_tags.category` の
+`style` / `genre` / `audience` / `medium` にそのまま対応する。
+**`usecaseTags`（用途）だけは CRM に存在しない**ため、営業資料の記述から手で付与している。
+CRM連携するなら用途列の追加が必要。
+
+将来 CRM から流し込む場合は、同じ形の配列を **`window.bmArtists.setData(list)`** に渡す。
+
+### カードに出す情報
+記号(A〜K) / サムネ / 画風の見出し / 一言説明 / 「この作家を詳しく見る」のみ。
+**タグはカードに出さず、詳細モーダル内にだけ表示する**（2026-08-29 変更）。
+一覧は絵と見出しで見比べる場所に寄せ、タグの読み込みは詳細を開いてからにする。
+見出しは2行ぶん・説明文は3行ぶんの高さを確保し、**全カードの高さを揃える**
+（揃えないと下端の「詳しく見る」の位置がばらつく）。
+
+### 件数表示の出し分け ⚠️
+**絞り込み無しのときは総数を出さない**（「該当する漫画家 11 名」と出すと
+"11人しかいない" と読まれてしまうため。営業資料も「本資料は抜粋です」と断っている）。
+- 絞り込み無し → 「在籍作家の一部を掲載しています」
+- 絞り込み中   → 「条件に合う作家 N 名を表示中」（何件ヒットしたか分からないと使えないため）
+
+リード文・下部CTAでも「掲載は一部」「ここにない画風も相談可」と明示している。
+掲載人数を増減させても文言の修正が要らない作りにしてある。
+
+### 絞り込みの仕様
+- 軸は5本（画風／用途／ジャンル／読者層／媒体）。各軸1行で、左に軸ラベルを固定表示
+- **同じ軸の中は OR、軸をまたぐと AND**（「画風=アニメ調」かつ「用途=採用」の直感に合わせる）
+- ⚠️ AND のため**組み合わせ次第で0件になりやすい**（例: 画風=リアル・劇画調 × 用途=採用 は0件）。
+  0件時は空表示＋「絞り込みを解除」ボタンを出して復帰させている
+- チップはデータに実在する値だけを `CREATORS` の出現順で生成する
+- **既定は各軸6件まで**表示し、超える分は「すべて見る（+N）」で開く（`VISIBLE_CHIPS = 6`）。
+  タグを全部出すとジャンル19件で画面が埋まり、カードが下に押し出されるため。
+  ⚠️ **畳んだ状態でも選択中のタグは必ず表示する**（選んだものが隠れると何で絞ったか分からなくなる）
+
+### Hero ⚠️高さの決め方に注意
+素材は `hero-artists.webp`（2000×666 の横長）。
+**`object-fit: cover` だと右端のキャラクターが見切れる**ため、PC（900px以上）は
+`contain` + `object-position: right center` で全体を見せる。
+
+高さは **`height: calc(100vw * 666 / 2000 + 72px)`** で決めている（72px = 固定ヘッダー分）。
+ここは3回踏み抜いたので理由を残す:
+- `min-height` を大きめに置くと `contain` の上下に余白が出る（画像480pxに対し枠682px）
+- `.art-hero__bg` を `position: relative` に変えると **bg と inner の高さが足し算**され、
+  Hero が倍近く（1170px）に伸びる。**bg は absolute のまま**にすること
+- `aspect-ratio` と `height` を併記すると競合して画像が潰れる（480px→405px）
+- ヘッダーは `position: fixed` なので、72px ぶん `padding-top` で押し下げないと
+  Hero 上部がヘッダーに隠れる
+
+### 追従CTA（.bm-fab）の縮小
+共通CTA（`js/bm-nav.js` が全ページに生成）は幅200px×3個=600pxあり、
+カードの1列目に被って作例が見えない。このページでは
+**既定をアイコンのみの丸ボタン（56px）に畳み、トグルで開く**。
+- CSSは `body.art-page` にスコープ済み＝**他26ページの .bm-fab は一切変わらない**
+  （前例: `css/bizanime.css` の `body.ba-page .bm-fab`）
+- トグルは `js/artists.js` が生成。`.bm-fab` は bm-nav.js が load 後に body へ挿すため、
+  **MutationObserver で待ってから**差し込む（即時 querySelector だと取り逃す）
+
+### 画像の作り方（再現手順）
+営業資料PDFから `pdfimages -png` で抽出している。注意点:
+- **PDFの表示ページ番号と物理ページ番号が1ずれる**（表紙が0扱い）。
+  記号の割り当ては `pdftotext` でページ内の記号を読んで確定させること（推測すると作家が入れ替わる）
+- **偶数番号のファイル（-002/-004/-006）はアルファマスクで中身が白紙**。
+  `Image.mode == 'RGB'` で判定して除外する（`L` モードはマスク）
+- 縦長の原稿は上端に手書き注釈が入ることがあるので、上部を落としてから 4:3 に切り出す
+- ⚠️ **抽出した画像には資料スライドの黒背景が帯として焼き込まれていることがある**。
+  CSS の `object-fit: cover` では消せない（画像の中身なので）。
+  書き出し後に外周の暗い行・列を走査して除去すること（2026-08-29 に全44枚を再処理）
+
+### 公開状況（2026-08-30 本番公開済み）
+ナビ登録 / sitemap.xml 追加 / 内部リンク / 専用OG画像（`og-artists.webp`）はすべて完了。
+- ナビ: 「ビズ書庫」のメガメニュー内ではなく**独立項目**として追加した（§1b の通り項目数に余裕が無く、
+  ヘッダー幅を 1200→1280px に広げて収めている）
+- 内部リンク: index / strength / manga-production-company の**本文中**に各1本。
+  ナビ・フッターだけだと孤立扱いになるため（memory `feedback_new_lp_internal_link_required`）
+- OG画像: `material/images/og/og-artists.webp`。既存 `og-biz-library` と同じ型
+  （上下7pxのオレンジ帯 + ロゴ + 英語名 + 日本語名）
 
 ## 1a. 用途別LP デザインシステム v2（2026-05-13）⭐進行中
 
@@ -173,6 +486,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
+- **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
 
 **運用ルール:**
 - 新作品を顧客・商談で共有する時 → `?manga=id` を使う（即時）
@@ -190,7 +504,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 
 | URL | ターゲットKW | 集約データカテゴリ |
 |---|---|---|
-| `/works/category/recruit` | 採用マンガ制作 | 採用 |
+| `/works/category/recruit` | 採用マンガ制作（title は2026-08-04に「採用**漫画**の制作事例〜」へ変更＝漢字が約23倍） | 採用 |
 | `/works/category/product` | 商品紹介マンガ制作 | 商品紹介 + 紹介 |
 | `/works/category/sales` | 営業マンガ制作 | 営業 |
 | `/works/category/company` | 会社紹介マンガ制作 | ブランド + 紹介 |
@@ -271,10 +585,11 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 
 ### 2.2 プラン事前選択
 ```
-https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
+https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 ```
 - お問い合わせフォームのメッセージ欄に自動で「【〇〇プランについて】」プレースホルダ挿入
-- [contact.html:144-149](contact.html) で処理
+- `full`=フル漫画家プラン、`hybrid`=ハイブリッドプラン（2026-08-19 料金プラン刷新でキーを`light|standard|premium`から変更）
+- [contact.html:249-256](contact.html) で処理
 
 ### 2.3 UTM / トラッキング
 - `?utm_source=...` `?utm_medium=...` `?utm_campaign=...` `?source=...`
@@ -286,7 +601,7 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
 | `js/bm-cta.js` | 共通CTAセクション生成 | `<section id="bmCtaMount"></section>` を置く |
-| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 | 全ページで読込（defer） |
+| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 言語切替 + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（ファイル末尾の独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④） | 全ページで読込（defer） |
 | `js/bm-i18n.js` | i18nエンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
@@ -305,7 +620,12 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
   <script src="js/bm-i18n.js" defer></script>
   <script src="js/bm-nav.js" defer></script>
   ```
-- **動的DOMの翻訳**: `window.i18n.translateAll()` を呼ぶ（英語モード時のみ）
+- **動的DOMの翻訳** ⭐: `translateAll()` は「英語に翻訳する」関数。**無条件呼び出しは日本語ページを壊す**（BUGS #008）。必ず言語チェックを通す:
+  ```javascript
+  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
+    window.i18n.translateAll();
+  }
+  ```
 - **注意**: `restoreAll()` 呼び出し時は `data-ja` 属性へフォールバックする。動的レンダリング後は必ず現在言語を確認してから `translateAll()` を呼ぶこと
 
 ## 5. 外部連携
@@ -315,11 +635,17 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704` |
 | Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加） | `contact.html` の送信時に **HubSpotと並行して** `https://contentsx-crm.vercel.app/api/inbound/web` へも POST（`CRM_ENDPOINT` / `CRM_TOKEN` 定数）。独自ドメイン `crm.contentsx.jp` は**割当保留中（NXDOMAIN）**のため、現状はVercelの本番URLを直接指定。割当後に `CRM_ENDPOINT` と本行を差し替える。**CRM送信が失敗してもHubSpot送信とサンクス表示は従来どおり動く**（`.catch` で握りつぶす=送信者に影響させない）。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。フォーム末尾の**ハニーポット `#bmWebsite`**（画面外・aria-hidden）はボット検知用で、値が入るとCRM側が黙って破棄する。`CRM_TOKEN` は静的サイトに埋まる=機密ではない（総当たり抑止の門番。実質の対策はCRM側のレート制限とハニーポット）。⚠️ **トークンをローテーションする時は【4箇所】を同時に更新する**（①CRM側 Vercel の環境変数 `INBOUND_SECRET`＝更新後に再デプロイ ②本サイトの `contact.html` ③ContentsXの `js/contact.js` ④イチオシ採用の `js/main.js`＝別リポジトリ josawa2255/recruitx のため `crm-token-sync` フックでは検知できない。2026-08-04 追加）。一部だけだとそのサイトのCRM送信が全件401で落ちるが、HubSpot受付とサンクス表示は正常に動き続けるため気づきにくい。commit時に警告する `crm-token-sync` フックあり |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
-| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） |
+| Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） / ③「LINEお問い合わせ」(`LX7_CMndmO0cEPKh0LpD`) ④「電話お問い合わせ」(`Cf7LCMzdmO0cEPKh0LpD`)（いずれも 2026-09-03 Issue #27）= `js/bm-nav.js` 末尾の独立IIFEにある `CONVERSIONS` 表（selector→ラベル）。`document` の click を **capture** で委譲監視し、③は `a[href*="line.me/R/ti/p/"]`、④は `a[href^="tel:"]` に当たるクリックで `gtag('event','conversion')` を発火。対象はヘッダー丸アイコン／ハンバーガー末尾／追従FAB／共通CTA(bm-cta.js)／LP内ボタン／制作事例カテゴリなど**LINE公式URL・電話番号を指す全リンク**（静的HTML・JS生成・ビルド生成を問わず自動で対象。HTML側に onclick は付けない。CVを増やす時は表に1行足す）。LINEは `target="_blank"`・電話は `tel:` で元ページが残るため、Google例の「遷移を止めて `event_callback` で `window.location`」は使わず遷移はブラウザ標準に任せる（同等の関数は `window.bmReportConversion(sendTo, url)` として公開）。シェア用 `social-plugins.line.me` は対象外。**ラベルは管理画面の `send_to` をコピペ・手入力禁止**（BUGS #025） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
-| LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831` |
-| 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開） |
+| LINE 公式 | LINEで相談 | `https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831`（クリックは Google Ads CV③「LINEお問い合わせ」として計測。上記 Google Ads 行参照） |
+| 電話 | ビズマンガ専用 | `tel:03-6261-0764`（2026-05-17〜 ヘッダー丸アイコンCTAに展開。クリックは Google Ads CV④「電話お問い合わせ」として計測、上記 Google Ads 行参照） |
 | GitHub Pages | ホスティング | `bizmanga.contentsx.jp` (CNAME) |
+
+### 5.1 お問い合わせフォームの二重送信ガード ⭐再発防止（2026-08-05 / BUGS #046）
+
+- **フォーム単位のフラグ `bmIsSubmitting`** を送信ハンドラ先頭で判定し、送信中の再入は経路によらず `return`。**ボタンの `disabled` だけに頼らない**（`disabled` はボタン経由の連打しか塞げず、Enter や `requestSubmit()` はすり抜ける）
+- フラグを false に戻すのは **`.catch` のみ**。成功時は戻さない＝完了画面から再送信されない
+- **失敗時の文言で無条件に再送を促さない**: fetch の失敗は「応答が取れなかった」であって「届かなかった」ではない。送信直後の通信断ではサーバーに届いているため、「もう一度お試しください」と促すと重複する。現行文言は「送信結果を確認できませんでした／すでに送信が完了している場合があります」＋電話番号の案内
 
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
@@ -332,11 +658,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 ### WP 管理画面メニュー（2026-06-12 再編）
 - B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層
 - **ニュース・コラムの掲載先がチェックボックス複数選択に**（BizManga/ContentsX/イチオシ採用、2026-06-12。イチオシ採用は旧称リクルートX、2026-07-09にキー`recruitx`→`ichioshi`改名・旧キーは読み込み時正規化で互換）。旧値 `both`=B+Cの意味で固定なのでBの表示は不変。`?site=bizmanga` の返却結果も移行前後で完全一致を検証済み
-- 新サービスのWP取り込み・メニュー追加はルートの wp-service-onboard スキル（`.claude/skills/wp-service-onboard/`）で実施
+- 新サービスのWP取り込み・メニュー追加はルートの jou-wp-service-onboard スキル（`.claude/skills/jou-wp-service-onboard/`）で実施
 
 ### WP 編集可能フィールド
 - `cx_title_en` / `cx_subtitle_ja` / `cx_subtitle_en`
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
+  - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
+    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
+    - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
+    - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先URL
 - `cx_cta_label_ja` — ⭐ ビズ書庫最終ページCTAラベル（日本語、空欄＝デフォルト「公式サイトを見る →」）
@@ -351,12 +681,16 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 |---|---|---|---|---|
 | **Hero マーキー** | `cx_show_hero_site` | `show_hero_site` | `both`/`bizmanga`/`contentsx`/`none` | `/works`（全件返却、フロントでフィルタ） |
 | Hero 順序 | `cx_hero_order_bm` / `cx_hero_order_cx` | `hero_order_bm` / `hero_order_cx` | 整数（小さい順、未設定=9999末尾） | 同上、編集画面のドラッグUIで並べ替え可 |
-| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（1=表示） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
+| **ホームのギャラリー枠** | `cx_show_gallery_bizmanga` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=bizmanga`（既にフィルタ済み専用EP） |
 | ギャラリー枠 順序 | `cx_sort_order`（全リスト共通の「表示順」入力欄） | `sort_order` | 整数（小さい順、0=末尾） | 同上、WP側で `cx_sort_order` 昇順ソート済み |
-| **ビズ書庫** | `cx_show_library` | `show_library` | bool | `/works` / `/library` |
-| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx` | works.html や `/works?site=` フィルタの基準 |
+| **ContentsX 新作情報** | `cx_show_new_contentsx` | （WP側でフィルタ済データを返却） | bool（**未設定=表示する** / `0`=表示しない） | `/works-new?site=contentsx` |
+| **ビズ書庫** | `cx_show_library` | `show_library` | bool（**未設定=表示する**） | `/works` / `/library` |
+| **サイト所属** | `cx_show_site` | `show_site` | `both`/`bizmanga`/`contentsx`（**未設定=`both`**） | works.html や `/works?site=` フィルタの基準 |
 
-- 4系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- 各系統は**完全独立**。「Heroだけ出す」「ギャラリーだけ出す」「ビズ書庫だけ出す」を自由に組合せ可能
+- ⭐ **掲載先フラグは全て「未設定＝表示する」**（2026-08-05統一）。明示的に `0`（`cx_show_site` は `contentsx`）が入っているものだけ非表示になる。
+  以前はギャラリーと新作情報だけ `=== '1'` の完全一致判定で、**新規登録した作品がフラグを手で立てるまでどこにも出ない**状態だった。
+  WP側の判定は `cxcms_show_flag_meta_query()`（`!= '0'` OR `NOT EXISTS`）に集約されている
 - ホームのギャラリー枠は **`BM_NEW_WORKS_DATA`（`/works-new` から取得）を優先**（[bm-home.js](js/bm-home.js#L112-L122)）。WP側でフィルタ済みなのでフロントは追加フィルタ不要
 - 後方互換: `/works-new` が空 or 未取得時は `BM_WORKS_DATA` でフォールバック
 - 順序制御: ギャラリー枠は `cx_sort_order` 昇順（同順位は `cx_added_date` 降順）。Heroと違って独立順序フィールドは持たず、編集画面の「表示順」入力欄が共通利用される
@@ -442,6 +776,15 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - CSP: `script-src` に `https://cdnjs.cloudflare.com` 必須
 - **クリック遷移なし**: 3D showcase は「こういう媒体がある」と見せるだけ。個別作品へは下のギャラリーで
 
+### 7.1.4b ⛔ 「Webtoon」はユーザー可視テキストで使わない（商標）
+
+- **Webtoon は NAVER の登録商標**（日・米・韓・欧・中）。**画面に出る日本語テキストでは使わない**
+- 代わりに **「縦スクロール漫画」「縦読み」「縦スクロール形式」** を使う
+- **CSS/JSの内部識別子（`data-group="webtoon"`、`bmGalleryGroupWebtoon` 等）は可視テキストではないので据え置きでよい**
+- 発生源は **WP側のフィールド値**であることが多い（事例の `cx_point` 等）。静的HTMLだけ直しても**次のビルドで元に戻る**ので、必ずWPの値を直す → ビルド → 生成物をgrepで確認、の順で行う（[BUGS.md](../BUGS.md) #048）
+- 例外: コラム本文で「Webtoonという呼称そのものを解説する」文脈（[column/vertical-manga-business.html](column/vertical-manga-business.html) 等）は説明上必要なため対象外
+- 関連: コラムのビルドには `normalize_brand_text()` による禁止表現の自動正規化があるが（§下部 S1 参照）、**漫画事例のビルド（`build-works.py`）には正規化が無い**ため、WP側の値がそのまま出る
+
 ### 7.1.5 ホームギャラリーのタブフィルタ（`.bm-gallery-tabs`）
 - `index.html` の `#newWorks` セクション内、ギャラリー見出し直下
 - **3タブ**: 全て / Webtoon（縦読み） / 横読み
@@ -467,6 +810,21 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 - i18n: サブタイトル「大手企業からスタートアップまで幅広くご支援」に `data-ja` / `data-en` 設定済み
 - キャンペーン見出し（`.bm-campaign-link`）: 月桂冠SVG付きで「8月限定シナリオ制作無料キャンペーン実施中」を表示し `/contact` へリンク。文言は時限なのでキャンペーン期間変更時に index.html の span（`data-ja`/`data-en`）と `aria-label` を更新。SP は font-size 20px で2行折返し許容（`> span` を `flex:1 1 auto; min-width:0`）
 
+### 7.2c 対談・動画セクション（`.bm-videos` / `#videos`）⭐2026-08-29追加
+- 位置: ニュース（`#news`）の直後、コラム（`#columns`）の直前
+- 役割: YouTube公式チャンネルの対談動画をホームで訴求。初回はマクニカ元村氏との対談「BtoB営業で"漫画"が商談を生む理由」（`w_O3iaQKduQ`）1本
+- **遅延埋め込み（LCP対策）**: 初期表示はサムネ（`https://i.ytimg.com/vi/{id}/maxresdefault.jpg`）＋再生ボタンの `<button.bm-video-thumb data-video-id>` のみ。クリック時に [js/bm-videos.js](js/bm-videos.js) が `youtube-nocookie.com/embed` の iframe（`.bm-video-frame`）に差し替える。bizanime.js と同じ方針
+- **動画の追加方法**: index.html の `<article class="bm-video-feature">` ブロックを複製し、`data-video-id` / サムネURL / タイトル・説明（`data-ja`/`data-en`）/ 尺表示を差し替えるだけ。JSは `data-video-id` を英数・`-`・`_` の正規表現で検証してから埋め込むので追加登録は不要
+- レイアウト: PC=動画左（flex:1.25）+テキスト右の2カラム、860px以下で縦積み。文字サイズはclamp()連続スケール、flex子に `min-width:0`
+- i18n: 見出し「対談・インタビュー」/バッジ「対談」/タイトル・説明・リンクすべて `data-ja`/`data-en`
+- CSP: 既存の `frame-src https:` / `img-src https:` の範囲内のため変更不要
+- CSS: [css/bizmanga.css](css/bizmanga.css) の「対談・動画セクション」ブロック（news直後）
+- **GEO（AI検索最適化）が本セクションの主目的**（YouTube言及はAI引用と最強相関≒0.737、Ahrefs 2025-12調査。分析正本は [../docs/content/GEO-ANALYSIS.md](../docs/content/GEO-ANALYSIS.md)）:
+  - **VideoObject JSON-LD**: index.html 末尾のJSON-LD群に `#interview-video` を追加（WebPage の `video` からも参照）。uploadDate/duration/contentUrl/embedUrl に加え、**チャプター13本を `hasPart` の Clip**（startOffset/endOffset/`&t=`URL）で記述し、対談の中身を機械可読化。AIクローラーはJS非実行のため、遅延iframe でも動画の存在はこのスキーマと静的HTMLで伝わる
+  - **話題リスト `.bm-video-topics`**: 目に見える引用可能パッセージとして主要トピック4点を `<ul>` で列挙（data-ja/data-en対応）
+  - **llms.txt**: 「対談・インタビュー動画（YouTube）」セクションに動画URL+要約を記載（v1.5）
+  - **動画追加時は3点セット**: HTMLブロック複製 + VideoObject JSON-LD追加 + llms.txt追記
+
 ### 7.3 About セクション（`.bm-about`）レイアウト
 - **PC（769px以上）**: 2カラムグリッド（`grid-template-columns: 1fr 1.1fr`、gap 72px）。左に heading「文章では届かない。マンガなら、届く。〜」、右に text 本文。`text-align: left`、heading下のアクセント線も左寄せ
 - **SP（768px以下）**: 従来の縦積み中央寄せに戻す（`display: block; text-align: center`、アクセント線は `margin: auto`）
@@ -477,8 +835,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 
 - **ページング**: 20件/ページ
 - **モーダル操作**: クリック / スワイプ（スマホ）/ 矢印キー（PC）
-- **縦読み判定**: 1ページ目の縦横比 < 0.2 で縦スクロールモードに自動切替
+- **縦読み判定**: `window.bmViewType` に一本化（WPの `view_type` が `vertical`/`vertical_only`、または1ページ目が `height/width > 1.8`）。**各JSで自前判定しないこと**（[BUGS.md](../BUGS.md) #012 / #013）
 - **i18n**: モーダル内カテゴリ / メディア / UIテキストも翻訳対応
+- **DOMは index.html と works.html に同一のものが2つ存在**する。動かすJSはページごとに別（index=[js/bm-hero.js](js/bm-hero.js) / works=[js/bm-works-page.js](js/bm-works-page.js)）。**モーダルの挙動を変えるときは必ず両方に反映する**
+
+### 8.1 スマホ縦読みの上下2ペイン分割 ⭐ 2026-08-06 追加
+
+縦読み作品はスマホで漫画が非常に長く、一体スクロールだと「使用媒体 / 導入内容 / 演出ポイント」まで到達できず実質読まれなかったため、上下2ペインに分割する。
+
+- **適用条件**: 画面幅768px以下 **かつ** 縦読み（`.work-detail-carousel.vertical-scroll`）のときだけ。横読みとPC（769px以上の左右2カラム）は従来どおりで一切変更しない
+- **構造**: 上ペイン=漫画 / 下ペイン=詳細。各ペインが独立した `overflow-y: auto` を持ち、`overscroll-behavior: contain` で相手側にスクロールを伝播させない（下ペインを操作しても漫画は動かない）
+- **比率の自動追従（読んでいる側に広さを譲る）**: CSS変数 `--wd-split` が上ペインの高さ比率
+  | 状態 | `--wd-split` | 上:下 |
+  |------|-------------|-------|
+  | 開いた直後 / 漫画に触れた | 0.75 | 3:1 |
+  | 詳細に触れた | 0.5 | 1:1 |
+  | 詳細を読み進めた | 0.25 | 1:3 |
+- **手動リサイズ**: ペイン境界の `.wd-split-handle` をドラッグ。上下とも最低1/4は残す
+- **実装**: [js/bm-wd-split.js](js/bm-wd-split.js)（`window.bmWdSplit.apply()` / `.reset()`）。**縦読み判定の直後に `apply()`、モーダルを閉じる時とカルーセルモード時に `reset()`** を呼ぶ。CSSは [css/bizmanga.css](css/bizmanga.css) の `@media (max-width: 768px)` 内 `.wd-split` 配下
+- **読込順（必須）**: `bm-view-type.js` → `bm-wd-split.js` → 各ページJS（`bm-hero.js` / `bm-works-page.js`）
+- ⚠️ **比率変更はペイン高さを変え、それが `scrollTop` を押し戻して `scroll` イベントを再発火させる**。これを「ユーザーが読んでいる」と誤認すると比率が固まるフィードバックループになるため、変更後 420ms は `scroll` を意図とみなさない（`SETTLE_MS`）。`pointerdown`/`touchstart` は明示操作なのでガードしない
 
 ## 9. 漫画ビューア（works.js）
 
@@ -549,6 +925,26 @@ https://bizmanga.contentsx.jp/contact?plan={light|standard|premium}
 | OG画像 | 全ページ共通で `bizmanga-logo.webp` を流用中。1200×630px の専用OGP画像が未作成（TODO） |
 | **SPA詳細シェル (news-detail/testimonial-detail/column-detail)** | **2026-04-20 `<meta name="robots" content="noindex, follow">` 付与済**。単一URLに全記事を集約するSPA構造のため、インデックス重複を排除。sitemap.xml からも `news-detail` / `testimonial-detail?id=451` の単数URLを削除 |
 | works OG画像個別化 | **2026-04-20 対応済**。`tools/templates/work-detail.html.tpl` に `{{og_image}}` プレースホルダを導入し、`tools/build-works.py` が WP API の `thumbnail` を og:image に展開。17作品すべて個別画像化 |
+
+### 2026-08-19 料金プラン全面刷新（3プラン→2プラン）
+
+- 旧プラン体系（ライト¥166,000〜/スタンダード¥181,000〜/プレミアム¥246,000〜、2026-07-02版）を廃止し、新2プラン体系に全面差し替え
+  - **フル漫画家プラン**: 1ページ33,660円〜（原稿料別途33,660円、10P目安 約37.0万円）。プロ漫画家が全工程を手がける最上位プラン
+  - **ハイブリッドプラン**: 1ページ25,740円〜（原稿料別途25,740円、10P目安 約28.3万円）。独自の制作メソッドでコストを抑えたプラン
+  - 本数割引（7P基準・1ページ単価）: フル漫画家=1本33,660/3本30,320/5本以上28,260円、ハイブリッド=1本25,740/3本23,200/5本以上21,600円
+  - 原稿料は総額込み表示（旧: 0円込み）から**別途表示**に変更
+- `/contact?plan={light|standard|premium}` → `/contact?plan={full|hybrid}` にURLパラメータのキーを変更（[contact.html](contact.html)の`planNames`マップ、§2.2参照）
+- pricing.html の Service+Offer JSON-LD を新2プランに更新（lowPrice 25740 / highPrice 33660 / offerCount 2）
+- 「業界最安値級」という断定的な価格訴求表現を**削除**（値上げにより根拠確認済みの主張が困難になったため）。「大手の約1/5の価格」は業界相場比較として引き続き使用（index.html / pricing.html のバッジ・meta・JSON-LD）
+- index.html・pricing.html・manga-production-company.html・strength.html・用途別LP群・works/category/recruit.html の料金言及箇所とJSON-LDを同期
+- **⭐総額表記は「原稿料込み」に統一**: 「10P目安」等の総額は `ページ単価×ページ数＋原稿料` で算出する（例: ハイブリッド10P = 25,740×10＋25,740 = 約28.3万円）。
+  pricing.html のカードのみ原稿料込みで、用途別LP8本・works/category/recruit.html の計22箇所が原稿料抜き（約25.7万円）になっており、**表示より実請求が高くなる不整合**が発生していたため統一（レビューで検出）。
+  - ir-manga = 5〜10P 約15.4万〜28.3万円 / inbound-manga = 3言語込み10P 約36.7万円 / sales-manga = 3〜5P 約10.3万円・10P 約28.3万円
+  - **pricing.html の本数割引表（7P基準・6セル）だけは原稿料「別」**。単価比較を主目的とする表のため金額は据え置き、各セルに「（原稿料別）」と明記して基準の混在を防ぐ
+  - `tools/build-works.py` の `CATEGORY_PAGES["recruit"].faq` にも旧価格（1ページ16,600円・10P約17.4万円）が残っていたため修正。**生成物である works/category/*.html だけ直しても日次ビルドで戻る**ので、生成元の更新が必須
+- **未対応（別Issue）**: 下記に残る旧料金表記（1ページ16,600円・1本19,800円等）は今回のスコープ外
+  - `column/配下26ファイル` と `column.html`（カード抜粋）— いずれもWP本文がマスターの自動生成物。`tools/build-columns.py` の `normalize_policy()` に「14,700→16,600」の置換があり、ここを更新すれば一括補正できるが、「5本セットで」等の文脈依存記述が壊れるため要精査
+  - `README.md` / `faq.html` / `i18n/en.json:139`（`"16,600円〜 / P"` の死んだ辞書エントリ。data-ja/data-en が優先されるため実害はないが次回改定時の混乱源）
 
 ### 2026-04-24 全ページ メタタグにパワーワード注入（第2弾）
 

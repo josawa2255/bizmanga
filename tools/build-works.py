@@ -80,6 +80,33 @@ CATEGORY_USECASE = {
 }
 
 
+# title に入れる検索KW（カテゴリ名 → 実際に検索される語形）
+#
+# Why: 個別事例ページの title が作品名のみだと検索KWが1語も含まれず、
+#      検索面で不可視になる（2026-08-04 のKW調査で判明）。
+#      カテゴリ名をそのまま連結すると「IP漫画」「紹介漫画」など
+#      検索されない語になるため、実際の検索語形を明示的に対応づける。
+#
+# 表記は「漫画」を優先（実測: 採用漫画は採用マンガの約23倍、
+# 漫画制作はマンガ制作の約80倍）。詳細は docs/content/KEYWORD-VOLUME.md
+CATEGORY_TITLE_KW = {
+    "採用": "採用漫画",
+    "商品紹介": "商品紹介漫画",
+    "営業資料": "営業資料漫画",
+    "営業": "営業資料漫画",
+    "研修": "研修漫画",
+    "広告": "漫画広告",
+    "集客": "漫画広告",
+    "会社紹介": "会社紹介漫画",
+    "企業紹介": "会社紹介漫画",
+    "ブランド": "ブランディング漫画",
+    "インバウンド": "インバウンド漫画",
+    "IR": "IR漫画",
+    "紹介": "サービス紹介漫画",
+    "IP": "IPコラボ漫画",
+}
+
+
 # LP（用途別ランディングページ）への内部リンクマッピング
 CATEGORY_LP_LINK = {
     "採用": ("/recruit-manga", "採用マンガ制作"),
@@ -193,9 +220,21 @@ def build_detail_page(w, template):
     hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
     thumb = hero_src  # 後方互換で thumb 変数名も維持
     category = w.get("category") or "制作事例"
-    pages_count = (w.get("spec") or {}).get("pages") or (
-        f"{w.get('pages')}P" if w.get("pages") else "—"
-    )
+    # title に入れる検索KW（未定義カテゴリは「ビジネス漫画」にフォールバック）
+    category_kw = CATEGORY_TITLE_KW.get(category, "ビジネス漫画")
+    # 作品名自体がKWを含む場合（例: 作品名「採用漫画」）は
+    # 「採用漫画｜採用漫画の制作事例」と重複するため、業種等の補足に置き換える
+    if category_kw in title_ja:
+        category_kw = "ビジネス漫画"
+    # gallery実枚数があればWP手入力(spec.pages/pages)より優先する
+    # (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
+    gallery_len_for_spec = len(gallery_list)
+    if gallery_len_for_spec > 0:
+        pages_count = f"{gallery_len_for_spec}P"
+    else:
+        pages_count = (w.get("spec") or {}).get("pages") or (
+            f"{w.get('pages')}P" if w.get("pages") else "—"
+        )
     period = (w.get("spec") or {}).get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
     # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示
@@ -304,6 +343,7 @@ def build_detail_page(w, template):
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
         "{{title_en}}": esc(title_en),
+        "{{category_kw}}": esc(category_kw),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
         "{{og_image}}": esc(og_image),
@@ -348,7 +388,7 @@ CATEGORY_PAGES = {
         "data_categories": ["採用"],
         "kw": "採用マンガ制作",
         "kw_short": "採用マンガ",
-        "title_seo": "採用マンガ制作事例｜会社紹介・社員インタビュー実績｜ビズマンガ",
+        "title_seo": "採用漫画の制作事例｜採用マンガ・社員インタビュー実績｜ビズマンガ",
         "description": "採用マンガ・採用漫画の制作事例集。会社紹介、社員インタビュー、仕事内容の漫画化など、新卒・中途採用向けに制作した実績を全公開。応募意欲・内定承諾率を高める採用ブランディング事例を業種別にご覧いただけます。",
         "keywords": "採用マンガ 事例,採用漫画 実績,採用パンフレット 漫画,会社紹介 漫画,新卒採用 マンガ,中途採用 マンガ",
         "intro_lead": "求職者に「働く姿」を物語で伝え、応募意欲・志望度・内定承諾率を高めた採用マンガの制作事例を公開しています。新卒・中途・アルバイト採用、各フェーズで活用できる実績をご覧ください。",
@@ -358,7 +398,7 @@ CATEGORY_PAGES = {
             {"q": "採用マンガはどんな場面で使えますか？", "a": "採用サイトのファーストビュー、採用パンフレット、会社説明会の導入動画、SNS（X/Instagram/TikTok）配信、内定者フォローまで幅広く活用できます。"},
             {"q": "新卒採用向けと中途採用向けで内容は変わりますか？", "a": "はい。新卒向けは入社後のリアリティと成長物語、中途向けは仕事の裁量・スピード・カルチャーマッチを重視した構成にします。ターゲット別に脚本を最適化します。"},
             {"q": "1冊あたりの制作期間はどれくらいですか？", "a": "標準的な10ページ構成で約4〜6週間が目安です。ヒアリング・脚本・ネーム・作画・修正の各フェーズをワンストップで進行します。"},
-            {"q": "費用感を教えてください。", "a": "1ページ16,600円〜（基本プラン）。10ページ構成で約17.4万円〜が目安です。詳細は無料お見積もりにてご案内します。"},
+            {"q": "費用感を教えてください。", "a": "1ページ25,740円〜（ハイブリッドプラン）。原稿料25,740円が別途かかり、10ページ構成で約28.3万円〜が目安です。詳細は無料お見積もりにてご案内します。"},
         ],
     },
     "product": {
