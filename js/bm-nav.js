@@ -683,3 +683,52 @@
   // グローバルに公開
   window.bmSwitchLang = switchLang;
 })();
+
+/* =====================================================================
+ * Google広告 コンバージョン「LINEお問い合わせ」（2026-09-03 / Issue #27）
+ * ---------------------------------------------------------------------
+ * サイト内の「LINEで相談」リンク（ヘッダー丸アイコン・ハンバーガー末尾・
+ * 追従FAB・共通CTA(bm-cta.js)・LP内ボタン・制作事例カテゴリ）は全て同じ
+ * LINE公式アカウントURLを指すので、個別に onclick を付けず document で
+ * クリックを委譲して拾う。静的HTML／このファイルや bm-cta.js が生成する
+ * CTA／build-columns・build-works が今後生成するページ、全て自動で対象。
+ *
+ * Google発行スニペット gtag_report_conversion は原文どおり公開しておく。
+ * ただし LINE リンクは target="_blank" で元ページが残るため、Google例の
+ * 「遷移を止めて event_callback で window.location」は使わない
+ * （新規タブがポップアップブロックに掛かる／return false で遷移しなくなる）。
+ * クリック時に event だけ送り、遷移はブラウザ標準に任せる。
+ *
+ * ⚠️ ラベルは Google広告管理画面「タグを設定する」の send_to をコピペした値。
+ *    l(エル)/I(アイ)/1(イチ) の取り違えで計測が死ぬ（BUGS #025）。手入力しない。
+ * ⚠️ 上の main IIFE は #bmNav が無いページで早期 return するので、ここは独立させる。
+ * ⚠️ capture 段階で拾う: メニュー側の stopPropagation に巻き込まれないため。
+ * ===================================================================== */
+(function () {
+  var SEND_TO = 'AW-18108125426/LX7_CMndmO0cEPKh0LpD';
+  // 「LINEで相談」= LINE公式アカウントURL。シェアボタン(social-plugins.line.me)は対象外
+  var LINE_SELECTOR = 'a[href*="line.me/R/ti/p/"]';
+
+  function gtag_report_conversion(url) {
+    var callback = function () {
+      if (typeof(url) != 'undefined') {
+        window.location = url;
+      }
+    };
+    if (typeof gtag !== 'function') { callback(); return false; }
+    gtag('event', 'conversion', {
+      'send_to': SEND_TO,
+      'event_callback': callback
+    });
+    return false;
+  }
+  window.gtag_report_conversion = gtag_report_conversion;
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var a = (t && typeof t.closest === 'function') ? t.closest(LINE_SELECTOR) : null;
+    if (!a) return;
+    // url を渡さない = event_callback は何もしない。新規タブへの遷移はブラウザに任せる
+    gtag_report_conversion();
+  }, true);
+})();
