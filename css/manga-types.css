@@ -143,17 +143,6 @@
   pointer-events: none;
 }
 
-.mt-v2 .mt-hero-deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-/* 薄いオレンジの大きな「07」— 塗り+輪郭で、にじみではなくグラフィックとして見せる */
-.mt-v2 .mt-hero-deco__num {
-  position: absolute; right: 2%; top: 48%; transform: translateY(-50%);
-  font-family: var(--lpv2-font-mono);
-  font-weight: 900; font-size: clamp(240px, 34vw, 560px);
-  line-height: 0.74; letter-spacing: -0.06em;
-  color: rgba(232, 85, 0, 0.085);
-  -webkit-text-stroke: 2px rgba(232, 85, 0, 0.16);
-  user-select: none;
-}
 /* 映画のフレーム枠（四隅のトンボ付き）。hero-inner の内側に置くので、
    下の索引帯を横切らず、常にコンテンツ幅と一致する。 */
 .mt-v2 .mt-hero-frame {
@@ -341,7 +330,6 @@
   .mt-v2 .mt-hero-kicker { margin-top: -8px; }
   .mt-v2 .mt-hero-sub { max-width: 100%; margin-bottom: 28px; }
   .mt-v2 .mt-hero-trailer { max-width: 420px; }
-  .mt-v2 .mt-hero-deco__num { right: -4%; font-size: clamp(180px, 46vw, 300px); }
 }
 @media (max-width: 420px) {
   .mt-v2 .mt-hero-cta { flex-direction: column; align-items: stretch; }
