@@ -175,149 +175,205 @@
       </div>
     </section>
 
-    <!-- ===== 1b. STRENGTHS INDEX（他LPの FORMATS スロットと同位置・同カード型／5枚） ===== -->
-    <section class="lpv2-section lpv2-formats" id="chapter-03-strengths" aria-label="ビズマンガの5つの強み">
+    <!-- ===== 1b. STRENGTHS — マンガのコマ割り風パネル 2+3（このページの主役セクション） =====
+         他LPの FORMATS スロットと同位置だが、強みは本ページ最大の訴求点なので
+         カード型ではなく「1コマ = 1つの強み」のコマ割りに拡大している。 -->
+    <section class="lpv2-section str-strengths" id="chapter-03-strengths" aria-label="ビズマンガの5つの強み">
+      <span class="str-halftone str-halftone--l" aria-hidden="true"></span>
+      <span class="str-halftone str-halftone--r" aria-hidden="true"></span>
       <div class="lpv2-container lpv2-container--wide">
-        <header class="lpv2-section-head">
+        <header class="lpv2-section-head str-head">
           <span class="lpv2-chapter-num">03</span>
           <span class="lpv2-chapter-mark">CHAPTER 03 &middot; STRENGTHS</span>
-          <h2 class="lpv2-h2" data-i18n-html data-ja="選ばれ続ける、<em>5つの強み</em>" data-en="The <em>five strengths</em> we're chosen for">選ばれ続ける、<em>5つの強み</em></h2>
+          <!-- 装飾は見出しの「文字の実寸」に追従させたいので、
+               文字幅にシュリンクラップする .str-head__hl で h2 ごと包む。
+               (コンテナ中央からの固定px指定だと文字に被る) -->
+          <div class="str-head__hl">
+            <span class="str-head__fx" aria-hidden="true">
+              <!-- 吹き出しは「5つの強み」の右横に、断面を文字側に向けて付ける。
+                   SVG 側で右半分だけを viewBox + clipPath で切り出しているので、
+                   文字の後ろから半分だけ覗いている見え方になる。
+                   文字には一切重ねない（輪郭が字画を横切ると読みにくいため）。
+                   塗りは断面がセクション地色 #fff8ed (= --lpv2-cream) から始まり、
+                   右端でブランド黄になるグラデーション。地に溶けてから色が乗るので
+                   白い板が貼ってあるようには見えない。
+                   ※ 地色は data URI 内にベタ書き。--lpv2-cream を変えたらここも直すこと。
+                   data-i18n-html が h2 の innerHTML を差し替えるため、
+                   DOM要素として置くと言語切替で消えてしまうので em::before(CSS)で描画。 -->
+              <svg class="str-head__lines" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                <polygon points="0,10 78,26 78,32 0,20" fill="#0a0a0a"/>
+                <polygon points="6,38 74,50 74,55 6,47" fill="#0a0a0a"/>
+                <polygon points="20,64 68,72 68,76 20,71" fill="#0a0a0a"/>
+              </svg>
+            </span>
+            <h2 class="lpv2-h2" data-i18n-html data-ja="選ばれ続ける、<em>5つの強み</em>" data-en="The <em>five strengths</em> we're chosen for">選ばれ続ける、<em>5つの強み</em></h2>
+          </div>
           <p class="lpv2-lead lpv2-lead--center" data-i18n-html data-ja="価格・納期・品質・著作権・展開力。<br>マンガ制作の発注で不安になる5つの論点すべてに、数字で答えます" data-en="Price, lead time, quality, copyright, reusability.<br>We answer all five with numbers.">価格・納期・品質・著作権・展開力。<br>マンガ制作の発注で不安になる5つの論点すべてに、数字で答えます</p>
         </header>
-        <div class="lpv2-formats-grid str-formats-grid">
-          <a class="lpv2-format str-format" href="#mech-01">
-            <div class="lpv2-format__illust">
+        <div class="str-panels">
+          <a class="str-panel" href="#mech-01">
+            <span class="str-panel__num" aria-hidden="true">01</span>
+            <div class="str-panel__body">
+              <h3 class="str-panel__name" data-ja="低価格" data-en="Low price">低価格</h3>
+              <p class="str-panel__stat"><em>1/5</em><small data-ja="大手比" data-en="vs. majors">大手比</small></p>
+              <p class="str-panel__note" data-ja="1ページ25,740円〜" data-en="From ¥25,740 / page">1ページ25,740円〜</p>
+            </div>
+            <div class="str-panel__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #01 (str-price) -->
               <picture>
                 <source type="image/webp" srcset="/images/strength/str-price.webp">
                 <img src="/images/strength/str-price.png" alt="圧倒的な低価格" loading="lazy" decoding="async" width="800" height="800">
               </picture>
             </div>
-            <p class="str-format__num">01</p>
-            <h3 class="lpv2-format__name" data-ja="低価格" data-en="Low price">低価格</h3>
-            <p class="str-format__stat"><em>1/5</em><small data-ja="大手比" data-en="vs. majors">大手比</small></p>
-            <p class="lpv2-format__use" data-ja="1ページ25,740円〜" data-en="From ¥25,740 / page">1ページ25,740円〜</p>
           </a>
-          <a class="lpv2-format str-format" href="#mech-02">
-            <div class="lpv2-format__illust">
+          <a class="str-panel" href="#mech-02">
+            <span class="str-panel__num" aria-hidden="true">02</span>
+            <div class="str-panel__body">
+              <h3 class="str-panel__name" data-ja="スピード" data-en="Speed">スピード</h3>
+              <p class="str-panel__stat"><em>2</em><small data-ja="週間〜" data-en="weeks">週間〜</small></p>
+              <p class="str-panel__note" data-ja="業界平均は2〜3ヶ月" data-en="Industry average: 2-3 months">業界平均は2〜3ヶ月</p>
+            </div>
+            <div class="str-panel__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #02 (str-speed) -->
               <picture>
                 <source type="image/webp" srcset="/images/strength/str-speed.webp">
                 <img src="/images/strength/str-speed.png" alt="最短2週間のスピード" loading="lazy" decoding="async" width="800" height="800">
               </picture>
             </div>
-            <p class="str-format__num">02</p>
-            <h3 class="lpv2-format__name" data-ja="スピード" data-en="Speed">スピード</h3>
-            <p class="str-format__stat"><em>2</em><small data-ja="週間〜" data-en="weeks">週間〜</small></p>
-            <p class="lpv2-format__use" data-ja="業界平均は2〜3ヶ月" data-en="Industry average: 2-3 months">業界平均は2〜3ヶ月</p>
           </a>
-          <a class="lpv2-format str-format" href="#mech-03">
-            <div class="lpv2-format__illust">
+          <a class="str-panel" href="#mech-03">
+            <span class="str-panel__num" aria-hidden="true">03</span>
+            <div class="str-panel__body">
+              <h3 class="str-panel__name" data-ja="品質" data-en="Quality">品質</h3>
+              <p class="str-panel__stat"><em>125</em><small data-ja="項目" data-en="checks">項目</small></p>
+              <p class="str-panel__note" data-ja="プロ漫画家が監修" data-en="Supervised by pro artists">プロ漫画家が監修</p>
+            </div>
+            <div class="str-panel__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #03 (str-quality) -->
               <picture>
                 <source type="image/webp" srcset="/images/strength/str-quality.webp">
                 <img src="/images/strength/str-quality.png" alt="ハイクオリティ" loading="lazy" decoding="async" width="800" height="800">
               </picture>
             </div>
-            <p class="str-format__num">03</p>
-            <h3 class="lpv2-format__name" data-ja="品質" data-en="Quality">品質</h3>
-            <p class="str-format__stat"><em>125</em><small data-ja="項目" data-en="checks">項目</small></p>
-            <p class="lpv2-format__use" data-ja="プロ漫画家が監修" data-en="Supervised by pro artists">プロ漫画家が監修</p>
           </a>
-          <a class="lpv2-format str-format" href="#mech-04">
-            <div class="lpv2-format__illust">
+          <a class="str-panel" href="#mech-04">
+            <span class="str-panel__num" aria-hidden="true">04</span>
+            <div class="str-panel__body">
+              <h3 class="str-panel__name" data-ja="著作権" data-en="Copyright">著作権</h3>
+              <p class="str-panel__stat"><em>0</em><small data-ja="リスク" data-en="risk">リスク</small></p>
+              <p class="str-panel__note" data-i18n-html data-ja="原画資産方式で<br>全譲渡" data-en="Full transfer of rights">原画資産方式で<br>全譲渡</p>
+            </div>
+            <div class="str-panel__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #04 (str-copyright) -->
               <picture>
                 <source type="image/webp" srcset="/images/strength/str-copyright.webp">
                 <img src="/images/strength/str-copyright.png" alt="著作権リスクゼロ" loading="lazy" decoding="async" width="800" height="800">
               </picture>
             </div>
-            <p class="str-format__num">04</p>
-            <h3 class="lpv2-format__name" data-ja="著作権" data-en="Copyright">著作権</h3>
-            <p class="str-format__stat"><em>0</em><small data-ja="リスク" data-en="risk">リスク</small></p>
-            <p class="lpv2-format__use" data-ja="原画資産方式で全譲渡" data-en="Full transfer of rights">原画資産方式で全譲渡</p>
           </a>
-          <a class="lpv2-format str-format" href="#mech-05">
-            <div class="lpv2-format__illust">
+          <a class="str-panel" href="#mech-05">
+            <span class="str-panel__num" aria-hidden="true">05</span>
+            <div class="str-panel__body">
+              <h3 class="str-panel__name" data-ja="展開力" data-en="Reuse">展開力</h3>
+              <p class="str-panel__stat"><em>4</em><small data-ja="媒体+" data-en="media+">媒体+</small></p>
+              <p class="str-panel__note" data-i18n-html data-ja="Web・印刷・<br>SNS・動画" data-en="Web, print,<br>SNS, video">Web・印刷・<br>SNS・動画</p>
+            </div>
+            <div class="str-panel__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #05 (str-media) -->
               <picture>
                 <source type="image/webp" srcset="/images/strength/str-media.webp">
                 <img src="/images/strength/str-media.png" alt="様々な媒体に展開" loading="lazy" decoding="async" width="800" height="800">
               </picture>
             </div>
-            <p class="str-format__num">05</p>
-            <h3 class="lpv2-format__name" data-ja="展開力" data-en="Reuse">展開力</h3>
-            <p class="str-format__stat"><em>4</em><small data-ja="媒体+" data-en="media+">媒体+</small></p>
-            <p class="lpv2-format__use" data-ja="Web・印刷・SNS・動画" data-en="Web, print, SNS, video">Web・印刷・SNS・動画</p>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- ===== 2. CHAPTER 01 — PROBLEM ===== -->
-    <section class="lpv2-section lpv2-problem" id="chapter-01-problem" aria-label="マンガ制作の発注で起きるお悩み">
-      <div class="lpv2-container">
-        <header class="lpv2-section-head">
-          <span class="lpv2-chapter-num">01</span>
-          <span class="lpv2-chapter-mark">CHAPTER 01 &middot; PROBLEM</span>
+    <!-- ===== 2. CHAPTER 01 — PROBLEM =====
+         横一列の「大きな数字 → 悩み → イラスト」型。数字が主役なので
+         左に巨大なゴースト番号を敷き、行ごとにオレンジの罫で区切る。 -->
+    <section class="lpv2-section str-problem" id="chapter-01-problem" aria-label="マンガ制作の発注で起きるお悩み">
+      <div class="lpv2-container lpv2-container--wide">
+        <header class="str-problem__head">
           <h2 class="lpv2-h2" data-i18n-html data-ja="マンガ制作の発注、こんな<em>お悩み</em>" data-en="Commissioning manga: <em>the usual worries</em>">マンガ制作の発注、こんな<em>お悩み</em></h2>
-          <p class="lpv2-lead lpv2-lead--center" data-ja="「効果は分かる。でも高い・遅い・リスクが読めない」——マンガ活用が社内で止まる理由は、だいたいこの3つに集約されます。" data-en="&quot;We get the value — but it's expensive, slow, and the risks are unclear.&quot; Manga projects usually stall for one of three reasons.">「効果は分かる。でも高い・遅い・リスクが読めない」——マンガ活用が社内で止まる理由は、だいたいこの3つに集約されます。</p>
+          <p class="str-problem__lead" data-ja="「効果は分かる。でも高い・遅い・リスクが読めない」" data-en="&quot;We get the value — but it's expensive, slow, and the risks are unclear.&quot;">「効果は分かる。でも高い・遅い・リスクが読めない」</p>
         </header>
-        <div class="lpv2-problem-grid">
-          <article class="lpv2-pain" data-lpv2-toggle>
-            <div class="lpv2-pain__body">
-              <span class="lpv2-pain__num">1</span>
-              <h3 class="lpv2-pain__title">見積もりを取ったら、想定の<em>3倍</em>だった。</h3>
-              <p class="lpv2-pain__text">1ページ5〜8万円。10ページで50〜80万円。効果は理解できても、この単価では試験導入の稟議すら通らず、企画そのものが立ち消えになってしまう。</p>
-              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+        <div class="str-pains">
+
+          <article class="str-pain" data-lpv2-toggle>
+            <span class="str-pain__ghost" aria-hidden="true">01</span>
+            <div class="str-pain__stat">
+              <p class="str-pain__figure" data-ja="3倍" data-en="3×">3倍</p>
+              <p class="str-pain__cat">COST</p>
             </div>
-            <picture class="lpv2-pain__illust">
+            <div class="str-pain__body">
+              <h3 class="str-pain__title" data-i18n-html data-ja="見積もりを取ったら、<br><em>想定の3倍</em>だった。" data-en="The quote came back at<br><em>three times</em> what we expected.">見積もりを取ったら、<br><em>想定の3倍</em>だった。</h3>
+              <button class="str-pain__more lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="str-pain__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #06 (pain-01) -->
               <source type="image/webp" srcset="/images/strength/pain-01.webp">
               <img src="/images/strength/pain-01.png" alt="マンガ制作の見積もりが想定の3倍だった" loading="lazy" decoding="async" width="1200" height="800">
             </picture>
-            <div class="lpv2-pain__detail">
-              <p>大手マンガ制作会社の一般的な単価は1ページ10〜15万円、比較的手頃な会社でも5〜8万円が相場です。これは全工程を手描きで行い、進行管理・営業・ディレクションの人件費を単価に乗せている体制に起因します。</p>
-              <p>結果として「まず1本試して効果を測る」という進め方が取れず、いきなり数百万円規模の意思決定を迫られます。効果検証の前に予算承認が必要になるため、マーケ施策としては最も稟議が通しにくいフォーマットになってしまっているのが実情です。</p>
+            <div class="str-pain__detail">
+              <p data-ja="1ページ5〜8万円。10ページで50〜80万円。効果は理解できても、この単価では試験導入の稟議すら通らず、企画そのものが立ち消えになってしまう。" data-en="¥50,000-80,000 per page — ¥500,000-800,000 for ten pages. Even when the value is clear, that price kills the approval before a pilot ever starts.">1ページ5〜8万円。10ページで50〜80万円。効果は理解できても、この単価では試験導入の稟議すら通らず、企画そのものが立ち消えになってしまう。</p>
+              <p data-ja="大手マンガ制作会社の一般的な単価は1ページ10〜15万円、比較的手頃な会社でも5〜8万円が相場です。これは全工程を手描きで行い、進行管理・営業・ディレクションの人件費を単価に乗せている体制に起因します。結果として「まず1本試して効果を測る」という進め方が取れず、いきなり数百万円規模の意思決定を迫られます。" data-en="Major studios typically charge ¥100,000-150,000 per page; even budget-friendly studios run ¥50,000-80,000, because every step is hand-drawn with project management and sales costs baked in. As a result, &quot;try one and measure the effect&quot; isn't an option — you're forced into a million-yen decision up front.">大手マンガ制作会社の一般的な単価は1ページ10〜15万円、比較的手頃な会社でも5〜8万円が相場です。これは全工程を手描きで行い、進行管理・営業・ディレクションの人件費を単価に乗せている体制に起因します。結果として「まず1本試して効果を測る」という進め方が取れず、いきなり数百万円規模の意思決定を迫られます。</p>
             </div>
           </article>
 
-          <article class="lpv2-pain" data-lpv2-toggle>
-            <div class="lpv2-pain__body">
-              <span class="lpv2-pain__num">2</span>
-              <h3 class="lpv2-pain__title">「2〜3ヶ月」と言われ、<em>施策に間に合わない</em>。</h3>
-              <p class="lpv2-pain__text">展示会、プレスリリース、採用シーズン。日付が決まっている施策ほどマンガが効くのに、納期が読めないせいで候補から外さざるを得ない。</p>
-              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+          <article class="str-pain" data-lpv2-toggle>
+            <span class="str-pain__ghost" aria-hidden="true">02</span>
+            <div class="str-pain__stat">
+              <p class="str-pain__figure" data-ja="2〜3ヶ月" data-en="2-3 mo.">2〜3ヶ月</p>
+              <p class="str-pain__cat">SPEED</p>
             </div>
-            <picture class="lpv2-pain__illust">
+            <div class="str-pain__body">
+              <h3 class="str-pain__title" data-i18n-html data-ja="「2〜3ヶ月」と言われ、<br><em>施策に間に合わない</em>。" data-en="&quot;Two to three months&quot; —<br><em>too late for the campaign</em>.">「2〜3ヶ月」と言われ、<br><em>施策に間に合わない</em>。</h3>
+              <button class="str-pain__more lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="str-pain__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #07 (pain-02) -->
               <source type="image/webp" srcset="/images/strength/pain-02.webp">
               <img src="/images/strength/pain-02.png" alt="納期2〜3ヶ月で施策に間に合わない" loading="lazy" decoding="async" width="1200" height="800">
             </picture>
-            <div class="lpv2-pain__detail">
-              <p>従来型のマンガ制作は、ヒアリング → シナリオ → ネーム → 作画 → 修正 を一つずつ順番に進める逐次型のワークフローです。各工程の間に確認待ちの時間が積み上がり、標準的な8〜10ページでも2〜3ヶ月かかります。</p>
-              <p>展示会・新商品ローンチ・採用広報など、締切が動かせない施策では「間に合うか分からないもの」は最初から選択肢に入りません。マンガが最も力を発揮する場面ほど、納期の不確実性が理由で使われないという構造的な機会損失が起きています。</p>
+            <div class="str-pain__detail">
+              <p data-ja="展示会、プレスリリース、採用シーズン。日付が決まっている施策ほどマンガが効くのに、納期が読めないせいで候補から外さざるを得ない。" data-en="Trade shows, press releases, hiring season — manga works best when there's a fixed date, yet an unpredictable schedule rules it out first.">展示会、プレスリリース、採用シーズン。日付が決まっている施策ほどマンガが効くのに、納期が読めないせいで候補から外さざるを得ない。</p>
+              <p data-ja="従来型のマンガ制作は、ヒアリング → シナリオ → ネーム → 作画 → 修正 を一つずつ順番に進める逐次型のワークフローです。各工程の間に確認待ちの時間が積み上がり、標準的な8〜10ページでも2〜3ヶ月かかります。展示会・新商品ローンチ・採用広報など、締切が動かせない施策では「間に合うか分からないもの」は最初から選択肢に入りません。" data-en="Traditional manga production moves step by step, with approval waits stacking up between each stage — a standard 8-10 pages ends up taking two to three months. For trade shows, product launches, and recruiting campaigns with a fixed deadline, anything with an uncertain timeline never even makes the shortlist.">従来型のマンガ制作は、ヒアリング → シナリオ → ネーム → 作画 → 修正 を一つずつ順番に進める逐次型のワークフローです。各工程の間に確認待ちの時間が積み上がり、標準的な8〜10ページでも2〜3ヶ月かかります。展示会・新商品ローンチ・採用広報など、締切が動かせない施策では「間に合うか分からないもの」は最初から選択肢に入りません。</p>
             </div>
           </article>
 
-          <article class="lpv2-pain" data-lpv2-toggle>
-            <div class="lpv2-pain__body">
-              <span class="lpv2-pain__num">3</span>
-              <h3 class="lpv2-pain__title">安い会社は、<em>品質と著作権</em>が読めない。</h3>
-              <p class="lpv2-pain__text">単価が安い会社は担当作家によって当たり外れが大きく、納品物の権利範囲も契約書を読むまで分からない。二次利用のたびに追加費用が発生するケースも。</p>
-              <button class="lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+          <article class="str-pain" data-lpv2-toggle>
+            <span class="str-pain__ghost" aria-hidden="true">03</span>
+            <div class="str-pain__stat">
+              <p class="str-pain__figure" data-ja="権利?" data-en="Rights?">権利?</p>
+              <p class="str-pain__cat">QUALITY / RIGHTS</p>
             </div>
-            <picture class="lpv2-pain__illust">
+            <div class="str-pain__body">
+              <h3 class="str-pain__title" data-i18n-html data-ja="安い会社は、<br><em>品質と著作権</em>が読めない。" data-en="Cheap studios:<br><em>quality and rights</em> are a black box.">安い会社は、<br><em>品質と著作権</em>が読めない。</h3>
+              <button class="str-pain__more lpv2-pain__more" type="button" aria-expanded="false">詳しく読む</button>
+            </div>
+            <picture class="str-pain__illust">
               <!-- IMAGE-PROMPT: docs/strength-image-prompts.md #08 (pain-03) -->
               <source type="image/webp" srcset="/images/strength/pain-03.webp">
               <img src="/images/strength/pain-03.png" alt="品質のばらつきと著作権の不安" loading="lazy" decoding="async" width="1200" height="800">
             </picture>
-            <div class="lpv2-pain__detail">
-              <p>低単価を売りにする制作会社の多くは、案件ごとにフリーランス作家をアサインする体制です。品質チェックの基準が明文化されていないため、同じ会社に発注しても担当作家によって完成度が大きく変わります。</p>
-              <p>さらに見落とされやすいのが権利の問題です。著作権が制作会社側に残る契約では、SNS転用・動画化・印刷物への流用のたびに許諾と追加費用が必要になります。フリー素材の組み合わせで作られていた場合、他社の制作物と絵柄が重複するリスクも避けられません。</p>
+            <div class="str-pain__detail">
+              <p data-ja="単価が安い会社は担当作家によって当たり外れが大きく、納品物の権利範囲も契約書を読むまで分からない。二次利用のたびに追加費用が発生するケースも。" data-en="At low-cost studios, quality swings wildly by which artist you get, and the scope of your rights stays unclear until you read the contract — with extra fees on every reuse.">単価が安い会社は担当作家によって当たり外れが大きく、納品物の権利範囲も契約書を読むまで分からない。二次利用のたびに追加費用が発生するケースも。</p>
+              <p data-ja="低単価を売りにする制作会社の多くは、案件ごとにフリーランス作家をアサインする体制です。品質チェックの基準が明文化されていないため、同じ会社に発注しても担当作家によって完成度が大きく変わります。さらに見落とされやすいのが権利の問題です。著作権が制作会社側に残る契約では、SNS転用・動画化・印刷物への流用のたびに許諾と追加費用が必要になります。" data-en="Most budget studios assign a different freelance artist to every project, with no written quality standard. Rights are the part most easily overlooked — if the studio keeps the copyright, you need permission, and pay again, every time you reuse the work.">低単価を売りにする制作会社の多くは、案件ごとにフリーランス作家をアサインする体制です。品質チェックの基準が明文化されていないため、同じ会社に発注しても担当作家によって完成度が大きく変わります。さらに見落とされやすいのが権利の問題です。著作権が制作会社側に残る契約では、SNS転用・動画化・印刷物への流用のたびに許諾と追加費用が必要になります。</p>
             </div>
           </article>
+
         </div>
+
+        <p class="str-problem__banner">
+          <span class="str-problem__banner-l" data-ja="価格・納期・権利を、" data-en="Price, schedule, rights —">価格・納期・権利を、</span><span class="str-problem__banner-r" data-ja="最初から明確に。" data-en="clear from day one.">最初から明確に。</span>
+        </p>
+        <span class="str-problem__chev" aria-hidden="true">
+          <svg viewBox="0 0 40 22" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <polyline points="3,3 20,18 37,3" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </div>
     </section>
 
