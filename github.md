@@ -121,6 +121,12 @@ git checkout -b feat/42-testimonials-restore
 - マージ後は Claude がブランチ削除・Issue自動クローズの確認・本番反映（GitHub Pagesデプロイ）の確認まで行う。
 - このルールは招待メンバーを含む**全チーム共通**（ContentsX_HP / bizmanga 両リポジトリ同一運用）。人間による手動マージも従来通り可能だが、基本フローはClaude実行に統一する。
 
+### 重要領域（漫画表示・WP接続）を触ったPR（2026-09-15 平澤指示）⭐
+
+- `.claude/pr-gate-paths.txt` に載っているファイル（ビューア / ホームギャラリー / 制作事例 / 埋込ビューア / WP APIクライアント / 静的ビルド）を触ったPRは、AIエージェントのレビューゲートが自動で **重要度 HIGH** にし、レビュー記録が無いと `gh pr merge` が止まる。
+- マージ前に **[docs/REVIEW-MANGA-WP.md](docs/REVIEW-MANGA-WP.md)** の手順（`tools/smoke-manga-wp.py` の自動テスト＋目視）を実行し、結果を添えて所有者のOKをもらう。この領域は「AIレビュー指摘ゼロ」での自動承認を使わない。
+- 人がGitHub画面から直接マージする場合も、同じ手順を済ませてからにする（ゲートはAIエージェントの操作にしか効かない）。
+
 ### ⚠️ ビルドBotだけは直接pushする（正常）
 
 このリポジトリでは、以下の **GitHub Actions が自動で `main` に commit/push** します。これは仕様であり、止めてはいけません。
