@@ -17,6 +17,17 @@
     ".bm-column-featured-excerpt",
     ".bm-column-hero-eyebrow",
     ".bm-section-desc",
+    /* manga-types の7章カード。幅170px前後に11px級の本文が入るため、
+       末尾の「。」が1文字だけ次行に落ちやすい（2026-09-10 追加） */
+    ".mt-chapter-card__desc",
+    /* manga-types の表現カスタマイズ。STEPの説明文は幅によって折り返すので
+       末尾の「。」だけが落ちないようにする（旧 .mt-sty-point__text は画風選び廃止で削除）。2026-09-14 */
+    ".mt-exp-step__desc",
+    /* manga-types の選び方ミニガイド。説明文の末尾「す。」が1文字落ちないように（2026-09-14） */
+    ".mt-choose__lead",
+    /* manga-types の FAQ 説明文。末尾「い。」が1文字落ちないように（2026-09-14）。
+       回答本文は「」内を nowrap にするとスマホで改行が崩れるため対象外 */
+    ".mt-faq__lead",
   ];
 
   var JOINER = "\u2060"; // word joiner (不可視 + 改行禁止)
