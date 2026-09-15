@@ -116,65 +116,85 @@
 }
 
 /* ------------------------------------------------------------------
- * 2. HERO — 左コピー / 右キャラクター / 下部にチャプター索引
- *    2026-08-24 強化: 見出しを 58px→76px まで拡大し、映画のフレーム枠・
- *    大きな「07」・キャラクターの土台・7章索引の帯を足して、
- *    左半分が空くだけだった構図に骨格を与える。
+ * 2. HERO — MANGA MAGAZINE × BUSINESS BRAND
+ *    2026-09-10 全面リデザイン。PCは横4層構成:
+ *      [左 コピー 40fr] [中央 メイン人物 26fr] [右 漫画コマ 24fr] [最右 黒ジャンル索引]
+ *    - 装飾（街並み / オレンジブラシ / 人物 / 白筆文字）は .mt-hero-figure の
+ *      内側だけでクリップする。.mt-hero 自体には overflow を掛けない
+ *      （下のセクションを巻き込まないため）
+ *    - 人物はコピー列に食い込むので、.mt-hero-copy::before のクリーム地の
+ *      スクリムで本文の可読性を確保する（ボックスに見えないよう右へフェード）
+ *    - 登場アニメーションは JS ではなく CSS @keyframes + fill-mode:both。
+ *      JSが落ちても要素が透明のまま残らない
  * ------------------------------------------------------------------ */
 .mt-v2 .mt-hero {
+  /* 4層のうち最右の黒ナビ幅。stage の padding-right と共有する */
+  --mt-hero-nav: clamp(126px, 10.4vw, 178px);
+  --mt-hero-pt: clamp(28px, 4vh, 60px);
+  /* 画面下端の固定CTAバー（.bm-fab は下から72px占有）にコピー下端のCTAが
+     潜り込まないよう、下パディングで必ず76px以上あける */
+  --mt-hero-pb: clamp(76px, 9vh, 104px);
+  --mt-hero-pl: clamp(20px, 4.2vw, 84px);
+  /* HERO内の重ね順（この範囲だけで完結。9999 のような値は使わない）
+     地色/網点 0 → .mt-hero-figure 1（内側: 都市2 → ブラシ3 → 人物4 → 筆文字5）
+     → コマ 3 →（コマ内のキャプション 2）→ 左コピー/CTA 4 → GENRESナビ 5 */
+
   position: relative;
   margin-top: 72px;                       /* .bm-header は position:fixed / 72px */
-  background:
-    radial-gradient(120% 90% at 82% 12%, rgba(232, 85, 0, 0.07) 0%, transparent 58%),
-    linear-gradient(180deg, #fff 0%, #fff 26%, var(--mt-cream) 100%);
-  border-bottom: 1px solid var(--mt-line);
-  overflow: hidden;
-}
-/* 画面を横切る細いオレンジの斜線 */
-.mt-v2 .mt-hero::before {
-  content: "";
-  position: absolute; inset: -25% -12%;
-  background: repeating-linear-gradient(
-    118deg,
-    transparent 0 118px,
-    rgba(232, 85, 0, 0.26) 118px 119px,
-    transparent 119px 236px
-  );
-  pointer-events: none;
+  isolation: isolate;
+  background-color: var(--mt-cream);
+  background-image:
+    /* 網点（漫画のトーン）。ごく薄く紙の質感として乗せる */
+    radial-gradient(circle at center, rgba(42, 37, 32, 0.055) 1px, transparent 1.4px),
+    linear-gradient(176deg, #fffdf8 0%, var(--mt-cream) 52%, #fcefdb 100%);
+  background-size: 15px 15px, 100% 100%;
+  border-bottom: 3px solid var(--lpv2-ink);
 }
 
-/* 映画のフレーム枠（四隅のトンボ付き）。hero-inner の内側に置くので、
-   下の索引帯を横切らず、常にコンテンツ幅と一致する。 */
-.mt-v2 .mt-hero-frame {
-  position: absolute; inset: 14px 8px; z-index: -1;
-  border: 1px solid rgba(232, 85, 0, 0.26);
-  pointer-events: none;
-}
-.mt-v2 .mt-hero-frame::before,
-.mt-v2 .mt-hero-frame::after {
-  content: ""; position: absolute; width: 24px; height: 24px;
-  border: 2px solid var(--mt-accent);
-}
-.mt-v2 .mt-hero-frame::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
-.mt-v2 .mt-hero-frame::after { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
-
-.mt-v2 .mt-hero-inner {
-  position: relative; z-index: 1;
-  max-width: 1260px; margin: 0 auto;
-  padding: 68px 52px 44px;
+.mt-v2 .mt-hero-stage {
+  position: relative;
+  max-width: 1720px; margin-inline: auto;
+  /* desktop: ヘッダー(72px)を除いた画面高。最低700px / 最高950px。
+     min-height なので中身が増えても切れずに伸びる。 */
+  min-height: clamp(700px, calc(100svh - 72px), 950px);
+  padding: var(--mt-hero-pt) var(--mt-hero-nav) var(--mt-hero-pb) var(--mt-hero-pl);
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.76fr);
-  /* 右の予告編ストリップが約900pxと高いため、center だとコピーとCTAが下に押し出され
-     1366x768 / 1440x900 で主CTAがファーストビュー外・フローティングCTAの下に隠れる
-     （2026-09-03 レビュー実測）。コピーは上寄せにする。 */
-  gap: 32px; align-items: start;
-  min-height: clamp(480px, 40vw, 600px);
+  grid-template-columns: minmax(0, 39fr) minmax(0, 25fr) minmax(0, 26fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
 }
-.mt-v2 .mt-hero-text { max-width: 660px; }
+
+/* --- 2-1. 左: コピー -------------------------------------------- */
+.mt-v2 .mt-hero-copy {
+  position: relative;
+  grid-column: 1; grid-row: 1; z-index: 4;
+  align-self: center;
+  max-width: 640px;
+}
+/* 人物が左に食い込むぶんの可読性スクリム。
+   単なる半透明の板だと縁が四角く見えてしまうので、HEROと同じ地色+網点を敷いた上で
+   マスクで放射状にフェードさせ、境界が出ないようにしている。 */
+.mt-v2 .mt-hero-copy::before {
+  content: "";
+  position: absolute; z-index: -1;
+  /* 2026-09-10 ブラッシュアップ: 以前は x=871 までクリームが乗り、人物の
+     シャツ・ネクタイ・胸元まで白く飛ばしていた（主役の存在感が落ちる原因）。
+     実測でコピーの右端は H1 2行目の 544px・リード 527px までなので、
+     「x≈430 まで不透明 / x≈565 で完全に消える」まで縮めた。
+     顔（x 640–800）と胸元（x≈600）はマスク半径の外＝完全に無加工。
+     マスクは必ず要素の内側で transparent に達しきらせる（外周に届くと縁が線になる）。 */
+  inset: -20% -8% -18% -70%;
+  background-color: var(--mt-cream);
+  background-image: radial-gradient(circle at center, rgba(42, 37, 32, 0.055) 1px, transparent 1.4px);
+  background-size: 15px 15px;
+  -webkit-mask-image: radial-gradient(66% 52% at 28% 50%, #000 0%, #000 75%, transparent 96%);
+  mask-image: radial-gradient(66% 52% at 28% 50%, #000 0%, #000 75%, transparent 96%);
+  pointer-events: none;
+}
 
 .mt-v2 .mt-breadcrumb ol {
   list-style: none; display: flex; flex-wrap: wrap; align-items: center;
-  gap: 8px; margin: 0 0 22px; padding: 0;
+  gap: 8px; margin: 0 0 clamp(14px, 2.4vh, 26px); padding: 0;
   font-size: 12.5px; letter-spacing: 0.05em; color: var(--mt-mute);
 }
 .mt-v2 .mt-breadcrumb li { display: flex; align-items: center; gap: 8px; }
@@ -183,157 +203,596 @@
 .mt-v2 .mt-breadcrumb a:hover { color: var(--mt-accent-deep); text-decoration: underline; }
 .mt-v2 .mt-breadcrumb [aria-current="page"] { color: var(--mt-ink); font-weight: 700; }
 
-/* 英字ラベルは白地に罫線を渡した「柱」として大きく置く */
-.mt-v2 .mt-hero-label {
-  display: flex; align-items: center; gap: 16px;
+/* MANGA / CHANGES / BUSINESS. の3行。小さく・オレンジ・字間広め */
+.mt-v2 .mt-hero-eyebrow {
+  margin: 0 0 clamp(12px, 2vh, 22px);
   font-family: var(--lpv2-font-mono);
-  font-size: clamp(13px, 1.15vw, 15px); font-weight: 900;
-  letter-spacing: 0.4em; text-transform: uppercase;
+  font-size: clamp(11px, 0.86vw, 13px);
+  font-weight: 900; line-height: 1.7;
+  letter-spacing: 0.42em; text-transform: uppercase;
   color: var(--mt-accent-deep);
-  margin: 0 0 26px;
 }
-.mt-v2 .mt-hero-label::before { content: ""; width: 56px; height: 3px; background: var(--mt-accent); flex: none; }
-.mt-v2 .mt-hero-label::after {
-  content: ""; height: 1px; flex: 1 1 auto;
-  background: linear-gradient(90deg, rgba(232, 85, 0, 0.4), transparent);
-}
-
-.mt-v2 .mt-hero-title {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  /* 上限 76px だと2行目「「伝わらない」を、」(8文字) が 660px 列に入らず「を、」が孤立行になる
-     （1366px以上で実測 677px）。72px なら 641px で収まる。 */
-  font-size: clamp(34px, 5.4vw, 72px);
-  line-height: 1.2; letter-spacing: -0.01em;
-  color: var(--mt-ink);
-  margin: 0 0 28px;
-}
-/* 「伝えるべき物語」— オレンジ文字 + 薄オレンジの下敷き + 下線 */
-.mt-v2 .mt-hero-title em {
-  font-style: normal; color: var(--mt-accent);
-  position: relative; display: inline-block;
-  padding: 0 0.08em;
-}
-.mt-v2 .mt-hero-title em::before {
-  content: ""; position: absolute; z-index: -1;
-  left: 0; right: 0; bottom: 0.1em; height: 0.42em;
-  background: var(--mt-accent-wash);
-}
-.mt-v2 .mt-hero-title em::after {
-  content: ""; position: absolute;
-  left: 0; right: 0; bottom: 0.02em; height: 3px;
+.mt-v2 .mt-hero-eyebrow span { display: block; }
+.mt-v2 .mt-hero-eyebrow::before {
+  content: ""; display: block;
+  width: 56px; height: 3px; margin-bottom: 14px;
   background: var(--mt-accent);
 }
 
-/* SEOキーワードを可視のキッカー行として残す（旧 lpv2-sr-only から可視化） */
-.mt-v2 .mt-hero-kicker {
-  font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em;
-  color: var(--mt-mute);
-  margin: -14px 0 20px;
+.mt-v2 .mt-hero-title {
+  /* 参考デザインの見出しは明朝ではなく太ゴシック。既存の sans トークンを使う */
+  font-family: var(--lpv2-font-sans);
+  font-weight: 900;
+  /* 7文字 ×約0.96em が収まる幅として上限を決めている（1920pxで約672px、
+     コピー列は約755px）。日本語が語中で折れないよう keep-all、
+     どうしても入らないときだけ break-word で溢れを防ぐ。 */
+  font-size: clamp(44px, 5vw, 92px);
+  line-height: 1.02; letter-spacing: -0.04em;
+  color: var(--lpv2-ink);
+  margin: 0 0 clamp(12px, 1.8vh, 20px);
+  max-width: min(44vw, 660px);
+  word-break: keep-all; overflow-wrap: break-word;
 }
 
-.mt-v2 .mt-hero-sub {
-  font-size: clamp(15px, 1.25vw, 17.5px);
-  line-height: 2.05;
-  color: var(--mt-mute);
-  max-width: 520px;
-  margin: 0 0 38px;
-  padding-left: 18px;
-  border-left: 3px solid var(--mt-line-strong);
+/* 英語は同じ font-size だと1行に入る文字数が減って行数が増える（CTAが
+   ファーストビューから押し出される）。bm-i18n.js が documentElement.lang を
+   切り替えるので、それを使って英語だけ一段小さくする。 */
+html[lang="en"] .mt-v2 .mt-hero-title { font-size: clamp(36px, 4.1vw, 74px); }
+
+/* SEOキーワード（ページ主題）を可視のキッカー行として必ず残す */
+.mt-v2 .mt-hero-kicker {
+  font-size: clamp(12px, 0.95vw, 13.5px);
+  font-weight: 700; letter-spacing: 0.02em;
+  color: var(--mt-accent-deep);
+  margin: 0 0 clamp(14px, 2.2vh, 24px);
+  padding-left: 14px;
+  border-left: 3px solid var(--mt-accent);
+}
+
+.mt-v2 .mt-hero-lead {
+  font-size: clamp(14px, 1.08vw, 16.5px);
+  line-height: 1.95;
+  color: var(--mt-ink);
+  margin: 0 0 clamp(18px, 3vh, 34px);
+  max-width: 30em;
+}
+
+/* --- USP 3点（丸アウトラインのSVGアイコン + 2行テキスト） --- */
+/* 囲いは付けず、エディトリアルのまま細部だけ揃える:
+   アイコンは3つとも 30px 固定、アイコン⇔文字は 9px、項目間 gap は均等、
+   上段の補助文字は一段小さく、下段の要点は 900。2行とも同じ line-height で
+   3項目のベースラインが揃う。 */
+/* 参考デザイン: アイコンを上・2行の文字を下に置き、項目間を細い縦罫で仕切る */
+.mt-v2 .mt-hero-usp {
+  list-style: none; margin: 0 0 clamp(18px, 2.8vh, 32px); padding: 0;
+  display: flex; flex-wrap: wrap; gap: 14px 0;
+}
+.mt-v2 .mt-hero-usp__item {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  padding: 2px clamp(15px, 1.7vw, 26px);
+}
+.mt-v2 .mt-hero-usp__item:first-child { padding-left: 0; }
+.mt-v2 .mt-hero-usp__item + .mt-hero-usp__item { border-left: 1px solid var(--mt-line-strong); }
+.mt-v2 .mt-hero-usp__icon {
+  flex: none; display: block; width: 36px; height: 36px;
+  color: var(--lpv2-ink);
+}
+.mt-v2 .mt-hero-usp__icon svg { display: block; width: 100%; height: 100%; }
+.mt-v2 .mt-hero-usp__text { display: block; }
+.mt-v2 .mt-hero-usp__text b {
+  display: block; font-size: 10.5px; font-weight: 700;
+  line-height: 1.5; letter-spacing: 0.06em; color: var(--mt-mute);
+}
+.mt-v2 .mt-hero-usp__text em {
+  display: block; font-style: normal;
+  font-size: clamp(13.5px, 1.02vw, 15.5px); font-weight: 900;
+  line-height: 1.5; letter-spacing: 0.01em; color: var(--lpv2-ink);
+}
+
+/* 参考デザインの "MANGA FOR A BRIGHTER TOMORROW"（CTA下の細罫+英字）。
+   画面下端の固定CTAバー(.bm-fab)が72px占有するため、コピー列の丈が足りない
+   ビューポートでは完全に隠れてしまう（1280x800 で実測）。高さに余裕がある
+   ときだけ出す。色は都市スカイラインの上に重なるので --mt-mute では
+   2.78:1 しか出ず、--mt-ink にして 6.4:1 を確保している。 */
+.mt-v2 .mt-hero-tagline {
+  display: none; align-items: center; gap: 14px;
+  margin: clamp(10px, 1.5vh, 18px) 0 0;
+  font-family: var(--lpv2-font-mono);
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--mt-ink);
+}
+@media (min-width: 1101px) and (min-height: 860px) {
+  .mt-v2 .mt-hero-tagline { display: flex; }
+}
+.mt-v2 .mt-hero-tagline::before {
+  content: ""; flex: none; width: 46px; height: 1px; background: var(--mt-line-strong);
 }
 
 .mt-v2 .mt-hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+/* HERO内だけ、面色をブランドオレンジ var(--lpv2-accent) #e85500 にする。
+   ページ内の他のCTAは AA 確保のため --lpv2-accent-deep のまま（ここだけの上書き）。
+   #e85500 に白文字は 3.66:1 で、16px だと AA(4.5:1) を満たさないため、
+   ラベルを 19px/900 まで上げて「大きい文字」(18.66px以上+bold → 3:1) の基準に載せている。
+   色をハードコードせず、ブラシ・アクセント罫線と同じ変数を共有する。 */
+.mt-v2 .mt-hero-cta .mt-btn--primary {
+  background: var(--lpv2-accent);
+  font-size: 19px;
+  box-shadow: 0 10px 22px -12px rgba(232, 85, 0, 0.55);
+}
+.mt-v2 .mt-hero-cta .mt-btn--primary:hover {
+  background: var(--lpv2-accent);
+  box-shadow: 0 16px 26px -12px rgba(232, 85, 0, 0.6);
+}
+.mt-v2 .mt-hero-cta__arrow { transition: transform 0.2s ease; }
+.mt-v2 .mt-btn--primary:hover .mt-hero-cta__arrow { transform: translateX(4px); }
 
-/* --- 3コマの予告編（フィルムストリップ風）。2026-08-31 実写カット3枚
-   （trailer-01-problem / -02-idea / -03-result）に差し替え済み。
-   .mt-trailer-frame__glyph 内は <picture><img></picture> で、img は object-fit:cover により
-   art枠（aspect-ratio 3:2）いっぱいに自動でトリミング表示される。 --- */
-.mt-v2 .mt-hero-trailer {
+/* --- 2-2. 中央: メイン人物と背景装飾 ---------------------------- */
+/* コピー列〜コマ列までを覆う装飾レイヤー。ここだけでクリップする。 */
+.mt-v2 .mt-hero-figure {
+  grid-column: 1 / 4; grid-row: 1; z-index: 1;
+  align-self: stretch;
   position: relative;
-  justify-self: center; align-self: center;
-  width: 100%; max-width: 360px;
-}
-.mt-v2 .mt-hero-trailer__label {
-  display: flex; align-items: center; gap: 12px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900; letter-spacing: 0.28em; text-transform: uppercase;
-  /* 黄色(--lpv2-yellow)は白/生成り地で約1.4:1しか出ず判読不能だったため accent-deep に（他ラベルと同基準） */
-  color: var(--mt-accent-deep);
-  margin: 0 0 12px;
-}
-.mt-v2 .mt-hero-trailer__label::after { content: ""; height: 1px; flex: 1 1 auto; background: var(--mt-line-strong); }
-
-.mt-v2 .mt-trailer-strip { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-
-.mt-v2 .mt-trailer-frame {
-  background: #fff;
-  border: 1px solid var(--mt-line-strong);
-}
-/* 画像を置く枠。実写カット(1536x1024=3:2)を入れる前提でアスペクト比を固定してあるため、
-   画像を同名で差し替えてもレイアウトが動かない（CLSなし）。 */
-.mt-v2 .mt-trailer-frame__art {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  background: var(--mt-ink);
-  color: var(--mt-cream);
   overflow: hidden;
+  pointer-events: none;
+  margin:
+    calc(-1 * var(--mt-hero-pt))
+    0
+    calc(-1 * var(--mt-hero-pb))
+    calc(-1 * var(--mt-hero-pl));
 }
-/* フィルムのパーフォレーション（上下の穴）。実写カットは背景が明るいことが多いため、
-   単なる白丸ではなく不透明な帯（フィルムの縁）にして、写真の色に関係なく見えるようにする。 */
-.mt-v2 .mt-trailer-frame__art::before,
-.mt-v2 .mt-trailer-frame__art::after {
-  content: "";
-  position: absolute; left: 0; right: 0; height: 12px; z-index: 1;
-  background-color: var(--mt-ink);
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 2px, transparent 2.2px);
-  background-size: 22px 12px; background-repeat: repeat-x; background-position: 11px center;
+.mt-v2 .mt-hero-figure > picture { position: absolute; display: block; }
+.mt-v2 .mt-hero-figure img { display: block; width: 100%; height: auto; }
+
+/* モノクロの街並み。左下〜中央下に、コピーの邪魔にならない濃度で敷く */
+/* 下端は画面下部固定CTA(.bm-fab)に隠れるため、上端が見えるよう bottom を上げる。
+   2026-09-10: さらに約25px上へ（6%→9%）。サイズ・opacity は据え置き。 */
+.mt-v2 .mt-hero-city {
+  left: -2%; bottom: 9%; width: 72%; z-index: 2;
+  /* 0.16 だと 1920px でタグラインの背後が暗くなり 4.07:1 まで落ちるため 0.13 に */
+  opacity: 0.13;
 }
-.mt-v2 .mt-trailer-frame__art::before { top: 0; }
-.mt-v2 .mt-trailer-frame__art::after { bottom: 0; }
-/* CUT番号は写真の明るさに関係なく読めるよう、小さな暗いチップ（フィルムスレート風）にする */
-.mt-v2 .mt-trailer-frame__cut {
-  position: absolute; z-index: 2; top: 18px; left: 12px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 9.5px; font-weight: 900; letter-spacing: 0.14em;
-  color: var(--mt-cream);
-  background: rgba(36, 29, 24, 0.78);
-  padding: 3px 7px;
-  border-radius: 2px;
+/* 人物の背中から頭の後ろへ、斜め右上に伸びるオレンジのブラシ */
+/* 視覚の優先順位を H1 > 人物 > コマ > ブラシ にするため、
+   2026-09-10 に 56%→48%（約14%縮小）・右上へ寄せ・opacity .9→.72 に落とした。
+   人物の頭〜肩の後ろから右上へ抜ける「背景の勢い」として使う。 */
+.mt-v2 .mt-hero-brush {
+  left: 36%; top: 0%; width: 48%; z-index: 3;
+  opacity: 0.72;
+  transform: rotate(-4deg);
 }
-/* <picture> を枠いっぱいに敷く（クラス名は SVG プレースホルダー時代の名残） */
-.mt-v2 .mt-trailer-frame__glyph {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
+/* 主役。頭頂がHERO上部、腰から下はHERO下端で切れる */
+.mt-v2 .mt-hero-man {
+  left: 54%; bottom: 0; z-index: 4;
+  width: auto; height: 96%;
+  transform: translateX(-50%);
+  /* 輪郭が背景から分かる最小限だけ。強い影は使わない */
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
 }
-.mt-v2 .mt-trailer-frame__glyph img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mt-v2 .mt-trailer-frame__cap {
-  margin: 0;
-  padding: 11px 14px;
-  font-size: 13px; font-weight: 700; line-height: 1.6;
-  color: var(--mt-ink);
+.mt-v2 .mt-hero-man img { width: auto; height: 100%; }
+/* ジャケット上の白い筆文字。狭い画面では潰れるので 1100px 未満で非表示 */
+/* 装飾コピー。顔（x比 ~50–62%）とネクタイ（~37–44%）を避け、
+   ジャケット右前身頃の暗い面に置く。H1より目立たせないため opacity は 0.82。 */
+.mt-v2 .mt-hero-lettering {
+  /* 実測: この高さでジャケットの暗い面は figure 内 x≈600–900px。
+     2026-09-10: 左端の「想」が白シャツ(〜x690)に掛かっていたため、
+     右へ+24px / 下へ+26px（1440pxで figure 1290 / HERO 828 換算）ずらし、
+     さらに7%縮小してジャケットの濃紺に収めた。装飾なので opacity は 0.82 のまま。 */
+  left: 52.9%; top: 62%; width: 14%; z-index: 5;
+  opacity: 0.82;
+  transform: rotate(-5deg);
 }
 
-@media (max-width: 1100px) {
-  .mt-v2 .mt-hero-inner { padding: 56px 32px 44px; gap: 24px; }
+/* --- 2-3. 右: 漫画コマ4枚（斜めに重なる漫画誌レイアウト） ------- */
+.mt-v2 .mt-hero-panels {
+  /* 参考デザイン: 4枚の独立カードではなく「斜めのコマ割りで連続した1枚の漫画ページ」。
+     --mt-sl = 境界線の斜めの落差 / --mt-gut = コマ間の溝の太さ。
+     各コマを平行四辺形に clip して隣接させると、太さ一定の斜めの溝ができる。 */
+  --mt-sl: clamp(22px, 2.4vw, 38px);
+  --mt-gut: 7px;
+  grid-column: 3; grid-row: 1; z-index: 3;
+  list-style: none; padding: 0;
+  align-self: stretch;
+  /* 天地はHERO端まで裁ち落とし。右の14pxは黒ナビとの間に残す地色 */
+  margin: calc(-1 * var(--mt-hero-pt)) 14px calc(-1 * var(--mt-hero-pb)) 0;
+  display: flex; flex-direction: column;
 }
-@media (max-width: 820px) {
-  /* SP/タブレット: コピーの下に予告編ストリップを配置（縦積み） */
-  .mt-v2 .mt-hero-inner {
-    grid-template-columns: 1fr;
-    padding: 36px 20px 40px;
-    min-height: 0;
-    gap: 32px;
+
+.mt-v2 .mt-hero-panel {
+  position: relative;
+  flex: 1 1 0; min-height: 0;
+}
+.mt-v2 .mt-hero-panel + .mt-hero-panel {
+  /* 斜めぶんだけ重ねてから溝の太さだけ戻す＝溝が --mt-gut に揃う */
+  margin-top: calc(var(--mt-gut) - var(--mt-sl));
+}
+
+.mt-v2 .mt-hero-panel__art {
+  position: absolute; inset: 0;
+  display: block; overflow: hidden;
+  background: var(--mt-cream);
+  clip-path: polygon(0 var(--mt-sl), 100% 0, 100% calc(100% - var(--mt-sl)), 0 100%);
+}
+/* 先頭と最後はHERO天地で断ち切るので、その側だけ水平に */
+.mt-v2 .mt-hero-panel--1 .mt-hero-panel__art {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--mt-sl)), 0 100%);
+}
+.mt-v2 .mt-hero-panel--4 .mt-hero-panel__art {
+  clip-path: polygon(0 var(--mt-sl), 100% 0, 100% 100%, 0 100%);
+}
+
+.mt-v2 .mt-hero-panel__art img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transform: scale(var(--z, 1));
+  transition: transform 0.4s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+/* コマの縦横比が可変になったので、寄り(--z)と object-position で主役を決める。
+   01 女性の表情+桜 / 02 作業員の顔+設備 / 03 女性とPC（左右端の人物を寄りで落とす）
+   / 04 経営者の表情+都市 */
+.mt-v2 .mt-hero-panel--1 { --z: 1.04; }
+.mt-v2 .mt-hero-panel--1 .mt-hero-panel__art img { object-position: 57% 26%; }
+.mt-v2 .mt-hero-panel--2 { --z: 1; }
+.mt-v2 .mt-hero-panel--2 .mt-hero-panel__art img { object-position: 45% 34%; }
+.mt-v2 .mt-hero-panel--3 { --z: 1.26; }
+.mt-v2 .mt-hero-panel--3 .mt-hero-panel__art img { object-position: 50% 34%; }
+.mt-v2 .mt-hero-panel--4 { --z: 1.06; }
+.mt-v2 .mt-hero-panel--4 .mt-hero-panel__art img { object-position: 41% 24%; }
+
+.mt-v2 .mt-hero-panel:hover .mt-hero-panel__art img { transform: scale(calc(var(--z, 1) * 1.04)); }
+
+/* コピーカードは clip の外（.mt-hero-panel 直下）に置くので、
+   参考デザインどおりコマの左端からはみ出させられる。02/03 を左に張り出す。 */
+.mt-v2 .mt-hero-panel__cap {
+  position: absolute; z-index: 2;
+  width: max-content; max-width: 88%;
+  margin: 0; padding: 8px 12px;
+  background: #fff;
+  border: 2px solid #111;
+  font-size: clamp(11px, 0.82vw, 13px);
+  font-weight: 800; line-height: 1.55; letter-spacing: 0.005em;
+  color: var(--lpv2-ink);
+}
+/* 01 は女性の顔がコマ上半分に来るので、キャプションは肩の高さまで下げる */
+.mt-v2 .mt-hero-panel--1 .mt-hero-panel__cap { right: 12px; top: 56%; }
+.mt-v2 .mt-hero-panel--2 .mt-hero-panel__cap { left: -32px; top: 42%; }
+.mt-v2 .mt-hero-panel--3 .mt-hero-panel__cap { left: -26px; top: 46%; }
+.mt-v2 .mt-hero-panel--4 .mt-hero-panel__cap { right: 14px; top: 34%; }
+
+/* --- 2-4. 最右: 黒の7ジャンル索引 -------------------------------- */
+.mt-v2 .mt-hero-genres {
+  position: absolute; z-index: 5;
+  top: 0; right: 0; bottom: 0;
+  width: var(--mt-hero-nav);
+  background: #151515;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex; flex-direction: column; justify-content: center;
+  /* 下部の英字ブロック（.mt-hero-genres__foot）の分だけ一覧の中心を上へずらす。
+     入れないと 07 PROFILE と重なる。 */
+  padding-bottom: 104px;
+}
+.mt-v2 .mt-hero-genres__label {
+  position: absolute; top: clamp(18px, 3vh, 34px); left: 0; right: 0;
+  margin: 0; text-align: center;
+  font-family: var(--lpv2-font-mono);
+  font-size: 10px; font-weight: 900;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--mt-accent);
+}
+.mt-v2 .mt-hero-genres__label span {
+  display: block; margin-top: 5px;
+  letter-spacing: 0.22em; color: rgba(255, 255, 255, 0.5);
+}
+.mt-v2 .mt-hero-genres__list { list-style: none; margin: 0; padding: 0; }
+
+.mt-v2 .mt-hero-genre {
+  position: relative; display: block;
+  padding: clamp(9px, 1.28vh, 16px) 10px clamp(9px, 1.28vh, 16px) 17px;
+  text-decoration: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.25s ease;
+}
+.mt-v2 .mt-hero-genres__list > li:first-child .mt-hero-genre { border-top: 0; }
+/* active/hover の左のオレンジ縦ライン */
+.mt-v2 .mt-hero-genre::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--mt-accent);
+  transform: scaleY(0);
+  transition: transform 0.3s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+.mt-v2 .mt-hero-genre__num,
+.mt-v2 .mt-hero-genre__en {
+  display: block; font-family: var(--lpv2-font-mono); font-weight: 900;
+}
+.mt-v2 .mt-hero-genre__num {
+  font-size: 10px; letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.25s ease;
+}
+.mt-v2 .mt-hero-genre__en {
+  margin-top: 3px;
+  font-size: clamp(11px, 0.85vw, 12.5px);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.74);
+  transition: color 0.25s ease;
+}
+.mt-v2 .mt-hero-genre__ja {
+  display: block; margin-top: 3px;
+  font-size: 10.5px; line-height: 1.45; letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.25s ease;
+}
+.mt-v2 .mt-hero-genre:hover { background: rgba(255, 255, 255, 0.045); }
+.mt-v2 .mt-hero-genre:hover::before,
+.mt-v2 .mt-hero-genre.is-active::before { transform: scaleY(1); }
+.mt-v2 .mt-hero-genre.is-active { background: rgba(255, 255, 255, 0.075); }
+.mt-v2 .mt-hero-genre.is-active .mt-hero-genre__num { color: var(--mt-accent); }
+.mt-v2 .mt-hero-genre.is-active .mt-hero-genre__en { color: #fff; }
+.mt-v2 .mt-hero-genre.is-active .mt-hero-genre__ja { color: rgba(255, 255, 255, 0.85); }
+.mt-v2 .mt-hero-genre:focus-visible {
+  outline: 3px solid var(--lpv2-yellow); outline-offset: -3px;
+}
+/* 参考デザインのナビ下部の英字。固定CTAバーの上に収まる位置に置く */
+.mt-v2 .mt-hero-genres__foot {
+  position: absolute; left: 0; right: 0;
+  bottom: calc(var(--mt-hero-pb) - 6px);
+  margin: 0; padding: 0 15px;
+  font-family: var(--lpv2-font-mono);
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.18em; line-height: 1.95; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.mt-v2 .mt-hero-genres__foot span { display: block; }
+
+/* --- 2-5. 登場アニメーション（JS非依存 / reduced-motion で無効） --- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes mt-hero-rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: none; }
   }
-  .mt-v2 .mt-hero-frame { inset: 8px 2px; }
-  .mt-v2 .mt-hero-text { max-width: 100%; }
-  .mt-v2 .mt-hero-title { font-size: clamp(30px, 8.4vw, 46px); line-height: 1.24; }
-  .mt-v2 .mt-hero-kicker { margin-top: -8px; }
-  .mt-v2 .mt-hero-sub { max-width: 100%; margin-bottom: 28px; }
-  .mt-v2 .mt-hero-trailer { max-width: 420px; }
+  @keyframes mt-hero-rise-man {
+    from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+    to   { opacity: 1; transform: translateX(-50%); }
+  }
+  @keyframes mt-hero-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .mt-v2 .mt-hero-copy > * {
+    animation: mt-hero-rise 0.66s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+  }
+  .mt-v2 .mt-hero-copy > :nth-child(1) { animation-delay: 0.04s; }
+  .mt-v2 .mt-hero-copy > :nth-child(2) { animation-delay: 0.10s; }
+  .mt-v2 .mt-hero-copy > :nth-child(3) { animation-delay: 0.16s; }
+  .mt-v2 .mt-hero-copy > :nth-child(4) { animation-delay: 0.22s; }
+  .mt-v2 .mt-hero-copy > :nth-child(5) { animation-delay: 0.28s; }
+  .mt-v2 .mt-hero-copy > :nth-child(6) { animation-delay: 0.34s; }
+  .mt-v2 .mt-hero-copy > :nth-child(7) { animation-delay: 0.40s; }
+
+  .mt-v2 .mt-hero-city { animation: mt-hero-fade 0.9s ease both 0.30s; }
+  .mt-v2 .mt-hero-brush { animation: mt-hero-fade 0.8s ease both 0.24s; }
+  .mt-v2 .mt-hero-man { animation: mt-hero-rise-man 0.86s cubic-bezier(0.22, 0.68, 0.24, 1) both 0.14s; }
+  .mt-v2 .mt-hero-lettering { animation: mt-hero-fade 0.7s ease both 0.62s; }
+
+  /* コマは上から順に（stagger）。コマ割りのタイリングを崩さないよう
+     移動は横方向だけにして、縦位置は動かさない。 */
+  @keyframes mt-hero-panel-in {
+    from { opacity: 0; transform: translateX(26px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .mt-v2 .mt-hero-panel {
+    animation: mt-hero-panel-in 0.7s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+  }
+  .mt-v2 .mt-hero-panel--1 { animation-delay: 0.34s; }
+  .mt-v2 .mt-hero-panel--2 { animation-delay: 0.44s; }
+  .mt-v2 .mt-hero-panel--3 { animation-delay: 0.54s; }
+  .mt-v2 .mt-hero-panel--4 { animation-delay: 0.64s; }
+
+  .mt-v2 .mt-hero-genres { animation: mt-hero-fade 0.7s ease both 0.5s; }
 }
-@media (max-width: 420px) {
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-hero-genre,
+  .mt-v2 .mt-hero-genre::before,
+  .mt-v2 .mt-hero-cta__arrow { transition: none; }
+  .mt-v2 .mt-hero-panel__art img,
+  .mt-v2 .mt-hero-panel:hover .mt-hero-panel__art img { transition: none; transform: scale(var(--z, 1)); }
+}
+
+/* --- 2-6. Tablet（〜1100px）: ナビを細く、コマを縮小、人物は維持 --- */
+@media (max-width: 1240px) {
+  /* 筆文字は人物が小さくなると白シャツに重なって判読できないので隠す。
+     セレクタは `.mt-hero-figure >` 込みにすること。`.mt-v2 .mt-hero-figure > picture`
+     の display:block が (0,2,1) で、`.mt-v2 .mt-hero-lettering` (0,2,0) に勝ってしまう。 */
+  .mt-v2 .mt-hero-figure > .mt-hero-lettering { display: none; }
+}
+@media (max-width: 1100px) {
+  .mt-v2 .mt-hero { --mt-hero-nav: clamp(108px, 12vw, 140px); }
+  /* コマ幅が狭くなるぶん、斜めの落差と左への張り出しを控えめにする */
+  .mt-v2 .mt-hero-panels { --mt-sl: 20px; --mt-gut: 6px; margin-right: 10px; }
+  .mt-v2 .mt-hero-panel__cap { font-size: 9.5px; padding: 5px 8px; max-width: 96%; }
+  .mt-v2 .mt-hero-panel--2 .mt-hero-panel__cap { left: -18px; }
+  .mt-v2 .mt-hero-panel--3 .mt-hero-panel__cap { left: -14px; }
+  .mt-v2 .mt-hero-stage {
+    grid-template-columns: minmax(0, 46fr) minmax(0, 24fr) minmax(0, 24fr);
+    min-height: clamp(660px, calc(100svh - 72px), 900px);
+  }
+  /* 5.7vw: 1024pxで約58px。「こんなに強い。」7文字(約6.72em)がコピー列
+     （=(100vw - nav - padding) x 46/94）に収まる上限。これ以上大きいと
+     word-break:keep-all が破れて「。」が孤立行になる。 */
+  .mt-v2 .mt-hero-title { font-size: clamp(36px, 5.7vw, 68px); max-width: min(52vw, 560px); }
+  /* 56% だとネクタイ(明るいオレンジ)が USP 3項目目「シナリオ/制作無料」の
+     真下に来て、黒文字とのコントラストが 3.60:1 まで落ちる。
+     スクリムを広げて人物を白く飛ばすのではなく、人物を右へ寄せて逃がす。 */
+  .mt-v2 .mt-hero-man { height: 92%; left: 60%; }
+  .mt-v2 .mt-hero-usp { gap: 10px 16px; }
+  .mt-v2 .mt-hero-genre { padding-left: 13px; }
+  .mt-v2 .mt-hero-genre__ja { font-size: 10px; }
+}
+
+/* ナビ幅が clamp の下限側に寄る 1360px 未満では、下部英字が4行→5行に折り返して
+   「07 PROFILE」と重なる（1180px / 1024px で実測）。この帯域では出さない。
+   縦積みレイアウトでは横並びで入るので、下のブロックで表示に戻す。 */
+@media (max-width: 1359px) {
+  .mt-v2 .mt-hero-genres__foot { display: none; }
+  .mt-v2 .mt-hero-genres { padding-bottom: 0; }
+}
+
+/* --- 2-7. Mobile + 縦長タブレット: 縦積み。ジャンル索引は横スクロールへ ---
+ * 横4層は「横幅に対して十分な余白がある」ことが前提。iPad縦(820x1180)や
+ * 768x1024 では HERO高が 900px まで伸びる一方で横は狭いため、高さ基準で置く
+ * 人物の横幅が 600px を超えてコピー列を丸ごと覆い（USP「制作無料」が
+ * ネクタイの上に乗って 2.05:1）、さらに頭頂が HERO 上端で切れる。
+ * この帯域は 4層を無理に維持せず、既存の縦積みレイアウトに寄せる。 */
+@media (max-width: 767px), (max-width: 1100px) and (orientation: portrait) {
+  .mt-v2 .mt-hero { --mt-hero-pl: 20px; }
+  .mt-v2 .mt-hero-stage {
+    display: flex; flex-direction: column;
+    /* desktopグリッドの align-items:center を必ず打ち消す。stretch にしないと
+       中身が絶対配置だけの .mt-hero-figure が幅0になり、横スクロールする
+       .mt-hero-genres がコンテンツ幅(936px)のまま左右にはみ出す。 */
+    align-items: stretch;
+    max-width: none; min-height: 0;
+    padding: 26px 20px 0;
+  }
+  /* コピー → 人物 → コマ → ジャンル索引 の順（指定の並び順） */
+  .mt-v2 .mt-hero-copy { order: 1; max-width: none; }
+  .mt-v2 .mt-hero-copy::before { display: none; }
+  .mt-v2 .mt-hero-figure { order: 2; }
+  .mt-v2 .mt-hero-panels { order: 3; }
+  .mt-v2 .mt-hero-genres { order: 4; }
+
+  .mt-v2 .mt-hero-title {
+    font-size: clamp(38px, 13.4vw, 62px);
+    max-width: none;
+    line-height: 1.06;
+  }
+  .mt-v2 .mt-hero-lead { font-size: 14.5px; line-height: 1.9; }
+  .mt-v2 .mt-hero-usp { gap: 12px 20px; }
   .mt-v2 .mt-hero-cta { flex-direction: column; align-items: stretch; }
   .mt-v2 .mt-hero-cta .mt-btn { width: 100%; }
+
+  /* 人物はスマホでもしっかり大きく。街並み・ブラシもこの箱の中で完結させる */
+  .mt-v2 .mt-hero-figure {
+    grid-column: auto; align-self: auto;
+    margin: 20px -20px 0;
+    height: min(52vh, 400px);
+  }
+  .mt-v2 .mt-hero-city { left: -4%; bottom: -1%; width: 104%; opacity: 0.14; }
+  .mt-v2 .mt-hero-brush { left: 14%; top: -6%; width: 92%; }
+  .mt-v2 .mt-hero-man { left: 50%; height: 94%; }  /* 100%だと頭頂が切れる */
+
+  /* コマは2列グリッド（横スクロールを増やさない） */
+  .mt-v2 .mt-hero-panels {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    /* 横4層用の裁ち落としマージンは縦積みでは不要 */
+    margin: 26px 0 0;
+    align-self: auto;
+  }
+  /* 2列グリッドでは斜めコマ割りを使わない。PC用の clip / 絶対配置 / 裁ち落とし /
+     寄りを全て打ち消し、独立したコマに戻す（PCの絶対値を持ち込まない）。 */
+  .mt-v2 .mt-hero-panel--1,
+  .mt-v2 .mt-hero-panel--2,
+  .mt-v2 .mt-hero-panel--3,
+  .mt-v2 .mt-hero-panel--4 {
+    --z: 1;
+    flex: none; margin: 0;
+    border: 3px solid #111; background: #fff;
+  }
+  .mt-v2 .mt-hero-panel__art {
+    position: relative; inset: auto;
+    aspect-ratio: 4 / 3;
+    clip-path: none;
+  }
+  .mt-v2 .mt-hero-panel--1 .mt-hero-panel__art,
+  .mt-v2 .mt-hero-panel--4 .mt-hero-panel__art { clip-path: none; }
+  /* 斜めコマ割り用の詰め代。隣接セレクタ (0,3,0) は
+     .mt-v2 .mt-hero-panel--2 (0,2,0) に勝つので、同じ形で明示的に打ち消す
+     （残すとグリッドで2枚目だけ14px高くなり、キャプションがコマの外へ出る）。 */
+  .mt-v2 .mt-hero-panel + .mt-hero-panel { margin-top: 0; }
+  /* 黒ナビ下部の逃げも横4層専用。縦積みでは余白が空くだけなので戻す */
+  .mt-v2 .mt-hero-genres { padding-bottom: 0; }
+  .mt-v2 .mt-hero-genres__foot { display: block; }
+  .mt-v2 .mt-hero-panel__cap {
+    top: auto; right: auto;
+    left: 6px; bottom: 6px;
+    max-width: calc(100% - 12px);
+  }
+  .mt-v2 .mt-hero-panel--1 .mt-hero-panel__cap,
+  .mt-v2 .mt-hero-panel--2 .mt-hero-panel__cap,
+  .mt-v2 .mt-hero-panel--3 .mt-hero-panel__cap,
+  .mt-v2 .mt-hero-panel--4 .mt-hero-panel__cap { top: auto; bottom: 6px; left: 6px; right: auto; }
+  .mt-v2 .mt-hero-genres__foot { position: static; padding: 0 20px 16px; }
+  /* 横位置が変わるのでトリミングの狙いも2列用に振り直す */
+  .mt-v2 .mt-hero-panel--1 .mt-hero-panel__art img { object-position: 56% 28%; }
+  .mt-v2 .mt-hero-panel--2 .mt-hero-panel__art img { object-position: 46% 30%; }
+  .mt-v2 .mt-hero-panel--3 .mt-hero-panel__art img { object-position: 46% 34%; }
+  .mt-v2 .mt-hero-panel--4 .mt-hero-panel__art img { object-position: 40% 26%; }
+  .mt-v2 .mt-hero-panel__cap { padding: 5px 8px; font-size: 10.5px; }
+
+  /* ジャンル索引は横スクロールのチャプターナビへ */
+  .mt-v2 .mt-hero-genres {
+    position: static; width: auto;
+    margin: 26px -20px 0;
+    border-left: 0; border-top: 3px solid var(--lpv2-ink);
+    display: block;
+  }
+  .mt-v2 .mt-hero-genres__label {
+    position: static; text-align: left;
+    padding: 14px 20px 2px;
+  }
+  .mt-v2 .mt-hero-genres__label span { display: inline; margin: 0 0 0 10px; }
+  .mt-v2 .mt-hero-genres__list {
+    display: flex; padding: 10px 20px 14px;
+    overflow-x: auto; scroll-snap-type: x proximity;
+    /* これがないと snap が padding-left を無視し、先頭の「01」が画面端に貼り付く */
+    scroll-padding-left: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .mt-v2 .mt-hero-genres__list > li { flex: 0 0 auto; scroll-snap-align: start; }
+  .mt-v2 .mt-hero-genre {
+    min-width: 128px; padding: 12px 14px 12px 15px;
+    border-top: 0; border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .mt-v2 .mt-hero-genres__list > li:first-child .mt-hero-genre { border-left: 0; padding-left: 3px; }
+  .mt-v2 .mt-hero-genre::before {
+    left: 0; right: 0; top: auto; bottom: -10px;
+    width: auto; height: 3px;
+    transform: scaleX(0);
+  }
+  .mt-v2 .mt-hero-genre:hover::before,
+  .mt-v2 .mt-hero-genre.is-active::before { transform: scaleX(1); }
+  .mt-v2 .mt-hero-genre.is-active { background: transparent; }
+}
+/* 縦積みでも画面が広い縦長タブレットでは、人物とコマをもう一回り大きく見せる */
+@media (min-width: 600px) and (max-width: 1100px) and (orientation: portrait) {
+  .mt-v2 .mt-hero-stage { padding: 40px clamp(24px, 5vw, 56px) 0; }
+  .mt-v2 .mt-hero-figure {
+    height: min(46vh, 560px);
+    margin-left: calc(-1 * clamp(24px, 5vw, 56px));
+    margin-right: calc(-1 * clamp(24px, 5vw, 56px));
+  }
+  .mt-v2 .mt-hero-city { width: 84%; left: 4%; }
+  .mt-v2 .mt-hero-brush { left: 26%; top: -4%; width: 66%; }
+  .mt-v2 .mt-hero-panels { gap: 20px; }
+  .mt-v2 .mt-hero-panel__cap { font-size: 12px; padding: 7px 11px; }
+  .mt-v2 .mt-hero-genres,
+  .mt-v2 .mt-hero-genres__label,
+  .mt-v2 .mt-hero-genres__list {
+    margin-inline: 0;
+  }
+  .mt-v2 .mt-hero-genres { margin-inline: calc(-1 * clamp(24px, 5vw, 56px)); }
+  .mt-v2 .mt-hero-genres__label { padding-inline: clamp(24px, 5vw, 56px); }
+  .mt-v2 .mt-hero-genres__list {
+    padding-inline: clamp(24px, 5vw, 56px);
+    scroll-padding-left: clamp(24px, 5vw, 56px);
+  }
+}
+
+@media (max-width: 359px) {
+  /* 360px未満では2列だとコマが小さくなりすぎるので1列に */
+  .mt-v2 .mt-hero-panels { grid-template-columns: 1fr; }
+  .mt-v2 .mt-hero-figure { height: min(46vh, 330px); }
 }
 
 /* ------------------------------------------------------------------
@@ -364,86 +823,293 @@
 }
 
 /* ------------------------------------------------------------------
- * 3. CHAPTERS 01–07 — 左:章一覧 / 右:選択中の詳細
+ * 3. CHAPTERS 01–07 — 見出し + 7枚の縦カード一覧
+ *    2026-09-10 リデザイン: 「左に章の行一覧 / 右に詳細」の2カラムをやめ、
+ *    上に7枚の縦カードを横一列で並べる一覧型にした（一覧から直感的に選ぶ）。
+ *    カードは button[data-mt-select] のままなので、bm-manga-types.js の
+ *    章セレクタ・ヒーロー右端のジャンル索引との同期・#mt-* の直リンクは無変更。
+ *    選択した章の詳細（.mt-chapter-detail）はカードの下にそのまま残す。
  * ------------------------------------------------------------------ */
-.mt-v2 .mt-chapters { background: var(--mt-paper); }
-.mt-v2 .mt-chapters-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 44px; align-items: start;
+.mt-v2 .mt-chapters {
+  position: relative;
+  isolation: isolate;
+  /* HEROと同じ淡いクリーム + 網点でそのままつながるようにする */
+  background-color: var(--mt-cream);
+  background-image:
+    radial-gradient(circle at center, rgba(42, 37, 32, 0.05) 1px, transparent 1.4px),
+    linear-gradient(180deg, #fffdf8 0%, var(--mt-cream) 42%, #fcefdb 100%);
+  background-size: 15px 15px, 100% 100%;
+  overflow: hidden;                       /* 背景装飾はこのセクション内でクリップ */
 }
 
-/* --- 左: 映画のチャプター一覧のような横長の行 --- */
-.mt-v2 .mt-chapter-list {
-  list-style: none; margin: 0; padding: 0;
-  border-top: 2px solid var(--mt-ink);
+/* --- 背景装飾: 下端の都市スカイライン + 左下のオレンジブラシ --- */
+.mt-v2 .mt-sel-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.mt-v2 .mt-sel-bg picture { position: absolute; display: block; }
+.mt-v2 .mt-sel-bg img { display: block; width: 100%; height: auto; }
+.mt-v2 .mt-sel-bg__city { left: -1%; right: -1%; bottom: -1%; width: 102%; opacity: 0.12; }
+.mt-v2 .mt-sel-bg__brush {
+  left: -7%; bottom: 3%; width: 30%;
+  opacity: 0.42; transform: rotate(-7deg);
 }
-.mt-v2 .mt-chapter-list > li { border-bottom: 1px solid var(--mt-line); }
 
-.mt-v2 .mt-chapter-row {
-  display: grid;
-  grid-template-columns: 50px minmax(0, 1fr) 26px;
-  align-items: center; gap: 14px;
-  width: 100%;
-  padding: 17px 16px;
-  background: transparent; border: 0;
-  font-family: inherit; color: var(--mt-ink);
-  text-align: left; cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+/* このセクションだけ内側の幅を広げる（7列を無理なく並べるため） */
+.mt-v2 .mt-sel-container { position: relative; z-index: 1; max-width: 1440px; }
+@media (min-width: 1241px) {
+  .mt-v2 .mt-sel-container { padding-inline: 24px; }
 }
-.mt-v2 .mt-chapter-row__num {
+
+/* ------------------------------------------------------------------
+ * 3-1. 見出しエリア（左=英字 / 中央=大見出し / 右=英字+手描き矢印）
+ * ------------------------------------------------------------------ */
+.mt-v2 .mt-sel-head {
+  display: grid;
+  grid-template-columns: clamp(92px, 9.5vw, 140px) minmax(0, 1fr) clamp(118px, 12.5vw, 190px);
+  gap: clamp(14px, 2.2vw, 44px);
+  align-items: start;
+  margin: 0 0 clamp(38px, 5.2vh, 68px);
+}
+
+.mt-v2 .mt-sel-head__eyebrow {
+  margin: clamp(6px, 1vh, 14px) 0 0;
   font-family: var(--lpv2-font-mono);
-  font-size: 15px; font-weight: 900; letter-spacing: 0.1em;
+  font-size: clamp(10px, 0.8vw, 12px);
+  font-weight: 900; line-height: 1.75;
+  letter-spacing: 0.36em; text-transform: uppercase;
   color: var(--mt-accent-deep);
-  transition: color 0.2s ease;
 }
-.mt-v2 .mt-chapter-row__body { min-width: 0; }
-.mt-v2 .mt-chapter-row__name {
-  display: block;
-  font-family: var(--lpv2-font-display);
-  font-size: 17px; font-weight: 900; line-height: 1.5;
-}
-.mt-v2 .mt-chapter-row__desc {
-  display: block;
-  font-size: 12.5px; line-height: 1.6;
-  color: var(--mt-mute);
-  margin-top: 3px;
-  transition: color 0.2s ease;
-}
-.mt-v2 .mt-chapter-row__arrow {
-  justify-self: end;
-  font-size: 16px; line-height: 1;
-  color: var(--mt-mute);
-  transition: color 0.2s ease, transform 0.2s ease;
+.mt-v2 .mt-sel-head__eyebrow span { display: block; }
+.mt-v2 .mt-sel-head__eyebrow::before {
+  content: ""; display: block;
+  width: 40px; height: 3px; margin-bottom: 12px;
+  background: var(--mt-accent);
 }
 
-/* 面色は --mt-accent-deep。#e85500 に白文字だと 3.66:1 で WCAG AA 未達のため、
-   最終CTAと同じ既存トークンで 5.50:1 を確保する（見た目は一段濃いオレンジ）。 */
-.mt-v2 .mt-chapter-row:hover,
-.mt-v2 .mt-chapter-row.is-active { background: var(--mt-accent-deep); color: #fff; }
-.mt-v2 .mt-chapter-row:hover .mt-chapter-row__num,
-.mt-v2 .mt-chapter-row.is-active .mt-chapter-row__num,
-.mt-v2 .mt-chapter-row:hover .mt-chapter-row__arrow,
-.mt-v2 .mt-chapter-row.is-active .mt-chapter-row__arrow { color: #fff; }
-.mt-v2 .mt-chapter-row:hover .mt-chapter-row__desc,
-.mt-v2 .mt-chapter-row.is-active .mt-chapter-row__desc { color: rgba(255, 255, 255, 0.86); }
-.mt-v2 .mt-chapter-row:hover .mt-chapter-row__arrow,
-.mt-v2 .mt-chapter-row.is-active .mt-chapter-row__arrow { transform: translateX(3px); }
-.mt-v2 .mt-chapter-row:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: -3px; }
+.mt-v2 .mt-sel-head__main { text-align: center; }
+.mt-v2 .mt-sel-head__title {
+  font-family: var(--lpv2-font-sans);      /* HEROのH1と同じ太ゴシック */
+  font-weight: 900;
+  font-size: clamp(38px, 6vw, 110px);
+  line-height: 1.0; letter-spacing: -0.045em;
+  color: var(--lpv2-ink);
+  margin: 0;
+  word-break: keep-all; overflow-wrap: break-word;
+}
+.mt-v2 .mt-sel-head__sub {
+  display: inline-flex; align-items: center; gap: 12px;
+  margin: clamp(14px, 2vh, 24px) 0 0;
+  font-size: clamp(14px, 1.35vw, 20px);
+  font-weight: 900; letter-spacing: 0.01em;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-sel-head__sub::before {
+  content: ""; flex: none; width: 4px; height: 1.05em;
+  background: var(--mt-accent);
+}
+.mt-v2 .mt-sel-head__lead {
+  margin: clamp(12px, 1.8vh, 20px) auto 0;
+  max-width: 46em;
+  font-size: clamp(13px, 1.02vw, 15px);
+  line-height: 1.95;
+  color: var(--mt-mute);
+}
 
-/* --- 右: 選択中の章の詳細 --- */
-.mt-v2 .mt-chapter-detail { position: relative; }
-@media (min-width: 961px) {
-  .mt-v2 .mt-chapter-detail { position: sticky; top: 96px; }
+.mt-v2 .mt-sel-head__aside { justify-self: end; text-align: right; }
+.mt-v2 .mt-sel-head__find {
+  margin: clamp(6px, 1vh, 14px) 0 0;
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(10px, 0.8vw, 12px);
+  font-weight: 900; line-height: 1.75;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--mt-mute);
+}
+.mt-v2 .mt-sel-head__find span { display: block; }
+.mt-v2 .mt-sel-head__find::before {
+  content: ""; display: block; margin: 0 0 12px auto;
+  width: 30px; height: 1px; background: var(--mt-line-strong);
+}
+/* 「気になる章からお選びください」+ 手描きの黒矢印 */
+.mt-v2 .mt-sel-head__note {
+  position: relative;
+  margin: clamp(20px, 3vh, 34px) 0 0;
+}
+.mt-v2 .mt-sel-head__note-text {
+  display: block;
+  font-size: clamp(11.5px, 0.95vw, 13.5px);
+  font-weight: 800; line-height: 1.75; letter-spacing: 0.02em;
+  color: var(--lpv2-ink);
+  transform: rotate(-4deg); transform-origin: 100% 50%;
+}
+.mt-v2 .mt-sel-head__arrow {
+  display: block; width: clamp(74px, 8vw, 118px);
+  margin: 6px 6px 0 auto;
+  transform: rotate(6deg);
+}
+.mt-v2 .mt-sel-head__arrow img { display: block; width: 100%; height: auto; }
+
+/* ------------------------------------------------------------------
+ * 3-2. 7枚の縦カード一覧
+ * ------------------------------------------------------------------ */
+.mt-v2 .mt-chapters-layout { display: block; }   /* 旧2カラムグリッドを解除 */
+
+.mt-v2 .mt-chapter-cards {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* 7列で「共感と信頼を生み出します。」13文字が1行に収まる幅を確保するため、
+     gapと内側余白は詰めめにする（文字サイズを落として押し込まない） */
+  gap: clamp(10px, 1vw, 14px);
+}
+.mt-v2 .mt-chapter-cards > li { display: flex; }
+
+.mt-v2 .mt-chapter-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  width: 100%;
+  padding: 0;
+  font: inherit; text-align: left;
+  color: var(--lpv2-ink);
+  background: #fff;
+  border: 1px solid var(--mt-line-strong);
+  border-radius: 0;                          /* 漫画雑誌感を優先して角丸なし */
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.22, 0.68, 0.24, 1),
+              border-color 0.25s ease, box-shadow 0.25s ease;
+}
+/* 選択中を示す上辺のオレンジバー */
+.mt-v2 .mt-chapter-card::before {
+  content: ""; position: absolute; z-index: 2;
+  left: -1px; right: -1px; top: -1px; height: 4px;
+  background: var(--mt-accent);
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 0.3s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+.mt-v2 .mt-chapter-card.is-active::before,
+.mt-v2 .mt-chapter-card:hover::before { transform: scaleX(1); }
+
+.mt-v2 .mt-chapter-card__art {
+  display: block; position: relative;
+  aspect-ratio: 4 / 5; overflow: hidden;
+  background: var(--mt-cream);
+  border-bottom: 1px solid var(--mt-line);
+}
+.mt-v2 .mt-chapter-card__art img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.45s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+
+.mt-v2 .mt-chapter-card__body {
+  display: flex; flex-direction: column;
+  flex: 1 1 auto;
+  padding: clamp(11px, 1vw, 15px) clamp(8px, 0.72vw, 11px) clamp(10px, 0.9vw, 13px);
+}
+.mt-v2 .mt-chapter-card__num {
+  display: block;
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(15px, 1.25vw, 19px); font-weight: 900;
+  letter-spacing: 0.05em; line-height: 1;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-chapter-card__name {
+  display: block;
+  word-break: normal; overflow-wrap: break-word; line-break: strict;
+  margin: 6px 0 8px;
+  font-size: clamp(12.5px, 1.02vw, 15.5px); font-weight: 900;
+  line-height: 1.4; letter-spacing: 0.005em;
+  color: var(--lpv2-ink);
+}
+.mt-v2 .mt-chapter-card__desc {
+  display: block;
+  font-size: clamp(10.5px, 0.795vw, 11.5px);
+  line-height: 1.75; letter-spacing: 0;
+  color: var(--mt-mute);
+  /* グローバルの overflow-wrap:anywhere / word-break:keep-all が効いていると、
+     文全体が1語扱い→溢れて任意位置で折れ、bm-kinsoku.js が入れた word joiner を
+     無視して末尾の「。」が1文字だけ落ちる。ここで通常の日本語折り返しに戻す。 */
+  word-break: normal; overflow-wrap: break-word; line-break: strict;
+}
+/* 説明文の行数に関わらずカード下端に揃える（margin-top:auto を打ち消さないこと） */
+.mt-v2 .mt-chapter-card__go {
+  display: flex; align-items: center; justify-content: center;
+  flex: none; width: 22px; height: 22px;
+  margin: auto 0 0;
+  color: var(--mt-accent-deep);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.mt-v2 .mt-chapter-card__go svg { display: block; width: 100%; height: 100%; }
+
+/* hover = 一時的な操作反応（浮き上がりだけ。枠色は変えない） */
+.mt-v2 .mt-chapter-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--mt-line-strong);
+  box-shadow: 0 10px 20px -14px rgba(20, 12, 0, 0.35);
+}
+.mt-v2 .mt-chapter-card:hover .mt-chapter-card__art img { transform: scale(1.045); }
+.mt-v2 .mt-chapter-card:hover .mt-chapter-card__go { transform: translateX(3px); }
+.mt-v2 .mt-chapter-card:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 2px; }
+
+/* selected = いま開いている章。枠・地色・番号・丸矢印をまとめてブランドオレンジ側に寄せる */
+.mt-v2 .mt-chapter-card.is-active {
+  border-color: var(--mt-accent);
+  border-width: 2px;
+  background: #fffaf4;                       /* ごく僅かに暖色寄り */
+}
+.mt-v2 .mt-chapter-card.is-active .mt-chapter-card__art img { filter: saturate(1.08); }
+/* 番号はブランドオレンジ #e85500 で強調する。ただし 18px だと白地で 3.53:1 で
+   AA(4.5:1)に届かないため、選択中は 19px 以上＝「大きい文字」(3:1)の基準に載せる。 */
+.mt-v2 .mt-chapter-card.is-active .mt-chapter-card__num {
+  color: var(--mt-accent);
+  font-size: clamp(19px, 1.45vw, 22px);
+}
+.mt-v2 .mt-chapter-card.is-active .mt-chapter-card__name { color: var(--lpv2-ink); }
+.mt-v2 .mt-chapter-card.is-active .mt-chapter-card__go {
+  color: #fff; background: var(--mt-accent-deep); border-radius: 50%;
+  width: 22px; height: 22px;
+}
+.mt-v2 .mt-chapter-card.is-active .mt-chapter-card__go svg circle { stroke: transparent; }
+/* 上端のオレンジラインは is-active のみ（hoverでは出さない） */
+.mt-v2 .mt-chapter-card::before { height: 4px; }
+.mt-v2 .mt-chapter-card:hover::before { transform: scaleX(0); }
+.mt-v2 .mt-chapter-card.is-active::before { transform: scaleX(1); }
+
+/* --- 05. カード → 詳細の接続: 選択中カードの下端に小さなオレンジ三角 ---
+   7列＝1行で並ぶ幅のときだけ出す（複数行のときは隣の行を指してしまうため） */
+@media (min-width: 1241px) {
+  .mt-v2 .mt-chapter-card.is-active::after {
+    content: ""; position: absolute; z-index: 3;
+    left: 50%; bottom: 0; transform: translate(-50%, 100%);
+    border: 9px solid transparent;
+    border-top: 9px solid var(--mt-accent);
+    border-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-chapter-card,
+  .mt-v2 .mt-chapter-card::before,
+  .mt-v2 .mt-chapter-card__art img,
+  .mt-v2 .mt-chapter-card__go { transition: none; }
+  .mt-v2 .mt-chapter-card:hover { transform: none; }
+  .mt-v2 .mt-chapter-card:hover .mt-chapter-card__art img { transform: none; }
+}
+
+/* --- 選択中の章の詳細（カード一覧の下に置く。中身と #mt-* は無変更） --- */
+.mt-v2 .mt-chapter-detail {
+  position: relative;
+  /* 旧2カラム時は右列で position:sticky だったが、カードの下に回ったので解除 */
+  margin: clamp(26px, 4vh, 52px) auto 0;
+  max-width: 980px;
 }
 .mt-v2 .mt-chapter-stage {
   position: relative;
-  background: var(--mt-cream);
+  /* カード一覧との差別化として、詳細は余白を広く取る */
+  padding: clamp(26px, 3.4vw, 48px);
+  background: #fff;
   border: 1px solid var(--mt-line);
-  padding: 30px;
   overflow: hidden;
 }
 .mt-v2 .mt-chapter-panel { position: relative; }
+/* 旧2カラム時は右列(約半幅)だったが、カード一覧の下＝全幅に回ったので、
+   広い画面では「左に挿絵 / 右に本文」の見開き型にして縦の間延びを防ぐ。 */
 /* JS無効時: 7章すべてを縦に並べて残す（区切り線つき） */
 .mt-v2 .mt-chapter-panel + .mt-chapter-panel {
   margin-top: 30px; padding-top: 30px;
@@ -452,28 +1118,77 @@
 /* JS有効時のみ、選択中の1章だけを表示 */
 .mt-v2 .mt-chapters-layout.is-js .mt-chapter-panel { display: none; margin-top: 0; padding-top: 0; border-top: 0; }
 .mt-v2 .mt-chapters-layout.is-js .mt-chapter-panel.is-active { display: block; }
+/* 旧2カラム時は右列(約半幅)だったが、カード一覧の下＝全幅に回ったので、
+   広い画面では「左に挿絵 / 右に本文」の見開き型にして縦の間延びを防ぐ。
+   直上の .is-active{display:block} と同詳細度(0,5,0)なので、必ずこの後ろに置くこと。 */
+@media (min-width: 760px) {
+  .mt-v2 .mt-chapter-panel,
+  .mt-v2 .mt-chapters-layout.is-js .mt-chapter-panel.is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+    gap: 30px; align-items: start;
+  }
+}
+
+/* 章を切り替えたときのフェードイン（控えめ / reduced-motion では無効） */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes mt-chapter-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .mt-v2 .mt-chapters-layout.is-js .mt-chapter-panel.is-active {
+    animation: mt-chapter-in 0.32s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+  }
+}
 
 /* 番号は「薄い背景文字」として、生成りの余白側（見出しの背後）に置く */
-.mt-v2 .mt-chapter-panel__body { position: relative; }
+.mt-v2 .mt-chapter-panel__body { position: relative; min-width: 0; }
+/* 装飾としてのみ機能させる。CHAPTERラベル・本文と競合しないよう
+   z-index:0 で背面に置き、濃度も下げる（テキストはHTMLのまま=切替で01〜07に更新） */
 .mt-v2 .mt-chapter-panel__num {
-  position: absolute; right: -6px; top: -14px;
+  position: absolute; z-index: 0; right: -4px; top: -22px;
   margin: 0; pointer-events: none; user-select: none;
   font-family: var(--lpv2-font-mono);
-  font-size: 92px; font-weight: 900; line-height: 1; letter-spacing: -0.04em;
-  color: rgba(232, 85, 0, 0.14);
+  font-size: clamp(72px, 7vw, 104px); font-weight: 900; line-height: 1; letter-spacing: -0.04em;
+  color: rgba(232, 85, 0, 0.09);
+}
+/* ===== 04. CHAPTER 05 / PRODUCT の章ラベル ===== */
+.mt-v2 .mt-chapter-panel__label {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 12px;
+  font-family: var(--lpv2-font-mono);
+  font-size: 11px; font-weight: 900;
+  letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-chapter-panel__label::before {
+  content: ""; flex: none; width: 26px; height: 2px; background: var(--mt-accent);
 }
 .mt-v2 .mt-chapter-panel__illust {
   display: block;
-  aspect-ratio: 2 / 1;
+  /* カード(4:5)と同じ chapter-* 画像を、詳細では正方形にトリミングして使う。
+     元画像が4:5なので上下が2割ほど切れる → 主役の位置を章ごとに指定する。 */
+  aspect-ratio: 1 / 1;
   background: #fff;
   border: 1px solid var(--mt-line);
   overflow: hidden;
   margin: 0 0 22px;
 }
+@media (min-width: 760px) {
+  .mt-v2 .mt-chapter-panel__illust { margin: 0; }
+}
 .mt-v2 .mt-chapter-panel__illust img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#mt-founding  .mt-chapter-panel__illust img { object-position: 50% 20%; }  /* 人物の表情＋青空 */
+#mt-recruit   .mt-chapter-panel__illust img { object-position: 52% 24%; }  /* 表情＋桜 */
+#mt-casestudy .mt-chapter-panel__illust img { object-position: 48% 26%; }  /* 技術者＋工場 */
+#mt-howto     .mt-chapter-panel__illust img { object-position: 50% 26%; }  /* 人物＋ペン */
+#mt-product   .mt-chapter-panel__illust img { object-position: 48% 34%; }  /* 表情＋タブレット */
+#mt-training  .mt-chapter-panel__illust img { object-position: 50% 30%; }  /* 人物＋ノート */
+#mt-profile   .mt-chapter-panel__illust img { object-position: 46% 24%; }  /* 経営者＋都市背景 */
 
 .mt-v2 .mt-chapter-panel__title {
-  position: relative;
+  position: relative; z-index: 1;
   font-family: var(--lpv2-font-display);
   font-weight: 900;
   font-size: clamp(21px, 2.2vw, 28px);
@@ -525,503 +1240,963 @@
 .mt-v2 .mt-chapter-panel__link::after { content: "\2192"; }
 .mt-v2 .mt-chapter-panel__link:hover { gap: 12px; }
 
-@media (max-width: 960px) {
-  .mt-v2 .mt-chapters-layout { grid-template-columns: 1fr; gap: 26px; }
+/* --- 3-3. レスポンシブ: 7列 → 4 → 3 → 2 → 1。横スクロールにはしない --- */
+@media (max-width: 1240px) {
+  .mt-v2 .mt-chapter-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  /* 見出しは3段組をやめて中央1本に。左右の英字は下に回して横並びにする */
+  .mt-v2 .mt-sel-head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .mt-v2 .mt-sel-head__eyebrow { margin-top: 0; }
+  .mt-v2 .mt-sel-head__eyebrow span { display: inline; }
+  .mt-v2 .mt-sel-head__eyebrow span + span::before { content: " "; }
+  .mt-v2 .mt-sel-head__aside {
+    justify-self: stretch;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    text-align: left;
+  }
+  .mt-v2 .mt-sel-head__find { margin: 0; }
+  .mt-v2 .mt-sel-head__find span { display: inline; }
+  .mt-v2 .mt-sel-head__find span + span::before { content: " "; }
+  .mt-v2 .mt-sel-head__find::before { display: none; }
+  .mt-v2 .mt-sel-head__note { margin: 0; display: flex; align-items: center; gap: 10px; }
+  .mt-v2 .mt-sel-head__note-text { transform: none; }
+  .mt-v2 .mt-sel-head__arrow { margin: 0; width: clamp(54px, 7vw, 78px); transform: rotate(-8deg) scaleX(-1); }
+}
+@media (max-width: 900px) {
+  .mt-v2 .mt-chapter-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .mt-v2 .mt-chapter-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mt-v2 .mt-sel-head { margin-bottom: 28px; }
+  .mt-v2 .mt-sel-head__aside { flex-wrap: wrap; }
 }
 @media (max-width: 560px) {
-  /* SP: 一覧は1カラム、短い説明は省略、番号とタイトルのみ */
-  .mt-v2 .mt-chapter-row { grid-template-columns: 40px minmax(0, 1fr) 22px; padding: 15px 12px; gap: 10px; }
-  .mt-v2 .mt-chapter-row__desc { display: none; }
   .mt-v2 .mt-chapter-stage { padding: 24px 20px; }
-  .mt-v2 .mt-chapter-panel__num { font-size: 64px; top: -18px; right: -2px; }
+  /* 縦積みでは大きな番号がCHAPTERラベルの行に重なるので、番号をタイトル行の高さまで
+     下げて（ラベルの下に潜らせて）透かしとして機能させる。ラベルは1行に固定。 */
+  .mt-v2 .mt-chapter-panel__num { font-size: 54px; top: 24px; right: -2px; }
+  .mt-v2 .mt-chapter-panel__label {
+    font-size: 10px; letter-spacing: 0.2em; gap: 8px;
+    white-space: nowrap;
+  }
+  .mt-v2 .mt-chapter-panel__label::before { width: 20px; }
   .mt-v2 .mt-chapter-panel__meta > div { grid-template-columns: 1fr; gap: 4px; }
+  /* 背景の都市は縮小、ブラシは省略（本文の邪魔をしない） */
+  .mt-v2 .mt-sel-bg__brush { display: none; }
+  .mt-v2 .mt-sel-bg__city { opacity: 0.09; }
+}
+@media (max-width: 339px) {
+  /* 340px未満のみ1列。360/375/390px の端末は2列を維持する
+     （1列にするとセクションが5000px超になり一覧として機能しない） */
+  .mt-v2 .mt-chapter-cards { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ------------------------------------------------------------------
- * 4. 相談セクション（生成り背景 + 白パネル + キャラクター）
- *    2026-08-24 強化: ラベル+見出し+1行+ボタンだけの平坦な帯だったのを、
- *    白い「招待状」パネル + 実績数値 + 3つの相談導線 + 吹き出し付きの
- *    大きなキャラクターに作り替えて、中央の空白をなくす。
+ * 5. HOW TO EXPRESS — 表現カスタマイズ（2026-09-14 新設）
+ *    旧「4つの表現形式」(.mt-formats / .mt-fmt-*) と旧「画風選び」(.mt-styles / .mt-sty-*)
+ *    を統合してページを短くした中間セクション。7つの物語セクションより弱く見せる。
+ *    左=導入+案内キャラ+CTA / 右=STEP01 表現形式 → STEP02 画風。
+ *    カードは button[aria-pressed]。選択切替は bm-manga-types.js の initExpress()。
+ *    幅は「7つの物語を巡る」と同じ .mt-sel-container（max 1440px）を共用。
  * ------------------------------------------------------------------ */
-.mt-v2 .mt-consult {
-  position: relative;
-  background:
-    radial-gradient(90% 120% at 88% 50%, rgba(232, 85, 0, 0.09) 0%, transparent 62%),
-    var(--mt-cream);
-  border-top: 1px solid var(--mt-line);
-  border-bottom: 1px solid var(--mt-line);
-  padding: 96px 0;
-  overflow: hidden;
+.mt-v2 .mt-express {
+  position: relative; isolation: isolate;
+  background-color: var(--mt-cream);
+  background-image:
+    radial-gradient(circle at center, rgba(42, 37, 32, 0.05) 1px, transparent 1.4px),
+    linear-gradient(180deg, #fcefdb 0%, var(--mt-cream) 22%, #fffdf8 100%);
+  background-size: 15px 15px, 100% 100%;
+  /* 2026-09-14: STEP01/02 を一画面に収めるため上を詰め、下の余白もほぼ削除 */
+  padding: clamp(14px, 2.6vh, 36px) 0 clamp(16px, 2.4vh, 28px);
 }
-.mt-v2 .mt-consult-inner {
-  position: relative; z-index: 1;
+
+/* スクリーンリーダー向けの補助テキスト（STEP番号・「用途：」「印象：」） */
+.mt-v2 .mt-exp-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.mt-v2 .mt-exp-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(230px, 25vw, 330px);
-  gap: clamp(24px, 3vw, 48px); align-items: end;
+  grid-template-columns: minmax(0, 28fr) minmax(0, 72fr);
+  gap: clamp(24px, 2.4vw, 44px);
+  align-items: start;
 }
 
-/* --- 白パネル（招待状） --- */
-.mt-v2 .mt-consult-panel {
-  background: #fff;
-  border: 1px solid var(--mt-line);
-  border-top: 4px solid var(--mt-accent);
-  padding: clamp(30px, 3.6vw, 54px);
-  box-shadow: 0 34px 60px -34px rgba(36, 29, 24, 0.3);
-}
-.mt-v2 .mt-consult-panel .mt-head__label { margin-bottom: 20px; }
-
-.mt-v2 .mt-consult-title {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(25px, 3.1vw, 42px);
-  line-height: 1.4; letter-spacing: 0.005em;
-  color: var(--mt-ink);
-  margin: 0 0 20px;
-}
-.mt-v2 .mt-consult-title em {
-  font-style: normal; color: var(--mt-accent);
-  position: relative; display: inline-block; padding: 0 0.06em;
-}
-.mt-v2 .mt-consult-title em::before {
-  content: ""; position: absolute; z-index: -1;
-  left: 0; right: 0; bottom: 0.1em; height: 0.4em;
-  background: var(--mt-accent-wash);
-}
-.mt-v2 .mt-consult-lead {
-  font-size: clamp(14.5px, 1.2vw, 17px); line-height: 2;
-  color: var(--mt-mute);
-  max-width: 620px;
-  margin: 0 0 30px;
-}
-
-/* --- 数値（ページ内・サイト共通の既存表記を並べただけ） --- */
-.mt-v2 .mt-consult-facts {
-  list-style: none; margin: 0 0 32px; padding: 26px 0;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  border-top: 1px solid var(--mt-line);
-  border-bottom: 1px solid var(--mt-line);
-}
-.mt-v2 .mt-consult-facts li {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px;
-}
-.mt-v2 .mt-consult-facts li + li { border-left: 1px solid var(--mt-line); padding-left: 20px; }
-.mt-v2 .mt-consult-facts__num {
+/* ---------------- 左: 導入 ---------------- */
+.mt-v2 .mt-exp-intro__label {
+  display: flex; align-items: center; gap: 14px;
+  margin: 0 0 clamp(12px, 1.8vh, 18px);
   font-family: var(--lpv2-font-mono);
-  font-size: clamp(30px, 3.4vw, 42px); font-weight: 900;
-  line-height: 1; letter-spacing: -0.02em;
+  font-size: clamp(10px, 0.78vw, 12px); font-weight: 900;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-exp-intro__label::before { content: ""; flex: none; width: 46px; height: 3px; background: var(--mt-accent); }
+.mt-v2 .mt-exp-intro__title {
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  /* 左カラム約380px(1440px時)に「どう見せるかでも、」約8.6emが収まる上限 */
+  font-size: clamp(26px, 2.85vw, 42px);
+  line-height: 1.08; letter-spacing: -0.04em;
+  color: var(--lpv2-ink);
+  margin: 0 0 clamp(10px, 1.6vh, 16px);
+  word-break: keep-all; overflow-wrap: break-word;
+}
+.mt-v2 .mt-exp-intro__sub {
+  margin: 0 0 clamp(10px, 1.6vh, 16px);
+  font-family: var(--lpv2-font-sans);
+  font-size: clamp(16px, 1.5vw, 24px); font-weight: 900; letter-spacing: 0.02em;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-exp-intro__lead {
+  margin: 0 0 clamp(8px, 1.4vh, 14px);
+  font-size: clamp(12px, 0.88vw, 14px); line-height: 1.9;
+  color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+
+/* 案内キャラ + 手描き風コピー（テキストは HTML） */
+.mt-v2 .mt-exp-guide {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  margin: 0 0 -6px;
+}
+.mt-v2 .mt-exp-guide__img {
+  display: block; overflow: hidden;
+  aspect-ratio: 1 / 1;           /* 上半身だけ見せて縦に伸ばさない */
+}
+.mt-v2 .mt-exp-guide__img img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+.mt-v2 .mt-exp-guide__note {
+  position: relative;
+  margin: 0 0 12% -4%;
+  padding: 14px 4px 14px 10px;
+  font-family: var(--lpv2-font-sans);
+  font-size: clamp(11.5px, 0.86vw, 13.5px); font-weight: 700; line-height: 1.7; letter-spacing: 0.02em;
+  color: var(--lpv2-ink);
+  transform: rotate(-9deg);
+  transform-origin: 0 50%;
+}
+/* 手描きの短い線（上と下） */
+.mt-v2 .mt-exp-guide__note::before,
+.mt-v2 .mt-exp-guide__note::after {
+  content: ""; position: absolute; height: 1.5px; background: var(--lpv2-ink); border-radius: 2px;
+}
+.mt-v2 .mt-exp-guide__note::before { left: 2px; top: 2px; width: 18px; transform: rotate(-38deg); }
+.mt-v2 .mt-exp-guide__note::after { left: 12px; bottom: 0; width: 22px; transform: rotate(24deg); }
+/* 顔の横の小さな集中線（オレンジ3本） */
+.mt-v2 .mt-exp-guide__spark {
+  position: absolute; left: 31%; top: 24%;
+  width: 16px; height: 3px; border-radius: 2px; background: var(--mt-accent);
+  transform: rotate(-20deg);
+  box-shadow: 2px -9px 0 0 var(--mt-accent), 3px 9px 0 0 var(--mt-accent);
+}
+
+/* CTA: 前後セクションと揃えた白地+オレンジ枠のピル（大きくしすぎない） */
+.mt-v2 .mt-exp-intro__cta { position: relative; z-index: 1; }
+.mt-v2 .mt-exp-intro__cta .mt-btn--primary {
+  width: 100%; max-width: 440px;
+  padding: 14px 20px; font-size: clamp(13.5px, 1vw, 15px);
+  background: #fff; color: var(--mt-accent-deep);
+  border: 2px solid var(--mt-accent); box-shadow: none;
+}
+.mt-v2 .mt-exp-intro__cta .mt-btn--primary:hover {
+  background: var(--mt-accent-deep); color: #fff; border-color: var(--mt-accent-deep); box-shadow: none;
+}
+
+.mt-v2 .mt-exp-points {
+  list-style: none; margin: clamp(14px, 2vh, 20px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 8px;
+}
+.mt-v2 .mt-exp-point { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mt-v2 .mt-exp-point__icon { flex: none; display: block; width: 26px; height: 26px; color: var(--mt-accent-deep); }
+.mt-v2 .mt-exp-point__icon svg { display: block; width: 100%; height: 100%; }
+.mt-v2 .mt-exp-point__text {
+  font-size: clamp(10px, 0.72vw, 11.5px); font-weight: 700; line-height: 1.5; white-space: nowrap;
+  color: var(--lpv2-ink);
+}
+
+/* ---------------- 右: STEP 01 / 02 ---------------- */
+.mt-v2 .mt-exp-steps { display: flex; flex-direction: column; min-width: 0; }
+.mt-v2 .mt-exp-step {
+  padding: clamp(12px, 1vw, 16px) clamp(14px, 1.3vw, 22px) clamp(12px, 1vw, 16px);
+  background: #fffdf8;
+  border: 1px solid rgba(42, 37, 32, 0.10);
+  border-radius: 6px;
+}
+.mt-v2 .mt-exp-step__head {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 6px clamp(14px, 1.4vw, 24px);
+  margin: 0 0 clamp(8px, 0.8vw, 12px);
+}
+.mt-v2 .mt-exp-step__no {
+  margin: 0; padding-right: clamp(14px, 1.4vw, 24px);
+  border-right: 2px solid var(--mt-accent);
+  font-family: var(--lpv2-font-mono); font-weight: 900; line-height: 1;
   color: var(--mt-accent);
 }
-.mt-v2 .mt-consult-facts__unit {
-  font-size: 14px; font-weight: 900; color: var(--mt-accent-deep);
+.mt-v2 .mt-exp-step__no span { display: block; font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--mt-accent-deep); margin-bottom: 3px; }
+.mt-v2 .mt-exp-step__no b { display: block; font-size: clamp(24px, 1.7vw, 27px); letter-spacing: 0.02em; }
+.mt-v2 .mt-exp-step__title {
+  margin: 0;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(18px, 1.75vw, 28px); line-height: 1.2; letter-spacing: -0.01em;
+  color: var(--lpv2-ink); white-space: nowrap;
 }
-.mt-v2 .mt-consult-facts__label {
-  flex: 1 1 100%;
-  font-size: 12.5px; line-height: 1.6; font-weight: 700;
+.mt-v2 .mt-exp-step__desc {
+  flex: 1 1 260px; margin: 0;
+  font-size: clamp(11.5px, 0.84vw, 13.5px); line-height: 1.7;
   color: var(--mt-mute);
-  margin-top: 8px;
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
 }
 
-/* --- 相談導線（フォーム / LINE / 電話） --- */
-.mt-v2 .mt-consult-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
-.mt-v2 .mt-consult-tel {
-  display: flex; flex-direction: column; gap: 2px;
-  text-decoration: none; padding: 4px 0;
+.mt-v2 .mt-exp-cards {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1vw, 16px);
 }
-.mt-v2 .mt-consult-tel__label {
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--mt-mute);
-}
-.mt-v2 .mt-consult-tel__num {
-  font-family: var(--lpv2-font-mono);
-  font-size: 21px; font-weight: 900; letter-spacing: 0.02em;
-  color: var(--mt-ink);
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-.mt-v2 .mt-consult-tel:hover .mt-consult-tel__num { color: var(--mt-accent); border-bottom-color: var(--mt-accent); }
-.mt-v2 .mt-consult-tel:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 3px; }
+.mt-v2 .mt-exp-cards > li { display: flex; min-width: 0; }
 
-/* --- キャラクター（ヒーローとは別カット: character-cta.webp）--- */
-.mt-v2 .mt-consult-figure {
+.mt-v2 .mt-exp-card {
   position: relative;
-  display: flex; flex-direction: column; align-items: flex-end;
-  align-self: end;
-  margin-bottom: -96px;                 /* 下端はセクションで切り取られる */
-}
-.mt-v2 .mt-consult-figure img {
-  width: 100%; height: auto; display: block;
-  filter: drop-shadow(0 18px 30px rgba(36, 29, 24, 0.16));
-}
-/* 吹き出し（相談セクションで使用）。2026-09-03 レビューで復元:
-   ヒーローのキャラ撤去時に基本ルールごと削除され、.mt-bubble--right の尻尾指定だけが
-   残って「まだ決まっていなくて大丈夫！」が無装飾のテキストになっていた（PR #26 指摘）。 */
-.mt-v2 .mt-bubble {
-  position: relative;
-  align-self: flex-start;
-  background: #fff;
-  border: 2px solid var(--mt-accent);
-  border-radius: 20px;
-  padding: 15px 21px;
-  margin: 0 0 22px;
-  font-size: clamp(13.5px, 1.05vw, 15px); font-weight: 700; line-height: 1.8;
-  color: var(--mt-ink);
-  box-shadow: 0 12px 26px -12px rgba(36, 29, 24, 0.42);
-}
-.mt-v2 .mt-bubble::before,
-.mt-v2 .mt-bubble::after { content: ""; position: absolute; left: 30px; }
-.mt-v2 .mt-bubble::before {
-  bottom: -15px; width: 26px; height: 15px;
-  background: var(--mt-accent);
-  clip-path: polygon(0 0, 100% 0, 22% 100%);
-}
-.mt-v2 .mt-bubble::after {
-  bottom: -11px; width: 20px; height: 13px; left: 33px;
-  background: #fff;
-  clip-path: polygon(0 0, 100% 0, 22% 100%);
-}
-/* 吹き出しの尻尾を右向き（キャラが右にいるので左から話しかける形） */
-.mt-v2 .mt-bubble--right {
-  align-self: flex-start;
-  margin: 0 0 18px;
-  max-width: 260px;
-}
-.mt-v2 .mt-bubble--right::before,
-.mt-v2 .mt-bubble--right::after { left: auto; }
-.mt-v2 .mt-bubble--right::before { right: 34px; bottom: -15px; width: 26px; height: 15px; clip-path: polygon(0 0, 100% 0, 78% 100%); }
-.mt-v2 .mt-bubble--right::after { right: 37px; bottom: -11px; width: 20px; height: 13px; clip-path: polygon(0 0, 100% 0, 78% 100%); }
-
-@media (max-width: 1000px) {
-  .mt-v2 .mt-consult-inner { grid-template-columns: minmax(0, 1fr) clamp(200px, 26vw, 280px); }
-  .mt-v2 .mt-consult-facts { grid-template-columns: 1fr; gap: 0; }
-  .mt-v2 .mt-consult-facts li { padding: 12px 0; }
-  .mt-v2 .mt-consult-facts li + li { border-left: 0; border-top: 1px solid var(--mt-line); padding-left: 0; }
-  .mt-v2 .mt-consult-facts__label { flex: 0 1 auto; margin-top: 0; margin-left: 8px; }
-}
-@media (max-width: 820px) {
-  .mt-v2 .mt-consult { padding: 64px 0 0; }
-  .mt-v2 .mt-consult-inner { grid-template-columns: 1fr; gap: 0; }
-  /* SP: 吹き出しは横幅いっぱいに使い（細い列に押し込むと5行に折り返す）、
-     キャラクターはその下に右寄せ。尻尾は下向きのままキャラを指す。 */
-  .mt-v2 .mt-consult-figure {
-    justify-self: stretch; width: auto;
-    align-items: flex-end;
-    padding-top: 26px;
-    margin-bottom: -10%;
-  }
-  .mt-v2 .mt-consult-figure img { width: clamp(180px, 48vw, 260px); }
-  .mt-v2 .mt-bubble--right { align-self: stretch; max-width: none; margin: 0 0 16px; }
-}
-@media (max-width: 420px) {
-  /* PC向けの強制改行を外す（後半20文字に折返し点が無く、375/390pxで途中で割れる） */
-  .mt-v2 .mt-consult-lead br { display: none; }
-  .mt-v2 .mt-consult-cta { align-items: stretch; }
-  .mt-v2 .mt-consult .mt-btn { width: 100%; }
-  .mt-v2 .mt-consult-tel { align-items: center; }
-}
-
-/* ------------------------------------------------------------------
- * 5. SCREENING FORMAT — 上映プログラムのチケットUI
- *    左: 4枚のチケット状ボタン / 右: 選択中の形式の詳細（プレビューは実写4枚 format-*.webp）。
- *    章セレクタ (3.) と同じ設計: JS無効時は4形式すべてが縦に並ぶ。
- * ------------------------------------------------------------------ */
-.mt-v2 .mt-formats { background: var(--mt-paper); position: relative; overflow: hidden; }
-/* 網点フェード（右上）+ 見出し裏の薄い斜線ウォッシュ。予告編ヒーローと同じ語彙を軽く再利用 */
-.mt-v2 .mt-formats::before {
-  content: "";
-  position: absolute; top: -40px; right: -40px; width: 300px; height: 300px;
-  background-image: radial-gradient(rgba(232, 85, 0, 0.14) 1.5px, transparent 1.8px);
-  background-size: 9px 9px;
-  -webkit-mask-image: radial-gradient(circle at 100% 0%, #000 0%, transparent 68%);
-          mask-image: radial-gradient(circle at 100% 0%, #000 0%, transparent 68%);
-  pointer-events: none;
-}
-.mt-v2 .mt-formats .mt-head { position: relative; }
-.mt-v2 .mt-formats .mt-head::before {
-  content: "";
-  position: absolute; z-index: -1; top: -20px; left: -24px; right: -24px; bottom: -20px;
-  background: repeating-linear-gradient(118deg, transparent 0 90px, rgba(232, 85, 0, 0.05) 90px 91px, transparent 91px 180px);
-  pointer-events: none;
-}
-.mt-v2 .mt-tickets {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: 40px; align-items: start;
-}
-
-/* --- 左: チケット一覧 --- */
-.mt-v2 .mt-ticket-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.mt-v2 .mt-ticket {
+  display: flex; flex-direction: column;
   width: 100%;
-  display: grid; grid-template-columns: 40px minmax(0, 1fr);
-  align-items: center; gap: 14px;
-  padding: 16px 18px;
+  padding: 6px 5px clamp(10px, 0.9vw, 14px);
+  font: inherit; text-align: left; color: var(--lpv2-ink);
   background: #fff;
-  border: 2px solid var(--mt-line);
-  text-align: left; cursor: pointer;
-  font-family: inherit; color: var(--mt-ink);
-  position: relative;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(42, 37, 32, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.22, 0.68, 0.24, 1), border-color 0.3s ease, box-shadow 0.3s ease;
 }
-/* チケットの半円の「もぎり跡」— 上映プログラムらしい切れ込み */
-.mt-v2 .mt-ticket::before,
-.mt-v2 .mt-ticket::after {
-  content: ""; position: absolute; top: 50%; transform: translateY(-50%);
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--mt-paper);
-  border: 2px solid var(--mt-line);
-  transition: border-color 0.2s ease;
+/* hover = 一時的な操作反応（枠色は変えない） */
+.mt-v2 .mt-exp-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px -12px rgba(20, 12, 0, 0.35); }
+.mt-v2 .mt-exp-card:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 2px; }
+/* selected = オレンジ枠(実質2px) + 右上のチェック + 名前をオレンジに */
+.mt-v2 .mt-exp-card[aria-pressed="true"] {
+  border-color: var(--mt-accent);
+  box-shadow: 0 0 0 1px var(--mt-accent);
 }
-.mt-v2 .mt-ticket::before { left: -9px; }
-.mt-v2 .mt-ticket::after { right: -9px; }
-.mt-v2 .mt-ticket__num {
-  font-family: var(--lpv2-font-mono);
-  font-size: 17px; font-weight: 900; letter-spacing: 0.06em;
-  color: var(--mt-accent-deep);
+.mt-v2 .mt-exp-card[aria-pressed="true"]:hover { box-shadow: 0 0 0 1px var(--mt-accent), 0 8px 16px -12px rgba(20, 12, 0, 0.35); }
+.mt-v2 .mt-exp-card__check {
+  position: absolute; z-index: 2; top: -9px; right: -9px;
+  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--mt-accent); color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+  opacity: 0; transform: scale(0.6);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 0.68, 0.24, 1);
 }
-.mt-v2 .mt-ticket__body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.mt-v2 .mt-ticket__en {
-  font-family: var(--lpv2-font-mono);
-  font-size: 10.5px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--mt-accent-deep);
-}
-.mt-v2 .mt-ticket__name {
-  font-family: var(--lpv2-font-display);
-  font-size: 18px; font-weight: 900; line-height: 1.4;
-  color: var(--mt-ink);
-}
-.mt-v2 .mt-ticket__hook { font-size: 12.5px; line-height: 1.6; color: var(--mt-mute); }
+.mt-v2 .mt-exp-card[aria-pressed="true"] .mt-exp-card__check { opacity: 1; transform: none; }
+.mt-v2 .mt-exp-card__checkmark { display: block; }
 
-.mt-v2 .mt-ticket:hover { border-color: var(--mt-line-strong); }
-.mt-v2 .mt-ticket.is-active {
-  border-color: var(--mt-accent-deep);
-  box-shadow: 0 14px 26px -16px rgba(36, 29, 24, 0.35);
-}
-.mt-v2 .mt-ticket.is-active::before,
-.mt-v2 .mt-ticket.is-active::after { border-color: var(--mt-accent-deep); }
-.mt-v2 .mt-ticket.is-active .mt-ticket__num { color: var(--mt-ink); }
-.mt-v2 .mt-ticket.is-active .mt-ticket__num::after { content: " \2713"; font-size: 12px; }
-.mt-v2 .mt-ticket:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 2px; }
-
-/* --- 右: 選択中の形式の詳細 --- */
-.mt-v2 .mt-ticket-stage { position: relative; }
-.mt-v2 .mt-ticket-panel {
-  display: flex; flex-direction: column; gap: 26px;
+.mt-v2 .mt-exp-card__art {
+  display: block; overflow: hidden; border-radius: 2px;
   background: var(--mt-cream);
-  border: 1px solid var(--mt-line);
-  padding: 30px;
 }
-@media (min-width: 561px) {
-  .mt-v2 .mt-ticket-panel { flex-direction: row; align-items: stretch; }
-}
-/* JS無効時: 4形式すべてを縦に並べて残す（パネル間は余白のみ） */
-.mt-v2 .mt-ticket-panel + .mt-ticket-panel { margin-top: 22px; }
-/* JS有効時のみ、選択中の1形式だけを表示 */
-.mt-v2 .mt-tickets.is-js .mt-ticket-panel { display: none; margin-top: 0; }
-.mt-v2 .mt-tickets.is-js .mt-ticket-panel.is-active { display: flex; }
+.mt-v2 .mt-exp-card__art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* STEP01: 形式ごとの主役が切れない位置（1コマ=人物+吹き出し / 4コマ=全体 / ストーリー=全体 / 縦読み=端末上部の枠とノッチ） */
+/* 2026-09-14: 見切れ対策で 4:3 → 1:1 に縦へ広げた */
+.mt-v2 .mt-exp-cards--format .mt-exp-card__art { aspect-ratio: 1 / 1; }
+.mt-v2 .mt-exp-card--one-panel .mt-exp-card__art img { object-position: 50% 0%; }   /* 人物+吹き出し全体 */
+.mt-v2 .mt-exp-card--four-panel .mt-exp-card__art img { object-position: 50% 50%; } /* 正方形素材=ノートリミング */
+/* ストーリー型は横長(4:3)素材。正方形枠に cover だと左右のテキストボックスが切れるので
+   contain で全体を見せ、余白はカードと同じ白にして目立たせない */
+.mt-v2 .mt-exp-card--story .mt-exp-card__art { background: #fff; }
+.mt-v2 .mt-exp-card--story .mt-exp-card__art img { object-fit: contain; object-position: 50% 50%; }
+.mt-v2 .mt-exp-card--vertical .mt-exp-card__art img { object-position: 50% 0%; }
+/* STEP02: 画風の違いが分かる顔まわりに寄せる（形式カードより横長にして差をつける） */
+.mt-v2 .mt-exp-cards--style .mt-exp-card__art { aspect-ratio: 4 / 3; }   /* 16:10 だと吹き出しが切れていた */
+.mt-v2 .mt-exp-cards--style .mt-exp-card__art img { object-position: 50% 0%; }
+.mt-v2 .mt-exp-card--shonen .mt-exp-card__art img { object-position: 45% 0%; }
 
-/* コマ割りプレビュー。2026-08-31 実写イラスト4枚（1コマ/4コマ/ストーリー型/縦読み、
-   汎用人物・マスコットなし）に差し替え。CHAPTERSの挿絵と同じ「アスペクト比固定+object-fit:cover」
-   パターンを踏襲し、画像の縦横比違いによるレイアウト崩れを防ぐ（生成サイズは横長1536x1024＝3:2）。 */
-.mt-v2 .mt-ticket-preview {
-  flex: none;
-  width: 100%; max-width: 260px;
-  aspect-ratio: 3 / 2;
-  margin: 0 auto;
-  background: #fff;
-  border: 1px solid var(--mt-line-strong);
-  overflow: hidden;
-}
-/* 行方向の flex では align-items:stretch が aspect-ratio より優先され、プレビューが
-   詳細列の高さまで縦に伸びて cover で左右が切れる（2026-09-03 レビューで実測 260x359）。
-   align-self:flex-start で 3:2 を維持する。 */
-@media (min-width: 561px) { .mt-v2 .mt-ticket-preview { margin: 0; align-self: flex-start; } }
-.mt-v2 .mt-ticket-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-/* 章一覧と同じ「上端2px黒罫」のエディトリアル motif をチケット一覧にも */
-.mt-v2 .mt-ticket-list { border-top: 2px solid var(--mt-ink); padding-top: 12px; }
-
-/* 形式切り替え時の軽いクロスフェード（150〜200ms。reduced-motionで無効化） */
-@keyframes mtTicketIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.mt-v2 .mt-tickets.is-js .mt-ticket-panel.is-active { animation: mtTicketIn 0.18s ease both; }
-
-.mt-v2 .mt-ticket-detail { flex: 1 1 auto; min-width: 0; }
-.mt-v2 .mt-ticket-detail__en {
-  font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900; letter-spacing: 0.24em; text-transform: uppercase;
-  color: var(--mt-accent-deep);
-  margin: 0 0 8px;
-}
-.mt-v2 .mt-ticket-detail__name {
-  font-family: var(--lpv2-font-display);
-  font-size: clamp(20px, 2vw, 25px); font-weight: 900; line-height: 1.4;
-  color: var(--mt-ink);
-  margin: 0 0 12px;
-}
-.mt-v2 .mt-ticket-detail__desc {
-  font-size: 14px; line-height: 1.95;
-  color: var(--mt-ink);
-  margin: 0 0 20px;
-}
-.mt-v2 .mt-ticket-detail__desc a { color: var(--mt-accent-deep); font-weight: 700; }
-.mt-v2 .mt-ticket-detail__meta { margin: 0 0 18px; border-top: 1px solid var(--mt-line); }
-.mt-v2 .mt-ticket-detail__meta > div {
-  display: grid; grid-template-columns: 116px minmax(0, 1fr);
-  gap: 12px; padding: 11px 0;
-  border-bottom: 1px solid var(--mt-line);
-}
-.mt-v2 .mt-ticket-detail__meta dt {
-  font-size: 11.5px; font-weight: 900; letter-spacing: 0.08em;
-  color: var(--mt-mute);
-}
-.mt-v2 .mt-ticket-detail__meta dd { margin: 0; font-size: 13.5px; font-weight: 700; color: var(--mt-ink); }
-.mt-v2 .mt-ticket-detail__combo {
-  margin: 0; font-size: 13.5px; font-weight: 700; line-height: 1.7;
-  color: var(--mt-ink);
-}
-.mt-v2 .mt-ticket-detail__combo span {
+.mt-v2 .mt-exp-card__name {
   display: block;
-  font-family: var(--lpv2-font-mono);
-  font-size: 10.5px; font-weight: 900; letter-spacing: 0.1em;
-  color: var(--mt-mute); margin-bottom: 4px;
+  margin: clamp(6px, 0.6vw, 9px) 4px 3px;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(14.5px, 1.2vw, 20px); line-height: 1.3; letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: color 0.3s ease;
 }
-
-.mt-v2 .mt-formats-foot {
-  margin: 40px 0 0;
-  font-size: 14px; line-height: 1.95;
+.mt-v2 .mt-exp-card[aria-pressed="true"] .mt-exp-card__name { color: var(--mt-accent-deep); }
+.mt-v2 .mt-exp-card__text {
+  display: block;
+  margin: 0 4px 8px;
+  font-size: clamp(11px, 0.8vw, 12.5px); line-height: 1.65;
   color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
 }
-.mt-v2 .mt-formats-foot strong { color: var(--mt-ink); }
-.mt-v2 .mt-formats-foot a { color: var(--mt-accent-deep); font-weight: 700; }
+.mt-v2 .mt-exp-card__tags {
+  /* PC4列でも「商品紹介・SNS」「使い方・ハウツー」が1段に収まるよう余白を詰めている */
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin: auto 2px 0;
+}
+.mt-v2 .mt-exp-tag {
+  display: inline-block;
+  padding: 3px 7px;
+  border: 1px solid var(--mt-line-strong); border-radius: 999px;
+  font-size: clamp(9.5px, 0.64vw, 11px); font-weight: 800; line-height: 1.5; white-space: nowrap;
+  color: var(--mt-ink); background: var(--mt-cream);
+}
 
+.mt-v2 .mt-exp-arrow {
+  display: block; align-self: center;
+  width: 22px; height: 22px; margin: 0;
+  color: var(--mt-accent);
+}
+.mt-v2 .mt-exp-arrow svg { display: block; width: 100%; height: 100%; }
+
+/* --- 登場（控えめ / reduced-motion で無効） --- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes mt-exp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .mt-v2 .mt-exp-intro { animation: mt-exp-rise 0.4s cubic-bezier(0.22, 0.68, 0.24, 1) both; }
+  .mt-v2 .mt-exp-steps { animation: mt-exp-rise 0.4s cubic-bezier(0.22, 0.68, 0.24, 1) 0.08s both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-exp-card,
+  .mt-v2 .mt-exp-card__check,
+  .mt-v2 .mt-exp-card__name { transition: none; }
+  .mt-v2 .mt-exp-card:hover { transform: none; }
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 1279px) {
+  /* 1280px未満の左右2カラムではカードが約170pxまで痩せ、用途タグが2段に崩れるので、画面いっぱいの上下段に */
+  .mt-v2 .mt-exp-layout { grid-template-columns: minmax(0, 1fr); }
+  .mt-v2 .mt-exp-intro {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 0 clamp(24px, 4vw, 48px); align-items: center;
+  }
+  .mt-v2 .mt-exp-intro__title { font-size: clamp(28px, 3.6vw, 42px); }
+}
 @media (max-width: 900px) {
-  .mt-v2 .mt-tickets { grid-template-columns: 1fr; gap: 24px; }
-  /* 横gapは「もぎり跡」(枠外に7pxはみ出す半円) が隣と重ならない幅にする（12pxだと重なる） */
-  .mt-v2 .mt-ticket-list { flex-direction: row; flex-wrap: wrap; gap: 12px 24px; }
-  /* 実際のflexアイテムは <li>（.mt-ticketはその中の button）なので、
-     幅指定は <li> 側に付ける */
-  .mt-v2 .mt-ticket-list > li { flex: 1 1 calc(50% - 12px); }
+  .mt-v2 .mt-exp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+@media (max-width: 700px) {
+  .mt-v2 .mt-exp-intro { grid-template-columns: minmax(0, 1fr); }
+  .mt-v2 .mt-exp-intro__title { font-size: clamp(26px, 7.4vw, 40px); }
+  .mt-v2 .mt-exp-intro__aside { max-width: 460px; }
+  .mt-v2 .mt-exp-guide { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
 }
 @media (max-width: 560px) {
-  .mt-v2 .mt-ticket-list { flex-direction: column; }
-  .mt-v2 .mt-ticket-list > li { flex: none; }
-  .mt-v2 .mt-ticket-panel { padding: 22px 18px; gap: 20px; }
-  .mt-v2 .mt-ticket-detail__meta > div { grid-template-columns: 1fr; gap: 3px; }
+  .mt-v2 .mt-exp-step__head { gap: 4px 14px; }
+  .mt-v2 .mt-exp-step__desc { flex-basis: 100%; }
+  .mt-v2 .mt-exp-card__name { font-size: 14.5px; white-space: normal; }
+  .mt-v2 .mt-exp-card__text { font-size: 10.5px; }
+  .mt-v2 .mt-exp-tag { font-size: 10px; padding: 2px 7px; }
+  .mt-v2 .mt-exp-point__text { white-space: normal; }
+}
+@media (max-width: 379px) {
+  /* 3列だと1項目56px幅まで痩せて「ヒアリングで」が4行・1文字孤立になるので縦1列に */
+  .mt-v2 .mt-exp-points { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .mt-v2 .mt-exp-point__text { white-space: nowrap; }
+}
+@media (max-width: 339px) {
+  .mt-v2 .mt-exp-cards { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ------------------------------------------------------------------
- * 6. NEXT PRODUCTION MEETING — 最終CTA（ダーク背景 --mt-ink + COMING NEXTポスター）
+ * 5b. HOW TO CHOOSE — 選び方ミニガイド（2026-09-14 新設）
+ *    表現カスタマイズの直後に置く「まとめ」。ページ内の強弱は 弱。
+ *    見出し + WHO × WHAT × WHERE の3枚 + 相談CTA だけ。JSなし・登場アニメなし。
+ *    背景は表現カスタマイズと同じ生成り + 網点を継承（新しい背景は作らない）。
  * ------------------------------------------------------------------ */
-/* 2026-08-31 V: セクション全体をポスターと同じダーク（--mt-ink）に統一し、
-   オレンジの全面背景をやめる。ポスター側は枠を保ちつつ背景色が地続きになるため
-   「暗い舞台にポスターが掲げられている」ように見える。人物も大きく表示する。 */
-.mt-v2 .mt-cta {
-  position: relative;
-  background: var(--mt-ink);
-  color: #fff;
-  padding: 92px 0;
-  overflow: hidden;
+.mt-v2 .mt-choose {
+  position: relative; isolation: isolate; overflow: hidden;   /* 透かし文字のはみ出しを切る */
+  background-color: var(--mt-cream);
+  background-image: radial-gradient(circle at center, rgba(42, 37, 32, 0.05) 1px, transparent 1.4px);
+  background-size: 15px 15px;
+  border-top: 1px solid var(--mt-line);
+  padding: clamp(48px, 5vw, 76px) 0;
 }
-.mt-v2 .mt-cta::after {
-  content: ""; position: absolute; inset: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  pointer-events: none;
-}
-.mt-v2 .mt-cta-inner {
-  position: relative; z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(300px, 34vw, 460px);
-  gap: clamp(32px, 4vw, 64px); align-items: center;
-}
-.mt-v2 .mt-cta-copy { max-width: 620px; }
-.mt-v2 .mt-cta__label {
-  font-family: var(--lpv2-font-mono);
-  font-size: 12px; font-weight: 900;
-  letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--lpv2-yellow);
-  margin: 0 0 24px;
-}
-.mt-v2 .mt-cta__title {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(25px, 3.4vw, 42px);
-  line-height: 1.45;
-  color: #fff;
-  margin: 0 0 22px;
-}
-.mt-v2 .mt-cta__text {
-  font-size: 14.5px; line-height: 2;
-  color: #fff;
-  margin: 0 0 36px;
-}
-.mt-v2 .mt-cta__row { display: flex; flex-wrap: wrap; gap: 14px; }
+.mt-v2 .mt-choose-container { position: relative; }
 
-/* --- キャラクターをそのままページに立たせる（「ポスターを貼った」感を消す）。
-   2026-08-31 VI: .mt-cta-poster 自体には背景色を持たせない（= セクションの --mt-ink が
-   そのまま透けて見える。同じ色を2枚重ねるのではなく「他に何も描かない」ことで境目を消す）。
-   下端の幕も rgba の決め打ちではなく var(--mt-ink) そのものに収束させ、色ズレをなくす。 --- */
-.mt-v2 .mt-cta-poster {
+.mt-v2 .mt-choose-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* 右上の薄い透かし英字（装飾） */
+.mt-v2 .mt-choose__watermark {
+  position: absolute; z-index: -1; top: -0.2em; right: 24px;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(80px, 9vw, 150px); line-height: 1; letter-spacing: -0.03em;
+  text-transform: uppercase; white-space: nowrap;
+  color: rgba(232, 85, 0, 0.045);
+  pointer-events: none; user-select: none;
+}
+
+/* ---------------- 見出し ---------------- */
+.mt-v2 .mt-choose-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end; gap: 16px 32px;
+  margin: 0 0 clamp(20px, 2vw, 30px);
+}
+.mt-v2 .mt-choose__label {
+  display: flex; align-items: center; gap: 14px;
+  margin: 0 0 clamp(10px, 1vw, 14px);
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(10px, 0.78vw, 12px); font-weight: 900;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-choose__label::before { content: ""; flex: none; width: 46px; height: 3px; background: var(--mt-accent); }
+/* 前セクションの H2（最大42px）より一段小さく */
+.mt-v2 .mt-choose__title {
+  margin: 0;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(24px, 2.4vw, 36px); line-height: 1.25; letter-spacing: -0.03em;
+  color: var(--lpv2-ink);
+  word-break: keep-all; overflow-wrap: break-word;
+}
+/* 「3つ」: 大きい太字なので #e85500 でも 3:1 以上（大きな文字の基準） */
+.mt-v2 .mt-choose__title em { font-style: normal; font-size: 1.2em; color: var(--mt-accent); }
+.mt-v2 .mt-choose__lead {
+  margin: clamp(6px, 0.8vw, 10px) 0 0;
+  font-size: clamp(13px, 1vw, 15px); line-height: 1.8;
+  color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+
+/* 手描き風の補助コピー + 左右の短い線 */
+.mt-v2 .mt-choose__note {
   position: relative;
-  aspect-ratio: 3 / 4;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  padding: 18px 14px 20px;
+  margin: 0 clamp(40px, 5vw, 96px) 6px 0;
+  font-family: var(--lpv2-font-sans);
+  font-size: clamp(12px, 0.9vw, 14px); font-weight: 700; line-height: 1.75; letter-spacing: 0.04em;
+  color: var(--lpv2-ink);
+  transform: rotate(-8deg);
+}
+.mt-v2 .mt-choose__note::before,
+.mt-v2 .mt-choose__note::after {
+  content: ""; position: absolute; height: 1.5px; background: var(--lpv2-ink); border-radius: 2px;
+}
+.mt-v2 .mt-choose__note::before { left: -34px; bottom: 18%; width: 28px; transform: rotate(42deg); }
+.mt-v2 .mt-choose__note::after { right: -38px; bottom: 30%; width: 34px; transform: rotate(-58deg); }
+
+/* ---------------- 3枚のカード ---------------- */
+.mt-v2 .mt-choose-list {
+  --mt-choose-gap: clamp(30px, 3vw, 44px);
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--mt-choose-gap);
+}
+.mt-v2 .mt-choose-card {
+  position: relative;
+  display: flex; flex-direction: column; min-width: 0;
+  padding: clamp(18px, 1.7vw, 24px) clamp(16px, 1.6vw, 24px) clamp(18px, 1.6vw, 22px);
+  background: #fffdf8;
+  border: 1px solid var(--mt-line);
+  border-radius: 8px;
+}
+/* カード間の「×」（2本の線で描く装飾。テキストではないので読み上げない） */
+.mt-v2 .mt-choose-card + .mt-choose-card::before {
+  content: ""; position: absolute; top: 52%;
+  left: calc(var(--mt-choose-gap) / -2);
+  width: 24px; height: 24px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(45deg, transparent calc(50% - 1.6px), var(--mt-accent) calc(50% - 1.6px), var(--mt-accent) calc(50% + 1.6px), transparent calc(50% + 1.6px)),
+    linear-gradient(-45deg, transparent calc(50% - 1.6px), var(--mt-accent) calc(50% - 1.6px), var(--mt-accent) calc(50% + 1.6px), transparent calc(50% + 1.6px));
+}
+
+.mt-v2 .mt-choose-card__head { display: flex; align-items: center; gap: clamp(12px, 1.2vw, 18px); }
+.mt-v2 .mt-choose-card__no {
+  flex: none;
+  padding-right: clamp(12px, 1.2vw, 18px);
+  border-right: 1px solid var(--mt-line);
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(38px, 3.4vw, 52px); line-height: 0.95; letter-spacing: -0.04em;
+  color: var(--mt-accent);
+}
+.mt-v2 .mt-choose-card__heading { min-width: 0; }
+/* 英字は装飾（aria-hidden。意味は h3 内の読み上げ用テキストで補う） */
+.mt-v2 .mt-choose-card__en {
+  display: block;
+  font-family: var(--lpv2-font-mono); font-weight: 900;
+  font-size: clamp(11px, 0.85vw, 13px); line-height: 1.2; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232, 85, 0, 0.5);
+}
+.mt-v2 .mt-choose-card__title {
+  margin: 4px 0 0;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(18px, 1.6vw, 24px); line-height: 1.3; letter-spacing: 0.01em;
+  color: var(--lpv2-ink); white-space: nowrap;
+}
+
+/* 画像: 3素材とも透明余白を切り詰めた約1.41:1。同じ枠に contain で置いてボリュームを揃える */
+.mt-v2 .mt-choose-card__art {
+  display: block; position: relative;
+  width: 84%; max-width: 360px;
+  margin: clamp(10px, 1vw, 14px) auto clamp(12px, 1.2vw, 16px);
+  aspect-ratio: 760 / 540;
+}
+/* 素材の後ろの淡いオレンジの円（装飾） */
+.mt-v2 .mt-choose-card__art::before {
+  content: ""; position: absolute; z-index: 0; left: 50%; bottom: 0;
+  width: 78%; aspect-ratio: 1 / 1; max-height: 100%;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 0 0 / 50% 50% 0 0;
+  background: var(--mt-accent-tint);
+}
+.mt-v2 .mt-choose-card__art img {
+  position: relative; z-index: 1;
+  display: block; width: 100%; height: 100%; object-fit: contain;
+}
+/* 人物素材は枠いっぱいまで描かれていて他の2枚より大きく見えるので、下端合わせで一回り小さく */
+.mt-v2 .mt-choose-card--who .mt-choose-card__art img { width: 92%; margin: 0 auto; object-position: 50% 100%; }
+
+.mt-v2 .mt-choose-pills {
+  list-style: none; margin: auto 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+}
+/* 1180px の3列（カード内幅約310px）でも「商品・サービス / 想い・ビジョン / ノウハウ」が1段に入る余白 */
+.mt-v2 .mt-choose-pill {
+  padding: 6px clamp(10px, 1vw, 18px);
+  background: #fff;
+  border: 1px solid var(--mt-line-strong); border-radius: 999px;
+  font-size: clamp(12px, 0.95vw, 14px); font-weight: 800; line-height: 1.45; white-space: nowrap;
+  color: var(--lpv2-ink);
+}
+
+/* ---------------- 相談CTA（案内キャラなし） ---------------- */
+.mt-v2 .mt-choose-cta {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center; gap: 18px clamp(24px, 4vw, 64px);
+  margin: clamp(18px, 1.8vw, 26px) 0 0;
+  padding: clamp(20px, 2vw, 28px) clamp(22px, 3.4vw, 56px);
+  background: #fffdf8;
+  border: 1px solid rgba(232, 85, 0, 0.32);
+  border-radius: 10px;
+}
+.mt-v2 .mt-choose-cta__title {
+  margin: 0;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(17px, 1.5vw, 22px); line-height: 1.55; letter-spacing: 0.01em;
+  color: var(--lpv2-ink);
+}
+.mt-v2 .mt-choose-cta__text {
+  margin: 8px 0 0;
+  font-size: clamp(11.5px, 0.85vw, 13px); line-height: 1.8;
+  color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+.mt-v2 .mt-choose-cta__action { display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0; }
+/* 面色は既存 .mt-btn--primary（--mt-accent-deep）のまま。影だけ消して軽くする */
+.mt-v2 .mt-choose-cta__btn {
+  width: 100%; max-width: 480px;
+  padding: 16px 24px; font-size: clamp(14px, 1.1vw, 16px);
+  box-shadow: none;
+}
+.mt-v2 .mt-choose-cta__btn:hover { box-shadow: none; }
+
+.mt-v2 .mt-choose-points { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; }
+.mt-v2 .mt-choose-point {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 0 clamp(12px, 1.6vw, 24px);
+}
+.mt-v2 .mt-choose-point + .mt-choose-point { border-left: 1px solid var(--mt-line-strong); }
+.mt-v2 .mt-choose-point__icon { flex: none; display: block; width: 26px; height: 26px; color: var(--mt-accent); }
+.mt-v2 .mt-choose-point__icon svg { display: block; width: 100%; height: 100%; }
+.mt-v2 .mt-choose-point__text {
+  font-size: clamp(10.5px, 0.75vw, 12px); font-weight: 700; line-height: 1.5; white-space: nowrap;
+  color: var(--lpv2-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-choose-cta__btn,
+  .mt-v2 .mt-choose-cta__btn:hover { transition: none; transform: none; }
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 1179px) {
+  /* 1180px未満の3列だと「商品・サービス」等のピルが2段に崩れるので縦積み。カードは「見出し+ピル / 画像」の横長にして高さを抑える */
+  .mt-v2 .mt-choose__watermark { display: none; }
+  .mt-v2 .mt-choose-head { grid-template-columns: minmax(0, 1fr); }
+  .mt-v2 .mt-choose__note { justify-self: start; margin: 10px 0 4px 40px; transform: rotate(-5deg); }
+  .mt-v2 .mt-choose-list { --mt-choose-gap: 34px; grid-template-columns: minmax(0, 1fr); }
+  .mt-v2 .mt-choose-card + .mt-choose-card::before { top: calc(var(--mt-choose-gap) / -2); left: 50%; }
+  .mt-v2 .mt-choose-card {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    grid-template-areas: "head art" "pills art";
+    align-items: center; column-gap: 24px;
+  }
+  .mt-v2 .mt-choose-card__head { grid-area: head; align-self: end; }
+  .mt-v2 .mt-choose-card__art { grid-area: art; width: 100%; max-width: 320px; margin: 0 auto; }
+  .mt-v2 .mt-choose-pills { grid-area: pills; align-self: start; justify-content: flex-start; margin: 16px 0 0; }
+  .mt-v2 .mt-choose-cta { grid-template-columns: minmax(0, 1fr); text-align: center; }
+}
+@media (max-width: 560px) {
+  .mt-v2 .mt-choose__title { font-size: clamp(22px, 6.4vw, 30px); }
+  .mt-v2 .mt-choose__note { margin-left: 34px; }
+  .mt-v2 .mt-choose-card { display: flex; }
+  .mt-v2 .mt-choose-card__head,
+  .mt-v2 .mt-choose-pills { align-self: stretch; }
+  .mt-v2 .mt-choose-card__art { width: min(100%, 300px); margin: 12px auto 14px; }
+  .mt-v2 .mt-choose-pills { justify-content: center; margin: 0; }
+  .mt-v2 .mt-choose-cta__title br { display: none; }
+  .mt-v2 .mt-choose-cta__text br { display: none; }
+  .mt-v2 .mt-choose-point { flex: 1 1 0; flex-direction: column; gap: 4px; padding: 0 6px; text-align: center; }
+}
+
+/* ------------------------------------------------------------------
+ * 5c. FAQ — よくあるご質問（2026-09-14 リデザイン）
+ *    旧 AFTER TALK / Q&A（lpv2-faq の details 流用）を置き換え。ページ内の強弱は 弱。
+ *    見出し → 4問のアコーディオン → 下部の細罫 + テキストリンク だけ。画像素材なし。
+ *    開閉は bm-manga-types.js の initFaq()。.is-js が付いたときだけ閉じた回答を畳む
+ *    （JS無効時は4問すべて表示）。.is-ready 以降だけ transition を効かせて初期化時に動かさない。
+ * ------------------------------------------------------------------ */
+.mt-v2 .mt-faq {
+  background-color: var(--mt-cream);
+  background-image: radial-gradient(circle at center, rgba(42, 37, 32, 0.04) 1px, transparent 1.4px);
+  background-size: 15px 15px;
+  border-top: 1px solid var(--mt-line);
+  padding: clamp(56px, 6.4vw, 96px) 0 clamp(48px, 5.6vw, 84px);
+}
+.mt-v2 .mt-faq-box {
+  padding: clamp(24px, 3.6vw, 52px) clamp(18px, 3.6vw, 52px) clamp(20px, 2.4vw, 32px);
+  background: #fffdf8;
+  border: 1px solid var(--mt-line);
+  border-radius: 12px;
+}
+
+/* ---------------- 見出し ---------------- */
+.mt-v2 .mt-faq__label {
+  display: flex; align-items: center; gap: 14px;
+  margin: 0;
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(11px, 0.85vw, 13px); font-weight: 900;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--mt-accent-deep);
+}
+.mt-v2 .mt-faq__label::before { content: ""; flex: none; width: 46px; height: 3px; background: var(--mt-accent); }
+/* HERO・7つの物語より小さく（desktop 48–60px） */
+.mt-v2 .mt-faq__title {
+  margin: clamp(8px, 0.9vw, 14px) 0 clamp(8px, 0.8vw, 12px);
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(40px, 4vw, 60px); line-height: 1.15; letter-spacing: -0.03em;
+  color: var(--lpv2-ink);
+}
+.mt-v2 .mt-faq__lead {
+  margin: 0 0 clamp(20px, 2.2vw, 32px);
+  font-size: clamp(14px, 1.1vw, 17px); line-height: 1.8;
+  color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+
+/* ---------------- アコーディオン ---------------- */
+.mt-v2 .mt-faq-list {
+  --mt-faq-no: clamp(44px, 3.4vw, 52px);   /* Q番号の円 = A列の幅 */
+  --mt-faq-gap: clamp(16px, 2vw, 32px);
+  display: grid; gap: clamp(10px, 1vw, 14px);
+}
+.mt-v2 .mt-faq-item {
+  background: #fff;
+  border: 1px solid var(--mt-line);
+  border-radius: 8px;
+}
+.mt-v2 .mt-faq-item.is-open { border-color: var(--mt-line-strong); }
+
+.mt-v2 .mt-faq-q { margin: 0; font-size: inherit; }
+.mt-v2 .mt-faq-q__btn {
+  display: grid; grid-template-columns: var(--mt-faq-no) minmax(0, 1fr) 28px;
+  align-items: center; column-gap: var(--mt-faq-gap);
+  width: 100%; margin: 0;
+  padding: clamp(12px, 1.1vw, 16px) clamp(16px, 2vw, 28px);
+  font: inherit; text-align: left; color: var(--lpv2-ink);
+  background: transparent; border: 0; border-radius: 8px;
+  cursor: pointer;
+}
+.mt-v2 .mt-faq-q__btn:hover { background: var(--mt-accent-tint); }
+.mt-v2 .mt-faq-q__btn:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 2px; }
+
+/* Q番号: 閉=白地+オレンジ枠+オレンジ文字 / 開=オレンジ塗り+白文字。
+   19px 太字＝大きな文字の基準（18.66px bold 以上）なので #e85500 で 3:1 以上 */
+.mt-v2 .mt-faq-q__no {
+  display: grid; place-items: center;
+  width: var(--mt-faq-no); height: var(--mt-faq-no);
+  border: 2px solid var(--mt-accent); border-radius: 50%;
+  background: #fff; color: var(--mt-accent);
+  font-family: var(--lpv2-font-sans); font-size: 19px; font-weight: 900; line-height: 1; letter-spacing: -0.02em;
+}
+.mt-v2 .mt-faq-q__btn[aria-expanded="true"] .mt-faq-q__no { background: var(--mt-accent); color: #fff; }
+.mt-v2 .mt-faq-q__text {
+  font-size: clamp(16px, 1.45vw, 22px); font-weight: 700; line-height: 1.5; letter-spacing: 0.01em;
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+.mt-v2 .mt-faq-q__icon { display: block; width: 28px; height: 28px; color: var(--mt-accent); }
+.mt-v2 .mt-faq-q__icon svg { display: block; width: 100%; height: 100%; }
+.mt-v2 .mt-faq-q__btn[aria-expanded="true"] .mt-faq-q__icon { transform: rotate(180deg); }
+
+/* 回答: grid-template-rows 0fr ⇄ 1fr で高さを開閉 */
+.mt-v2 .mt-faq-a { display: grid; grid-template-rows: 1fr; }
+.mt-v2 .mt-faq-a__inner { min-height: 0; overflow: hidden; }
+.mt-v2 .mt-faq-list.is-js .mt-faq-item:not(.is-open) .mt-faq-a { grid-template-rows: 0fr; }
+.mt-v2 .mt-faq-list.is-js .mt-faq-item:not(.is-open) .mt-faq-a__inner { visibility: hidden; opacity: 0; }
+.mt-v2 .mt-faq-list.is-ready .mt-faq-a { transition: grid-template-rows 0.3s ease; }
+.mt-v2 .mt-faq-list.is-ready .mt-faq-a__inner { transition: opacity 0.3s ease, visibility 0s linear 0s; }
+.mt-v2 .mt-faq-list.is-ready .mt-faq-item:not(.is-open) .mt-faq-a__inner { transition: opacity 0.25s ease, visibility 0s linear 0.3s; }
+.mt-v2 .mt-faq-list.is-ready .mt-faq-q__no { transition: background-color 0.3s ease, color 0.3s ease; }
+.mt-v2 .mt-faq-list.is-ready .mt-faq-q__icon { transition: transform 0.3s ease; }
+
+.mt-v2 .mt-faq-a__body {
+  display: grid; grid-template-columns: var(--mt-faq-no) minmax(0, 1fr);
+  column-gap: var(--mt-faq-gap); align-items: start;
+  padding: clamp(16px, 1.6vw, 22px) clamp(16px, 2vw, 28px) clamp(18px, 1.8vw, 24px);
+  border-top: 1px solid var(--mt-line);
+}
+.mt-v2 .mt-faq-a__mark {
+  position: relative;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(26px, 2.2vw, 34px); line-height: 1.3; text-align: center;
+  color: var(--mt-accent);
+}
+/* A の右の細いオレンジ縦線 */
+.mt-v2 .mt-faq-a__mark::after {
+  content: ""; position: absolute; top: 0.2em; right: calc(var(--mt-faq-gap) / -2);
+  width: 2px; height: 1.3em; background: var(--mt-accent);
+}
+.mt-v2 .mt-faq-a__text {
+  margin: 0;
+  font-size: clamp(15px, 1.05vw, 16px); font-weight: 400; line-height: 1.85;
+  color: var(--mt-mute);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+
+/* ---------------- 下部: 細罫 + BizManga + テキストリンク ---------------- */
+.mt-v2 .mt-faq-foot {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start; column-gap: clamp(20px, 2.4vw, 36px);
+  margin: clamp(20px, 2.2vw, 30px) 0 0;
+}
+.mt-v2 .mt-faq-foot__brand {
+  display: block;
+  margin-top: 0.95em; padding-top: 8px;
+  border-top: 1px solid rgba(232, 85, 0, 0.28);
+  font-family: var(--lpv2-font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.4em; color: var(--mt-mute);
+}
+.mt-v2 .mt-faq-foot__link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: clamp(14px, 1.05vw, 16px); font-weight: 800; line-height: 1.6;
+  color: var(--mt-accent-deep); text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.mt-v2 .mt-faq-foot__link:hover { border-bottom-color: currentColor; }
+.mt-v2 .mt-faq-foot__link:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 3px; border-radius: 2px; }
+.mt-v2 .mt-faq-foot__arrow { transition: transform 0.2s ease; }
+.mt-v2 .mt-faq-foot__link:hover .mt-faq-foot__arrow { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-faq-list.is-ready .mt-faq-a,
+  .mt-v2 .mt-faq-list.is-ready .mt-faq-a__inner,
+  .mt-v2 .mt-faq-list.is-ready .mt-faq-item:not(.is-open) .mt-faq-a__inner,
+  .mt-v2 .mt-faq-list.is-ready .mt-faq-q__no,
+  .mt-v2 .mt-faq-list.is-ready .mt-faq-q__icon,
+  .mt-v2 .mt-faq-foot__arrow { transition: none; }
+  .mt-v2 .mt-faq-foot__link:hover .mt-faq-foot__arrow { transform: none; }
+}
+
+/* --- レスポンシブ（どの幅でも1カラム） --- */
+@media (max-width: 1023px) {
+  .mt-v2 .mt-faq__title { font-size: clamp(40px, 5.2vw, 52px); }
+}
+@media (max-width: 600px) {
+  .mt-v2 .mt-faq-box { padding: 24px 14px 18px; border-radius: 10px; }
+  .mt-v2 .mt-faq__label { padding-left: 4px; }
+  .mt-v2 .mt-faq__title { font-size: clamp(32px, 8.6vw, 40px); padding-left: 4px; }
+  .mt-v2 .mt-faq__lead { padding-left: 4px; }
+  .mt-v2 .mt-faq-list { --mt-faq-no: 40px; --mt-faq-gap: 12px; }
+  .mt-v2 .mt-faq-q__btn { grid-template-columns: var(--mt-faq-no) minmax(0, 1fr) 22px; padding: 12px 12px 12px 12px; }
+  .mt-v2 .mt-faq-q__no { font-size: 18.7px; }
+  .mt-v2 .mt-faq-q__icon { width: 22px; height: 22px; }
+  .mt-v2 .mt-faq-q__text { font-size: 16px; }
+  /* 回答は本文の幅を優先して A の列と余白を細くする（A と縦線の関係は維持） */
+  .mt-v2 .mt-faq-a__body { grid-template-columns: 20px minmax(0, 1fr); column-gap: 14px; padding: 14px 12px 16px 12px; }
+  .mt-v2 .mt-faq-a__mark { font-size: 22px; }
+  .mt-v2 .mt-faq-a__mark::after { right: -8px; }
+  /* 狭い幅では auto-phrase だと「幅広い／ステークホルダーに…」のように行末が大きく空くので通常の折り返しに戻す */
+  .mt-v2 .mt-faq-a__text { font-size: 16px; line-height: 1.8; word-break: normal; }
+  .mt-v2 .mt-faq-foot { padding: 0 4px; }
+  .mt-v2 .mt-faq-foot__brand { letter-spacing: 0.3em; }
+}
+@media (max-width: 379px) {
+  /* 320px 幅で質問文が4行になるのを抑える */
+  .mt-v2 .mt-faq-box { padding: 22px 10px 16px; }
+  .mt-v2 .mt-faq-list { --mt-faq-no: 36px; --mt-faq-gap: 10px; }
+  .mt-v2 .mt-faq-q__btn { grid-template-columns: var(--mt-faq-no) minmax(0, 1fr) 20px; padding: 10px; }
+  .mt-v2 .mt-faq-q__icon { width: 20px; height: 20px; }
+  .mt-v2 .mt-faq-a__body { padding: 12px 10px 14px 8px; }
+}
+
+/* ------------------------------------------------------------------
+ * 6. FINAL CTA — LET'S MAKE YOUR STORY（2026-09-14 リデザイン）
+ *    旧 NEXT PRODUCTION MEETING（ダーク背景 + COMING NEXT ポスター）を置き換え。ページ内の強弱は 強。
+ *    中央揃えの「1メッセージ + 1CTA」。装飾は四隅の桃色の円（1枚の画像を反転して流用）+
+ *    ごく薄い網点 + 左の縦 BIZMANGA だけで、文字とボタンの領域には重ねない。
+ * ------------------------------------------------------------------ */
+.mt-v2 .mt-final {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--mt-cream);
+  padding: clamp(80px, 8vw, 116px) 0 clamp(72px, 7.2vw, 104px);
   text-align: center;
 }
-.mt-v2 .mt-cta-poster__spot {
-  position: absolute; inset: 0; z-index: 0;
-  background: radial-gradient(ellipse 70% 55% at 50% 25%, rgba(255, 213, 74, 0.28) 0%, transparent 68%);
+
+/* ---------------- 装飾 ---------------- */
+.mt-v2 .mt-final__deco { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.mt-v2 .mt-final__deco img { display: block; width: 100%; height: auto; }
+/* 素材は「左上に中心がある 1/4 円」。四隅へは反転で置く */
+.mt-v2 .mt-final__peach { position: absolute; display: block; }
+.mt-v2 .mt-final__peach--tl { top: 0; left: 0; width: clamp(240px, 26vw, 400px); opacity: 0.4; }
+.mt-v2 .mt-final__peach--tr { top: 0; right: 0; width: clamp(160px, 17vw, 270px); opacity: 0.35; transform: scaleX(-1); }
+.mt-v2 .mt-final__peach--bl { bottom: 0; left: 0; width: clamp(240px, 27vw, 420px); opacity: 0.55; transform: scaleY(-1); }
+.mt-v2 .mt-final__peach--br { bottom: 0; right: 0; width: clamp(220px, 24vw, 380px); opacity: 0.45; transform: scale(-1, -1); }
+.mt-v2 .mt-final__halftone {
+  position: absolute; display: block;
+  top: 14%; right: 7%;
+  width: clamp(140px, 14vw, 220px); opacity: 0.22;
 }
-.mt-v2 .mt-cta-poster__figure {
-  position: absolute; inset: 0; z-index: 1;
-  display: block; line-height: 0;
-}
-.mt-v2 .mt-cta-poster__figure img {
-  width: 100%; height: 100%;
-  object-fit: contain; object-position: 50% 0%;
-  display: block;
-}
-/* 下端の幕（写真の上に文字を乗せても読めるようにする）。終点はセクション背景と同じ --mt-ink */
-.mt-v2 .mt-cta-poster::after {
-  content: "";
-  position: absolute; inset: 0; z-index: 2;
-  background: linear-gradient(180deg, transparent 50%, var(--mt-ink) 88%);
-  pointer-events: none;
-}
-.mt-v2 .mt-cta-poster__eyebrow {
-  position: relative; z-index: 3;
-  font-family: var(--lpv2-font-mono);
-  font-size: 10px; font-weight: 900; letter-spacing: 0.24em; text-transform: uppercase;
-  color: var(--lpv2-yellow);
-  margin: 0 0 6px;
-}
-.mt-v2 .mt-cta-poster__title {
-  position: relative; z-index: 3;
-  font-family: var(--lpv2-font-display);
-  font-weight: 900; font-size: clamp(19px, 2vw, 25px);
-  line-height: 1.15;
-  color: #fff;
-  margin: 0 0 12px;
-}
-.mt-v2 .mt-cta-poster__credit {
-  position: relative; z-index: 3;
-  font-family: var(--lpv2-font-mono);
-  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
+.mt-v2 .mt-final__side {
+  position: absolute; top: 50%; left: clamp(18px, 2.4vw, 36px);
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-family: var(--lpv2-font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5em; color: rgba(42, 37, 32, 0.4);
 }
 
-@media (max-width: 720px) {
-  .mt-v2 .mt-cta-inner { grid-template-columns: 1fr; text-align: center; }
-  .mt-v2 .mt-cta-copy { max-width: none; }
-  .mt-v2 .mt-cta__row { justify-content: center; }
-  .mt-v2 .mt-cta-poster { max-width: min(340px, 78vw); margin: 0 auto; aspect-ratio: 3 / 4; }
+/* ---------------- 本体 ---------------- */
+.mt-v2 .mt-final__inner { position: relative; }
+.mt-v2 .mt-final__label {
+  display: inline-flex; align-items: center; gap: clamp(12px, 1.4vw, 20px);
+  margin: 0 0 clamp(14px, 1.6vw, 22px);
+  font-family: var(--lpv2-font-mono);
+  font-size: clamp(11px, 0.9vw, 14px); font-weight: 900;
+  letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--mt-accent-deep);
 }
-@media (max-width: 560px) {
-  .mt-v2 .mt-cta { padding: 64px 0; }
-  .mt-v2 .mt-cta::after { inset: 12px; }
-  /* SP: CTAは縦並び */
-  .mt-v2 .mt-cta__row { flex-direction: column; align-items: stretch; }
-  .mt-v2 .mt-cta__row .mt-btn { width: 100%; }
+.mt-v2 .mt-final__label::before,
+.mt-v2 .mt-final__label::after { content: ""; flex: none; width: clamp(36px, 5vw, 72px); height: 2px; background: var(--mt-accent); }
+/* HERO の H1（1440px で約72px）より小さく、FAQ（約58px）より強く */
+.mt-v2 .mt-final__title {
+  margin: 0;
+  font-family: var(--lpv2-font-sans); font-weight: 900;
+  font-size: clamp(34px, 4.5vw, 66px); line-height: 1.18; letter-spacing: -0.02em;
+  color: var(--lpv2-ink);
+}
+/* 「物語」「カタチ」: 大きな太字なので #e85500 でも 3:1 以上 */
+.mt-v2 .mt-final__em { color: var(--mt-accent); }
+.mt-v2 .mt-final__lead {
+  margin: clamp(16px, 1.8vw, 24px) 0 clamp(26px, 3vw, 40px);
+  font-size: clamp(14px, 1.15vw, 17px); line-height: 1.9; font-weight: 500;
+  color: var(--mt-ink);
+  word-break: normal; word-break: auto-phrase; overflow-wrap: break-word; line-break: strict;
+}
+
+/* メインCTA: ブランドオレンジ塗りの横長ピル。
+   文字は19px以上の太字（大きな文字の基準）なので #e85500 に白でも 3:1 以上。hover は既存の accent-deep */
+.mt-v2 .mt-final__action { position: relative; display: flex; justify-content: center; }
+.mt-v2 .mt-final__btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 14px;
+  width: min(100%, 460px); min-height: clamp(66px, 5.4vw, 78px);
+  padding: 0 32px;
+  border-radius: 999px;
+  background: var(--mt-accent); color: #fff;
+  font-family: var(--lpv2-font-sans); font-size: clamp(19px, 1.45vw, 21px); font-weight: 900; letter-spacing: 0.06em;
+  text-decoration: none;
+  box-shadow: 0 10px 22px -14px rgba(185, 65, 0, 0.55);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+.mt-v2 .mt-final__btn:hover {
+  background: var(--mt-accent-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px -14px rgba(185, 65, 0, 0.6);
+}
+.mt-v2 .mt-final__btn:focus-visible { outline: 3px solid var(--mt-focus); outline-offset: 4px; }
+.mt-v2 .mt-final__arrow { transition: transform 0.25s ease; }
+.mt-v2 .mt-final__btn:hover .mt-final__arrow { transform: translateX(4px); }
+
+/* 手描き風コピー（既存フォント + 軽い rotate）と右上の短いアクセント線2本 */
+.mt-v2 .mt-final__note {
+  position: absolute; top: -34px; left: calc(50% + clamp(270px, 22vw, 330px));
+  margin: 0;
+  font-family: var(--lpv2-font-sans); font-size: clamp(14px, 1.1vw, 17px); font-weight: 700;
+  line-height: 1.7; letter-spacing: 0.08em; text-align: left; white-space: nowrap;
+  color: var(--lpv2-ink);
+  transform: rotate(-14deg);
+}
+.mt-v2 .mt-final__note::before,
+.mt-v2 .mt-final__note::after {
+  content: ""; position: absolute; height: 2.5px; border-radius: 2px; background: var(--mt-accent);
+}
+.mt-v2 .mt-final__note::before { top: -12px; right: 4px; width: 18px; transform: rotate(-62deg); }
+.mt-v2 .mt-final__note::after { top: -4px; right: -12px; width: 13px; transform: rotate(-30deg); }
+
+/* 安心ポイント3つ（間は細いオレンジの縦線） */
+.mt-v2 .mt-final__points {
+  list-style: none; margin: clamp(30px, 3.4vw, 48px) 0 0; padding: 0;
+  display: flex; justify-content: center;
+}
+.mt-v2 .mt-final__point {
+  display: flex; align-items: center; gap: 14px;
+  padding: 6px clamp(22px, 4vw, 60px);
+  text-align: left;
+}
+.mt-v2 .mt-final__point + .mt-final__point { border-left: 1px solid rgba(232, 85, 0, 0.45); }
+.mt-v2 .mt-final__icon { flex: none; display: grid; place-items: center; width: 52px; height: 52px; }
+.mt-v2 .mt-final__icon-img { display: block; }
+.mt-v2 .mt-final__icon img { width: 100%; height: auto; object-fit: contain; }
+/* 素材の縦横比が違う（吹き出し=横長 / 電球=縦長 / 人物=横長で低い）ので見た目の大きさを個別に揃える */
+.mt-v2 .mt-final__point--hearing .mt-final__icon-img { width: 46px; }
+.mt-v2 .mt-final__point--idea .mt-final__icon-img { width: 44px; }
+.mt-v2 .mt-final__point--consultation .mt-final__icon-img { width: 52px; }
+.mt-v2 .mt-final__point-text {
+  font-size: clamp(13px, 1.05vw, 16px); font-weight: 500; line-height: 1.6; white-space: nowrap;
+  color: var(--lpv2-ink);
+}
+.mt-v2 .mt-final__point-text b { font-weight: 900; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-v2 .mt-final__btn,
+  .mt-v2 .mt-final__arrow { transition: none; }
+  .mt-v2 .mt-final__btn:hover,
+  .mt-v2 .mt-final__btn:hover .mt-final__arrow { transform: none; }
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 1099px) {
+  /* 手描きコピーはボタン右に置くと見出し・画面端と競合するので、安心ポイントの下へ（display:contents で並べ替え） */
+  .mt-v2 .mt-final__inner { display: flex; flex-direction: column; align-items: center; }
+  .mt-v2 .mt-final__action { display: contents; }
+  .mt-v2 .mt-final__note {
+    position: relative; top: auto; left: auto; order: 10;
+    margin: clamp(26px, 4vw, 36px) 0 0;
+    font-size: 14px; white-space: normal;
+    transform: rotate(-6deg);
+  }
+  .mt-v2 .mt-final__side { display: none; }
+  .mt-v2 .mt-final__halftone { top: 6%; right: 3%; }
+}
+@media (max-width: 767px) {
+  .mt-v2 .mt-final { padding: 64px 0 60px; }
+  .mt-v2 .mt-final__title { font-size: clamp(24px, 6.9vw, 36px); }
+  .mt-v2 .mt-final__lead { font-size: 14.5px; }
+  .mt-v2 .mt-final__btn { min-height: 64px; }
+  /* 上の2つは見出しと重なるので外し、下の2つを小さく残す */
+  .mt-v2 .mt-final__peach--tl,
+  .mt-v2 .mt-final__peach--tr { display: none; }
+  .mt-v2 .mt-final__peach--bl { width: 170px; opacity: 0.45; }
+  .mt-v2 .mt-final__peach--br { width: 150px; opacity: 0.4; }
+  .mt-v2 .mt-final__halftone { top: 12px; right: 8px; width: 110px; opacity: 0.18; }
+  /* 安心ポイントは縦並び（2+1にはしない） */
+  .mt-v2 .mt-final__points { flex-direction: column; align-items: stretch; width: min(100%, 300px); }
+  .mt-v2 .mt-final__point { padding: 12px 8px; }
+  .mt-v2 .mt-final__point + .mt-final__point { border-left: 0; border-top: 1px solid rgba(232, 85, 0, 0.3); }
+  .mt-v2 .mt-final__point-text { font-size: 14.5px; }
+}
+@media (max-width: 379px) {
+  .mt-v2 .mt-final__title { font-size: 21px; }
+  .mt-v2 .mt-final__label { letter-spacing: 0.18em; }
 }
 
 /* ------------------------------------------------------------------
@@ -1046,20 +2221,8 @@
  * ------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   .mt-v2 .mt-btn,
-  .mt-v2 .mt-chapter-row,
-  .mt-v2 .mt-chapter-row__num,
-  .mt-v2 .mt-chapter-row__desc,
-  .mt-v2 .mt-chapter-row__arrow,
-  .mt-v2 .mt-chapter-panel__link,
-  .mt-v2 .mt-ticket,
-  .mt-v2 .mt-ticket::before,
-  .mt-v2 .mt-ticket::after,
-  .mt-v2 .lpv2-related-card { transition: none; }
-  .mt-v2 .mt-btn:hover,
-  .mt-v2 .mt-chapter-row:hover .mt-chapter-row__arrow,
-  .mt-v2 .mt-chapter-row.is-active .mt-chapter-row__arrow,
-  .mt-v2 .lpv2-related-card:hover { transform: none; }
-  .mt-v2 .mt-tickets.is-js .mt-ticket-panel.is-active { animation: none; }
+  .mt-v2 .mt-chapter-panel__link { transition: none; }
+  .mt-v2 .mt-btn:hover { transform: none; }
 }
 
 /* ------------------------------------------------------------------
@@ -1069,42 +2232,6 @@
  * ------------------------------------------------------------------ */
 .mt-v2 .lpv2-guide__eyebrow,
 .mt-v2 .lpv2-guide__text a,
-.mt-v2 .lpv2-related-card__num,
-.mt-v2 .lpv2-related-card__arrow,
 .mt-v2 .lpv2-eyebrow { color: var(--mt-accent-deep); }
 .mt-v2 .lpv2-eyebrow::before { background: var(--mt-accent-deep); }
 
-/* NOW SHOWING — 他8LPのRELATEDカードと同じ「内容に沿ったコンパクトな高さ」を踏襲しつつ、
-   上辺バー+控えめな網点円だけでポスターらしさを添える（縦長固定はやめ、余白を作りすぎない）。
-   文字（FILM 0X / タイトル / 一言 / 詳しく→）の可読性を最優先する。
-   ホバーは既存の -2px/-2px の浮き上がり + 影を踏襲。 */
-.mt-v2 .lpv2-related-card {
-  position: relative;
-  padding: 22px 20px 16px;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-.mt-v2 .lpv2-related-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 1;
-  background: var(--mt-accent);
-}
-/* ポスター右上に控えめな網点の円モチーフ */
-.mt-v2 .lpv2-related-card::after {
-  content: "";
-  position: absolute; top: -34%; right: -30%; width: 68%; aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  background-image: radial-gradient(currentColor 1px, transparent 1.3px);
-  background-size: 6px 6px;
-  color: rgba(36, 29, 24, 0.06);
-  pointer-events: none;
-}
-.mt-v2 .lpv2-related-card:hover::after { color: rgba(255, 255, 255, 0.09); }
-.mt-v2 .lpv2-related-card__num,
-.mt-v2 .lpv2-related-card__name,
-.mt-v2 .lpv2-related-card__hook,
-.mt-v2 .lpv2-related-card__arrow { position: relative; z-index: 1; }
-.mt-v2 .lpv2-related-card__arrow { margin-top: auto; padding-top: 14px; }
-.mt-v2 .lpv2-related-card:hover { box-shadow: 0 20px 34px -20px rgba(36, 29, 24, 0.45); }
-/* ホバー時は共通カードが黒地(--lpv2-ink)になるため、accent-deep のままだと FILM 0X が 3.6:1 に落ちる。
-   他8LPと同じ #e85500（黒地で 5.4:1）に戻す。 */
-.mt-v2 .lpv2-related-card:hover .lpv2-related-card__num { color: var(--lpv2-accent); }

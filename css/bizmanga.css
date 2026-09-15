@@ -9,6 +9,10 @@
   --bm-accent-rgb: 235, 82, 0;
   --bm-accent-light: #FFF9F4;
   --bm-accent-hover: #d44900;
+  /* 白地に小さい文字を置くとき用の濃いオレンジ。#EB5200 は白地で 3.66:1、
+     --bm-accent-hover(#d44900) でも 4.42:1 で AA に届かないため。
+     値は bm-lp-v2.css の --lpv2-accent-deep と同じ（サイト共通の既存色）。 */
+  --bm-accent-deep: #b94100;
   --bm-bg: #ffffff;
   --bm-bg-light: #FFF9F4;
   --bm-text: #333333;
@@ -538,22 +542,23 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   bottom: 32px;
   right: 32px;
   z-index: 9999;
-  padding: 16px 48px;
+  /* 2026-09-11: 問い合わせCTAと同じ塗りオレンジだと視覚的な優先順位が並んでしまうため、
+     白地＋オレンジ枠＋オレンジ文字の一段弱い見せ方にし、横幅も縮めた（機能・位置は不変） */
+  padding: 11px 20px;
   border-radius: 50px;
-  background: var(--bm-accent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #fff;
-  border: none;
+  background: #fff;
+  /* 枠はブランドオレンジ、文字は 13px で 4.5:1 を満たす --bm-accent-deep(#b94100) */
+  color: var(--bm-accent-deep);
+  border: 2px solid var(--bm-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  letter-spacing: 0.08em;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s, background 0.2s;
@@ -563,7 +568,8 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   pointer-events: auto;
 }
 .bm-back-to-top:hover {
-  background: var(--bm-accent-hover);
+  background: var(--bm-accent);
+  color: #fff;
 }
 
 /* ===== 追従CTA（LINE + お問い合わせ）— slide+tooltip演出 ===== */
@@ -716,8 +722,8 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   .bm-back-to-top {
     bottom: calc(72px + env(safe-area-inset-bottom));
     right: 16px;
-    padding: 12px 24px;
-    font-size: 14px;
+    padding: 9px 16px;
+    font-size: 12px;
   }
   /* フッターが隠れないよう余白確保 */
   body {

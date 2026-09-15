@@ -91,10 +91,10 @@
 
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-    {"@type":"Question","name":"4コマとストーリー型は、どちらが効果的ですか？","acceptedAnswer":{"@type":"Answer","text":"4コマはSNS・メルマガ・ホワイトペーパーなど短尺接触に最適、ストーリー型（6〜10ページ）は採用・導入事例・創業ストーリーなど深く伝えたい場面で最適です。目的により使い分けます。"}},
-    {"@type":"Question","name":"採用マンガと会社紹介マンガはどう違いますか？","acceptedAnswer":{"@type":"Answer","text":"採用マンガは応募前の候補者に「入社後の具体的な働き方」を伝えるため、社員インタビューや1日の流れを描きます。会社紹介マンガは広く取引先・投資家・社員家族向けに「会社の存在意義・ビジョン」を物語化します。目的とターゲットが異なります。"}},
-    {"@type":"Question","name":"縦読み作品を多言語展開できますか？","acceptedAnswer":{"@type":"Answer","text":"はい、縦スクロール型フォーマットのまま英語・中国語（簡体字/繁体字）・韓国語などへの多言語展開に対応しています。訪日インバウンド向けコンテンツや海外採用広報での活用実績があり、既存の横読み作品を縦読み・多言語版へリメイクすることも可能です。"}},
-    {"@type":"Question","name":"ジャンルもページ数も、まだ決まっていません。","acceptedAnswer":{"@type":"Answer","text":"問題ありません。30分の無料相談で、伝えたい相手・目的・掲載先をお伺いし、最適なジャンル・上映形式（コマ数）・ページ数をこちらからご提案します。1ページから発注可能で、相談・お見積もりは何度でも無料です。"}}
+    {"@type":"Question","name":"採用漫画と会社紹介漫画はどう違いますか？","acceptedAnswer":{"@type":"Answer","text":"採用漫画は、応募前の候補者に「入社後の具体的な働き方」を伝えるため、社員インタビューや1日の流れを描きます。会社紹介漫画は、取引先・顧客・一般の方など幅広いステークホルダーに向けて、「会社の存在意義・ビジョン」を物語化します。目的とターゲットが異なります。"}},
+    {"@type":"Question","name":"4コマ漫画とストーリー型はどちらが効果的ですか？","acceptedAnswer":{"@type":"Answer","text":"4コマはSNS・メルマガ・ホワイトペーパーなど、短い接触時間で伝えたい場合に適しています。ストーリー型は、採用・導入事例・創業ストーリーなど、背景や感情まで深く伝えたい場合に適しています。目的に応じて使い分けます。"}},
+    {"@type":"Question","name":"縦読み対応は可能ですか？","acceptedAnswer":{"@type":"Answer","text":"はい、縦スクロール型フォーマットに対応しています。SNSキャンペーン・採用広報・訪日インバウンドコンテンツなどに活用でき、横読みの既存作品を縦読み形式へ展開することも可能です。"}},
+    {"@type":"Question","name":"何ページから発注できますか？","acceptedAnswer":{"@type":"Answer","text":"1ページから発注可能です。1コマ漫画、4コマ漫画、ストーリー型、縦読み、連載形式まで、目的と予算に応じた最適なボリュームをご提案します。"}}
   ]}
   </script>
 
@@ -149,68 +149,136 @@
 
   <main id="main">
 
-    <!-- ===== 1. PROLOGUE — 物語の予告編（左コピー / 右3コマ予告編） ===== -->
-    <section class="mt-hero" aria-labelledby="mt-hero-title">
-      <div class="mt-hero-inner">
-        <span class="mt-hero-frame" aria-hidden="true"></span>
-        <div class="mt-hero-text">
+    <!-- ===== 1. HERO — MANGA MAGAZINE × BUSINESS BRAND
+         左=コピー / 中央=メイン人物 / 右=漫画コマ4枚 / 最右=7ジャンル索引 の4層構成。
+         画像はすべて images/manga-types/hero-*（webp配信・pngフォールバック）。
+         装飾（街並み・オレンジブラシ・筆文字）は .mt-hero-figure の内側でクリップするため、
+         .mt-hero 自体には overflow を掛けていない。 ===== -->
+    <section class="mt-hero" aria-labelledby="mt-hero-title" data-mt-hero>
+      <div class="mt-hero-stage">
+
+        <!-- 左: コピー -->
+        <div class="mt-hero-copy">
           <nav class="mt-breadcrumb" aria-label="パンくずリスト">
             <ol>
               <li><a href="/" data-ja="ホーム" data-en="Home">ホーム</a></li>
               <li aria-current="page" data-ja="マンガの種類" data-en="Manga Types">マンガの種類</li>
             </ol>
           </nav>
-          <p class="mt-hero-label">PROLOGUE / 00</p>
-          <h1 class="mt-hero-title" id="mt-hero-title" data-i18n-html data-ja="御社の<br>「伝わらない」を、<br><em>物語の予告編</em>に。" data-en="Turn what your company can't get across<br>into <em>a story's trailer</em>.">御社の<br>「伝わらない」を、<br><em>物語の予告編</em>に。</h1>
+
+          <p class="mt-hero-eyebrow" aria-hidden="true"><span>Manga</span><span>changes</span><span>business.</span></p>
+
+          <h1 class="mt-hero-title" id="mt-hero-title" data-i18n-html data-ja="伝わるって、<br>こんなに強い。" data-en="Getting through<br>is this powerful.">伝わるって、<br>こんなに強い。</h1>
+
           <p class="mt-hero-kicker" data-ja="ビジネス漫画の種類・7ジャンルの選び方ガイド" data-en="Business manga types: a guide to choosing among 7 genres">ビジネス漫画の種類・7ジャンルの選び方ガイド</p>
-          <p class="mt-hero-sub" data-i18n-html data-ja="まだ名前のない課題にも、物語の入口があります。<br>3コマのプロローグから、7つのチャプターへ。" data-en="Even a problem you can't quite name yet has a way in.<br>From a 3-panel prologue to 7 chapters.">まだ名前のない課題にも、物語の入口があります。<br>3コマのプロローグから、7つのチャプターへ。</p>
+
+          <p class="mt-hero-lead" data-i18n-html data-ja="難しいことも、堅い話も、マンガなら伝わる。<br>ビジネスの課題をストーリーで解決する、<br>それがビズマンガです。" data-en="Complex topics and formal talk both land when they're manga.<br>Solving business problems with story &mdash;<br>that is BizManga.">難しいことも、堅い話も、マンガなら伝わる。<br>ビジネスの課題をストーリーで解決する、<br>それがビズマンガです。</p>
+
+          <ul class="mt-hero-usp">
+            <li class="mt-hero-usp__item">
+              <span class="mt-hero-usp__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="16" r="14"/><path d="M16 8.6v7.8l5.2 3.1"/>
+                </svg>
+              </span>
+              <span class="mt-hero-usp__text"><b data-ja="最短" data-en="From">最短</b><em data-ja="2週間納品" data-en="2 weeks">2週間納品</em></span>
+            </li>
+            <li class="mt-hero-usp__item">
+              <span class="mt-hero-usp__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="16" r="14"/><path d="M12.4 9.6h5.4l3.8 3.8v8.9h-9.2z"/><path d="M17.6 9.7v3.9h3.9"/>
+                </svg>
+              </span>
+              <span class="mt-hero-usp__text"><b data-ja="1ページ" data-en="From 1 page">1ページ</b><em data-ja="から対応" data-en="and up">から対応</em></span>
+            </li>
+            <li class="mt-hero-usp__item">
+              <span class="mt-hero-usp__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="16" r="14"/><path d="M20.9 10.3l1.8 1.8-8.4 8.4-2.5.7.7-2.5z"/><path d="M10.4 22.6h11"/>
+                </svg>
+              </span>
+              <span class="mt-hero-usp__text"><b data-ja="シナリオ" data-en="Scenario">シナリオ</b><em data-ja="制作無料" data-en="free of charge">制作無料</em></span>
+            </li>
+          </ul>
+
           <div class="mt-hero-cta">
             <a href="#chapters" class="mt-btn mt-btn--primary mt-btn--xl">
-              <span data-ja="プロローグから物語を選ぶ" data-en="Choose a story from the prologue">プロローグから物語を選ぶ</span>
-            </a>
-            <a href="/contact" class="mt-btn mt-btn--ghost mt-btn--xl">
-              <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
+              <span data-ja="あなたに最適なマンガを見つける" data-en="Find the manga that fits you">あなたに最適なマンガを見つける</span>
+              <span class="mt-hero-cta__arrow" aria-hidden="true">&rarr;</span>
             </a>
           </div>
+
+          <p class="mt-hero-tagline" aria-hidden="true">Manga for a brighter tomorrow</p>
         </div>
 
-        <!-- 3コマの予告編。2026-08-31 実写カット3枚に差し替え済み（画風プロンプトは
-             docs/manga-types-image-prompts.md の「D. プロローグ予告編カット」参照）。 -->
-        <div class="mt-hero-trailer">
-          <p class="mt-hero-trailer__label" aria-hidden="true">TRAILER — 3 CUTS</p>
-          <ol class="mt-trailer-strip">
-            <li class="mt-trailer-frame mt-trailer-frame--problem">
-              <div class="mt-trailer-frame__art">
-                <span class="mt-trailer-frame__cut" aria-hidden="true">CUT 01</span>
-                <picture class="mt-trailer-frame__glyph">
-                  <source type="image/webp" srcset="/images/manga-types/trailer-01-problem.webp">
-                  <img src="/images/manga-types/trailer-01-problem.png" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <p class="mt-trailer-frame__cap" data-ja="伝えたいのに、伝わらない。" data-en="You want to say it, but it isn't landing.">伝えたいのに、伝わらない。</p>
-            </li>
-            <li class="mt-trailer-frame mt-trailer-frame--idea">
-              <div class="mt-trailer-frame__art">
-                <span class="mt-trailer-frame__cut" aria-hidden="true">CUT 02</span>
-                <picture class="mt-trailer-frame__glyph">
-                  <source type="image/webp" srcset="/images/manga-types/trailer-02-idea.webp">
-                  <img src="/images/manga-types/trailer-02-idea.png" alt="" aria-hidden="true" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <p class="mt-trailer-frame__cap" data-ja="マンガという方法に、気づく。" data-en="Then you discover manga.">マンガという方法に、気づく。</p>
-            </li>
-            <li class="mt-trailer-frame mt-trailer-frame--result">
-              <div class="mt-trailer-frame__art">
-                <span class="mt-trailer-frame__cut" aria-hidden="true">CUT 03</span>
-                <picture class="mt-trailer-frame__glyph">
-                  <source type="image/webp" srcset="/images/manga-types/trailer-03-result.webp">
-                  <img src="/images/manga-types/trailer-03-result.png" alt="" aria-hidden="true" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <p class="mt-trailer-frame__cap" data-ja="伝わって、未来が動き出す。" data-en="It gets across, and things start to move.">伝わって、未来が動き出す。</p>
-            </li>
-          </ol>
+        <!-- 中央: メインキャラクター（装飾レイヤー。この要素の内側でクリップする） -->
+        <div class="mt-hero-figure" aria-hidden="true">
+          <picture class="mt-hero-city">
+            <source type="image/webp" srcset="/images/manga-types/hero-cityscape.webp">
+            <img src="/images/manga-types/hero-cityscape.png" alt="" width="1100" height="367" loading="eager" fetchpriority="low" decoding="async">
+          </picture>
+          <picture class="mt-hero-brush">
+            <source type="image/webp" srcset="/images/manga-types/hero-orange-brush.webp">
+            <img src="/images/manga-types/hero-orange-brush.png" alt="" width="760" height="570" loading="eager" fetchpriority="low" decoding="async">
+          </picture>
+          <picture class="mt-hero-man">
+            <source type="image/webp" srcset="/images/manga-types/hero-main-man.webp">
+            <img src="/images/manga-types/hero-main-man.png" alt="" width="900" height="1200" loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+          <picture class="mt-hero-lettering">
+            <source type="image/webp" srcset="/images/manga-types/hero-brush-lettering.webp">
+            <img src="/images/manga-types/hero-brush-lettering.png" alt="" width="700" height="525" loading="eager" fetchpriority="low" decoding="async">
+          </picture>
         </div>
+
+        <!-- 右: 漫画コマ4枚（斜めに重なる漫画誌的レイアウト） -->
+        <ul class="mt-hero-panels">
+          <li class="mt-hero-panel mt-hero-panel--1">
+            <picture class="mt-hero-panel__art">
+              <source type="image/webp" srcset="/images/manga-types/hero-panel-recruit.webp">
+              <img src="/images/manga-types/hero-panel-recruit.png" alt="桜の下で笑顔を見せる、入社したばかりの女性社員" width="860" height="645" loading="eager" fetchpriority="low" decoding="async">
+            </picture>
+            <p class="mt-hero-panel__cap" data-i18n-html data-ja="採用を、<br>もっと魅力的に。" data-en="Make hiring<br>more compelling.">採用を、<br>もっと魅力的に。</p>
+          </li>
+          <li class="mt-hero-panel mt-hero-panel--2">
+            <picture class="mt-hero-panel__art">
+              <source type="image/webp" srcset="/images/manga-types/hero-panel-engineer.webp">
+              <img src="/images/manga-types/hero-panel-engineer.png" alt="青空の下、プラントを見上げる技術者" width="860" height="645" loading="eager" fetchpriority="low" decoding="async">
+            </picture>
+            <p class="mt-hero-panel__cap" data-i18n-html data-ja="技術を、<br>もっとわかりやすく。" data-en="Make technology<br>easier to grasp.">技術を、<br>もっとわかりやすく。</p>
+          </li>
+          <li class="mt-hero-panel mt-hero-panel--3">
+            <picture class="mt-hero-panel__art">
+              <source type="image/webp" srcset="/images/manga-types/hero-panel-presentation.webp">
+              <img src="/images/manga-types/hero-panel-presentation.png" alt="オフィスで笑顔で商品を説明する女性社員" width="860" height="645" loading="eager" fetchpriority="low" decoding="async">
+            </picture>
+            <p class="mt-hero-panel__cap" data-i18n-html data-ja="商品の魅力を、<br>もっと伝わる形で。" data-en="Put your product's appeal<br>in a form that lands.">商品の魅力を、<br>もっと伝わる形で。</p>
+          </li>
+          <li class="mt-hero-panel mt-hero-panel--4">
+            <picture class="mt-hero-panel__art">
+              <source type="image/webp" srcset="/images/manga-types/hero-panel-executive.webp">
+              <img src="/images/manga-types/hero-panel-executive.png" alt="窓辺の椅子で街を見つめる経営者" width="860" height="645" loading="eager" fetchpriority="low" decoding="async">
+            </picture>
+            <p class="mt-hero-panel__cap" data-i18n-html data-ja="会社の想いを、<br>未来へつなぐ。" data-en="Carry your company's<br>intent into the future.">会社の想いを、<br>未来へつなぐ。</p>
+          </li>
+        </ul>
+
+        <!-- 最右: 7ジャンル索引。リンク先は CHAPTERS 01–07 の既存ID（#mt-founding 等）で、
+             bm-manga-types.js の hashchange ハンドラが該当章を開いてスクロールする。 -->
+        <nav class="mt-hero-genres" aria-label="ビジネス漫画の7ジャンル" data-mt-hero-genres>
+          <p class="mt-hero-genres__label" aria-hidden="true">Genres<span>01&ndash;07</span></p>
+          <ul class="mt-hero-genres__list">
+            <li><a href="#mt-founding" class="mt-hero-genre is-active" data-mt-hero-genre="founding"><span class="mt-hero-genre__num" aria-hidden="true">01</span><span class="mt-hero-genre__en" aria-hidden="true">Origin</span><span class="mt-hero-genre__ja" data-ja="創業ストーリー" data-en="Founding story">創業ストーリー</span></a></li>
+            <li><a href="#mt-recruit" class="mt-hero-genre" data-mt-hero-genre="recruit"><span class="mt-hero-genre__num" aria-hidden="true">02</span><span class="mt-hero-genre__en" aria-hidden="true">Recruit</span><span class="mt-hero-genre__ja" data-ja="採用漫画" data-en="Recruiting manga">採用漫画</span></a></li>
+            <li><a href="#mt-casestudy" class="mt-hero-genre" data-mt-hero-genre="casestudy"><span class="mt-hero-genre__num" aria-hidden="true">03</span><span class="mt-hero-genre__en" aria-hidden="true">Case study</span><span class="mt-hero-genre__ja" data-ja="導入事例・顧客の声" data-en="Case studies">導入事例・顧客の声</span></a></li>
+            <li><a href="#mt-howto" class="mt-hero-genre" data-mt-hero-genre="howto"><span class="mt-hero-genre__num" aria-hidden="true">04</span><span class="mt-hero-genre__en" aria-hidden="true">How to</span><span class="mt-hero-genre__ja" data-ja="How to" data-en="How to">How to</span></a></li>
+            <li><a href="#mt-product" class="mt-hero-genre" data-mt-hero-genre="product"><span class="mt-hero-genre__num" aria-hidden="true">05</span><span class="mt-hero-genre__en" aria-hidden="true">Product</span><span class="mt-hero-genre__ja" data-ja="商品説明" data-en="Product explainer">商品説明</span></a></li>
+            <li><a href="#mt-training" class="mt-hero-genre" data-mt-hero-genre="training"><span class="mt-hero-genre__num" aria-hidden="true">06</span><span class="mt-hero-genre__en" aria-hidden="true">Training</span><span class="mt-hero-genre__ja" data-ja="研修マニュアル" data-en="Training manual">研修マニュアル</span></a></li>
+            <li><a href="#mt-profile" class="mt-hero-genre" data-mt-hero-genre="profile"><span class="mt-hero-genre__num" aria-hidden="true">07</span><span class="mt-hero-genre__en" aria-hidden="true">Profile</span><span class="mt-hero-genre__ja" data-ja="社長・プロフィール" data-en="Executive profile">社長・プロフィール</span></a></li>
+          </ul>
+          <p class="mt-hero-genres__foot" aria-hidden="true"><span>Business</span><span>stories</span><span>for a brighter</span><span>tomorrow.</span></p>
+        </nav>
+
       </div>
     </section>
 
@@ -223,87 +291,163 @@
       </div>
     </div>
 
-    <!-- ===== 2. CHAPTERS 01–07 — 7つの物語を巡る ===== -->
+    <!-- ===== 2. CHAPTERS 01–07 — 7つの物語を巡る（2026-09-10 一覧カード型へリデザイン）
+         見出し + 7枚の縦カード。カードは button[data-mt-select] のままなので、
+         bm-manga-types.js の章セレクタとヒーロー索引の同期がそのまま効く。
+         下の .mt-chapter-detail（7章の詳細パネル / #mt-* の直リンク先）は無変更。 ===== -->
     <section class="mt-section mt-chapters" id="chapters" aria-labelledby="mt-chapters-title">
-      <div class="mt-container">
-        <header class="mt-head">
-          <p class="mt-head__label">CHAPTERS 01–07</p>
-          <h2 class="mt-head__title" id="mt-chapters-title" data-ja="7つの物語を巡る" data-en="Seven stories to browse">7つの物語を巡る</h2>
-          <p class="mt-head__lead" data-i18n-html data-ja="企業の数だけ、伝えるべき物語がある。<br>章を選ぶと、そのマンガで伝えられることと主な活用シーンが表示されます。" data-en="Every company has a story worth telling.<br>Pick a chapter to see what that manga can convey and where it is typically used.">企業の数だけ、伝えるべき物語がある。<br>章を選ぶと、そのマンガで伝えられることと主な活用シーンが表示されます。</p>
+
+      <!-- 背景装飾（下端の都市スカイライン + 左下のオレンジブラシ）。すべて装飾なので aria-hidden -->
+      <div class="mt-sel-bg" aria-hidden="true">
+        <picture class="mt-sel-bg__brush">
+          <source type="image/webp" srcset="/images/manga-types/chapter-orange-brush.webp">
+          <img src="/images/manga-types/chapter-orange-brush.png" alt="" width="1000" height="333" loading="lazy" decoding="async">
+        </picture>
+        <picture class="mt-sel-bg__city">
+          <source type="image/webp" srcset="/images/manga-types/chapter-cityscape.webp">
+          <img src="/images/manga-types/chapter-cityscape.png" alt="" width="1500" height="500" loading="lazy" decoding="async">
+        </picture>
+      </div>
+
+      <div class="mt-container mt-sel-container">
+
+        <!-- 見出しエリア: 左=英字 / 中央=大見出し / 右=英字 + 手描き矢印の注釈 -->
+        <header class="mt-sel-head">
+          <p class="mt-sel-head__eyebrow" aria-hidden="true"><span>Manga</span><span>changes</span><span>business.</span></p>
+
+          <div class="mt-sel-head__main">
+            <h2 class="mt-sel-head__title" id="mt-chapters-title" data-ja="7つの物語を巡る。" data-en="Seven stories to explore.">7つの物語を巡る。</h2>
+            <p class="mt-sel-head__sub" data-ja="ビジネスの課題に、最適なストーリーを。" data-en="The right story for your business challenge.">ビジネスの課題に、最適なストーリーを。</p>
+            <p class="mt-sel-head__lead" data-i18n-html data-ja="伝えたい想い、解決したい課題に合わせて、最適なマンガのカタチがあります。<br>7つのストーリーから、あなたにぴったりの章を見つけてください。" data-en="For every message you want to land and every problem you want to solve, there is a form of manga that fits.<br>Find the chapter that suits you among these seven stories.">伝えたい想い、解決したい課題に合わせて、最適なマンガのカタチがあります。<br>7つのストーリーから、あなたにぴったりの章を見つけてください。</p>
+          </div>
+
+          <div class="mt-sel-head__aside">
+            <p class="mt-sel-head__find" aria-hidden="true"><span>Find</span><span>your</span><span>story.</span></p>
+            <p class="mt-sel-head__note">
+              <span class="mt-sel-head__note-text" data-i18n-html data-ja="気になる章から<br>お選びください" data-en="Start from whichever<br>chapter interests you">気になる章から<br>お選びください</span>
+              <picture class="mt-sel-head__arrow" aria-hidden="true">
+                <source type="image/webp" srcset="/images/manga-types/chapter-arrow-handdrawn.webp">
+                <img src="/images/manga-types/chapter-arrow-handdrawn.png" alt="" width="460" height="153" loading="lazy" decoding="async">
+              </picture>
+            </p>
+          </div>
         </header>
 
         <div class="mt-chapters-layout" data-mt-chapters>
 
-          <!-- 左: チャプター一覧 -->
-          <ul class="mt-chapter-list">
+          <!-- 7枚の縦カード一覧。button[data-mt-select] のまま＝既存の章セレクタJSと
+               ヒーロー右端のジャンル索引との同期をそのまま使う。 -->
+          <ul class="mt-chapter-cards">
             <li>
-              <button type="button" class="mt-chapter-row is-active" data-mt-select="founding" aria-pressed="true" aria-controls="mt-founding">
-                <span class="mt-chapter-row__num" aria-hidden="true">01</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">創業ストーリー</span>
-                  <span class="mt-chapter-row__desc">会社の「なぜ」を、原点から描く。</span>
+              <button type="button" class="mt-chapter-card is-active" data-mt-select="founding" aria-pressed="true" aria-current="true" aria-controls="mt-founding">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-origin.webp">
+                    <img src="/images/manga-types/chapter-origin.png" alt="創業ストーリー漫画のカード画像。青空の街を見上げる若きビジネスマン" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">01</span>
+                  <span class="mt-chapter-card__name" data-ja="創業ストーリー" data-en="Founding story">創業ストーリー</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="創業の想いや歴史を描き、<br>共感と信頼を生み出します。" data-en="We portray your founding vision and history,<br>building empathy and trust.">創業の想いや歴史を描き、<br>共感と信頼を生み出します。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="recruit" aria-pressed="false" aria-controls="mt-recruit">
-                <span class="mt-chapter-row__num" aria-hidden="true">02</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">採用漫画</span>
-                  <span class="mt-chapter-row__desc">働く人の一日を、候補者の物語に。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="recruit" aria-pressed="false" aria-controls="mt-recruit">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-recruit.webp">
+                    <img src="/images/manga-types/chapter-recruit.png" alt="採用漫画のカード画像。桜の下で新しい門出を迎える女性社員" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">02</span>
+                  <span class="mt-chapter-card__name" data-ja="採用漫画" data-en="Recruiting manga">採用漫画</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="仕事の魅力や社員の想いを伝え、<br>共感する人材と出会います。" data-en="Convey the work and your people,<br>and meet candidates who share it.">仕事の魅力や社員の想いを伝え、<br>共感する人材と出会います。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="casestudy" aria-pressed="false" aria-controls="mt-casestudy">
-                <span class="mt-chapter-row__num" aria-hidden="true">03</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">導入事例・顧客の声</span>
-                  <span class="mt-chapter-row__desc">課題から成果までを、追体験させる。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="casestudy" aria-pressed="false" aria-controls="mt-casestudy">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-case-study.webp">
+                    <img src="/images/manga-types/chapter-case-study.png" alt="導入事例漫画のカード画像。青空と工場を見つめる若き技術者" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">03</span>
+                  <span class="mt-chapter-card__name" data-ja="導入事例・顧客の声" data-en="Case studies">導入事例・顧客の声</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="導入効果やお客様の声を、<br>ストーリーで伝えます。" data-en="Share results and customer voices<br>as a story.">導入効果やお客様の声を、<br>ストーリーで伝えます。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="howto" aria-pressed="false" aria-controls="mt-howto">
-                <span class="mt-chapter-row__num" aria-hidden="true">04</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">How to</span>
-                  <span class="mt-chapter-row__desc">複雑な手順を、迷わない物語へ。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="howto" aria-pressed="false" aria-controls="mt-howto">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-howto.webp">
+                    <img src="/images/manga-types/chapter-howto.png" alt="How to漫画のカード画像。窓辺で思索する若きビジネスマン" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">04</span>
+                  <span class="mt-chapter-card__name" data-ja="How to" data-en="How to">How to</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="複雑な内容や手順を、<br>マンガでやさしく解説します。" data-en="Complex content and steps,<br>explained gently in manga.">複雑な内容や手順を、<br>マンガでやさしく解説します。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="product" aria-pressed="false" aria-controls="mt-product">
-                <span class="mt-chapter-row__num" aria-hidden="true">05</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">商品説明</span>
-                  <span class="mt-chapter-row__desc">スペックではなく、使う未来を見せる。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="product" aria-pressed="false" aria-controls="mt-product">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-product.webp">
+                    <img src="/images/manga-types/chapter-product.png" alt="商品説明漫画のカード画像。タブレットで商品を説明する女性社員" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">05</span>
+                  <span class="mt-chapter-card__name" data-ja="商品説明" data-en="Product explainer">商品説明</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="商品の魅力をストーリーで伝え、<br>「欲しい」を引き出します。" data-en="Tell your product's appeal as a story<br>and draw out the wish to own it.">商品の魅力をストーリーで伝え、<br>「欲しい」を引き出します。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="training" aria-pressed="false" aria-controls="mt-training">
-                <span class="mt-chapter-row__num" aria-hidden="true">06</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">研修マニュアル</span>
-                  <span class="mt-chapter-row__desc">失敗と成功を、疑似体験に変える。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="training" aria-pressed="false" aria-controls="mt-training">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-training.webp">
+                    <img src="/images/manga-types/chapter-training.png" alt="研修マニュアル漫画のカード画像。都市の研修室で学ぶ若手社員" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">06</span>
+                  <span class="mt-chapter-card__name" data-ja="研修マニュアル" data-en="Training manual">研修マニュアル</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="学びをわかりやすく伝え、<br>理解と定着を促します。" data-en="Make learning clear,<br>and help it take root.">学びをわかりやすく伝え、<br>理解と定着を促します。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
             <li>
-              <button type="button" class="mt-chapter-row" data-mt-select="profile" aria-pressed="false" aria-controls="mt-profile">
-                <span class="mt-chapter-row__num" aria-hidden="true">07</span>
-                <span class="mt-chapter-row__body">
-                  <span class="mt-chapter-row__name">社長・プロフィール</span>
-                  <span class="mt-chapter-row__desc">経営者の人柄を、記憶に残す。</span>
+              <button type="button" class="mt-chapter-card" data-mt-select="profile" aria-pressed="false" aria-controls="mt-profile">
+                <span class="mt-chapter-card__art">
+                  <picture>
+                    <source type="image/webp" srcset="/images/manga-types/chapter-profile.webp">
+                    <img src="/images/manga-types/chapter-profile.png" alt="社長・プロフィール漫画のカード画像。未来を見つめる経営者" loading="lazy" decoding="async" width="432" height="540">
+                  </picture>
                 </span>
-                <span class="mt-chapter-row__arrow" aria-hidden="true">→</span>
+                <span class="mt-chapter-card__body">
+                  <span class="mt-chapter-card__num" aria-hidden="true">07</span>
+                  <span class="mt-chapter-card__name" data-ja="社長・プロフィール" data-en="Executive profile">社長・プロフィール</span>
+                  <span class="mt-chapter-card__desc" data-i18n-html data-ja="経営者の想いや人柄を伝え、<br>企業への共感を生み出します。" data-en="Share the leader's intent and character,<br>building empathy for the company.">経営者の想いや人柄を伝え、<br>企業への共感を生み出します。</span>
+                  <span class="mt-chapter-card__go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10.4"/><path d="M10.4 8.2l4 3.8-4 3.8"/></svg></span>
+                </span>
               </button>
             </li>
           </ul>
@@ -314,11 +458,12 @@
 
               <article class="mt-chapter-panel is-active" id="mt-founding" data-mt-panel="founding">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-founding.webp">
-                  <img src="/images/manga-types/type-founding.png" alt="創業ストーリー漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-origin.webp">
+                  <img src="/images/manga-types/chapter-origin.png" alt="創業ストーリー漫画のイラスト。青空の街を見上げる若きビジネスマン" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">01</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 01<span aria-hidden="true"> / </span>ORIGIN</p>
                   <h3 class="mt-chapter-panel__title">創業ストーリー</h3>
                   <p class="mt-chapter-panel__desc">会社の「なぜ」を、原点から描く。</p>
                   <p class="mt-chapter-panel__text">会社の原点や創業者の決断を、共感を生む物語として届けます。企業理念・ビジョンをストーリー化することで「なぜこの会社なのか」という共感が生まれ、コーポレートサイト・会社案内・IR資料への掲載はもちろん、社員教育やインナーブランディングの教材としても効果的です。<a href="/company-manga">会社紹介マンガ</a>の中核コンテンツとしてもよく使われます。</p>
@@ -332,11 +477,12 @@
 
               <article class="mt-chapter-panel" id="mt-recruit" data-mt-panel="recruit">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-recruit.webp">
-                  <img src="/images/manga-types/type-recruit.png" alt="採用漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-recruit.webp">
+                  <img src="/images/manga-types/chapter-recruit.png" alt="採用漫画のイラスト。桜の下で新しい門出を迎える女性社員" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">02</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 02<span aria-hidden="true"> / </span>RECRUIT</p>
                   <h3 class="mt-chapter-panel__title">採用漫画</h3>
                   <p class="mt-chapter-panel__desc">働く人の一日を、候補者の物語に。</p>
                   <p class="mt-chapter-panel__text">社員の一日や仕事のリアルを描き、候補者が入社後を想像できる物語にします。採用サイトやパンフレットに掲載することで、応募率の向上とミスマッチによる早期離職の防止につながります。詳しくは<a href="/recruit-manga">採用マンガ</a>のページ、または<a href="/column/business-manga-sales-recruiting">採用マンガ活用ガイド</a>をご覧ください。</p>
@@ -350,11 +496,12 @@
 
               <article class="mt-chapter-panel" id="mt-casestudy" data-mt-panel="casestudy">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-casestudy.webp">
-                  <img src="/images/manga-types/type-casestudy.png" alt="導入事例・顧客の声 漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-case-study.webp">
+                  <img src="/images/manga-types/chapter-case-study.png" alt="導入事例漫画のイラスト。青空と工場を見つめる若き技術者" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">03</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 03<span aria-hidden="true"> / </span>CASE STUDY</p>
                   <h3 class="mt-chapter-panel__title">導入事例・顧客の声</h3>
                   <p class="mt-chapter-panel__desc">課題から成果までを、追体験させる。</p>
                   <p class="mt-chapter-panel__text">課題から成果までを顧客視点で描き、導入後の変化と信頼を伝えます。導入前後のビフォーアフターを漫画で表現することで、テキストだけの事例より読了率が大幅に向上し、営業資料やWebサイトに組み込むことで成約率の向上にも寄与します。戦略的なシナリオ設計は<a href="/column/btob-manga-cvr-strategy">CVR1.5倍の戦略的シナリオ設計</a>で解説しています。営業資料への組み込みは<a href="/sales-manga">営業資料マンガ</a>もご参照ください。</p>
@@ -368,11 +515,12 @@
 
               <article class="mt-chapter-panel" id="mt-howto" data-mt-panel="howto">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-howto.webp">
-                  <img src="/images/manga-types/type-howto.png" alt="How to（使い方ガイド）漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-howto.webp">
+                  <img src="/images/manga-types/chapter-howto.png" alt="How to漫画のイラスト。窓辺で思索する若きビジネスマン" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">04</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 04<span aria-hidden="true"> / </span>HOW TO</p>
                   <h3 class="mt-chapter-panel__title">How to</h3>
                   <p class="mt-chapter-panel__desc">複雑な手順を、迷わない物語へ。</p>
                   <p class="mt-chapter-panel__text">複雑な操作や手順を、初めての人にも迷わないステップへ変えます。操作マニュアルを漫画化することで問い合わせ件数を削減でき、複雑な手順もステップごとに視覚的に解説可能。多言語対応で海外ユーザーへの展開もできます。</p>
@@ -386,11 +534,12 @@
 
               <article class="mt-chapter-panel" id="mt-product" data-mt-panel="product">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-product.webp">
-                  <img src="/images/manga-types/type-product.png" alt="商品説明漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-product.webp">
+                  <img src="/images/manga-types/chapter-product.png" alt="商品説明漫画のイラスト。タブレットで商品を説明する女性社員" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">05</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 05<span aria-hidden="true"> / </span>PRODUCT</p>
                   <h3 class="mt-chapter-panel__title">商品説明</h3>
                   <p class="mt-chapter-panel__desc">スペックではなく、使う未来を見せる。</p>
                   <p class="mt-chapter-panel__text">商品が活躍する場面を描き、特徴やメリットを自分ごととして伝えます。複雑な商品スペックもストーリーで直感的に伝わり、LPやECサイトに掲載することでコンバージョン向上、SNS広告素材としても高いクリック率が期待できます。詳しくは<a href="/product-manga">商品紹介マンガ</a>のページ、<a href="/column/btob-manga-lp-lead-generation">BtoB LPでリード獲得</a>もご覧ください。</p>
@@ -404,11 +553,12 @@
 
               <article class="mt-chapter-panel" id="mt-training" data-mt-panel="training">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-training.webp">
-                  <img src="/images/manga-types/type-training.png" alt="研修マニュアル漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-training.webp">
+                  <img src="/images/manga-types/chapter-training.png" alt="研修マニュアル漫画のイラスト。都市の研修室で学ぶ若手社員" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">06</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 06<span aria-hidden="true"> / </span>TRAINING</p>
                   <h3 class="mt-chapter-panel__title">研修マニュアル</h3>
                   <p class="mt-chapter-panel__desc">失敗と成功を、疑似体験に変える。</p>
                   <p class="mt-chapter-panel__text">現場の具体例を疑似体験させ、ルールと行動を記憶に定着させます。新人研修マニュアルの理解度向上やコンプライアンス・ハラスメント研修に最適で、eラーニング教材としても活用できます。詳しくは<a href="/training-manga">研修マンガ</a>のページをご覧ください。</p>
@@ -422,11 +572,12 @@
 
               <article class="mt-chapter-panel" id="mt-profile" data-mt-panel="profile">
                 <picture class="mt-chapter-panel__illust">
-                  <source type="image/webp" srcset="/images/manga-types/type-profile.webp">
-                  <img src="/images/manga-types/type-profile.png" alt="社長・プロフィール漫画の作例イラスト" loading="lazy" decoding="async" width="768" height="512">
+                  <source type="image/webp" srcset="/images/manga-types/chapter-profile.webp">
+                  <img src="/images/manga-types/chapter-profile.png" alt="社長・プロフィール漫画のイラスト。未来を見つめる経営者" loading="lazy" decoding="async" width="432" height="540">
                 </picture>
                 <div class="mt-chapter-panel__body">
                   <p class="mt-chapter-panel__num" aria-hidden="true">07</p>
+                  <p class="mt-chapter-panel__label">CHAPTER 07<span aria-hidden="true"> / </span>PROFILE</p>
                   <h3 class="mt-chapter-panel__title">社長・プロフィール</h3>
                   <p class="mt-chapter-panel__desc">経営者の人柄を、記憶に残す。</p>
                   <p class="mt-chapter-panel__text">経営者の人柄や価値観を親しみやすく描き、短い接触でも印象を残します。社長メッセージを漫画で表現することで「読まれる形」になり、名刺やプロフィールサイトへの掲載、講演・セミナーの自己紹介ツールとしても活用できます。</p>
@@ -445,304 +596,436 @@
       </div>
     </section>
 
-    <!-- ===== 3. 相談セクション（キャラクター入り） ===== -->
-    <section class="mt-consult" aria-labelledby="mt-consult-title">
-      <div class="mt-container mt-consult-inner">
-        <div class="mt-consult-panel">
-          <p class="mt-head__label">INTERMISSION / STORY CONSULTATION</p>
-          <h2 class="mt-consult-title" id="mt-consult-title" data-i18n-html data-ja="次のチャプターに迷ったら、<br><em>課題だけ</em>聞かせてください。" data-en="Not sure which chapter fits?<br><em>Just tell us the problem.</em>">次のチャプターに迷ったら、<br><em>課題だけ</em>聞かせてください。</h2>
-          <p class="mt-consult-lead" data-i18n-html data-ja="伝えたい相手・目的・掲載先から、<br>最適な物語と上映形式を一緒に整理します。" data-en="From your audience, your goal, and where it will run,<br>we'll sort out the right story and screening format together.">伝えたい相手・目的・掲載先から、<br>最適な物語と上映形式を一緒に整理します。</p>
-          <ul class="mt-consult-facts">
-            <li><span class="mt-consult-facts__num">30</span><span class="mt-consult-facts__unit" data-ja="分" data-en="min">分</span><span class="mt-consult-facts__label" data-ja="オンライン無料相談" data-en="Free online consultation">オンライン無料相談</span></li>
-            <li><span class="mt-consult-facts__num">1</span><span class="mt-consult-facts__unit" data-ja="ページ" data-en="page">ページ</span><span class="mt-consult-facts__label" data-ja="から発注可能" data-en="Minimum order">から発注可能</span></li>
-            <li><span class="mt-consult-facts__num">0</span><span class="mt-consult-facts__unit" data-ja="円" data-en="yen">円</span><span class="mt-consult-facts__label" data-ja="相談・お見積もり（発注義務なし）" data-en="Quotes are free, no obligation">相談・お見積もり（発注義務なし）</span></li>
-          </ul>
-          <div class="mt-consult-cta">
-            <a href="/contact" class="mt-btn mt-btn--primary mt-btn--xl">
-              <span data-ja="課題を相談する" data-en="Tell us your problem">課題を相談する</span>
-            </a>
-            <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="mt-btn mt-btn--ghost mt-btn--xl" target="_blank" rel="noopener">
-              <span data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>
-            </a>
-            <a href="tel:03-6261-0764" class="mt-consult-tel">
-              <span class="mt-consult-tel__label" data-ja="お電話でも" data-en="Or call us">お電話でも</span>
-              <span class="mt-consult-tel__num">03-6261-0764</span>
-            </a>
+    <!-- ===== 3. HOW TO EXPRESS — 表現カスタマイズ（2026-09-14 新設）
+         旧「4つの表現形式」(#formats) と旧「画風選び」(#styles) を統合してページを短くした。
+         左=導入+案内キャラ+CTA / 右=STEP01 表現形式 → STEP02 画風（各4枚から1つ選べる button[aria-pressed]）。
+         選択は bm-manga-types.js の initExpress() が担当。送信・診断ロジックは持たない。 ===== -->
+    <section class="mt-section mt-express" id="express" aria-labelledby="mt-express-title">
+      <div class="mt-container mt-sel-container">
+        <div class="mt-exp-layout">
+
+          <!-- 左: 導入 -->
+          <div class="mt-exp-intro">
+            <div class="mt-exp-intro__text">
+              <p class="mt-exp-intro__label" aria-hidden="true">How to express</p>
+              <h2 class="mt-exp-intro__title" id="mt-express-title" data-i18n-html data-ja="どう見せるかでも、<br>印象は変わる。" data-en="How you show it<br>changes the impression.">どう見せるかでも、<br>印象は変わる。</h2>
+              <p class="mt-exp-intro__sub" data-ja="4つの形式 × 4つの画風" data-en="4 formats × 4 art styles">4つの形式 × 4つの画風</p>
+              <p class="mt-exp-intro__lead" data-i18n-html data-ja="同じメッセージでも、表現形式や画風によって<br>伝わり方は大きく変わります。<br>目的やターゲットに合わせて、<br>最適な組み合わせを見つけましょう。" data-en="The same message lands very differently<br>depending on format and art style.<br>Match them to your goal and audience<br>to find the best combination.">同じメッセージでも、表現形式や画風によって<br>伝わり方は大きく変わります。<br>目的やターゲットに合わせて、<br>最適な組み合わせを見つけましょう。</p>
+            </div>
+
+            <div class="mt-exp-intro__aside">
+              <!-- 案内キャラ（背景透過PNG）+ 手描き風の補助コピー（HTMLテキスト） -->
+              <div class="mt-exp-guide">
+                <picture class="mt-exp-guide__img" aria-hidden="true">
+                  <source type="image/webp" srcset="/images/manga-types/expression-guide-character.webp">
+                  <img src="/images/manga-types/expression-guide-character.png" alt="" width="400" height="500" loading="lazy" decoding="async">
+                </picture>
+                <span class="mt-exp-guide__spark" aria-hidden="true"></span>
+                <p class="mt-exp-guide__note" data-i18n-html data-ja="迷っていても大丈夫！<br>BizMangaが<br>最適な組み合わせを<br>ご提案します。" data-en="Not sure? No problem!<br>BizManga will suggest<br>the best combination<br>for you.">迷っていても大丈夫！<br>BizMangaが<br>最適な組み合わせを<br>ご提案します。</p>
+              </div>
+
+              <div class="mt-exp-intro__cta">
+                <a href="/contact" class="mt-btn mt-btn--primary">
+                  <span data-ja="最適な組み合わせを相談する" data-en="Ask us for the best combination">最適な組み合わせを相談する</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
+
+              <ul class="mt-exp-points">
+                <li class="mt-exp-point">
+                  <span class="mt-exp-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5h22v13.5h-11l-5.6 4.6v-4.6H5z"/><circle cx="11" cy="14.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="14.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="21" cy="14.2" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+                  <span class="mt-exp-point__text" data-i18n-html data-ja="ヒアリングで<br>ぴったり提案" data-en="Tailored proposals<br>from a hearing">ヒアリングで<br>ぴったり提案</span>
+                </li>
+                <li class="mt-exp-point">
+                  <span class="mt-exp-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 6a7.2 7.2 0 0 0-4.2 13c.9.7 1.3 1.6 1.3 2.7V23h5.8v-1.3c0-1.1.4-2 1.3-2.7A7.2 7.2 0 0 0 16 6z"/><path d="M13.2 26.4h5.6"/><path d="M16 1.8v1.6M6.4 5.8l1.1 1.1M25.6 5.8l-1.1 1.1M3 14.2h1.6M27.4 14.2h1.6"/></svg></span>
+                  <span class="mt-exp-point__text" data-i18n-html data-ja="目的に応じた<br>プロの視点" data-en="A pro view<br>for your goal">目的に応じた<br>プロの視点</span>
+                </li>
+                <li class="mt-exp-point">
+                  <span class="mt-exp-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="10.6" r="4"/><path d="M8.6 25c0-4 3.3-6.6 7.4-6.6s7.4 2.6 7.4 6.6"/><circle cx="6.8" cy="12.6" r="2.8"/><path d="M2.6 22.6c.3-2.8 2-4.5 4.4-4.5"/><circle cx="25.2" cy="12.6" r="2.8"/><path d="M29.4 22.6c-.3-2.8-2-4.5-4.4-4.5"/></svg></span>
+                  <span class="mt-exp-point__text" data-i18n-html data-ja="ご相談は<br>無料です" data-en="Consultation<br>is free">ご相談は<br>無料です</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 右: STEP 01 → STEP 02 -->
+          <div class="mt-exp-steps">
+
+            <div class="mt-exp-step" role="group" aria-labelledby="mt-exp-step1-title" data-mt-exp-group>
+              <div class="mt-exp-step__head">
+                <p class="mt-exp-step__no" aria-hidden="true"><span>Step</span><b>01</b></p>
+                <h3 class="mt-exp-step__title" id="mt-exp-step1-title"><span class="mt-exp-sr">STEP 01 </span><span data-ja="表現形式を選ぶ" data-en="Choose a format">表現形式を選ぶ</span></h3>
+                <p class="mt-exp-step__desc" data-ja="伝えたい内容やシーンに合わせて、最適な形式を選びましょう。" data-en="Pick the format that fits your content and where it will be seen.">伝えたい内容やシーンに合わせて、最適な形式を選びましょう。</p>
+              </div>
+              <ul class="mt-exp-cards mt-exp-cards--format">
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--one-panel" data-mt-exp-option="one-panel" aria-pressed="true">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-format-one-panel.webp">
+                      <img src="/images/manga-types/expression-format-one-panel.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="1コマ" data-en="Single panel">1コマ</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="一瞬で要点を伝える<br>インパクトのある表現。" data-en="Instant impact<br>that delivers the point.">一瞬で要点を伝える<br>インパクトのある表現。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="用途：" data-en="Best for: ">用途：</span><span class="mt-exp-tag" data-ja="広告・バナー" data-en="Ads & banners">広告・バナー</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="SNS投稿" data-en="Social posts">SNS投稿</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--four-panel" data-mt-exp-option="four-panel" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-format-four-panel.webp">
+                      <img src="/images/manga-types/expression-format-four-panel.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="4コマ" data-en="Four panels">4コマ</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="短い起承転結で<br>印象に残る。" data-en="A short arc<br>that sticks.">短い起承転結で<br>印象に残る。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="用途：" data-en="Best for: ">用途：</span><span class="mt-exp-tag" data-ja="サービス紹介" data-en="Service intros">サービス紹介</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="社内啓発" data-en="Internal comms">社内啓発</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--story" data-mt-exp-option="story" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-format-story.webp">
+                      <img src="/images/manga-types/expression-format-story.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="ストーリー型" data-en="Full story">ストーリー型</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="共感と理解を深める<br>しっかりとしたストーリー。" data-en="A full story that deepens<br>empathy and understanding.">共感と理解を深める<br>しっかりとしたストーリー。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="用途：" data-en="Best for: ">用途：</span><span class="mt-exp-tag" data-ja="採用・会社紹介" data-en="Hiring & company intro">採用・会社紹介</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="ブランディング" data-en="Branding">ブランディング</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--vertical" data-mt-exp-option="vertical" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-format-vertical.webp">
+                      <img src="/images/manga-types/expression-format-vertical.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="縦読み" data-en="Vertical scroll">縦読み</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="スマホでテンポよく<br>読み進められる。" data-en="Reads smoothly<br>on a phone.">スマホでテンポよく<br>読み進められる。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="用途：" data-en="Best for: ">用途：</span><span class="mt-exp-tag" data-ja="商品紹介・SNS" data-en="Products & social">商品紹介・SNS</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="使い方・ハウツー" data-en="How-to guides">使い方・ハウツー</span></span>
+                </button>
+              </li>
+              </ul>
+            </div>
+
+            <span class="mt-exp-arrow" aria-hidden="true"><svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 10l8 8 8-8"/></svg></span>
+
+            <div class="mt-exp-step" role="group" aria-labelledby="mt-exp-step2-title" data-mt-exp-group>
+              <div class="mt-exp-step__head">
+                <p class="mt-exp-step__no" aria-hidden="true"><span>Step</span><b>02</b></p>
+                <h3 class="mt-exp-step__title" id="mt-exp-step2-title"><span class="mt-exp-sr">STEP 02 </span><span data-ja="画風を選ぶ" data-en="Choose an art style">画風を選ぶ</span></h3>
+                <p class="mt-exp-step__desc" data-ja="ターゲットや伝えたい印象に合わせて、最適な画風を選びましょう。" data-en="Pick the art style that fits your audience and the impression you want.">ターゲットや伝えたい印象に合わせて、最適な画風を選びましょう。</p>
+              </div>
+              <ul class="mt-exp-cards mt-exp-cards--style">
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--business" data-mt-exp-option="business" aria-pressed="true">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-style-business.webp">
+                      <img src="/images/manga-types/expression-style-business.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="ビジネス・王道" data-en="Business classic">ビジネス・王道</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="信頼感と誠実さで、<br>しっかり伝わる。" data-en="Trust and sincerity<br>that land clearly.">信頼感と誠実さで、<br>しっかり伝わる。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="印象：" data-en="Impression: ">印象：</span><span class="mt-exp-tag" data-ja="信頼感" data-en="Trust">信頼感</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="幅広い世代" data-en="All generations">幅広い世代</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--shonen" data-mt-exp-option="shonen" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-style-shonen.webp">
+                      <img src="/images/manga-types/expression-style-shonen.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="少年漫画調" data-en="Shonen style">少年漫画調</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="熱量と勢いで、<br>行動を後押しする。" data-en="Energy and momentum<br>that push to act.">熱量と勢いで、<br>行動を後押しする。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="印象：" data-en="Impression: ">印象：</span><span class="mt-exp-tag" data-ja="エネルギー" data-en="Energy">エネルギー</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="若年層に最適" data-en="Great for youth">若年層に最適</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--gekiga" data-mt-exp-option="gekiga" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-style-gekiga.webp">
+                      <img src="/images/manga-types/expression-style-gekiga.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="劇画・重厚" data-en="Gekiga / dramatic">劇画・重厚</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="重みとリアリティで、<br>深く心に響く。" data-en="Weight and realism<br>that resonate deeply.">重みとリアリティで、<br>深く心に響く。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="印象：" data-en="Impression: ">印象：</span><span class="mt-exp-tag" data-ja="重厚感" data-en="Gravity">重厚感</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="信頼・伝統" data-en="Trust & tradition">信頼・伝統</span></span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="mt-exp-card mt-exp-card--pop" data-mt-exp-option="pop" aria-pressed="false">
+                  <span class="mt-exp-card__check" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-exp-card__checkmark"><path d="M3.6 8.3l2.8 2.8 6-6.2"/></svg></span>
+                  <span class="mt-exp-card__art" aria-hidden="true">
+                    <picture>
+                      <source type="image/webp" srcset="/images/manga-types/expression-style-pop.webp">
+                      <img src="/images/manga-types/expression-style-pop.png" alt="" width="400" height="300" loading="lazy" decoding="async">
+                    </picture>
+                  </span>
+                  <span class="mt-exp-card__name" data-ja="ポップ・親しみ系" data-en="Pop & friendly">ポップ・親しみ系</span>
+                  <span class="mt-exp-card__text" data-i18n-html data-ja="やさしく楽しく、<br>身近に伝わる。" data-en="Gentle, fun<br>and close to home.">やさしく楽しく、<br>身近に伝わる。</span>
+                  <span class="mt-exp-card__tags"><span class="mt-exp-sr" data-ja="印象：" data-en="Impression: ">印象：</span><span class="mt-exp-tag" data-ja="親しみやすさ" data-en="Approachable">親しみやすさ</span><span class="mt-exp-sr">、</span><span class="mt-exp-tag" data-ja="共感・好感度" data-en="Empathy & likability">共感・好感度</span></span>
+                </button>
+              </li>
+              </ul>
+            </div>
+
           </div>
         </div>
-        <div class="mt-consult-figure">
-          <p class="mt-bubble mt-bubble--right" data-i18n-html data-ja="まだ決まっていなくて大丈夫！<br>目的だけ教えてね。" data-en="No need to decide yet!<br>Just tell us your goal.">まだ決まっていなくて大丈夫！<br>目的だけ教えてね。</p>
-          <img src="/material/images/character-cta.webp" alt="" aria-hidden="true" width="1152" height="1228" loading="lazy" decoding="async">
-        </div>
       </div>
     </section>
 
-    <!-- ===== 4. SCREENING FORMAT — 物語に合う形式を選ぶ（上映プログラムのチケットUI） ===== -->
-    <section class="mt-section mt-formats" id="formats" aria-labelledby="mt-formats-title">
-      <div class="mt-container">
-        <header class="mt-head">
-          <p class="mt-head__label">SCREENING FORMAT 01–04</p>
-          <h2 class="mt-head__title" id="mt-formats-title" data-ja="物語に合う形式を選ぶ" data-en="Pick the format that fits the story">物語に合う形式を選ぶ</h2>
-          <p class="mt-head__lead" data-ja="どんな物語を、どれくらい深く届けるか。映画の上映形式を選ぶように、使う場所と読後感から選びます。" data-en="How deep should the story go, and where will it run? Choose a format the way you'd choose a screening.">どんな物語を、どれくらい深く届けるか。映画の上映形式を選ぶように、使う場所と読後感から選びます。</p>
-        </header>
+    <!-- ===== 3b. HOW TO CHOOSE — 選び方ミニガイド（2026-09-14 新設）
+         種類・形式・画風を見てきた人向けの短いまとめ。WHO × WHAT × WHERE の3枚 + 相談CTAだけの「弱い」セクション。
+         JSなし。カード間の「×」は CSS の擬似要素で描く（読み上げなし）。 ===== -->
+    <section class="mt-section mt-choose" id="how-to-choose" aria-labelledby="mt-choose-title">
+      <div class="mt-container mt-sel-container mt-choose-container">
+        <span class="mt-choose__watermark" aria-hidden="true">How to choose</span>
 
-        <div class="mt-tickets" data-mt-formats>
+        <div class="mt-choose-head">
+          <div class="mt-choose-head__text">
+            <p class="mt-choose__label" aria-hidden="true">How to choose</p>
+            <h2 class="mt-choose__title" id="mt-choose-title" data-i18n-html data-ja="迷ったら、この<em>3つ</em>だけ。" data-en="Not sure? Just these <em>3</em>.">迷ったら、この<em>3つ</em>だけ。</h2>
+            <p class="mt-choose__lead" data-ja="この3つの視点で整理すれば、最適なマンガがきっと見つかります。" data-en="Sort things out from these three angles, and you'll find the right manga.">この3つの視点で整理すれば、最適なマンガがきっと見つかります。</p>
+          </div>
+          <!-- 手描き風の補助コピー（HTMLテキスト） -->
+          <p class="mt-choose__note" data-i18n-html data-ja="まだ決まっていなくても<br>大丈夫です！<br>私たちが一緒に<br>整理します！" data-en="Not decided yet?<br>That's fine!<br>We'll sort it out<br>together!">まだ決まっていなくても<br>大丈夫です！<br>私たちが一緒に<br>整理します！</p>
+        </div>
 
-          <!-- 上映プログラム（チケット4枚） -->
-          <ul class="mt-ticket-list">
-            <li>
-              <button type="button" class="mt-ticket" data-mt-format-select="teaser" aria-pressed="false" aria-controls="mt-format-teaser">
-                <span class="mt-ticket__num" aria-hidden="true">01</span>
-                <span class="mt-ticket__body">
-                  <span class="mt-ticket__en">TEASER POSTER</span>
-                  <span class="mt-ticket__name">1コマ</span>
-                  <span class="mt-ticket__hook">広告・SNSで瞬時に伝える</span>
-                </span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mt-ticket" data-mt-format-select="short" aria-pressed="false" aria-controls="mt-format-short">
-                <span class="mt-ticket__num" aria-hidden="true">02</span>
-                <span class="mt-ticket__body">
-                  <span class="mt-ticket__en">SHORT EPISODE</span>
-                  <span class="mt-ticket__name">4コマ</span>
-                  <span class="mt-ticket__hook">短く完結し、連載にも向く</span>
-                </span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mt-ticket is-active" data-mt-format-select="feature" aria-pressed="true" aria-controls="mt-format-feature">
-                <span class="mt-ticket__num" aria-hidden="true">03</span>
-                <span class="mt-ticket__body">
-                  <span class="mt-ticket__en">FEATURE STORY</span>
-                  <span class="mt-ticket__name">ストーリー型</span>
-                  <span class="mt-ticket__hook">深い共感と理解をつくる</span>
-                </span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="mt-ticket" data-mt-format-select="mobile" aria-pressed="false" aria-controls="mt-format-mobile">
-                <span class="mt-ticket__num" aria-hidden="true">04</span>
-                <span class="mt-ticket__body">
-                  <span class="mt-ticket__en">MOBILE CUT</span>
-                  <span class="mt-ticket__name">縦読み</span>
-                  <span class="mt-ticket__hook">スマホ・SNSに最適化</span>
-                </span>
-              </button>
-            </li>
-          </ul>
+        <ol class="mt-choose-list" role="list">
+          <li class="mt-choose-card mt-choose-card--who">
+            <div class="mt-choose-card__head">
+              <span class="mt-choose-card__no" aria-hidden="true">01</span>
+              <div class="mt-choose-card__heading">
+                <span class="mt-choose-card__en" aria-hidden="true">Who</span>
+                <h3 class="mt-choose-card__title"><span class="mt-choose-sr">01 WHO </span><span data-ja="誰に伝える？" data-en="Who is it for?">誰に伝える？</span></h3>
+              </div>
+            </div>
+            <picture class="mt-choose-card__art">
+              <source type="image/webp" srcset="/images/manga-types/choice-who-team.webp">
+              <img src="/images/manga-types/choice-who-team.png" alt="マンガを届ける対象となるビジネスパーソンのイメージ" width="760" height="543" loading="lazy" decoding="async">
+            </picture>
+            <ul class="mt-choose-pills">
+              <li class="mt-choose-pill" data-ja="顧客" data-en="Customers">顧客</li>
+              <li class="mt-choose-pill" data-ja="採用候補者" data-en="Candidates">採用候補者</li>
+              <li class="mt-choose-pill" data-ja="社員" data-en="Employees">社員</li>
+            </ul>
+          </li>
+          <li class="mt-choose-card mt-choose-card--what">
+            <div class="mt-choose-card__head">
+              <span class="mt-choose-card__no" aria-hidden="true">02</span>
+              <div class="mt-choose-card__heading">
+                <span class="mt-choose-card__en" aria-hidden="true">What</span>
+                <h3 class="mt-choose-card__title"><span class="mt-choose-sr">02 WHAT </span><span data-ja="何を伝える？" data-en="What to say?">何を伝える？</span></h3>
+              </div>
+            </div>
+            <picture class="mt-choose-card__art">
+              <source type="image/webp" srcset="/images/manga-types/choice-what-message.webp">
+              <img src="/images/manga-types/choice-what-message.png" alt="商品・ビジョン・ノウハウを表すビジネス資料" width="760" height="537" loading="lazy" decoding="async">
+            </picture>
+            <ul class="mt-choose-pills">
+              <li class="mt-choose-pill" data-ja="商品・サービス" data-en="Products & services">商品・サービス</li>
+              <li class="mt-choose-pill" data-ja="想い・ビジョン" data-en="Mission & vision">想い・ビジョン</li>
+              <li class="mt-choose-pill" data-ja="ノウハウ" data-en="Know-how">ノウハウ</li>
+            </ul>
+          </li>
+          <li class="mt-choose-card mt-choose-card--where">
+            <div class="mt-choose-card__head">
+              <span class="mt-choose-card__no" aria-hidden="true">03</span>
+              <div class="mt-choose-card__heading">
+                <span class="mt-choose-card__en" aria-hidden="true">Where</span>
+                <h3 class="mt-choose-card__title"><span class="mt-choose-sr">03 WHERE </span><span data-ja="どこで使う？" data-en="Where to use it?">どこで使う？</span></h3>
+              </div>
+            </div>
+            <picture class="mt-choose-card__art">
+              <source type="image/webp" srcset="/images/manga-types/choice-where-media.webp">
+              <img src="/images/manga-types/choice-where-media.png" alt="Webサイト・SNS・営業資料でのマンガ活用イメージ" width="760" height="541" loading="lazy" decoding="async">
+            </picture>
+            <ul class="mt-choose-pills">
+              <li class="mt-choose-pill" data-ja="Webサイト" data-en="Website">Webサイト</li>
+              <li class="mt-choose-pill" data-ja="SNS" data-en="Social media">SNS</li>
+              <li class="mt-choose-pill" data-ja="営業資料" data-en="Sales materials">営業資料</li>
+            </ul>
+          </li>
+        </ol>
 
-          <!-- 選択中の形式の詳細（JS無効時は4形式すべてが縦に並ぶ） -->
-          <div class="mt-ticket-stage" aria-live="polite">
-
-            <article class="mt-ticket-panel" id="mt-format-teaser" data-mt-format-panel="teaser">
-              <div class="mt-ticket-preview mt-ticket-preview--teaser" aria-hidden="true">
-                <picture>
-                  <source type="image/webp" srcset="/images/manga-types/format-1koma.webp">
-                  <img src="/images/manga-types/format-1koma.png" alt="" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <div class="mt-ticket-detail">
-                <p class="mt-ticket-detail__en">TEASER POSTER</p>
-                <h3 class="mt-ticket-detail__name">1コマ</h3>
-                <p class="mt-ticket-detail__desc">一瞬で印象づける最小単位のコンテンツ。SNSの単発投稿やバナー広告のクリエイティブに最適です。</p>
-                <dl class="mt-ticket-detail__meta">
-                  <div><dt>推奨ページ数</dt><dd>1コマ（単票）</dd></div>
-                  <div><dt>主な掲載場所</dt><dd>SNS広告・バナー・OGP画像</dd></div>
-                </dl>
-                <p class="mt-ticket-detail__combo"><span>おすすめの組み合わせ</span>マンガ広告 × 1コマ</p>
-              </div>
-            </article>
-
-            <article class="mt-ticket-panel" id="mt-format-short" data-mt-format-panel="short">
-              <div class="mt-ticket-preview mt-ticket-preview--short" aria-hidden="true">
-                <picture>
-                  <source type="image/webp" srcset="/images/manga-types/format-4koma.webp">
-                  <img src="/images/manga-types/format-4koma.png" alt="" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <div class="mt-ticket-detail">
-                <p class="mt-ticket-detail__en">SHORT EPISODE</p>
-                <h3 class="mt-ticket-detail__name">4コマ</h3>
-                <p class="mt-ticket-detail__desc">起承転結で完結する短尺コンテンツ。メルマガ・SNS連載や、資料内の挿絵としても使いやすい構成です。</p>
-                <dl class="mt-ticket-detail__meta">
-                  <div><dt>推奨ページ数</dt><dd>4コマ完結</dd></div>
-                  <div><dt>主な掲載場所</dt><dd>メルマガ・SNS連載・資料内カット</dd></div>
-                </dl>
-                <p class="mt-ticket-detail__combo"><span>おすすめの組み合わせ</span>How toマンガ × 4コマ</p>
-              </div>
-            </article>
-
-            <article class="mt-ticket-panel is-active" id="mt-format-feature" data-mt-format-panel="feature">
-              <div class="mt-ticket-preview mt-ticket-preview--feature" aria-hidden="true">
-                <picture>
-                  <source type="image/webp" srcset="/images/manga-types/format-story.webp">
-                  <img src="/images/manga-types/format-story.png" alt="" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <div class="mt-ticket-detail">
-                <p class="mt-ticket-detail__en">FEATURE STORY</p>
-                <h3 class="mt-ticket-detail__name">ストーリー型</h3>
-                <p class="mt-ticket-detail__desc">6〜10ページで感情移入を促す型。採用・創業ストーリー・導入事例など、深く伝えたい場面に向きます。</p>
-                <dl class="mt-ticket-detail__meta">
-                  <div><dt>推奨ページ数</dt><dd>6〜10ページ</dd></div>
-                  <div><dt>主な掲載場所</dt><dd>採用サイト・営業資料・パンフレット</dd></div>
-                </dl>
-                <p class="mt-ticket-detail__combo"><span>おすすめの組み合わせ</span>採用マンガ × ストーリー型</p>
-              </div>
-            </article>
-
-            <article class="mt-ticket-panel" id="mt-format-mobile" data-mt-format-panel="mobile">
-              <div class="mt-ticket-preview mt-ticket-preview--mobile" aria-hidden="true">
-                <picture>
-                  <source type="image/webp" srcset="/images/manga-types/format-vertical.webp">
-                  <img src="/images/manga-types/format-vertical.png" alt="" loading="lazy" decoding="async" width="768" height="512">
-                </picture>
-              </div>
-              <div class="mt-ticket-detail">
-                <p class="mt-ticket-detail__en">MOBILE CUT</p>
-                <h3 class="mt-ticket-detail__name">縦読み</h3>
-                <p class="mt-ticket-detail__desc">縦スクロール型フォーマットに完全対応。横読み作品の縦読みリメイクや、英語・中国語簡体字/繁体字・韓国語への多言語展開も可能です。<a href="/inbound-manga">インバウンド漫画の事例を見る</a></p>
-                <dl class="mt-ticket-detail__meta">
-                  <div><dt>推奨ページ数</dt><dd>縦スクロール 10コマ〜（可変）</dd></div>
-                  <div><dt>主な掲載場所</dt><dd>SNSキャンペーン・スマホ広告・訪日インバウンド</dd></div>
-                </dl>
-                <p class="mt-ticket-detail__combo"><span>おすすめの組み合わせ</span>商品紹介マンガ × 縦読み</p>
-              </div>
-            </article>
-
+        <div class="mt-choose-cta">
+          <div class="mt-choose-cta__copy">
+            <p class="mt-choose-cta__title" data-i18n-html data-ja="最適なマンガの<br>ご提案は、私たちにお任せください。" data-en="Leave it to us<br>to propose the right manga.">最適なマンガの<br>ご提案は、私たちにお任せください。</p>
+            <p class="mt-choose-cta__text" data-i18n-html data-ja="ご要望をヒアリングし、目的に合わせた最適なプランをご提案します。<br>まずはお気軽にご相談ください。" data-en="We'll listen to your needs and propose the best plan for your goal.<br>Feel free to reach out.">ご要望をヒアリングし、目的に合わせた最適なプランをご提案します。<br>まずはお気軽にご相談ください。</p>
+          </div>
+          <div class="mt-choose-cta__action">
+            <a href="/contact" class="mt-btn mt-btn--primary mt-choose-cta__btn">
+              <span data-ja="あなたに合うマンガを相談する" data-en="Ask us which manga fits you">あなたに合うマンガを相談する</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+            <ul class="mt-choose-points">
+              <li class="mt-choose-point">
+                <span class="mt-choose-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5h22v13.5h-11l-5.6 4.6v-4.6H5z"/><circle cx="11" cy="14.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="14.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="21" cy="14.2" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+                <span class="mt-choose-point__text" data-i18n-html data-ja="ヒアリングで<br>ぴったり提案" data-en="Tailored proposals<br>from a hearing">ヒアリングで<br>ぴったり提案</span>
+              </li>
+              <li class="mt-choose-point">
+                <span class="mt-choose-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 6a7.2 7.2 0 0 0-4.2 13c.9.7 1.3 1.6 1.3 2.7V23h5.8v-1.3c0-1.1.4-2 1.3-2.7A7.2 7.2 0 0 0 16 6z"/><path d="M13.2 26.4h5.6"/><path d="M16 1.8v1.6M6.4 5.8l1.1 1.1M25.6 5.8l-1.1 1.1M3 14.2h1.6M27.4 14.2h1.6"/></svg></span>
+                <span class="mt-choose-point__text" data-i18n-html data-ja="目的に応じた<br>プロの視点" data-en="A pro view<br>for your goal">目的に応じた<br>プロの視点</span>
+              </li>
+              <li class="mt-choose-point">
+                <span class="mt-choose-point__icon"><svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="10.6" r="4"/><path d="M8.6 25c0-4 3.3-6.6 7.4-6.6s7.4 2.6 7.4 6.6"/><circle cx="6.8" cy="12.6" r="2.8"/><path d="M2.6 22.6c.3-2.8 2-4.5 4.4-4.5"/><circle cx="25.2" cy="12.6" r="2.8"/><path d="M29.4 22.6c-.3-2.8-2-4.5-4.4-4.5"/></svg></span>
+                <span class="mt-choose-point__text" data-i18n-html data-ja="ご相談は<br>無料です" data-en="Consultation<br>is free">ご相談は<br>無料です</span>
+              </li>
+            </ul>
           </div>
         </div>
-
-        <p class="mt-formats-foot"><strong>1ページから発注可能です。</strong>目的と予算に応じた最適ボリュームは<a href="/pricing">料金ページ</a>、または無料相談でご提案します。</p>
       </div>
     </section>
 
-    <!-- ===== 5. AFTER TALK / Q&A（FAQPage 構造化データと対応） ===== -->
-    <section class="lpv2-section lpv2-faq" id="faq" aria-label="よくあるご質問">
-      <div class="lpv2-container">
-        <header class="lpv2-section-head">
-          <p class="lpv2-eyebrow" data-ja="AFTER TALK / Q&amp;A" data-en="AFTER TALK / Q&amp;A">AFTER TALK / Q&amp;A</p>
-          <h2 class="lpv2-h2" data-i18n-html data-ja="上映後、編集部に<em>聞く</em>" data-en="After the credits roll, <em>ask the editors</em>">上映後、編集部に<em>聞く</em></h2>
-          <p class="lpv2-lead lpv2-lead--center" data-ja="エンドロールのあとに聞きたくなる、ジャンル・形式・ページ数の疑問。制作の舞台裏を、編集部が解説します。" data-en="The questions about genre, format and page count that come up after the credits roll — our editors explain what happens behind the scenes.">エンドロールのあとに聞きたくなる、ジャンル・形式・ページ数の疑問。制作の舞台裏を、編集部が解説します。</p>
-        </header>
-        <div class="lpv2-faq-list">
-          <details class="lpv2-faq-item">
-            <summary>4コマとストーリー型は、どちらが効果的ですか？</summary>
-            <div class="lpv2-faq-answer">4コマはSNS・メルマガ・ホワイトペーパーなど短尺接触に最適、ストーリー型（6〜10ページ）は採用・導入事例・創業ストーリーなど深く伝えたい場面で最適です。目的により使い分けます。</div>
-          </details>
-          <details class="lpv2-faq-item">
-            <summary>採用マンガと会社紹介マンガはどう違いますか？</summary>
-            <div class="lpv2-faq-answer">採用マンガは応募前の候補者に「入社後の具体的な働き方」を伝えるため、社員インタビューや1日の流れを描きます。会社紹介マンガは広く取引先・投資家・社員家族向けに「会社の存在意義・ビジョン」を物語化します。目的とターゲットが異なります。</div>
-          </details>
-          <details class="lpv2-faq-item">
-            <summary>縦読み作品を多言語展開できますか？</summary>
-            <div class="lpv2-faq-answer">はい、縦スクロール型フォーマットのまま英語・中国語（簡体字/繁体字）・韓国語などへの多言語展開に対応しています。訪日インバウンド向けコンテンツや海外採用広報での活用実績があり、既存の横読み作品を縦読み・多言語版へリメイクすることも可能です。</div>
-          </details>
-          <details class="lpv2-faq-item">
-            <summary>ジャンルもページ数も、まだ決まっていません。</summary>
-            <div class="lpv2-faq-answer">問題ありません。30分の無料相談で、伝えたい相手・目的・掲載先をお伺いし、最適なジャンル・上映形式（コマ数）・ページ数をこちらからご提案します。1ページから発注可能で、相談・お見積もりは何度でも無料です。</div>
-          </details>
-        </div>
+    <!-- ===== 5. FAQ — よくあるご質問（2026-09-14 リデザイン。FAQPage 構造化データと同一文言）
+         4問のアコーディオン。h3 > button[aria-expanded][aria-controls] + div[role=region]。
+         開閉は bm-manga-types.js の initFaq()（1問ずつ開く single accordion、初期は Q1 のみ展開）。
+         JS無効時は4問すべての回答を表示したまま。画像素材は使わない。 ===== -->
+    <section class="mt-section mt-faq" id="faq" aria-labelledby="mt-faq-title">
+      <div class="mt-container mt-sel-container">
+        <div class="mt-faq-box">
+          <p class="mt-faq__label" aria-hidden="true">FAQ</p>
+          <h2 class="mt-faq__title" id="mt-faq-title" data-ja="よくあるご質問" data-en="Frequently asked questions">よくあるご質問</h2>
+          <p class="mt-faq__lead" data-ja="ご検討中のよくあるご質問にお答えします。ほかにも気になることがあれば、お気軽にご相談ください。" data-en="Answers to the questions we hear most from companies considering manga. If anything else comes to mind, feel free to ask.">ご検討中のよくあるご質問にお答えします。ほかにも気になることがあれば、お気軽にご相談ください。</p>
 
-        <aside class="lpv2-guide" aria-label="関連: 漫画制作会社 比較ガイド">
-          <p class="lpv2-guide__eyebrow">発注先の比較で迷ったら</p>
-          <p class="lpv2-guide__text" data-ja="どのジャンルに強い業者に頼めばいいか迷っている方は、業界主要5社の料金・対応カテゴリを一覧化した【漫画制作会社 比較ガイド】もあわせてご覧ください。" data-en="If you're unsure which studio specializes in your genre, see our comparison of the top 5 vendors by pricing and coverage in the Manga Production Company Comparison Guide.">
-            どのジャンルに強い業者に頼めばいいか迷っている方は、業界主要5社の料金・対応カテゴリを一覧化した
-            <a href="/manga-production-company" data-ja="漫画制作会社 比較ガイド" data-en="Manga Production Company Comparison Guide">漫画制作会社 比較ガイド</a>
-            もあわせてご覧ください。
-          </p>
-        </aside>
-      </div>
-    </section>
+          <div class="mt-faq-list" data-mt-faq>
+            <div class="mt-faq-item is-open">
+              <h3 class="mt-faq-q">
+                <button type="button" class="mt-faq-q__btn" id="mt-faq-q1" aria-expanded="true" aria-controls="mt-faq-a1">
+                  <span class="mt-faq-q__no" aria-hidden="true">Q1</span>
+                  <span class="mt-faq-q__text" data-ja="採用漫画と会社紹介漫画はどう違いますか？" data-en="How is a recruiting manga different from a company profile manga?">採用漫画と会社紹介漫画はどう違いますか？</span>
+                  <span class="mt-faq-q__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></span>
+                </button>
+              </h3>
+              <div class="mt-faq-a" id="mt-faq-a1" role="region" aria-labelledby="mt-faq-q1">
+                <div class="mt-faq-a__inner">
+                  <div class="mt-faq-a__body">
+                    <span class="mt-faq-a__mark" aria-hidden="true">A</span>
+                    <p class="mt-faq-a__text" data-i18n-html data-ja="採用漫画は、応募前の候補者に「入社後の具体的な働き方」を伝えるため、社員インタビューや1日の流れを描きます。<br>会社紹介漫画は、取引先・顧客・一般の方など幅広いステークホルダーに向けて、「会社の存在意義・ビジョン」を物語化します。<br>目的とターゲットが異なります。" data-en="A recruiting manga shows candidates, before they apply, what working at the company is really like, drawing on employee interviews and a typical day.<br>A company profile manga turns the company's purpose and vision into a story for a broad range of stakeholders, such as partners, customers and the general public.<br>They differ in goal and audience.">採用漫画は、応募前の候補者に「入社後の具体的な働き方」を伝えるため、社員インタビューや1日の流れを描きます。<br>会社紹介漫画は、取引先・顧客・一般の方など幅広いステークホルダーに向けて、「会社の存在意義・ビジョン」を物語化します。<br>目的とターゲットが異なります。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-faq-item">
+              <h3 class="mt-faq-q">
+                <button type="button" class="mt-faq-q__btn" id="mt-faq-q2" aria-expanded="false" aria-controls="mt-faq-a2">
+                  <span class="mt-faq-q__no" aria-hidden="true">Q2</span>
+                  <span class="mt-faq-q__text" data-ja="4コマ漫画とストーリー型はどちらが効果的ですか？" data-en="Which works better: a 4-panel manga or a story format?">4コマ漫画とストーリー型はどちらが効果的ですか？</span>
+                  <span class="mt-faq-q__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></span>
+                </button>
+              </h3>
+              <div class="mt-faq-a" id="mt-faq-a2" role="region" aria-labelledby="mt-faq-q2">
+                <div class="mt-faq-a__inner">
+                  <div class="mt-faq-a__body">
+                    <span class="mt-faq-a__mark" aria-hidden="true">A</span>
+                    <p class="mt-faq-a__text" data-i18n-html data-ja="4コマはSNS・メルマガ・ホワイトペーパーなど、短い接触時間で伝えたい場合に適しています。<br>ストーリー型は、採用・導入事例・創業ストーリーなど、背景や感情まで深く伝えたい場合に適しています。<br>目的に応じて使い分けます。" data-en="A 4-panel manga suits short touchpoints such as social media, newsletters and white papers.<br>A story format suits recruiting, case studies and founding stories, where you want to convey background and emotion in depth.<br>We choose based on your goal.">4コマはSNS・メルマガ・ホワイトペーパーなど、短い接触時間で伝えたい場合に適しています。<br>ストーリー型は、採用・導入事例・創業ストーリーなど、背景や感情まで深く伝えたい場合に適しています。<br>目的に応じて使い分けます。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-faq-item">
+              <h3 class="mt-faq-q">
+                <button type="button" class="mt-faq-q__btn" id="mt-faq-q3" aria-expanded="false" aria-controls="mt-faq-a3">
+                  <span class="mt-faq-q__no" aria-hidden="true">Q3</span>
+                  <span class="mt-faq-q__text" data-ja="縦読み対応は可能ですか？" data-en="Do you support vertical-scroll manga?">縦読み対応は可能ですか？</span>
+                  <span class="mt-faq-q__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></span>
+                </button>
+              </h3>
+              <div class="mt-faq-a" id="mt-faq-a3" role="region" aria-labelledby="mt-faq-q3">
+                <div class="mt-faq-a__inner">
+                  <div class="mt-faq-a__body">
+                    <span class="mt-faq-a__mark" aria-hidden="true">A</span>
+                    <p class="mt-faq-a__text" data-i18n-html data-ja="はい、縦スクロール型フォーマットに対応しています。<br>SNSキャンペーン・採用広報・訪日インバウンドコンテンツなどに活用でき、横読みの既存作品を縦読み形式へ展開することも可能です。" data-en="Yes, we support the vertical-scroll format.<br>It works for social campaigns, recruiting PR and inbound tourism content, and existing horizontal works can also be adapted to vertical scroll.">はい、縦スクロール型フォーマットに対応しています。<br>SNSキャンペーン・採用広報・訪日インバウンドコンテンツなどに活用でき、横読みの既存作品を縦読み形式へ展開することも可能です。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-faq-item">
+              <h3 class="mt-faq-q">
+                <button type="button" class="mt-faq-q__btn" id="mt-faq-q4" aria-expanded="false" aria-controls="mt-faq-a4">
+                  <span class="mt-faq-q__no" aria-hidden="true">Q4</span>
+                  <span class="mt-faq-q__text" data-ja="何ページから発注できますか？" data-en="How many pages is the minimum order?">何ページから発注できますか？</span>
+                  <span class="mt-faq-q__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></span>
+                </button>
+              </h3>
+              <div class="mt-faq-a" id="mt-faq-a4" role="region" aria-labelledby="mt-faq-q4">
+                <div class="mt-faq-a__inner">
+                  <div class="mt-faq-a__body">
+                    <span class="mt-faq-a__mark" aria-hidden="true">A</span>
+                    <p class="mt-faq-a__text" data-i18n-html data-ja="1ページから発注可能です。<br>1コマ漫画、4コマ漫画、ストーリー型、縦読み、連載形式まで、目的と予算に応じた最適なボリュームをご提案します。" data-en="You can order from a single page.<br>From 1-panel and 4-panel manga to story format, vertical scroll and serialized formats, we'll propose the right volume for your goal and budget.">1ページから発注可能です。<br>1コマ漫画、4コマ漫画、ストーリー型、縦読み、連載形式まで、目的と予算に応じた最適なボリュームをご提案します。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- ===== 6. NOW SHOWING — 目的別の上映作品 ===== -->
-    <section class="lpv2-section lpv2-related" aria-label="用途別マンガLP">
-      <div class="lpv2-container lpv2-container--wide">
-        <header class="lpv2-section-head">
-          <p class="lpv2-eyebrow" data-ja="NOW SHOWING / 01–08" data-en="NOW SHOWING / 01–08">NOW SHOWING / 01–08</p>
-          <h2 class="lpv2-h2" data-i18n-html data-ja="目的別の<em>上映作品</em>" data-en="Now showing, <em>by purpose</em>">目的別の<em>上映作品</em></h2>
-          <p class="lpv2-lead lpv2-lead--center" data-ja="上映作品はそれぞれ、訴求軸・構成・料金目安を詳しく解説しています。" data-en="Each title's page explains its angle, structure and price range in detail.">上映作品はそれぞれ、訴求軸・構成・料金目安を詳しく解説しています。</p>
-        </header>
-        <div class="lpv2-related-grid">
-          <a class="lpv2-related-card" href="/product-manga">
-            <p class="lpv2-related-card__num">FILM 01</p>
-            <h3 class="lpv2-related-card__name">商品紹介マンガ</h3>
-            <p class="lpv2-related-card__hook">複雑な商品も伝わるストーリーに</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/recruit-manga">
-            <p class="lpv2-related-card__num">FILM 02</p>
-            <h3 class="lpv2-related-card__name">採用マンガ</h3>
-            <p class="lpv2-related-card__hook">応募・内定承諾率を高める</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/manga-ad-lp">
-            <p class="lpv2-related-card__num">FILM 03</p>
-            <h3 class="lpv2-related-card__name">マンガ広告</h3>
-            <p class="lpv2-related-card__hook">広告らしくない、止まる広告</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/company-manga">
-            <p class="lpv2-related-card__num">FILM 04</p>
-            <h3 class="lpv2-related-card__name">会社紹介マンガ</h3>
-            <p class="lpv2-related-card__hook">ステークホルダー横断で届く</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/sales-manga">
-            <p class="lpv2-related-card__num">FILM 05</p>
-            <h3 class="lpv2-related-card__name">営業資料マンガ</h3>
-            <p class="lpv2-related-card__hook">決裁者まで物語のまま届く</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/training-manga">
-            <p class="lpv2-related-card__num">FILM 06</p>
-            <h3 class="lpv2-related-card__name">研修マンガ</h3>
-            <p class="lpv2-related-card__hook">失敗事例を安全に疑似体験</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/inbound-manga">
-            <p class="lpv2-related-card__num">FILM 07</p>
-            <h3 class="lpv2-related-card__name">インバウンド漫画</h3>
-            <p class="lpv2-related-card__hook">言葉を超えて旅人に届く</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-          <a class="lpv2-related-card" href="/ir-manga">
-            <p class="lpv2-related-card__num">FILM 08</p>
-            <h3 class="lpv2-related-card__name">IRマンガ</h3>
-            <p class="lpv2-related-card__hook">個人投資家は数字より物語</p>
-            <span class="lpv2-related-card__arrow">詳しく →</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 7. NEXT PRODUCTION MEETING — 次回作の制作会議（最終CTA） ===== -->
-    <section class="mt-cta" aria-labelledby="mt-cta-title">
-      <div class="mt-container mt-cta-inner">
-        <div class="mt-cta-copy">
-          <p class="mt-cta__label">NEXT PRODUCTION MEETING / 30 MIN</p>
-          <h2 class="mt-cta__title" id="mt-cta-title" data-i18n-html data-ja="次に予告編になるのは、<br>御社の物語。" data-en="The next trailer to premiere<br>will be your company's story.">次に予告編になるのは、<br>御社の物語。</h2>
-          <p class="mt-cta__text" data-ja="企画が白紙でも大丈夫です。目的と掲載先を伺い、最適なジャンル・上映形式・ページ数をご提案します。" data-en="It's fine if nothing is decided yet. We'll ask about your goal and where it will run, then propose the right genre, screening format and page count.">企画が白紙でも大丈夫です。目的と掲載先を伺い、最適なジャンル・上映形式・ページ数をご提案します。</p>
-          <div class="mt-cta__row">
-            <a href="/contact" class="mt-btn mt-btn--on-accent">
-              <span data-ja="無料相談・お見積もり" data-en="Free quote">無料相談・お見積もり</span>
-            </a>
-            <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="mt-btn mt-btn--on-accent-ghost" target="_blank" rel="noopener">
-              <span data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>
-            </a>
+          <div class="mt-faq-foot">
+            <span class="mt-faq-foot__brand" aria-hidden="true">BizManga</span>
+            <a href="/contact" class="mt-faq-foot__link"><span data-ja="まずは相談してみる" data-en="Talk to us first">まずは相談してみる</span><span class="mt-faq-foot__arrow" aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
-        <div class="mt-cta-poster" aria-hidden="true">
-          <span class="mt-cta-poster__spot"></span>
-          <picture class="mt-cta-poster__figure">
-            <source type="image/webp" srcset="/images/manga-types/cta-poster-character.webp">
-            <img src="/images/manga-types/cta-poster-character.png" alt="" loading="lazy" decoding="async" width="768" height="1152">
-          </picture>
-          <p class="mt-cta-poster__eyebrow">YOUR STORY</p>
-          <p class="mt-cta-poster__title">COMING<br>NEXT</p>
-          <p class="mt-cta-poster__credit">Produced with BIZMANGA</p>
+      </div>
+    </section>
+
+    <!-- ===== 7. FINAL CTA — LET'S MAKE YOUR STORY（2026-09-14 リデザイン）
+         旧 NEXT PRODUCTION MEETING（ダーク背景 + マスコットのポスター + CTA2本）を置き換え。
+         1メッセージ + 1CTA（/contact）+ 安心ポイント3つ。人物・キャラ・漫画コマは使わない。
+         背景の桃色の円・網点・縦の BIZMANGA は装飾（.mt-final__deco を丸ごと aria-hidden）。
+         登場は共通の .lpv2-reveal（bm-lp-v2.js。reduced-motion は bm-lp-v2.css 側で無効）。 ===== -->
+    <section class="mt-final" id="final-cta" aria-labelledby="mt-final-title">
+      <div class="mt-final__deco" aria-hidden="true">
+        <picture class="mt-final__peach mt-final__peach--tl"><source type="image/webp" srcset="/images/manga-types/final-cta-peach-gradient.webp"><img src="/images/manga-types/final-cta-peach-gradient.png" alt="" width="800" height="800" loading="lazy" decoding="async"></picture>
+        <picture class="mt-final__peach mt-final__peach--tr"><source type="image/webp" srcset="/images/manga-types/final-cta-peach-gradient.webp"><img src="/images/manga-types/final-cta-peach-gradient.png" alt="" width="800" height="800" loading="lazy" decoding="async"></picture>
+        <picture class="mt-final__peach mt-final__peach--bl"><source type="image/webp" srcset="/images/manga-types/final-cta-peach-gradient.webp"><img src="/images/manga-types/final-cta-peach-gradient.png" alt="" width="800" height="800" loading="lazy" decoding="async"></picture>
+        <picture class="mt-final__peach mt-final__peach--br"><source type="image/webp" srcset="/images/manga-types/final-cta-peach-gradient.webp"><img src="/images/manga-types/final-cta-peach-gradient.png" alt="" width="800" height="800" loading="lazy" decoding="async"></picture>
+        <picture class="mt-final__halftone"><source type="image/webp" srcset="/images/manga-types/final-cta-halftone.webp"><img src="/images/manga-types/final-cta-halftone.png" alt="" width="600" height="600" loading="lazy" decoding="async"></picture>
+        <span class="mt-final__side">BIZMANGA</span>
+      </div>
+
+      <div class="mt-container mt-final__inner lpv2-reveal">
+        <p class="mt-final__label">Let's make your story</p>
+        <h2 class="mt-final__title" id="mt-final-title"><span data-ja="御社の" data-en="Let's give ">御社の</span><span class="mt-final__em" data-ja="物語" data-en="your story">物語</span><span data-ja="を、" data-en=" a">を、</span><br><span data-ja="一緒に" data-en="clear ">一緒に</span><span class="mt-final__em" data-ja="カタチ" data-en="shape">カタチ</span><span data-ja="にしませんか？" data-en=" together.">にしませんか？</span></h2>
+        <p class="mt-final__lead" data-i18n-html data-ja="目的や課題に合わせて、最適なマンガの企画・表現・活用方法をご提案します。<br>まずはお気軽にご相談ください。" data-en="We'll propose the right manga plan, expression and use for your goals and challenges.<br>Feel free to reach out.">目的や課題に合わせて、最適なマンガの企画・表現・活用方法をご提案します。<br>まずはお気軽にご相談ください。</p>
+
+        <div class="mt-final__action">
+          <a href="/contact" class="mt-final__btn">
+            <span data-ja="無料で相談してみる" data-en="Talk to us for free">無料で相談してみる</span>
+            <span class="mt-final__arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <!-- 手描き風の補助コピー（HTMLテキスト。PCはボタン右上、1099px以下は安心ポイントの下へ） -->
+          <p class="mt-final__note" data-i18n-html data-ja="マンガで、<br>ビジネスを<br>もっと前へ。" data-en="Move your<br>business forward<br>with manga.">マンガで、<br>ビジネスを<br>もっと前へ。</p>
         </div>
+
+        <ul class="mt-final__points">
+            <li class="mt-final__point mt-final__point--hearing">
+              <span class="mt-final__icon"><picture class="mt-final__icon-img"><source type="image/webp" srcset="/images/manga-types/final-cta-icon-hearing.webp"><img src="/images/manga-types/final-cta-icon-hearing.png" alt="" width="160" height="160" loading="lazy" decoding="async"></picture></span>
+              <span class="mt-final__point-text" data-i18n-html data-ja="ヒアリングで<br><b>ぴったり提案</b>" data-en="A hearing for<br><b>a tailored proposal</b>">ヒアリングで<br><b>ぴったり提案</b></span>
+            </li>
+            <li class="mt-final__point mt-final__point--idea">
+              <span class="mt-final__icon"><picture class="mt-final__icon-img"><source type="image/webp" srcset="/images/manga-types/final-cta-icon-idea.webp"><img src="/images/manga-types/final-cta-icon-idea.png" alt="" width="160" height="160" loading="lazy" decoding="async"></picture></span>
+              <span class="mt-final__point-text" data-i18n-html data-ja="目的に応じた<br><b>プロの視点</b>" data-en="A pro view<br><b>for your goal</b>">目的に応じた<br><b>プロの視点</b></span>
+            </li>
+            <li class="mt-final__point mt-final__point--consultation">
+              <span class="mt-final__icon"><picture class="mt-final__icon-img"><source type="image/webp" srcset="/images/manga-types/final-cta-icon-consultation.webp"><img src="/images/manga-types/final-cta-icon-consultation.png" alt="" width="160" height="160" loading="lazy" decoding="async"></picture></span>
+              <span class="mt-final__point-text" data-i18n-html data-ja="ご相談は<br><b>無料です</b>" data-en="Consultation<br><b>is free</b>">ご相談は<br><b>無料です</b></span>
+            </li>
+        </ul>
       </div>
     </section>
 
