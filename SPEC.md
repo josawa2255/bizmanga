@@ -1177,6 +1177,7 @@ WordPress で works を追加・更新したら以下いずれか:
 | [../docs/specs/COMPONENT.md](../docs/specs/COMPONENT.md) | 再利用UIパーツ |
 | [../docs/content/SEO.md](../docs/content/SEO.md) | SEOメタデータ一覧 |
 | [../docs/operations/CHECKLIST.md](../docs/operations/CHECKLIST.md) | 公開前チェックリスト |
+| [docs/REVIEW-MANGA-WP.md](docs/REVIEW-MANGA-WP.md) | **漫画表示・WP接続を触ったPRの確認手順**（pr-gate 重要領域、`tools/smoke-manga-wp.py`） |
 
 ## 15. よくある落とし穴（Gotchas）
 
