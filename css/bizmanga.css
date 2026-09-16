@@ -568,7 +568,10 @@ html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
   pointer-events: auto;
 }
 .bm-back-to-top:hover {
-  background: var(--bm-accent);
+  /* 白文字を乗せる面は --bm-accent(#EB5200, 3.66:1)ではなく --bm-accent-deep(#b94100, 5.50:1)。
+     13px/12px の小さい文字なので AA(4.5:1) が要る（上の変数定義のコメントと同じ理由） */
+  background: var(--bm-accent-deep);
+  border-color: var(--bm-accent-deep);
   color: #fff;
 }
 
@@ -722,7 +725,9 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   .bm-back-to-top {
     bottom: calc(72px + env(safe-area-inset-bottom));
     right: 16px;
-    padding: 9px 16px;
+    /* 9px だと高さ 40px で 44px 基準を割る（STYLE-GUIDE 鉄則9: タップ要素は最低44×44px）。
+       12px にして 12+18+12+枠4 = 46px を確保する */
+    padding: 12px 16px;
     font-size: 12px;
   }
   /* フッターが隠れないよう余白確保 */

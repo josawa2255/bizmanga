@@ -1,9 +1,10 @@
 /* ===================================================================
- * bm-manga-types.js — 「マンガの種類」ページの章/形式セレクタ
+ * bm-manga-types.js — 「マンガの種類」ページの章セレクタ / 表現カスタマイズ / FAQ
  *
- * 左の一覧 (button[data-mt-select] / [data-mt-format-select]) をクリック・
- * キー操作すると、右の詳細 (article[data-mt-panel] / [data-mt-format-panel])
- * をページ遷移なしで切り替える。章セレクタ・形式セレクタは同じ設計。
+ * 左の一覧 (button[data-mt-select]) をクリック・キー操作すると、
+ * 右の詳細 (article[data-mt-panel]) をページ遷移なしで切り替える。
+ * 表現カスタマイズ ([data-mt-exp-group] / [data-mt-exp-option]) も同じ操作感
+ * （クリック + 矢印キー）だが、切り替える詳細パネルは持たない。
  *
  * 方針:
  *   - 全パネルのHTMLは常にDOMに存在する。JSが動いたときだけ
@@ -11,7 +12,8 @@
  *     （= JS無効・エラー時はすべて縦に並んだまま読める）
  *   - 選択状態は aria-pressed、詳細側は aria-live="polite" で通知
  *   - #mt-recruit のようなハッシュ付きURLでも該当章を開く（章セレクタのみ）
- * 2026-08-24 新規 / 2026-08-31 形式セレクタ（上映形式チケットUI）を追加
+ * 2026-08-24 新規 / 2026-09-14 形式セレクタ（チケットUI）を廃止し表現カスタマイズへ置換
+ * 2026-09-16 表現カスタマイズにも矢印キー操作を追加（章セレクタと操作感を揃えるため）
  * =================================================================== */
 (function () {
   'use strict';
@@ -150,11 +152,26 @@
     var groups = document.querySelectorAll('[data-mt-exp-group]');
     Array.prototype.forEach.call(groups, function (group) {
       var buttons = Array.prototype.slice.call(group.querySelectorAll('[data-mt-exp-option]'));
-      buttons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          buttons.forEach(function (b) {
-            b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-          });
+
+      function select(btn, moveFocus) {
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        if (moveFocus) btn.focus();
+      }
+
+      buttons.forEach(function (btn, index) {
+        btn.addEventListener('click', function () { select(btn, false); });
+        // ↑↓←→ で選択を移動（章セレクタと同じ操作感。フォーカスも一緒に動かす）。
+        // 2026-09-16: 章セレクタには矢印キーがあるのにここだけ無く、
+        // 同じ見た目・同じ aria-pressed のUIで操作方法が食い違っていたため追加
+        btn.addEventListener('keydown', function (e) {
+          var step =
+            e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 :
+            e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+          if (!step) return;
+          e.preventDefault();
+          select(buttons[(index + step + buttons.length) % buttons.length], true);
         });
       });
     });
