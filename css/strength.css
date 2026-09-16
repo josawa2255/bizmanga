@@ -33,7 +33,8 @@
   position: relative;
   overflow: hidden;
   background: var(--lpv2-cream);
-  border-top: var(--lpv2-border-w) solid var(--lpv2-ink);
+  /* 直前の .lpv2-hero が border-bottom 3px を持つため、ここで border-top を足すと
+     継ぎ目が6pxの帯になる（2026-09-16 実測）。上辺は hero 側の罫線に任せる */
   border-bottom: var(--lpv2-border-w) solid var(--lpv2-ink);
 }
 .str-v2 .str-halftone {
@@ -133,6 +134,10 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
 @media (max-width: 1000px) {
   .str-v2 .str-head__lines { display: none; }
 }
+/* 集中線も吹き出しと同じ理由（EN見出しは幅に関係なく2行に折り返し、.str-head__hl が
+   見出し枠いっぱいに広がるため文字から100px以上離れて浮く）で言語ガードする。
+   2026-09-16 実測: EN 1440pxで文字まで158px、EN 1001pxでは左にはみ出して切れていた */
+html[lang="en"] .str-v2 .str-head__lines { display: none; }
 
 /* ---- コマ割りグリッド：上段2枚（span 3）+ 下段3枚（span 2） ---- */
 .str-v2 .str-panels {
@@ -159,9 +164,14 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.str-v2 .str-panel:hover {
-  transform: translate(-4px, -4px);
-  box-shadow: 10px 10px 0 var(--lpv2-ink);
+/* 浮き上がりは「ホバーできる装置」に限定する。幅で切ると 721〜1000px の
+   タッチ端末でタップ後に :hover が残り、浮いたまま固着する
+   （STYLE-GUIDE 鉄則: hover専用の見た目にはタッチ代替を用意する。ここでは :active が代替） */
+@media (hover: hover) {
+  .str-v2 .str-panel:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--lpv2-ink);
+  }
 }
 .str-v2 .str-panel:active { transform: translate(0, 0); box-shadow: 3px 3px 0 var(--lpv2-ink); }
 .str-v2 .str-panel:focus-visible { outline: 3px solid var(--lpv2-accent); outline-offset: 3px; }
@@ -249,11 +259,15 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
   display: block;
 }
 
-/* 下段3コマは幅が狭いぶん、文字を一段落として収める */
-.str-v2 .str-panel:nth-child(n + 3) { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); }
-.str-v2 .str-panel:nth-child(n + 3) .str-panel__body { padding: 28px 12px 26px 32px; }
-.str-v2 .str-panel:nth-child(n + 3) .str-panel__name { font-size: clamp(20px, 1.7vw, 26px); }
-.str-v2 .str-panel:nth-child(n + 3) .str-panel__stat em { font-size: clamp(36px, 3.5vw, 52px); }
+/* 下段3コマは幅が狭いぶん、文字を一段落として収める。
+   「下段が狭い」のは上2枚+下3枚に組む PC レイアウトのときだけなので、そこに限定する。
+   2026-09-16 実測: ガードが無いと、全カードが等幅になるタブレット(721〜1000px)でも
+   3〜5枚目だけ見出し 20px / 数字 36px と小さいままで、1〜2枚目(22px/42px)と不揃いになっていた */
+@media (min-width: 1001px) {
+  .str-v2 .str-panel:nth-child(n + 3) { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); }
+
+  .str-v2 .str-panel:nth-child(n + 3) .str-panel__stat em { font-size: clamp(36px, 3.5vw, 52px); }
+}
 
 /* ---- タブレット：2 列（5枚目は半幅のまま中央） ---- */
 @media (max-width: 1000px) {
@@ -277,7 +291,6 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
     min-height: 148px;
     border-width: 3px;
   }
-  .str-v2 .str-panel:hover { transform: none; box-shadow: none; }
   /* 三角の斜辺は x + y = 44。本文は左30px/上18px から始めるので接触しない */
   .str-v2 .str-panel__num { width: 44px; height: 44px; font-size: 15px; padding: 5px 0 0 6px; }
   .str-v2 .str-panel__body,
@@ -331,7 +344,8 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
   cursor: pointer;
 }
 .str-v2 .str-pain + .str-pain { border-top: 2px solid rgba(232, 85, 0, 0.55); }
-.str-v2 .str-pain:focus-visible { outline: 3px solid var(--lpv2-accent); outline-offset: 4px; }
+/* .str-pain は article でフォーカスを受けないため、実際の操作要素に付ける */
+.str-v2 .str-pain__more:focus-visible { outline: 3px solid var(--lpv2-accent); outline-offset: 4px; }
 
 /* 左端の巨大ゴースト番号。行の背景として敷くだけなので読み上げ対象外 */
 .str-v2 .str-pain__ghost {
@@ -353,7 +367,6 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
 
 /* 大きな数字 + 英語ラベル */
 .str-v2 .str-pain__stat { position: relative; z-index: 1; min-width: 0; }
-.str-v2 .str-pain__figure { max-width: 100%; }
 .str-v2 .str-pain__figure {
   margin: 0;
   font-family: var(--lpv2-font-display);
@@ -364,16 +377,18 @@ html[lang="en"] .str-v2 .str-strengths .lpv2-h2 em::before { display: none; }
   color: var(--lpv2-accent);
   white-space: nowrap;
 }
-/* 2 行目だけ「2〜3ヶ月」と字数が多く、同じサイズだと 270px の列を
-   はみ出して本文に重なる。この行だけ一段小さくする */
-.str-v2 .str-pain:nth-child(2) .str-pain__figure { font-size: clamp(34px, 3.9vw, 58px); }
-/* 英語は同じ意味でも語が長く（「権利?」→「Rights?」等）、nowrap のまま
-   日本語サイズで出すと 270px の列を突き抜けて本文タイトルに重なる。
-   行ごとの個別対処では漏れるので、EN は一律で一段小さくする。
-   セレクタに :nth-child を含めているのは、上の nth-child(2) ルール
-   (詳細度 0,4,0) に勝たせるため。単に html[lang] を足すだけでは
-   (0,3,1) で負け、2行目だけ EN 指定が効かない */
-html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4vw, 52px); }
+/* 数字の縮小は「左に 270px / 150px の固定列がある多段レイアウト」のときだけ必要。
+   1カラムになる 700px 以下では列幅の制約が無いので、全行とも既定サイズのまま出す
+   （2026-09-16 実測: ガードが無いと EN のスマホで 30px まで縮み、JA の 52px と揃わなかった） */
+@media (min-width: 701px) {
+  /* 2 行目だけ「2〜3ヶ月」と字数が多く、同じサイズだと列をはみ出して本文に重なる */
+  .str-v2 .str-pain:nth-child(2) .str-pain__figure { font-size: clamp(34px, 3.9vw, 58px); }
+  /* 英語は同じ意味でも語が長く（「権利?」→「Rights?」等）、日本語サイズのままだと
+     列を突き抜けて本文タイトルに重なる。行ごとの個別対処では漏れるので EN は一律で一段小さく。
+     `.str-pain` を1つ挟んで詳細度 (0,4,1) にしているのは、上の nth-child(2) ルール (0,4,0) に
+     勝たせるため（html[lang] を足すだけの (0,3,1) では 2 行目に負ける） */
+  html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4vw, 52px); }
+}
 .str-v2 .str-pain__cat {
   margin: 8px 0 0;
   font-family: var(--lpv2-font-mono);
@@ -381,7 +396,6 @@ html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4
   font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--lpv2-ink-mute);
-  text-transform: uppercase;
 }
 
 .str-v2 .str-pain__body { min-width: 0; position: relative; z-index: 1; }
@@ -403,6 +417,9 @@ html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4
   display: inline-flex; align-items: center; gap: 7px; margin-top: 4px; padding: 4px 0;
   font-family: var(--lpv2-font-mono); font-size: 13px; font-weight: 900; letter-spacing: 0.06em;
   color: var(--lpv2-accent); background: none; border: 0; cursor: pointer;
+  /* 共通 .lpv2-pain__more の uppercase を打ち消す。EN ラベル "Read more" が
+     "READ MORE" になるのを避ける（日本語では効果が無いため今まで表面化していなかった） */
+  text-transform: none;
 }
 .str-v2 .str-pain__more::after { content: "+"; font-size: 17px; line-height: 1; }
 .str-v2 .str-pain.is-open .str-pain__more::after { content: "−"; }
@@ -410,9 +427,12 @@ html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4
 .str-v2 .str-pain__detail {
   display: none; grid-column: 1 / -1; position: relative; z-index: 1; margin-top: 24px; padding: 22px 26px;
   background: #fff; border-left: 3px solid var(--lpv2-accent);
-  font-size: 14.5px; line-height: 1.95; color: var(--lpv2-ink-soft);
+  /* 本ページは読ませる文章量が多く、他LPよりワンサイズ大きい本文で統一する
+     （SPEC.md §強み。14.5pxだと同ページの仕組み/FAQ 15.5px と不揃いになる） */
+  font-size: 15.5px; line-height: 2; color: var(--lpv2-ink-soft);
 }
-.str-v2 .str-pain__detail p { max-width: 62em; }
+/* 行長は本ページ共通の 38em 上限（1行 35〜40字）に合わせる */
+.str-v2 .str-pain__detail p { max-width: 38em; }
 .str-v2 .str-pain__detail p + p { margin-top: 1em; }
 .str-v2 .str-pain.is-open .str-pain__detail { display: block; }
 
@@ -423,12 +443,15 @@ html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4
 .str-v2 .str-pain__illust img { width: 100%; height: auto; display: block; }
 
 .str-v2 .str-problem__banner {
-  display: flex; justify-content: center; margin: 56px 0 0;
+  display: flex; justify-content: center; flex-wrap: wrap; margin: 56px 0 0;
   font-family: var(--lpv2-font-display); font-weight: 900;
   font-size: clamp(13.5px, 3.6vw, 24px); line-height: 1.3;
 }
+/* nowrap にすると、幅の狭い端末（特に文字数の多いEN）で文字が
+   .str-problem の overflow:hidden に飲まれて両端が切れる（2026-09-16 実測: EN 320pxで左右とも欠落）。
+   切れるより折り返す方を選ぶ */
 .str-v2 .str-problem__banner-l,
-.str-v2 .str-problem__banner-r { color: #fff; padding: 16px 28px; white-space: nowrap; }
+.str-v2 .str-problem__banner-r { color: #fff; padding: 16px 28px; }
 .str-v2 .str-problem__banner-l {
   background: var(--lpv2-ink); padding-right: 42px;
   -webkit-clip-path: polygon(0 0, 100% 0, calc(100% - 24px) 100%, 0 100%);
@@ -444,19 +467,29 @@ html[lang="en"] .str-v2 .str-pain .str-pain__figure { font-size: clamp(30px, 3.4
 }
 .str-v2 .str-problem__chev svg { display: block; width: 100%; height: auto; }
 
-@media (max-width: 900px) {
+/* 270+330+gap を固定したままだと 901〜1000px で中央の本文列が 177px まで潰れ、
+   見出しが4行に折り返す（2026-09-16 実測）。狭い側のトラックを先に縮める */
+@media (max-width: 1000px) {
   .str-v2 .str-pain { grid-template-columns: minmax(0,150px) minmax(0,1fr) minmax(0,220px); column-gap: 22px; }
 }
 @media (max-width: 700px) {
   .str-v2 .str-pain { grid-template-columns: 1fr; row-gap: 16px; padding: 26px 0; }
   .str-v2 .str-pain__illust { order: 3; }
-  .str-v2 .str-pain__detail { margin-top: 16px; padding: 16px 18px; font-size: 13.5px; }
+  .str-v2 .str-pain__detail { margin-top: 16px; padding: 16px 18px; font-size: 15.5px; }
   .str-v2 .str-pain__ghost { display: none; }
-  .str-v2 .str-problem__banner { font-size: 15px; }
+  /* 固定pxにすると上の clamp の下限(13.5px)・vw項が効かなくなるため、SPでも連続スケールのまま */
+  .str-v2 .str-problem__banner { font-size: clamp(12.5px, 4.2vw, 18px); }
   .str-v2 .str-problem__banner-l,
   .str-v2 .str-problem__banner-r { padding: 12px 18px; }
   .str-v2 .str-problem__banner-l { padding-right: 30px; }
   .str-v2 .str-problem__banner-r { padding-left: 30px; }
+}
+
+/* 共通 bm-lp-v2.css の prefers-reduced-motion 対象リストは .lpv2-format 等の
+   共通クラス名で書かれており、本ページ独自の .str-panel は拾われない。ここで補う */
+@media (prefers-reduced-motion: reduce) {
+  .str-v2 .str-panel { transition: none; }
+  .str-v2 .str-panel:hover { transform: none; box-shadow: none; }
 }
 
 /* ------------------------------------------------------------------
