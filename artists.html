@@ -61,7 +61,9 @@
   <link rel="stylesheet" href="/css/bm-lp-v2.css">
   <link rel="stylesheet" href="/css/artists.css">
   <!-- Hero素材の先読み（LCP対策） -->
-  <link rel="preload" href="/material/images/artists/hero-artists.webp" as="image" type="image/webp">
+  <!-- picture と同じ条件で出し分ける。media を付けないと両方DLして無駄になる -->
+  <link rel="preload" href="/material/images/artists/hero-artists-2026.webp" as="image" type="image/webp" media="(min-width: 900px)">
+  <link rel="preload" href="/material/images/artists/hero-artists-sp-2026.webp" as="image" type="image/webp" media="(max-width: 899px)">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -193,7 +195,12 @@
     <!-- ===== 1. HERO ===== -->
     <section class="art-hero" aria-label="漫画家・作品紹介">
       <div class="art-hero__bg" aria-hidden="true">
-        <img src="/material/images/artists/hero-artists.webp" alt="" width="2000" height="666" loading="eager" fetchpriority="high" decoding="async">
+        <!-- PCは横長(1600x800)、SPは縦長(828x1472)を出し分ける。
+             どちらも「絵の無い側」にコピーが乗る構図（PC=左、SP=上） -->
+        <picture>
+          <source media="(max-width: 899px)" srcset="/material/images/artists/hero-artists-sp-2026.webp" width="828" height="1472">
+          <img src="/material/images/artists/hero-artists-2026.webp" alt="" width="1600" height="800" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
       </div>
       <div class="art-hero__inner">
         <div class="art-hero__text">
