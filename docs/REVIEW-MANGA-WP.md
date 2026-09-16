@@ -11,14 +11,16 @@
 
 | 領域 | ファイル | 壊れると何が起きるか |
 |---|---|---|
-| ビズ書庫ビューア | `biz-library.html` / `js/works.js` / `js/bm-view-type.js` / `js/bm-viewer.js` / `css/works.css` | **QRコードで外部配布済み**の `/biz-library?manga=id` が開かない・ページ送りできない（BUGS #010/#012/#013） |
-| ホーム | `index.html` / `js/bm-hero.js` / `js/bm-home.js` / `js/bm-pre-production.js` | Hero マーキー・ギャラリー（横読み/縦読み）が空になる（#051/#052） |
-| 制作事例 | `works.html` / `js/bm-works-page.js` / `js/bm-works.js` / `js/bm-work-modal.js` / `js/bm-wd-split.js` | 一覧・モーダルが出ない。**index と works は同じDOMで別JS**なので両方見る |
-| 埋込・LP | `embed-viewer.html` / `js/bm-lp-library-embed.js` | ホームの3D画面・用途別LPの書庫埋込が真っ黒 |
+| ビズ書庫ビューア | `biz-library.html` / `js/works.js` / `js/bm-view-type.js` / `css/works.css` | **QRコードで外部配布済み**の `/biz-library?manga=id` が開かない・ページ送りできない（BUGS #010/#012/#013） |
+| ホーム | `index.html` / `js/bm-hero.js` / `js/bm-home.js` / `js/bm-works.js`（6件カード） / `js/bm-viewer.js`（`#bmViewerOverlay`） / `js/bm-pre-production.js` | Hero マーキー・ギャラリー（横読み/縦読み）が空になる（#051/#052） |
+| 制作事例 | `works.html` / `js/bm-works-page.js` / `js/bm-wd-split.js`（事例モーダルのSP上下2ペイン） | 一覧・モーダルが出ない。**index と works は同じDOM（`#workDetailOverlay`）で別JS**（index=`bm-hero.js` / works=`bm-works-page.js`）なので両方見る |
+| 事例カテゴリページ | `works/category/*.html`（ビルド生成） / `js/bm-work-modal.js`（**このページだけが使う**） | カテゴリページのカードクリックでモーダルが開かない。スモークテストは開かないので**目視必須** |
+| 埋込・LP | `embed-viewer.html` / `js/bm-lp-library-embed.js`（用途別LP 8本の `data-bm-lp-library*`） | ホームの3D画面・用途別LPの書庫埋込が真っ黒 |
 | WP 接続 | `js/bm-wp-api.js` / `js/bm-wp-config.js` / `js/bm-sanitize.js` | 全ページの WP 由来データが消える／XSS（#009/#039） |
-| WP 由来データを描くページ | `artists.html` `js/artists*.js` / `testimonials*.html` `js/bm-testimonials*.js` / `column*.html` `news*.html` `js/bm-column-filter.js` / `js/bizanime.js` | 該当ページが空になる |
+| WP 由来データを描くページ | `artists.html` `js/artists*.js` / `testimonials.html` `testimonial-detail.html` `js/bm-testimonials*.js` / `column.html` `column-detail.html` `news.html` `news-detail.html` `js/bm-column-filter.js` / `js/bizanime.js` | 該当ページが空になる |
 | 静的ビルド | `tools/build-*.py` / `tools/templates/` / `.github/workflows/build-*.yml` | `/works/{slug}` `/column/{slug}` が消える・古い文言で上書き（#021/#048） |
 | Service Worker | `sw.js` | 表紙画像が古いまま／読めない |
+| この仕組み自身 | `.claude/pr-gate-paths.txt` / `docs/REVIEW-MANGA-WP.md` / `tools/smoke-manga-wp.py` | ゲートやテストを緩める変更が素通りする（だからこれらも保護対象） |
 
 WPプラグイン本体（PHP）は**別リポジトリ**（`~/Documents/contentX/web/contentsx-wp-plugin/`、PRIVATE）。
 そちらを触った場合も、このリポジトリ側の確認（§1〜§3）を本番APIに対して実行する。
@@ -26,22 +28,29 @@ WPプラグイン本体（PHP）は**別リポジトリ**（`~/Documents/content
 ## 1. 自動スモークテスト（必須・最初にやる）
 
 ```bash
-# 作業ブランチの worktree で
-python3 -m http.server 8127 --bind 127.0.0.1 &          # ローカル配信
-python3 tools/smoke-manga-wp.py --base http://127.0.0.1:8127
+# 作業ブランチの worktree（リポジトリ直下）で。内蔵サーバーが 127.0.0.1:5500 で配信して検証する
+python3 tools/smoke-manga-wp.py --serve .
 ```
+
+`python3 -m http.server` は使わない（拡張子なしURL `biz-library?manga=` が 404 になり、必ず FAIL する）。
+ポート 5500 は WP プラグインの CORS 許可オリジンなので、実際の CORS 設定のまま API が通る。
+別ポート（`--port`）にすると API 応答を中継して通すため、CORS 設定そのものは検証されない。
 
 確認していること（全部 PASS が条件）:
 
 1. **WP API の生レスポンス**: `/works?site=bizmanga` `/works-new?site=bizmanga` `/library` `/news` `/columns` が件数>0、
    各作品に `id / gallery / view_type / thumbnail` があり、`/manga/{id}` の枚数が `/library` と一致、gallery 画像URLが到達可能
-2. **ホーム**: Hero マーキーに表紙が並ぶ、ギャラリーのカード数が `/works-new` の件数と一致、カードのリンクが `biz-library?manga=`
-3. **制作事例**: カードが出る → クリックでモーダル `#workDetailOverlay` が開き、漫画画像が実際に読み込まれる
-4. **ビズ書庫**: グリッドが出る → クリックで `#mangaModal` が開き画像が読み込まれる → 閉じられる
-5. **QRモード**: referrer なしで `?manga=id` を開くと `html.qr-mode` が付く／サイト内遷移（referrer あり）なら付かない（#010）
+2. **ホーム**: Hero マーキーに表紙が並ぶ、`/works-new` をブラウザでも API と同じ件数で受信（フォールバックしていない）、
+   ギャラリーのカード数が仕様どおり（横読み/縦読みに分けて各10件まで＝`js/bm-home.js` の `MAX_PER_GROUP`）、
+   カードのクリックで `biz-library?manga=` へ遷移
+3. **制作事例**: カードが出る → クリックでモーダル `#workDetailOverlay` が開き、漫画画像が実際に読み込まれ、読み込み失敗の画像が無い
+4. **ビズ書庫**: グリッドの作品数が `/library` と一致 → クリックで `#mangaModal` が開き画像が読み込まれ、読み込み失敗が無い → 閉じられる
+5. **QRモード**: referrer なしで `?manga=id` を開くと `html.qr-mode` が付く／サイト内遷移（referrer あり）なら付かない（#010）。
+   作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（フォールバックにある作品は WP が壊れていても開けてしまう）
 6. **埋込ビューア**: `embed-viewer.html?manga=id&manual=1` で画像が出る
-7. **スマホ**（390px）: `?manga=id` で `#mobileView` に画像が出る
-8. **どのページでも** JS の未捕捉エラー・自サイト起因の console error・自サイトへの 404 が無い
+7. **スマホ**（390px）: `?manga=id` で `mode-vertical`（見開き作品もSPでは縦スクロール）で開き、`#modalManga` に画像が出る。
+   `#mobileView` は見開き専用要素なので非表示が正常
+8. **どのページでも** JS の未捕捉エラー・サイト/WP/素材ホスト（`*.contentsx.jp`）起因の console error や 404 が無い
 
 失敗したら原因を直してから再実行。**テストの側を緩めて通さない**（緩めるときは平澤さんに理由を説明してOKをもらう）。
 マージ後は本番にも同じテストを当てる: `python3 tools/smoke-manga-wp.py --base https://bizmanga.contentsx.jp`
@@ -49,7 +58,9 @@ python3 tools/smoke-manga-wp.py --base http://127.0.0.1:8127
 ## 2. 目視（自動テストが見ない部分）
 
 - ビューア（PC）: 見開き→矢印/クリックでページ送り、`viewToggle` で縦読みへ切替、**最終ページCTA**（`cta_enabled` の作品で表示、他では出ない）
-- ビューア（SP）: 縦読み、上下2ペイン分割（`bm-wd-split.js`）、タップ左右でページ送り
+- ビューア（SP）: 縦読み、タップ左右でページ送り。制作事例モーダル（SP）は上下2ペイン分割（`bm-wd-split.js`）
+- `/works/category/{slug}`（静的生成）のカードクリックでモーダルが開く（担当は `js/bm-work-modal.js`。**スモークテストは見ない**）
+- ホームの3D画面（`index.html` 内の `embed-viewer` iframe）は http 配信だと CSP で描画されないので、本番または https で目視
 - 縦読み作品（`view_type: vertical` / `vertical_only`）と見開き作品を**1つずつ**開く。判定は `window.bmViewType.*` に委譲されているか（自前判定を足していないか、#012/#013）
 - ホーム: 横読み/縦読みの2グループに分かれている、新作の並び順が WP の「表示順」どおり（`cx_sort_order` 昇順）
 - `/works/{slug}`（静的ページ）と `/works` 一覧のカテゴリフィルタ
@@ -80,7 +91,10 @@ python3 tools/smoke-manga-wp.py --base http://127.0.0.1:8127
 4. 変更ファイル一覧・PRのURL・上記の結果を平澤さんに提示して **OKをもらう**
 5. `bash ~/.claude/hooks/pr-review-gate.sh --approve human` を記録 → `gh pr merge`
    （**この領域では `--approve ai-clean` は使わない**。ゲート側でも ai-clean の記録は拒否される）
-6. マージ後: 本番に §1 のテストを当てる → ブランチ削除
+6. マージ後: 本番に §1 のテストを当てる（`--base https://bizmanga.contentsx.jp`）→ ブランチ削除
+
+**ゲートの前提**: ゲートは `gh pr merge` を実行するセッションの作業ディレクトリ（または `cd <dir> && gh pr merge` の `<dir>`）の
+リポジトリで採点する。採点できない場所（origin の無いワークスペース root など）からのマージは**拒否**される（fail closed）。
 
 ## 関連
 

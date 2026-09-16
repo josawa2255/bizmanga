@@ -7,23 +7,29 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
 対応するチェックリスト: docs/REVIEW-MANGA-WP.md §1
 
 使い方:
-  python3 tools/smoke-manga-wp.py --serve .                               # このリポジトリを内蔵サーバーで配信して検証（推奨）
-  python3 tools/smoke-manga-wp.py --base https://bizmanga.contentsx.jp   # 本番にも当てられる
-  python3 tools/smoke-manga-wp.py --api-only                              # WP API だけ
+  python3 tools/smoke-manga-wp.py --serve .                              # 推奨: 内蔵サーバー(127.0.0.1:5500)で配信して検証
+  python3 tools/smoke-manga-wp.py --base https://bizmanga.contentsx.jp  # 本番にも当てられる（マージ後の確認）
+  python3 tools/smoke-manga-wp.py --api-only                             # WP API だけ（ブラウザを使わない）
 
 ローカル検証の仕組み:
-  - 内蔵サーバーは GitHub Pages と同じく拡張子なしURL（/biz-library → biz-library.html）を解決する
-    （python -m http.server では `biz-library?manga=` へのサイト内遷移が 404 になる）
-  - WP API は本番オリジンにしか CORS を許可していない（BUGS.md #009）ので、ブラウザ内の
-    API リクエストを Playwright で中継し Access-Control-Allow-Origin を付けて返す（応答本体は本番のまま）
-  - http 配信では CSP の frame-src（https: のみ）で埋込 iframe の違反ログが出るため、その1種類だけ無視する
+  - 内蔵サーバーはリポジトリ直下 serve.py の CleanURLHandler（拡張子なしURL対応）を再利用し、127.0.0.1 だけで
+    待ち受ける。ディレクトリ一覧は GitHub Pages と同じく 404。`python -m http.server` は `biz-library?manga=` への
+    サイト内遷移が 404 になるので使わない
+  - WP プラグインの CORS 許可オリジンは 本番 + http://127.0.0.1:5500 + http://localhost:3000（contentsx-cms.php）。
+    既定ポート 5500 なら**実際の CORS 設定のまま**通る。別ポートを指定したときだけ、Playwright で API 応答を中継して
+    Access-Control-Allow-Origin を足す（その場合 CORS 設定そのものは検証されない）
+  - http 配信では CSP frame-src（https: のみ）で 127.0.0.1 の埋込 iframe が拒否されるログが出る。そのローカル起因分だけ無視する
+  - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の URL を使う
+  - QR直リンク・埋込・スマホの確認には、works.js のローカルフォールバック表（FALLBACK_WORKS）に**無い**作品を選ぶ
+    （フォールバックにある作品は WP が壊れていても開けてしまい、WP 接続の確認にならない）
 
-終了コード: 全 PASS で 0、1つでも FAIL なら 1。
+終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
 """
 import argparse
 import json
 import os
+import re
 import sys
 import threading
 import urllib.error
@@ -33,7 +39,11 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 DEFAULT_API = "https://cms.contentsx.jp/wp-json/contentsx/v1"
-DEFAULT_BASE = "http://127.0.0.1:8127"
+DEFAULT_PORT = 5500
+# WP プラグイン（contentsx-cms.php cxcms_allowed_origins）が許可しているローカルオリジン
+CORS_ALLOWED_LOCAL_ORIGINS = {"http://127.0.0.1:5500", "http://localhost:3000"}
+# エラー・404 を「自分の責任範囲」として数えるホスト（サイト自身 + WP + 素材置き場）
+WATCH_HOST_SUFFIXES = ("contentsx.jp",)
 RESULTS = []  # (name, ok, detail)
 
 
@@ -46,6 +56,12 @@ def get_json(url, timeout=25):
     req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def get_text(url, timeout=25):
+    req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read().decode("utf-8", "replace")
 
 
 def url_ok(url, timeout=15):
@@ -75,29 +91,45 @@ def img_url(entry):
 
 
 # ------------------------------------------------------- Built-in server
-class CleanUrlHandler(SimpleHTTPRequestHandler):
-    """GitHub Pages 互換: /foo → foo.html、/dir → dir/index.html。キャッシュ無効。ログは黙らせる"""
+def make_handler(directory):
+    """リポジトリ直下の serve.py（クリーンURL）を再利用。無ければ同等の最小実装で代替"""
+    base_cls = SimpleHTTPRequestHandler
+    if os.path.isfile(os.path.join(directory, "serve.py")):
+        try:
+            sys.path.insert(0, directory)
+            import serve  # noqa: E402  (BizManga/serve.py)
+            base_cls = serve.CleanURLHandler
+        except Exception:
+            base_cls = SimpleHTTPRequestHandler
+        finally:
+            if sys.path and sys.path[0] == directory:
+                sys.path.pop(0)
 
-    def translate_path(self, path):
-        full = super().translate_path(path)
-        if os.path.isfile(full):
+    class Handler(base_cls):
+        def translate_path(self, path):
+            full = super().translate_path(path)
+            # serve.py が無いときの保険: /foo → foo.html（ディレクトリより .html を優先）
+            if not os.path.exists(full) and not os.path.splitext(full)[1] and os.path.isfile(full + ".html"):
+                return full + ".html"
             return full
-        if os.path.isdir(full) and os.path.isfile(os.path.join(full, "index.html")):
-            return os.path.join(full, "index.html")
-        if not os.path.splitext(full)[1] and os.path.isfile(full + ".html"):
-            return full + ".html"
-        return full
 
-    def end_headers(self):
-        self.send_header("Cache-Control", "no-store")
-        super().end_headers()
+        def list_directory(self, path):
+            # GitHub Pages はディレクトリ一覧を出さない（index.html が無ければ 404）
+            self.send_error(404, "Not Found")
+            return None
 
-    def log_message(self, *a):
-        pass
+        def end_headers(self):
+            self.send_header("Cache-Control", "no-store")
+            super().end_headers()
+
+        def log_message(self, *a):
+            pass
+
+    return Handler
 
 
 def start_server(directory, port):
-    handler = partial(CleanUrlHandler, directory=directory)
+    handler = partial(make_handler(directory), directory=directory)
     httpd = ThreadingHTTPServer(("127.0.0.1", port), handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd
@@ -160,19 +192,40 @@ def check_api(api):
     return data
 
 
+def pick_wp_only_id(base, lib):
+    """works.js の FALLBACK_WORKS に無い作品IDを選ぶ（WP 接続が生きていないと開けない作品）"""
+    ids = [w["id"] for w in lib if w.get("id")]
+    if not ids:
+        return None, "library が空"
+    try:
+        src = get_text(f"{base}/js/works.js")
+        fallback = set(re.findall(r"\[\s*'([a-z0-9-]+)'\s*,", src))
+    except Exception as e:
+        return ids[0], f"works.js を取得できず先頭を使用（{str(e)[:60]}）"
+    for i in ids:
+        if i not in fallback:
+            return i, "FALLBACK_WORKS に無い作品"
+    return ids[0], "全作品が FALLBACK_WORKS にあるため先頭を使用（WP 接続の確認としては弱い）"
+
+
 # ------------------------------------------------------------- Browser
-WAIT_DATA = """() => new Promise(res => {
-  if (window.BM_LIBRARY_DATA || window.BM_NEW_WORKS_DATA || window.BM_WORKS_DATA) return res('already');
-  const t = setTimeout(() => res('timeout'), 20000);
-  const done = () => { clearTimeout(t); res('event'); };
-  window.addEventListener('bm-all-data-ready', done, { once: true });
-  window.addEventListener('bm-data-ready', done, { once: true });
+# ホーム/制作事例: bm-wp-api.js は 1段目(/works)で bm-data-ready、2段目(/works-new 等)完了で bm-all-data-ready を出す。
+# ホームのギャラリーは /works-new を使うので、全データ到着まで待つ
+WAIT_ALL = """() => new Promise(res => {
+  if (window.BM_NEW_WORKS_DATA) return res('already');
+  const t = setTimeout(() => res('timeout'), 25000);
+  window.addEventListener('bm-all-data-ready', () => { clearTimeout(t); res('event'); }, { once: true });
 })"""
 
 IMG_LOADED = """sel => {
   const imgs = [...document.querySelectorAll(sel)];
   return imgs.some(i => i.complete && i.naturalWidth > 0);
 }"""
+
+# 読み込みを試みた（complete）のに幅ゼロ＝壊れている画像。未着手の lazy 画像は数えない
+BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
+  .filter(i => i.complete && i.getAttribute('src') && i.naturalWidth === 0)
+  .map(i => i.currentSrc || i.src).slice(0, 5)"""
 
 
 class PageProbe:
@@ -187,44 +240,51 @@ class PageProbe:
         self.page.on("console", self._on_console)
         self.page.on("response", self._on_response)
 
+    def _watched(self, url):
+        h = urlparse(url).netloc
+        return bool(h) and (h == self.host or h.endswith(WATCH_HOST_SUFFIXES))
+
     def _on_console(self, m):
         if m.type != "error":
             return
         loc = (m.location or {}).get("url", "") if isinstance(m.location, dict) else ""
         text = m.text
-        # http 配信のときだけ: CSP frame-src（https: のみ）の違反ログは配信方式の差なので無視
-        if self.local_http and "Content Security Policy" in text and "frame-src" in text:
+        # http 配信のときだけ: 127.0.0.1 の埋込 iframe に対する CSP frame-src 違反は配信方式の差なので無視
+        if self.local_http and "Content Security Policy" in text and ("127.0.0.1" in text or "localhost" in text):
             return
-        # 自サイト起因（または場所不明）のエラーだけ数える。GA/Clarity/HubSpot 等の外部は無視
-        if (not loc) or (self.host in loc):
+        # 自サイト・WP・素材ホスト起因（または場所不明）のエラーだけ数える。GA/Clarity/HubSpot 等は無視
+        if (not loc) or self._watched(loc):
             self.errors.append("console: " + text[:160])
 
     def _on_response(self, r):
-        if self.host in r.url and r.status >= 400:
+        if self._watched(r.url) and r.status >= 400:
             self.bad.append(f"{r.status} {r.url}")
 
     def finish(self, label):
         rec(f"{label}: JSエラー無し", not self.errors, "; ".join(self.errors)[:300])
-        rec(f"{label}: 自サイト404無し", not self.bad, "; ".join(self.bad)[:300])
-        self.page.close()
+        rec(f"{label}: サイト/WP/素材への 404 無し", not self.bad, "; ".join(self.bad)[:300])
+        try:
+            self.page.close()
+        except Exception:
+            pass
 
 
-def check_browser(base, data, api):
+def check_browser(base, data):
     import logging
     from playwright.sync_api import sync_playwright
-    # コンテキストを閉じた後に届いた中継リクエストの残りを asyncio が ERROR ログ（Traceback）として吐くが、
-    # 判定には無関係なので黙らせる（判定は RESULTS と終了コードで行う）
+    # コンテキストを閉じた後に届いた中継の残りを asyncio が ERROR ログ（Traceback）として吐くが判定には無関係
     logging.getLogger("asyncio").setLevel(logging.CRITICAL)
 
-    host = urlparse(base).netloc
-    local_http = urlparse(base).scheme == "http"
-    api_origin = "{0.scheme}://{0.netloc}".format(urlparse(api))
+    parsed = urlparse(base)
+    host = parsed.netloc
+    local_http = parsed.scheme == "http"
+    use_relay = local_http and base not in CORS_ALLOWED_LOCAL_ORIGINS
     lib = data.get("library") or []
-    first_id = lib[0]["id"] if lib and lib[0].get("id") else None
     n_new = len(data.get("works_new") or [])
+    wp_id, why = pick_wp_only_id(base, lib)
+    print(f"== ブラウザ: {base}  CORS: {'中継（ACAO付与。CORS設定そのものは検証しない）' if use_relay else '実際の許可オリジンのまま'}  検証作品: {wp_id}（{why}）", flush=True)
 
     def relay_cors(route, request):
-        """WP API はローカルオリジンに CORS を許可しないので、本番の応答をそのまま中継して ACAO を足す"""
         try:
             resp = route.fetch()
             headers = dict(resp.headers)
@@ -234,149 +294,166 @@ def check_browser(base, data, api):
             try:
                 route.abort()
             except Exception:
-                pass  # コンテキストを閉じた後に届いた分は無視
+                pass
 
     def new_ctx(browser, **kw):
         ctx = browser.new_context(**kw)
-        if local_http:
-            ctx.route(api_origin + "/**", relay_cors)
+        if use_relay:
+            ctx.route("https://cms.contentsx.jp/**", relay_cors)
         return ctx
 
-    def probe(ctx):
-        return PageProbe(ctx, host, local_http=local_http)
-
     def close_ctx(ctx):
-        # 飛んでいる途中の中継リクエストがあっても例外にしない（Playwright 推奨手順）。
-        # networkidle 待ちは GA/Clarity 等の外部ビーコンで終わらないことがあるので使わない
         try:
             ctx.unroute_all(behavior="ignoreErrors")
         except Exception:
             pass
-        ctx.close()
+        try:
+            ctx.close()
+        except Exception:
+            pass
+
+    def probe(ctx):
+        return PageProbe(ctx, host, local_http=local_http)
+
+    def section(label, fn):
+        """区画ごとに例外を隔離: 途中で落ちても残りを続け、落ちた区画は FAIL として残す"""
+        try:
+            fn()
+        except Exception as e:
+            rec(f"{label}: 検証が例外で中断", False, f"{type(e).__name__}: {str(e)[:200]}")
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
         desktop = new_ctx(browser, viewport={"width": 1440, "height": 900})
 
-        # --- ホーム -------------------------------------------------------
-        pr = probe(desktop)
-        pg = pr.page
-        pg.goto(f"{base}/index.html", wait_until="load")
-        how = pg.evaluate(WAIT_DATA)
-        pg.wait_for_timeout(1500)
-        hero = pg.locator("#bmHeroWorksBg .bm-hero-works-cover").count()
-        rec("ホーム: Hero マーキーに表紙がある", hero > 0, f"{hero}枚 (data:{how})")
-        cards = pg.locator(".bm-gallery-card").count()
-        # ページ本体（js/bm-home.js）と同じ計算: /works-new を 横読み/縦読み の2グループに分け、各グループ10件まで表示
-        calc = pg.evaluate("""() => {
-          const d = window.BM_NEW_WORKS_DATA || [];
-          const isV = x => !!(window.bmViewType && window.bmViewType.isForcedVertical(x));
-          const v = d.filter(isV).length, m = d.length - v;
-          return { got: d.length, expected: Math.min(10, m) + Math.min(10, v), manga: m, vertical: v };
-        }""")
-        rec("ホーム: /works-new をブラウザでも同じ件数で受信（フォールバックしていない）", calc["got"] == n_new and n_new > 0, f"ブラウザ={calc['got']} API={n_new}")
-        rec("ホーム: ギャラリーのカード数が仕様どおり（横読み/縦読み 各10件まで）", cards == calc["expected"] and cards > 0,
-            f"画面={cards} 期待={calc['expected']}（横読み{calc['manga']}件・縦読み{calc['vertical']}件）")
-        if cards:
-            pg.locator(".bm-gallery-card").first.scroll_into_view_if_needed()
-            pg.locator(".bm-gallery-card").first.click()
-            try:
-                pg.wait_for_url("**/biz-library?manga=*", timeout=10000)
-                rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", True, pg.url.split("/")[-1])
-            except Exception:
-                rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", False, pg.url)
-        pr.finish("ホーム")
-
-        # --- 制作事例 -----------------------------------------------------
-        pr = probe(desktop)
-        pg = pr.page
-        pg.goto(f"{base}/works.html", wait_until="load")
-        pg.evaluate(WAIT_DATA)
-        pg.wait_for_timeout(1500)
-        n_cards = pg.locator("#bmWorksGrid .bm-works-card, #bmWorksGrid [data-build-static]").count()
-        rec("制作事例: カードが表示される", n_cards > 0, f"{n_cards}件")
-        if n_cards:
-            card = pg.locator("#bmWorksGrid .bm-works-card, #bmWorksGrid [data-build-static]").first
-            card.scroll_into_view_if_needed()
-            card.click()
-            try:
-                pg.wait_for_selector("#workDetailOverlay.active", timeout=10000)
-                opened = True
-            except Exception:
-                opened = False
-            rec("制作事例: カードクリックでモーダルが開く", opened)
-            if opened:
+        def home():
+            pr = probe(desktop)
+            pg = pr.page
+            pg.goto(f"{base}/index.html", wait_until="load")
+            how = pg.evaluate(WAIT_ALL)
+            pg.wait_for_timeout(800)
+            hero = pg.locator("#bmHeroWorksBg .bm-hero-works-cover").count()
+            rec("ホーム: Hero マーキーに表紙がある", hero > 0, f"{hero}枚 (data:{how})")
+            cards = pg.locator(".bm-gallery-card").count()
+            # ページ本体（js/bm-home.js）と同じ計算: /works-new を 横読み/縦読み に分け、各グループ MAX_PER_GROUP(10) 件まで
+            calc = pg.evaluate("""() => {
+              const d = window.BM_NEW_WORKS_DATA || [];
+              const isV = x => !!(window.bmViewType && window.bmViewType.isForcedVertical(x));
+              const v = d.filter(isV).length, m = d.length - v;
+              return { got: d.length, expected: Math.min(10, m) + Math.min(10, v), manga: m, vertical: v };
+            }""")
+            rec("ホーム: /works-new をブラウザでも同じ件数で受信（フォールバックしていない）", calc["got"] == n_new and n_new > 0, f"ブラウザ={calc['got']} API={n_new}")
+            rec("ホーム: ギャラリーのカード数が仕様どおり（横読み/縦読み 各10件まで）", cards == calc["expected"] and cards > 0,
+                f"画面={cards} 期待={calc['expected']}（横読み{calc['manga']}件・縦読み{calc['vertical']}件）")
+            if not use_relay:
+                rec("ホーム: WP API を実際の CORS 許可設定のまま取得できた", calc["got"] == n_new and n_new > 0, base)
+            if cards:
+                pg.locator(".bm-gallery-card").first.scroll_into_view_if_needed()
+                pg.locator(".bm-gallery-card").first.click()
                 try:
-                    pg.wait_for_function(IMG_LOADED, arg="#workDetailCarousel img", timeout=20000)
-                    rec("制作事例: モーダル内の漫画画像が読み込まれる", True)
+                    pg.wait_for_url("**/biz-library?manga=*", timeout=10000)
+                    rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", True, pg.url.split("/")[-1])
                 except Exception:
-                    rec("制作事例: モーダル内の漫画画像が読み込まれる", False, "20秒以内に naturalWidth>0 の画像が無い")
-                pg.locator("#workDetailClose").click()
-                pg.wait_for_timeout(500)
-                rec("制作事例: モーダルを閉じられる", pg.locator("#workDetailOverlay.active").count() == 0)
-        pr.finish("制作事例")
+                    rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", False, pg.url)
+            pr.finish("ホーム")
 
-        # --- ビズ書庫 -----------------------------------------------------
-        pr = probe(desktop)
-        pg = pr.page
-        pg.goto(f"{base}/biz-library.html", wait_until="load")
-        pg.evaluate(WAIT_DATA)
-        pg.wait_for_timeout(1500)
-        n_grid = pg.locator("#worksGrid > *").count()
-        paginated = pg.locator("#gridPagination *").count() > 0
-        ok_grid = n_grid > 0 and (n_grid == len(lib) or paginated)
-        rec("ビズ書庫: グリッドの作品数が /library と一致（またはページ送りあり）", ok_grid, f"画面={n_grid} API={len(lib)} pagination={paginated}")
-        if n_grid:
-            pg.locator("#worksGrid > *").first.click()
-            try:
-                pg.wait_for_selector("#mangaModal", state="visible", timeout=10000)
-                opened = True
-            except Exception:
-                opened = False
-            rec("ビズ書庫: クリックでビューアが開く", opened)
-            if opened:
+        def works():
+            pr = probe(desktop)
+            pg = pr.page
+            pg.goto(f"{base}/works.html", wait_until="load")
+            pg.evaluate(WAIT_ALL)
+            pg.wait_for_timeout(800)
+            sel = "#bmWorksGrid .bm-works-card, #bmWorksGrid [data-build-static]"
+            n_cards = pg.locator(sel).count()
+            rec("制作事例: カードが表示される", n_cards > 0, f"{n_cards}件")
+            if n_cards:
+                card = pg.locator(sel).first
+                card.scroll_into_view_if_needed()
+                card.click()
                 try:
-                    pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                    rec("ビズ書庫: ビューアの漫画画像が読み込まれる", True)
+                    pg.wait_for_selector("#workDetailOverlay.active", timeout=10000)
+                    opened = True
                 except Exception:
-                    rec("ビズ書庫: ビューアの漫画画像が読み込まれる", False, "20秒以内に画像が読み込まれない")
-                qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
-                rec("ビズ書庫: サイト内クリックでは qr-mode にならない", not qr)
-                pg.locator("#modalClose").click()
-                pg.wait_for_timeout(600)
-                rec("ビズ書庫: ビューアを閉じられる", not pg.locator("#mangaModal").is_visible())
-        pr.finish("ビズ書庫")
+                    opened = False
+                rec("制作事例: カードクリックでモーダルが開く", opened)
+                if opened:
+                    try:
+                        pg.wait_for_function(IMG_LOADED, arg="#workDetailCarousel img", timeout=20000)
+                        rec("制作事例: モーダル内の漫画画像が読み込まれる", True)
+                    except Exception:
+                        rec("制作事例: モーダル内の漫画画像が読み込まれる", False, "20秒以内に naturalWidth>0 の画像が無い")
+                    pg.wait_for_timeout(1500)
+                    broken = pg.evaluate(BROKEN_IMGS, "#workDetailCarousel img")
+                    rec("制作事例: モーダル内に読み込み失敗の画像が無い", not broken, "; ".join(broken)[:300])
+                    pg.locator("#workDetailClose").click()
+                    pg.wait_for_timeout(500)
+                    rec("制作事例: モーダルを閉じられる", pg.locator("#workDetailOverlay.active").count() == 0)
+            pr.finish("制作事例")
 
-        # --- QR直リンク（referrer なし） ------------------------------------
-        if first_id:
+        def library():
+            pr = probe(desktop)
+            pg = pr.page
+            pg.goto(f"{base}/biz-library.html", wait_until="load")
+            # works.js は自前で /library を取得し BM_* グローバルもイベントも出さないので、カード数の到達で待つ
+            try:
+                pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib), timeout=25000)
+            except Exception:
+                pass
+            n_grid = pg.locator("#worksGrid > *").count()
+            rec("ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）", n_grid == len(lib) and n_grid > 0, f"画面={n_grid} API={len(lib)}")
+            if n_grid:
+                pg.locator("#worksGrid > *").first.click()
+                try:
+                    pg.wait_for_selector("#mangaModal", state="visible", timeout=10000)
+                    opened = True
+                except Exception:
+                    opened = False
+                rec("ビズ書庫: クリックでビューアが開く", opened)
+                if opened:
+                    try:
+                        pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
+                        rec("ビズ書庫: ビューアの漫画画像が読み込まれる", True)
+                    except Exception:
+                        rec("ビズ書庫: ビューアの漫画画像が読み込まれる", False, "20秒以内に画像が読み込まれない")
+                    pg.wait_for_timeout(1500)
+                    broken = pg.evaluate(BROKEN_IMGS, "#mangaModal img")
+                    rec("ビズ書庫: ビューア内に読み込み失敗の画像が無い", not broken, "; ".join(broken)[:300])
+                    qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
+                    rec("ビズ書庫: サイト内クリックでは qr-mode にならない", not qr)
+                    pg.locator("#modalClose").click()
+                    pg.wait_for_timeout(600)
+                    rec("ビズ書庫: ビューアを閉じられる", not pg.locator("#mangaModal").is_visible())
+            pr.finish("ビズ書庫")
+
+        def qr_direct():
             qr_ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
             pr = probe(qr_ctx)
             pg = pr.page
-            pg.goto(f"{base}/biz-library.html?manga={first_id}", wait_until="load")
+            pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load")
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
                 pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec(f"QR直リンク ?manga={first_id}: ビューアが自動で開き画像が出る", True)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", True)
             except Exception:
-                rec(f"QR直リンク ?manga={first_id}: ビューアが自動で開き画像が出る", False)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", False)
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）", qr)
             pr.finish("QR直リンク")
             close_ctx(qr_ctx)
 
-            # --- サイト内遷移（referrer あり） ------------------------------
+        def internal_nav():
             pr = probe(desktop)
             pg = pr.page
-            pg.goto(f"{base}/biz-library.html?manga={first_id}", wait_until="load", referer=f"{base}/index.html")
+            pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load", referer=f"{base}/index.html")
             pg.wait_for_timeout(1500)
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("サイト内遷移 ?manga=: referrer ありなら qr-mode にならない", not qr)
             pr.finish("サイト内遷移")
 
-            # --- 埋込ビューア -------------------------------------------------
+        def embed():
             pr = probe(desktop)
             pg = pr.page
-            pg.goto(f"{base}/embed-viewer.html?manga={first_id}&manual=1", wait_until="load")
+            pg.goto(f"{base}/embed-viewer.html?manga={wp_id}&manual=1", wait_until="load")
             try:
                 pg.wait_for_function(IMG_LOADED, arg="#viewer img", timeout=20000)
                 rec("埋込ビューア embed-viewer?manga=&manual=1: 画像が出る", True)
@@ -384,15 +461,12 @@ def check_browser(base, data, api):
                 rec("埋込ビューア embed-viewer?manga=&manual=1: 画像が出る", False)
             pr.finish("埋込ビューア")
 
-        close_ctx(desktop)
-
-        # --- スマホ ---------------------------------------------------------
-        if first_id:
-            mobile = new_ctx(browser, viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True,
-                                         user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
-            pr = probe(mobile)
+        def mobile():
+            ctx = new_ctx(browser, viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True,
+                          user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
+            pr = probe(ctx)
             pg = pr.page
-            pg.goto(f"{base}/biz-library.html?manga={first_id}", wait_until="load")
+            pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load")
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
                 pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
@@ -411,36 +485,54 @@ def check_browser(base, data, api):
             hs = pg.evaluate("() => document.body.scrollWidth > window.innerWidth")
             rec("スマホ(390px): 横スクロール無し", not hs)
             pr.finish("スマホ")
-            close_ctx(mobile)
+            close_ctx(ctx)
 
+        section("ホーム", home)
+        section("制作事例", works)
+        section("ビズ書庫", library)
+        if wp_id:
+            section("QR直リンク", qr_direct)
+            section("サイト内遷移", internal_nav)
+            section("埋込ビューア", embed)
+        close_ctx(desktop)
+        if wp_id:
+            section("スマホ", mobile)
         browser.close()
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default=DEFAULT_BASE, help="確認対象のサイトURL（末尾スラッシュ無し）")
-    ap.add_argument("--api", default=DEFAULT_API, help="WP API のベースURL")
+    ap.add_argument("--base", default=f"http://127.0.0.1:{DEFAULT_PORT}", help="確認対象のサイトURL（末尾スラッシュ無し）")
+    ap.add_argument("--api", default=DEFAULT_API, help="WP API のベースURL（Python 側の確認にだけ効く）")
     ap.add_argument("--api-only", action="store_true", help="WP API の確認だけ行う（ブラウザを使わない）")
     ap.add_argument("--serve", metavar="DIR", help="このディレクトリを内蔵サーバーで配信して検証する（--base より優先）")
-    ap.add_argument("--port", type=int, default=8127, help="--serve のポート（既定 8127）")
+    ap.add_argument("--port", type=int, default=DEFAULT_PORT, help=f"--serve のポート（既定 {DEFAULT_PORT}＝WP の CORS 許可オリジン）")
     args = ap.parse_args()
     base = args.base.rstrip("/")
     httpd = None
     if args.serve:
-        httpd = start_server(os.path.abspath(args.serve), args.port)
+        try:
+            httpd = start_server(os.path.abspath(args.serve), args.port)
+        except OSError as e:
+            print(f"内蔵サーバーを 127.0.0.1:{args.port} で起動できません（{e}）。--port で別ポートを指定するか、使用中のプロセスを止めてください", file=sys.stderr)
+            sys.exit(2)
         base = f"http://127.0.0.1:{args.port}"
 
     print(f"== WP API: {args.api}")
     data = check_api(args.api)
     if not args.api_only:
-        print(f"== ブラウザ: {base}")
         try:
-            check_browser(base, data, args.api)
+            check_browser(base, data)
         except ImportError:
             rec("playwright が見つからない", False, "pip install playwright && python3 -m playwright install chromium")
-
-    if httpd:
+        except Exception as e:
+            rec("ブラウザ検証を開始できない（Chromium 未導入・起動失敗など）", False, f"{type(e).__name__}: {str(e)[:200]}")
+        finally:
+            if httpd:
+                httpd.shutdown()
+    elif httpd:
         httpd.shutdown()
+
     n_fail = sum(1 for _, ok, _ in RESULTS if not ok)
     print("\n== 結果: {} PASS / {} FAIL".format(len(RESULTS) - n_fail, n_fail))
     for name, ok, detail in RESULTS:

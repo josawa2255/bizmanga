@@ -18,3 +18,9 @@
 ^tools/(build-[a-z0-9-]+|migrate-[a-z0-9-]+)\.py$
 ^tools/templates/
 ^\.github/workflows/build-[a-z0-9-]+\.yml$
+# --- 保護される面を描く静的ページ（build-works.py が生成。ここの事例モーダルは js/bm-work-modal.js が担当） ---
+^works/category/
+# --- この仕組み自身（ゲート設定・確認手順・スモークテスト）。緩める変更も必ずレビューを通す ---
+^\.claude/pr-gate-paths\.txt$
+^docs/REVIEW-MANGA-WP\.md$
+^tools/smoke-manga-wp\.py$
