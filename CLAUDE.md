@@ -84,6 +84,13 @@ if (window.i18n && window.i18n.translateAll) {
 - ページ送り: `waitForImage()` で画像読み込み完了を待ってからフラグ解除
 - `isSpreadAnimating` フラグでクリック入力をゲート
 
+## ⛔ 漫画表示・WP接続は絶対に壊さない（2026-09-15 平澤指示・レビュー必須領域）
+
+- 対象: ビューア（`biz-library.html` `js/works.js` `js/bm-view-type.js` …）、ホーム（`index.html` `js/bm-hero.js` `js/bm-home.js`）、制作事例（`works.html` `js/bm-works-page.js` `js/bm-work-modal.js` …）、埋込（`embed-viewer.html`）、WP接続（`js/bm-wp-api.js` `js/bm-wp-config.js` `js/bm-sanitize.js`）、WP由来データを描くページ、静的ビルド（`tools/build-*.py` `tools/templates/` `.github/workflows/build-*.yml`）、`sw.js`。正確な一覧は [.claude/pr-gate-paths.txt](.claude/pr-gate-paths.txt)
+- これらを触ったPRは PRレビューゲート（`~/.claude/hooks/pr-review-gate.sh`）が自動で HIGH にし、`gh pr merge` を止める。**確認手順の正本は [docs/REVIEW-MANGA-WP.md](docs/REVIEW-MANGA-WP.md)**
+- 必ず `python3 tools/smoke-manga-wp.py --serve .`（内蔵サーバー 127.0.0.1:5500 で配信。`python -m http.server` は不可）を全 PASS にしてから、結果を添えて平澤さんのOKをもらい `--approve human` でマージ。**この領域は `--approve ai-clean` 不可**（ゲート側でも拒否）。`works/category/*.html` の事例モーダル（`js/bm-work-modal.js`）と3D画面はテストが見ないので目視
+- 重要ファイルを増やしたら `.claude/pr-gate-paths.txt` にも足す（足し忘れるとゲートが素通りする）
+
 ## 外部サービス
 - HubSpot: Portal 48367061（ContentsXと共通）
 - WordPress API: `https://cms.contentsx.jp/wp-json/contentsx/v1`（bm-wp-config.js）
