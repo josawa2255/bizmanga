@@ -1,0 +1,26 @@
+# BizManga — PRレビューゲートの「プロジェクト重要パス」（~/.claude/hooks/pr-review-gate.sh が読む）
+# 1行1つの正規表現（grep -E、リポジトリ root からの相対パスに一致）。差分に1つでも一致すると
+# +3 → 重要度 HIGH → `gh pr merge` がレビュー記録なしではブロックされる。
+#
+# 2026-09-15 平澤指示: 「漫画の表示」と「WordPress との接続」は絶対に壊さない。
+# 触ったPRは必ず下のチェックリストで壊れていないかを確認し、平澤さんのOK（--approve human）でマージする。
+# この領域は ai-clean（AIレビュー指摘ゼロでの自動承認）を使えない。
+# checklist: docs/REVIEW-MANGA-WP.md
+#
+# --- 漫画の表示（ビューア / ホームギャラリー / Hero マーキー / 制作事例モーダル / 静的 works / 埋込ビューア） ---
+^js/(works|bm-viewer|bm-view-type|bm-work-modal|bm-works-page|bm-works|bm-home|bm-hero|bm-wd-split|bm-lp-library-embed|bm-pre-production)\.js$
+^(biz-library|embed-viewer|works|index)\.html$
+^css/works\.css$
+^sw\.js$
+# --- WordPress 接続（APIクライアント / サニタイズ / WP由来データを描くJS / 静的ビルドとそのテンプレ・ワークフロー） ---
+^js/(bm-wp-api|bm-wp-config|bm-sanitize|artists|artists-data|bm-testimonials|bm-testimonials-page|bm-column-filter|bizanime)\.js$
+^(column|column-detail|news|news-detail|testimonials|testimonial-detail|artists)\.html$
+^tools/(build-[a-z0-9-]+|migrate-[a-z0-9-]+)\.py$
+^tools/templates/
+^\.github/workflows/build-[a-z0-9-]+\.yml$
+# --- 保護される面を描く静的ページ（build-works.py が生成。ここの事例モーダルは js/bm-work-modal.js が担当） ---
+^works/category/
+# --- この仕組み自身（ゲート設定・確認手順・スモークテスト）。緩める変更も必ずレビューを通す ---
+^\.claude/pr-gate-paths\.txt$
+^docs/REVIEW-MANGA-WP\.md$
+^tools/smoke-manga-wp\.py$

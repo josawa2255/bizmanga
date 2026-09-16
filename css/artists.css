@@ -77,59 +77,121 @@
   pointer-events: none;
 }
 
-/* Hero素材は 2000x666 の横長。cover だと左右のコマ（特に右端のキャラ）が
-   切れてしまうため、右端を基準に合わせて絵柄を残す。
-   高さは下の aspect-ratio 側で画像に追従させる。 */
-.art-hero__bg img {
+/* Hero素材は PC=1600x800 の横長 / SP=828x1472 の縦長（picture で出し分け）。
+   SPの縦長は「上=余白(コピー用) / 下=キャラ」の構図なので、上端基準で表示する。
+   ⚠️ bottom 基準にするとキャラ密集部がコピーの背面に来て本文が読めなくなる。
+   高さは下の vw 計算 / min-height 側で決める。 */
+.art-hero__bg img,
+.art-hero__bg picture {
+  display: block;
   width: 100%;
   height: 100%;
+}
+
+.art-hero__bg img {
   object-fit: cover;
-  object-position: right center;
+  object-position: center top;
   opacity: .96;
 }
 
-/* PCでは Hero 枠そのものを画像の縦横比(2000:666)にして、見切れも余白も出さない。
+/* PCでは Hero 枠そのものを画像の縦横比(1600:800=2:1)にして、見切れも余白も出さない。
    ⚠️ .art-hero__bg は absolute のまま（relative に変えると bg と inner の高さが
-   足し算されて Hero が倍近く伸びる）。高さは .art-hero の aspect-ratio が決める。 */
+   足し算されて Hero が倍近く伸びる）。高さは .art-hero の height が決める。
+   ⚠️ 2:1 は旧素材(3:1)より縦に長い。画面高を超えないよう上限を max() で抑える。 */
 @media (min-width: 900px) {
   /* ヘッダーは position:fixed なので、その高さぶん下げないと Hero 上部が隠れる。
-     aspect-ratio は画像部分にだけ効かせたいので、padding-top で押し下げ、
+     比率は画像部分にだけ効かせたいので、padding-top で押し下げ、
      box-sizing の都合で高さは calc に含める */
   .art-hero {
     /* ヘッダー(position:fixed / 72px)の下から画像を始める。
-       画像部分だけを 2000:666 に保つため、その 72px は padding で足す
+       画像部分だけを 2:1 に保つため、その 72px は padding で足す
        （box-sizing: border-box なので height に含まれる） */
     padding-top: 72px;
-    /* 画像部分の高さ = 幅 x 666/2000。100vw 基準にすると縦スクロールバーぶん
-       ずれるので、aspect-ratio は使わず vw で直接指定する */
-    height: calc(100vw * 666 / 2000 + 72px);
+    /* 画像部分の高さ = 幅 x 1/2。100vw 基準にすると縦スクロールバーぶん
+       ずれるので、aspect-ratio は使わず vw で直接指定する。
+       ただし 2:1 だとワイド画面で Hero だけで1画面を超えるため、
+       画面高の 76% を上限にする（超えたぶんは cover で左右を詰める） */
+    height: calc(min(100vw * 800 / 1600, 76vh) + 72px);
     background: linear-gradient(90deg, #fff 0%, #fff 38%, #fdf6ee 100%);
   }
   .art-hero__bg {
     top: 72px;                       /* 画像もヘッダーの下から */
   }
   .art-hero__bg img {
-    object-fit: contain;
+    /* 右のキャラ群を主役に残しつつ、左の余白をコピー用に空ける */
+    object-fit: cover;
     object-position: right center;
   }
   .art-hero__inner {
-    min-height: 0;               /* 高さは aspect-ratio 側に任せる */
+    min-height: 0;               /* 高さは .art-hero 側に任せる */
     height: 100%;
     padding-top: 0;
     padding-bottom: 0;
   }
 }
 
-/* 左側のコピーを読ませるため、背景の上に白グラデを重ねる */
+/* コピーを読ませるため、背景の上に白グラデを重ねる。
+   既定(=899px以下、SPの縦長素材)は上→下。PC横長は下の 900px ブロックで左→右に差し替える。
+   ⚠️ picture の切替点(899/900px)と必ず揃えること。ずらすと
+      「縦長画像に横グラデ」の組み合わせが中間幅で出てコピーが読めなくなる */
 .art-hero__bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg,
-    rgba(255,255,255,.97) 0%,
-    rgba(255,255,255,.93) 28%,
-    rgba(255,255,255,.55) 46%,
-    rgba(255,255,255,0) 62%);
+  /* ⚠️ 不透明域は「本文(.art-hero__sub)の下端」まで確実に残すこと。
+     実測(390〜860px)で本文の下端は Hero の 57〜64% に来るので、
+     66% までは .88 以上の白を保ち、その直後に一気に抜いて下のキャラを見せる。
+     ここを浅くすると本文がキャラの線画と重なって読めなくなる */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,.96) 0%,
+    rgba(255,255,255,.94) 45%,
+    rgba(255,255,255,.90) 60%,
+    rgba(255,255,255,.86) 66%,
+    rgba(255,255,255,.30) 74%,
+    rgba(255,255,255,0) 84%);
+}
+
+/* 縦長素材が出る 899px 以下は、コピーを上の余白帯に置き、
+   その下にキャラが見える高さを確保する。
+   画像の実高(幅x1472/828 ≒ 1.78倍)そのままは長すぎるので vw で頭打ちにする。
+   ⚠️ 720px の SP ブロックではなくここで指定する。720px だと
+      721〜899px（フォルダブル・タブレット縦）で高さが足りずキャラが切れる */
+@media (max-width: 899px) {
+  /* 縦長素材(828x1472)を、コピーが乗る上の余白帯ごと見せる。
+     高さは幅に追従（= 幅 x 1472/828）だが、幅が広いほど余白帯が間延びするので
+     ⚠️ 上限を 132vw と 88vh の小さい方で頭打ちにする。
+     超えたぶんは object-position: center top の cover で画像の下側から詰める
+     （上端＝コピー用の余白は必ず残る） */
+  .art-hero {
+    /* 画像の実比(幅x1.78)を基本にしつつ、幅が広い端末で余白帯が間延びしないよう
+       ⚠️ 上限 720px で頭打ち。下限 620px は 320px幅でも eyebrow が
+       固定ヘッダー(72px)の下に収まり、CTA下に絵の帯が残る実測値。
+       ここを縮めるとヘッダーに eyebrow・見出しが潜り込む */
+    height: clamp(620px, 100vw * 1472 / 828, 720px);
+  }
+  .art-hero__bg img {
+    object-fit: cover;
+    object-position: center top;
+  }
+  .art-hero__inner {
+    min-height: 0;
+    height: 100%;
+    align-items: flex-start;
+    /* 固定ヘッダー(72px)の下からコピーを始める。
+       下側はキャラを見せる帯なので padding-bottom は詰めない */
+    padding-top: clamp(84px, 17vw, 120px);
+    padding-bottom: clamp(24px, 6vw, 48px);
+  }
+}
+
+@media (min-width: 900px) {
+  .art-hero__bg::after {
+    background: linear-gradient(100deg,
+      rgba(255,255,255,.97) 0%,
+      rgba(255,255,255,.93) 26%,
+      rgba(255,255,255,.60) 44%,
+      rgba(255,255,255,0) 60%);
+  }
 }
 
 .art-hero__inner {
@@ -791,19 +853,7 @@
 /* ===== SP 調整 ===== */
 /* 連続スケールで大半は成立するので、構造の組み替えが要る箇所だけ上書きする */
 @media (max-width: 720px) {
-  /* Hero: 背景の人物を隠さないよう、コピーの背面だけ白を強める */
-  .art-hero__bg::after {
-    background: linear-gradient(180deg,
-      rgba(255,255,255,.95) 0%,
-      rgba(255,255,255,.88) 42%,
-      rgba(255,255,255,.35) 72%,
-      rgba(255,255,255,0) 100%);
-  }
-
-  .art-hero__inner {
-    min-height: clamp(420px, 88vw, 560px);
-    align-items: flex-start;
-  }
+  /* グラデ・Hero高さは 899px 以下のブロック側で指定済み。ここではCTAだけ調整する */
 
   .art-hero__cta-row .art-btn {
     flex: 1 1 100%;
