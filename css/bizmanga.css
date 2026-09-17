@@ -145,6 +145,13 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   min-width: 0; /* flex overflow 防止 */
 }
 /* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
+/* 漫画家紹介・LP系ページもヘッダーだけは共通フォントに固定し、
+   本文用フォント差によるナビ・CTAの文字幅とベースラインのずれを防ぐ */
+body.art-page .bm-header,
+body.lpv2-page .bm-header,
+body.mpc-page .bm-header {
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+}
 .bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
 .bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; max-width: none; flex-shrink: 0; aspect-ratio: 1316 / 370; }
 /* ナビ9項目とCTAを1280〜1920pxで収める。 */
