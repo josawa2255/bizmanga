@@ -4326,6 +4326,30 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   text-align: left;
 }
 
+/* 料金Q&Aの補助CTA。質問と開閉部分はFAQ共通スタイルを使用 */
+.bm-pricing-faq {
+  background: var(--bm-bg-light);
+}
+.bm-pricing-faq .lpv2-h2 {
+  font-family: inherit;
+  font-size: clamp(26px, 3.2vw, 38px);
+  letter-spacing: 0.04em;
+  color: var(--bm-text);
+}
+.lpv2-faq-answer p {
+  margin: 0;
+}
+.bm-pricing-faq-contact {
+  margin: 36px auto 0;
+  text-align: center;
+}
+.bm-pricing-faq-contact span {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--lpv2-ink-mute);
+  font-size: 14px;
+}
+
 /* 2プラン体系（フル漫画家/ハイブリッド）: 3カード用グリッドを2列に上書き */
 .bm-plan-grid--2col { grid-template-columns: repeat(2, 1fr); max-width: 860px; margin-left: auto; margin-right: auto; }
 
