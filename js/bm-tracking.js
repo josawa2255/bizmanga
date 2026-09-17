@@ -65,7 +65,7 @@
     btn.addEventListener('click', function() {
       var t = getTracking();
       if (!t.faqClicked) t.faqClicked = [];
-      var q = btn.getAttribute('data-ja') || btn.textContent.trim().slice(0, 30);
+      var q = btn.textContent.trim().slice(0, 30);
       if (t.faqClicked.indexOf(q) === -1) {
         t.faqClicked.push(q);
         saveTracking(t);
@@ -79,7 +79,7 @@
     if (!btn) return;
     var t = getTracking();
     if (!t.categoryViewed) t.categoryViewed = [];
-    var cat = btn.getAttribute('data-ja') || btn.textContent.trim().replace(/\(\d+\)/, '').trim();
+    var cat = btn.textContent.trim().replace(/\(\d+\)/, '').trim();
     if (cat && cat !== 'すべて' && t.categoryViewed.indexOf(cat) === -1) {
       t.categoryViewed.push(cat);
       saveTracking(t);

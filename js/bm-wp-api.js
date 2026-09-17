@@ -227,8 +227,8 @@
         '<div class="bm-column-card-img"><img src="' + esc(thumb) + '" alt="' + esc(item.title_ja) + '" loading="lazy" width="400" height="225"></div>' +
         '<div class="bm-column-card-body">' +
           catHtml +
-          '<h3 class="bm-column-card-title" data-ja="' + esc(item.title_ja) + '" data-en="' + esc(item.title_en || item.title_ja) + '">' + esc(item.title_ja) + '</h3>' +
-          '<p class="bm-column-card-excerpt" data-ja="' + esc(item.excerpt_ja) + '" data-en="' + esc(item.excerpt_en || item.excerpt_ja) + '">' + esc(item.excerpt_ja) + '</p>' +
+          '<h3 class="bm-column-card-title">' + esc(item.title_ja) + '</h3>' +
+          '<p class="bm-column-card-excerpt">' + esc(item.excerpt_ja) + '</p>' +
           '<time class="bm-column-card-date">' + esc(item.date) + '</time>' +
         '</div>';
       colFrag.appendChild(card);
@@ -238,10 +238,6 @@
     if (isHome && data.length > COLUMN_HOME_LIMIT) {
       var more = document.getElementById('bmColumnMore');
       if (more) more.style.display = '';
-    }
-
-    if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
-      window.i18n.translateAll();
     }
     console.log('[BM-WP-API] コラム: ' + displayData.length + '/' + data.length + '件 rendered');
   }

@@ -5,47 +5,16 @@
 - デプロイ先: GitHub Pages → bizmanga.contentsx.jp
 - DNS: お名前.com（CNAME）
 
-## i18n（日英切替）システム
+## 表示言語
 
-### アーキテクチャ（2層構造）
-1. **JSON辞書** `i18n/en.json`（約228エントリ・随時増加）: テキストノード走査で日本語→英語に自動置換
-2. **data属性** `data-ja` / `data-en`: HTML要素に直接付与。JSON辞書より優先
-
-### 主要ファイル
-- `js/bm-i18n.js` — i18nエンジン本体
-- `i18n/en.json` — 翻訳辞書
-- `js/bm-nav.js` — `switchLang()` は `window.i18n.switchLang()` に委譲。未ロード時はfallbackで直接走査
-
-### 設定値
-- localStorageキー: `bm-lang`
-- 言語ボタンクラス: `.bm-lang-btn`
-- パブリックAPI: `window.i18n` + `window.bmSwitchLang`（互換エイリアス）
-
-### スクリプト読込順序（必須）
-```html
-<script src="js/bm-i18n.js" defer></script>
-<script src="js/bm-nav.js" defer></script>
-```
-bm-i18n.js → bm-nav.js の順序が必須。全ページ（27 HTML）に適用済み。
-
-### JS側のi18n対応パターン
-```javascript
-// 動的レンダリング後
-if (window.i18n && window.i18n.translateAll) {
-  window.i18n.translateAll();
-} else if (typeof window.bmSwitchLang === 'function') {
-  window.bmSwitchLang('en');
-}
-```
-
-### i18n対応済みJS
-- `bm-testimonials.js`, `bm-home.js`, `bm-pre-production.js` → translateAll()パターン
-- `bm-works-page.js` → CATEGORY_EN, MEDIA_EN マップ + data-ja/data-en動的セット
-- `works.js` → CATEGORY_EN_MAP + filter/card/modal/viewer UI の i18n
+- サイトは全ページ日本語固定。`<html lang="ja">` を維持する。
+- `js/bm-nav.js` はリタイアした `bm-lang` の保存値のみを安全に削除し、言語を切り替えない。
+- 動的データは日本語フィールドのみを表示に使う。WordPress API が保持する他言語フィールドはこのサイト側から参照しない。
+- 共通ナビゲーションは `js/bm-nav.js` だけを `defer` で読み込む。
 
 ## ページ構成
 
-⭐ **ページ一覧の正は [SPEC.md §1](SPEC.md) の表**（本表は主要ページの抜粋）。全HTML（27本）の構成・章立て・LP一覧はそちらを参照。全ページ共通で `bm-i18n.js` + `bm-nav.js` を読込む（以下「主要JS」はページ固有分のみ）。
+⭐ **ページ一覧の正は [SPEC.md §1](SPEC.md) の表**（本表は主要ページの抜粋）。全HTML（27本）の構成・章立て・LP一覧はそちらを参照。全ページ共通で `bm-nav.js` を読込む（以下「主要JS」はページ固有分のみ）。
 
 | ページ | ファイル | ページ固有の主要JS |
 |--------|---------|--------|
@@ -60,7 +29,7 @@ if (window.i18n && window.i18n.translateAll) {
 | ニュース | news.html / news-detail.html | bm-wp-api.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
-| 強み | strength.html | （**2026-08-05 v2デザインへ統一**: bm-lp-v2.css/js + アドオン css/strength.css（`body.str-v2` スコープ）。ヒーローは product-manga / manga-ad-lp と同型。旧 bm-strength.js は廃止。画像プロンプトは docs/strength-image-prompts.md。**2026-08-19** 「5つの強み」をコマ割りパネル `.str-panels`、「お悩み」を数字中心の横並び行 `.str-pain` に刷新。EN時は `html[lang="en"]` で装飾（吹き出し・集中線）を非表示にし大きな数値を縮小。**段組み依存の調整は `@media (min-width: 701px)/(1001px)` で囲う**（詳細は SPEC.md §1 の同行）） |
+| 強み | strength.html | （**2026-08-05 v2デザインへ統一**: bm-lp-v2.css/js + アドオン css/strength.css（`body.str-v2` スコープ）。ヒーローは product-manga / manga-ad-lp と同型。旧 bm-strength.js は廃止。画像プロンプトは docs/strength-image-prompts.md。**2026-08-19** 「5つの強み」をコマ割りパネル `.str-panels`、「お悩み」を数字中心の横並び行 `.str-pain` に刷新。**段組み依存の調整は `@media (min-width: 701px)/(1001px)` で囲う**（詳細は SPEC.md §1 の同行）） |
 | マンガの種類 | manga-types.html | bm-manga-types.js（**2026-09-10 HEROのみ「MANGA MAGAZINE × BUSINESS BRAND」版へリデザイン**〈PC横4層: 左コピー／中央メイン人物／右の漫画コマ4枚／最右の黒7ジャンル索引。画像は `images/manga-types/hero-*`。旧3コマ予告編ヒーロー `.mt-hero-trailer`/`.mt-trailer-*` は全廃。索引は既存ID `#mt-founding` 等へリンクし、`bm-manga-types.js` の `select()` が章セレクタと双方向に同期。**HEROの仕様の正本は SPEC.md §1 の同行**〉。HERO以外は **2026-08-31 「企業の物語を上映する映画館」版**のまま〈PR #26、2026-09-03 レビュー修正込み〉: PROLOGUE〈3コマ予告編・実写〉→BRIDGE→CHAPTERS 01–07〈**2026-09-10 一覧カード型へリデザイン**: 7枚の縦カード + 下に詳細。カードは `button[data-mt-select]` のままでJS・ヒーロー索引同期・`#mt-*` 直リンクは無変更。2026-09-11 ブラッシュアップで selected/hover を分離（`aria-current` 付与）、カード説明を短縮、詳細エリアの画像を水彩 `type-*` からカードと同じ `chapter-*` に統一、CHAPTERラベル追加〉→**HOW TO EXPRESS〈表現カスタマイズ / 2026-09-14 新設〉**〈旧「4つの表現形式」`#formats` と旧「画風選び」`#styles` を削除して統合（PC高さ約-51%）。左=導入+案内キャラ+手描き風コピー+CTA / 右=STEP01 表現形式 → STEP02 画風の各4カード。カードは `button[aria-pressed]` で `bm-manga-types.js` の `initExpress()` が各グループ1つ選択。旧 `.mt-fmt-*`/`.mt-sty-*` CSS は削除、旧画像ファイルは残置〉→**HOW TO CHOOSE〈選び方ミニガイド / 2026-09-14 新設〉**〈`#how-to-choose`。強弱「弱」の短いまとめ: 見出し+手描き補助コピー / WHO×WHAT×WHERE の3カード（画像 `images/manga-types/choice-*` + ピル3つ、JSなし）/ 相談CTA。参考デザイン右下の女性キャラは使わない〉→**FAQ〈よくあるご質問 / 2026-09-14 リデザイン〉**〈旧 AFTER TALK `lpv2-faq` を置換。4問の single accordion（`button[aria-expanded]` + region、`initFaq()`、初期Q1展開、JS無効時は全表示）+ 下部テキストリンク `/contact`。画像なし。FAQPage JSON-LD は表示文言に同期〉→**FINAL CTA〈LET'S MAKE YOUR STORY / 2026-09-14 リデザイン〉**〈旧 NEXT PRODUCTION MEETING（ダーク背景+マスコット）を置換。生成り背景・中央揃えの「1メッセージ + 1CTA（`/contact`）」+ 安心ポイント3つ。装飾は四隅の桃色の円・網点・縦 BIZMANGA のみ（画像 `images/manga-types/final-cta-*`）。人物なし〉。CSSは `css/manga-types.css`（`body.mt-v2` スコープ）、新規画像8枚は `images/manga-types/`（webp配信・pngは768px縮小フォールバック、C2PAメタデータ除去済み）。**各セクションの仕様・実装上の注意（`#mt-*` ハッシュ深リンク／章セレクタと表現カスタマイズの矢印キー／画像の実寸 width・height）の正本は SPEC.md §1 の同行**。画像プロンプトは docs/manga-types-image-prompts.md（C節は差し替え前の記録）） |
 | 活用場面 | use-cases.html | js/bm-use-cases.js（**2026-08-24 「10の接点を巡る」エディトリアル版へ全面刷新**: 未コミット・作業中〈ブランチ `feat/manga-types-redesign`〉。2026-08-21版のLP v2流用構成（統計バー+4問クイズ+3列カード`.uc-scene-grid`+KPIストリップ）を廃止し、先行実装した [[manga-types.html]] の「7つの物語を巡る」章選択UIと同じ設計思想でページ固有パーツを `css/use-cases.css`（`body.uc-v2` スコープ、`uc-*` 名前空間）に全面再実装。構成: Hero（左=コピー、右=公式キャラ）→TOUCHPOINTS 01–10（左に9場面の横長リスト `button.uc-scene-row`〈名刺/HP・LP(02–03)/SNS/採用面接/サプライズ/マニュアル/提案資料/メルマガ/展示会〉、右に選択中の詳細 `article.uc-scene-panel`。切替は `js/bm-use-cases.js` が `aria-pressed` + `aria-live="polite"` で担当、`#uc-meishi` 等のハッシュ深リンク対応、**JS無効時は9グループすべて縦並びで残る**設計は `js/bm-manga-types.js` と同じ）→ONE STORY, MANY TOUCHPOINTS（`.uc-spread`、中心の「1 STORY」から6接点へ細線で分岐する図）→WHY MANGA WORKS（`.uc-why`、効果データ `.uc-why-data` 付きの本文プローズ、BtoBコラム3本・比較ガイドへの内部リンクは維持）→FAQ(4問)→RELATED(用途別LP 8本)→END CTA `.uc-cta`。**白抜き文字を敷く面・小さいオレンジ文字（18.66px未満）はすべて `--uc-accent-deep` に統一**（`.uc-btn--primary`/選択中の場面行 `.uc-scene-row.is-active`/各種ラベル・番号・本文中リンク等。`--uc-accent` #e85500 に白文字だと3.95:1でWCAG AA未達のため、manga-types.html で確立した既存トークンで5.50:1を確保。このページ限定で `lpv2-guide__eyebrow`/`lpv2-related-card__num`/`__arrow` も `.uc-v2` スコープで上書き）。9シーンの挿絵 `material/images/use-cases/*.webp` は当初チビキャラ風の独自画風（既存画像を流用）だったが、他ページとのブランド統一のため水彩+ink画風（manga-types/strength/recruit-manga系）へ**作り直し予定**。画像プロンプトは docs/use-cases-image-prompts.md（9シーン: 名刺/HP・LP/SNS/採用面接/サプライズ/マニュアル/提案資料/メルマガ/展示会。ChatGPTでの生成はユーザーが実施）） |
 | その他 | pricing / privacy-policy / 404 / embed-viewer | 各ページ固有JS |
@@ -103,14 +72,6 @@ if (window.i18n && window.i18n.translateAll) {
 - 必要Secrets: `GSC_CLIENT_ID` / `GSC_CLIENT_SECRET` / `GSC_REFRESH_TOKEN`（登録済み）
 - 追跡KW追加は `TARGET_QUERIES` 配列を編集
 
-## Python自動翻訳ツール
-`tools/i18n-build.py`:
-- HTML/JSから日本語テキストを自動抽出
-- 既存のen.jsonとマージ
-- `--auto-translate` でGoogle Translate APIによる自動翻訳
-- `--dry-run` `--report` オプション対応
-
 ## 履歴メモ
-- i18nシステム / works i18n / 見開きデフォルト / ページ送り修正 / FAQ複数開き は **対応済み・push済み**（旧「未完了タスク」記述を2026-06-05に解消）
 - CORS は **解決済み**（WP API は本番からアクセス可。詳細は memory `project_cors_issue`）
 - 最新の仕様・変更履歴は [SPEC.md](SPEC.md)、過去バグと再発防止は [../BUGS.md](../BUGS.md) を参照

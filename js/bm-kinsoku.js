@@ -112,13 +112,4 @@
     run();
   }
 
-  window.addEventListener("i18n-lang-changed", function () {
-    SELECTORS.forEach(function (sel) {
-      var els = document.querySelectorAll(sel);
-      Array.prototype.forEach.call(els, function (el) {
-        el[FLAG] = false;
-      });
-    });
-    run();
-  });
 })();

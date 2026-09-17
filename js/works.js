@@ -67,46 +67,39 @@ function getImageSrc(data, pageIndex) {
 // 全作品の表紙＋最小情報（即座にカード表示用、WP API取得後にgallery等をマージ）
 const FALLBACK_WORKS = (function() {
   var F = [
-    ['diamond','DIAMOND シャンパンコール','DIAMOND Champagne Call',11,'研修','spread'],
-    ['ichinohe-home','一戸ホーム','Ichinohe Home',22,'営業','spread'],
-    ['omatome-ninja','おまとめ忍者 見つけてみせる！トレンドの兆し','Omatome Ninja: Discovering Trend Signs',15,'紹介','spread'],
-    ['omatome-ninja-2','おまとめ忍者 手間な議事録をこっそり要約','Omatome Ninja: Secretly Summarizing Meeting Notes',15,'紹介','spread'],
-    ['omatome-ninja-3','おまとめ忍者 地獄のまとめ作業 拙者におまかせ！','Omatome Ninja: Leave the Tedious Summarizing to Me!',15,'紹介','spread'],
-    ['omatome-ninja-4','おまとめ忍者 手書き派の悩み 拙者にお任せ！','Omatome Ninja: Helping the Handwriting Fans!',15,'紹介','spread'],
-    ['omatome-ninja-5','おまとめ忍者 長時間会議も怖くない！','Omatome Ninja: No More Fear of Long Meetings!',15,'紹介','spread'],
-    ['omatome-ninja-rohto','おまとめ忍者 忍者参上！！欠席者をお助けいたす！','Omatome Ninja: Here to Help Absentees!',15,'紹介','spread'],
-    ['omatome-ninja-english','おまとめ忍者（海外版）','Omatome Ninja (Global Edition)',15,'紹介','spread'],
-    ['seko','瀬古恭介 始まりのものがたり','Kyosuke Seko: A Story of Beginnings',25,'ブランド','spread'],
-    ['life-buzfes','バズフェス','BuzzFes',25,'集客','spread'],
-    ['life-school','バズスクール','Buzz School',26,'集客','spread'],
-    ['bms-unso','BMS運送','BMS Transport',10,'採用','spread'],
-    ['sixtones','SixTONES風キャラ','SixTONES-style Characters',4,'IP','spread'],
-    ['torutoru-kun','トルトルくん','Torutoru-kun',21,'採用','spread'],
-    ['hamada-masatada','濱田将匡 信頼を、つなぐ。','Masatada Hamada: Connecting Trust',20,'ブランド','spread'],
-    ['asobi-kyary','ASOBI SYSTEM×きゃりーぱみゅぱみゅ','ASOBI SYSTEM x Kyary Pamyu Pamyu',6,'IP','spread'],
-    ['uike-law','正義の価値','The Value of Justice',8,'ブランド','spread'],
-    ['lady-column','レディーコラム','Lady Column',8,'紹介','spread']
+    ['diamond','DIAMOND シャンパンコール',11,'研修','spread'],
+    ['ichinohe-home','一戸ホーム',22,'営業','spread'],
+    ['omatome-ninja','おまとめ忍者 見つけてみせる！トレンドの兆し',15,'紹介','spread'],
+    ['omatome-ninja-2','おまとめ忍者 手間な議事録をこっそり要約',15,'紹介','spread'],
+    ['omatome-ninja-3','おまとめ忍者 地獄のまとめ作業 拙者におまかせ！',15,'紹介','spread'],
+    ['omatome-ninja-4','おまとめ忍者 手書き派の悩み 拙者にお任せ！',15,'紹介','spread'],
+    ['omatome-ninja-5','おまとめ忍者 長時間会議も怖くない！',15,'紹介','spread'],
+    ['omatome-ninja-rohto','おまとめ忍者 忍者参上！！欠席者をお助けいたす！',15,'紹介','spread'],
+    ['omatome-ninja-english','おまとめ忍者（海外版）',15,'紹介','spread'],
+    ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'],
+    ['life-buzfes','バズフェス',25,'集客','spread'],
+    ['life-school','バズスクール',26,'集客','spread'],
+    ['bms-unso','BMS運送',10,'採用','spread'],
+    ['sixtones','SixTONES風キャラ',4,'IP','spread'],
+    ['torutoru-kun','トルトルくん',21,'採用','spread'],
+    ['hamada-masatada','濱田将匡 信頼を、つなぐ。',20,'ブランド','spread'],
+    ['asobi-kyary','ASOBI SYSTEM×きゃりーぱみゅぱみゅ',6,'IP','spread'],
+    ['uike-law','正義の価値',8,'ブランド','spread'],
+    ['lady-column','レディーコラム',8,'紹介','spread']
   ];
   var out = {};
   F.forEach(function(r) {
     out[r[0]] = {
-      title: r[1], title_en: r[2], pages: r[3],
+      title: r[1], pages: r[2],
       path: 'https://contentsx.jp/material/manga/' + r[0] + '/',
-      tags: [r[4]], category: r[4],
-      viewType: r[5]
+      tags: [r[3]], category: r[3],
+      viewType: r[4]
     };
   });
   return out;
 })();
 
 // ===== カテゴリ英訳マップ =====
-const CATEGORY_EN_MAP = {
-  'すべて': 'All', '営業': 'Sales', '採用': 'Recruitment', '研修': 'Training',
-  '集客': 'Marketing', '紹介': 'Introduction', 'ブランド': 'Branding',
-  'IP': 'IP', 'プロモーション': 'Promotion', 'その他': 'Other', '創業ストーリー': 'Founding Story'
-};
-
-// ===== フィルタボタン生成 =====
 const worksFilter = document.getElementById('worksFilter');
 
 function buildFilterButtons() {
@@ -122,17 +115,13 @@ function buildFilterButtons() {
     if (d.category) catCount[d.category] = (catCount[d.category] || 0) + 1;
   });
   catCount['すべて'] = allWorks.length;
-
-  const isEn = getBmLang() === 'en';
   categories.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (cat === 'すべて' ? ' active' : '');
     btn.dataset.cat = cat;
-    const catEn = CATEGORY_EN_MAP[cat] || cat;
     /* escHtml() 済み（XSS対策） */
     const labelJa = escHtml(cat);
-    const labelEn = escHtml(catEn);
-    btn.innerHTML = `<span data-ja="${labelJa}" data-en="${labelEn}">${isEn ? labelEn : labelJa}</span> <span class="filter-count">${catCount[cat]}</span>`;
+    btn.innerHTML = `<span>${labelJa}</span> <span class="filter-count">${catCount[cat]}</span>`;
     btn.addEventListener('click', () => filterWorks(cat, btn));
     worksFilter.appendChild(btn);
   });
@@ -160,7 +149,6 @@ const worksGrid = document.getElementById('worksGrid');
 
 function buildWorkCards() {
   worksGrid.innerHTML = '';
-  const isEn = getBmLang() === 'en';
   const cardsFrag = document.createDocumentFragment();
   Object.entries(mangaData).forEach(([key, data]) => {
     // 制作過程（赤ペン・ネーム専用）エントリはカードに出さない
@@ -173,17 +161,15 @@ function buildWorkCards() {
     const coverSrc = escHtml(data.thumbnail || getImageSrc(data, 0));
     const tallClass = data.tallCover ? ' tall-cover' : '';
     const title = escHtml(data.title);
-    const titleEn = escHtml(data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
     const cat = escHtml(data.category);
-    const catEn = escHtml(CATEGORY_EN_MAP[data.category] || data.category || '');
     card.innerHTML = `
       <div class="work-card-img-wrapper${tallClass}">
         <img class="work-card-img" src="${coverSrc}" alt="${title}" loading="lazy">
-        ${data.category ? `<span class="work-card-category" data-ja="${cat}" data-en="${catEn}">${isEn ? catEn : cat}</span>` : ''}
+        ${data.category ? `<span class="work-card-category">${cat}</span>` : ''}
         <span class="work-card-page-count">${parseInt(data.pages, 10) || 0}P</span>
       </div>
       <div class="work-card-body">
-        <div class="work-card-title" data-ja="${title}" data-en="${titleEn}">${isEn ? titleEn : title}</div>
+        <div class="work-card-title">${title}</div>
         <div class="work-card-footer">
           <div class="work-card-arrow">→</div>
         </div>
@@ -243,15 +229,6 @@ initLibraryUI();
 probeCoverImages();  // 表紙の縦長自動検出
 
 // 現在の言語が英語なら即座に反映
-if (getBmLang() === 'en') {
-  if (window.i18n && window.i18n.translateAll) {
-    window.i18n.translateAll();
-  } else if (typeof window.bmSwitchLang === 'function') {
-    window.bmSwitchLang('en');
-  }
-}
-
-// WP API からデータ取得して上書き
 (function fetchLibraryFromAPI() {
   fetch('https://cms.contentsx.jp/wp-json/contentsx/v1/library')
     .then(function(res) { return res.json(); })
@@ -273,7 +250,6 @@ if (getBmLang() === 'en') {
         var pages = galleryLen > 0 ? galleryLen : (w.pages || 0);
         mangaData[w.id] = {
           title: w.title_ja || '',
-          title_en: w.title_en || '',
           pages: pages,
           path: 'https://contentsx.jp/material/manga/' + w.id + '/',
           tags: w.tags && w.tags.length > 0 ? w.tags : [],
@@ -287,7 +263,6 @@ if (getBmLang() === 'en') {
           name_gallery: w.name_gallery || [],
           client_url: w.client_url || '',
           cta_label_ja: w.cta_label_ja || '',
-          cta_label_en: w.cta_label_en || '',
           cta_enabled: !!w.cta_enabled,
         };
         if (window.bmViewType && window.bmViewType.isForcedVertical(w)) {
@@ -615,9 +590,7 @@ function hideVerticalElements() {
 
 // Open vertical scroll viewer
 function openVerticalViewer(key, data) {
-  modalTitle.setAttribute('data-ja', data.title);
-  modalTitle.setAttribute('data-en', data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
-  modalTitle.textContent = getBmLang() === 'en' ? (data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title)) : data.title;
+  modalTitle.textContent = data.title;
   modalTotalPages = data.pages;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
   currentMangaKey = key;
@@ -755,10 +728,7 @@ function openManga(key) {
     // Set mode class for CSS background switching
     mangaModal.classList.remove('mode-vertical', 'mode-spread');
     mangaModal.classList.add('mode-' + mode);
-
-    modalTitle.setAttribute('data-ja', data.title);
-    modalTitle.setAttribute('data-en', data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title));
-    modalTitle.textContent = getBmLang() === 'en' ? (data.title_en || (window.i18n && window.i18n.t ? window.i18n.t(data.title) : data.title)) : data.title;
+    modalTitle.textContent = data.title;
     currentMangaKey = key; // トグルボタン用に早期セット
 
     // 切り替えボタンの表示制御（PC + 非verticalOnlyのみ）
@@ -1460,20 +1430,16 @@ var ctaShowTimer = null;
 var currentCtaData = null;
 var ctaShownForKey = null;
 
-var CTA_DEFAULT_LABEL_JA = '公式サイトを見る →';
-var CTA_DEFAULT_LABEL_EN = 'Visit Official Site →';
+var CTA_DEFAULT_LABEL = '公式サイトを見る →';
 
-function isValidCtaUrl(u) {
-  if (!u || typeof u !== 'string') return false;
-  return /^https?:\/\//i.test(u.trim());
+function isValidCtaUrl(url) {
+  return typeof url === 'string' && /^https?:\/\//i.test(url.trim());
 }
 
-// 現言語のラベルを返す。空欄ならデフォルト文言にフォールバック
-function getCtaLabelForLang(data, lang) {
+function getCtaLabel(data) {
   if (!data) return null;
-  var label = lang === 'en' ? data.cta_label_en : data.cta_label_ja;
-  if (label && label.trim()) return label.trim();
-  return lang === 'en' ? CTA_DEFAULT_LABEL_EN : CTA_DEFAULT_LABEL_JA;
+  var label = data.cta_label_ja;
+  return label && label.trim() ? label.trim() : CTA_DEFAULT_LABEL;
 }
 
 function hideMangaCta() {
@@ -1491,17 +1457,13 @@ function scheduleMangaCta() {
 
   var data = currentCtaData;
   if (!isValidCtaUrl(data.client_url)) return;
-
-  var lang = getBmLang();
-  var label = getCtaLabelForLang(data, lang);
+  var label = getCtaLabel(data);
 
   if (ctaShowTimer) clearTimeout(ctaShowTimer);
   ctaShowTimer = setTimeout(function() {
     ctaShowTimer = null;
     ctaBtn.href = data.client_url;
     ctaTextEl.textContent = label;
-    ctaTextEl.setAttribute('data-ja', (data.cta_label_ja && data.cta_label_ja.trim()) || CTA_DEFAULT_LABEL_JA);
-    ctaTextEl.setAttribute('data-en', (data.cta_label_en && data.cta_label_en.trim()) || CTA_DEFAULT_LABEL_EN);
     ctaOverlay.hidden = false;
     requestAnimationFrame(function() {
       ctaOverlay.classList.add('visible');
@@ -1527,25 +1489,16 @@ if (ctaBtn) {
       gtag('event', 'manga_cta_click', {
         manga_slug: currentMangaKey || '',
         client_url: currentCtaData.client_url || '',
-        language: getBmLang()
+        language: 'ja'
       });
     }
   });
 }
 
-// 言語切替時: 表示中CTAのラベルを切替
-document.addEventListener('i18n-lang-changed', function(e) {
-  if (!ctaOverlay || ctaOverlay.hidden || !currentCtaData) return;
-  var lang = (e && e.detail && e.detail.lang) || getBmLang();
-  ctaTextEl.textContent = getCtaLabelForLang(currentCtaData, lang);
-});
-
 // ===== View Toggle Button (PC: spread ⇔ vertical) =====
 var viewToggleBtn = document.getElementById('viewToggle');
 var viewToggleIcon = document.getElementById('viewToggleIcon');
 var viewToggleLabel = document.getElementById('viewToggleLabel');
-
-function getBmLang() { return document.documentElement.lang || 'ja'; }
 
 function updateViewToggle(mode, verticalOnly) {
   if (!viewToggleBtn) return;
@@ -1555,17 +1508,12 @@ function updateViewToggle(mode, verticalOnly) {
     return;
   }
   viewToggleBtn.style.display = 'flex';
-  var isEn = getBmLang() === 'en';
   if (mode === 'vertical') {
     viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="8" height="18" rx="1"/><rect x="14" y="3" width="8" height="18" rx="1"/></svg>';
-    viewToggleLabel.setAttribute('data-ja', '見開き');
-    viewToggleLabel.setAttribute('data-en', 'Spread View');
-    viewToggleLabel.textContent = isEn ? 'Spread View' : '見開き';
+    viewToggleLabel.textContent = '見開き';
   } else {
     viewToggleIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg>';
-    viewToggleLabel.setAttribute('data-ja', '縦読み');
-    viewToggleLabel.setAttribute('data-en', 'Vertical Scroll');
-    viewToggleLabel.textContent = isEn ? 'Vertical Scroll' : '縦読み';
+    viewToggleLabel.textContent = '縦読み';
   }
 }
 
@@ -1713,7 +1661,6 @@ if (isDirectMode) {
         mangaData[data.id] = {
           id: data.id,
           title: data.title_ja || data.id,
-          title_en: data.title_en || data.title_ja || data.id,
           pages: data.pages || (data.gallery && data.gallery.length) || 1,
           category: data.category || '',
           tags: [],
@@ -1726,7 +1673,6 @@ if (isDirectMode) {
           comment: data.comment || '',
           client_url: data.client_url || '',
           cta_label_ja: data.cta_label_ja || '',
-          cta_label_en: data.cta_label_en || '',
           cta_enabled: !!data.cta_enabled
         };
         openManga(autoOpen);

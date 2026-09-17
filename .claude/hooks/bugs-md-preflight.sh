@@ -26,9 +26,6 @@ case "$hay" in
   *bm-view-type*|*works.js*|*viewer*|*ビューア*) hit "#012/#013: 漫画ビューアは view_type を自前判定せず window.bmViewType.* に委譲。/library と /manga/{id} 両分岐を揃える" ;;
 esac
 case "$hay" in
-  *i18n*|*en.json*|*translateAll*) hit "#005/#008/#015: i18nは読込順(i18n.js→nav.js)固定・translateAll無条件呼び禁止・UIラベルにdata-i18n-skip" ;;
-esac
-case "$hay" in
   *ContentX/material/*|*material/*) hit "#020: ContentX/material の画像は BizManga が絶対URL参照。削除は両サイト同時grep必須（memory feedback_contentx_material_cross_repo_refs）" ;;
 esac
 # CSP メタの一括置換（sed -g 全グローバル置換の地雷）

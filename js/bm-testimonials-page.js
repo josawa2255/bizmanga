@@ -28,9 +28,7 @@
     {
       id: 0,
       heading: '採用応募数が2倍に増加',
-      heading_en: 'Application numbers doubled',
       excerpt: '漫画にしたことで、求職者に仕事の魅力がダイレクトに伝わるようになりました。面接でも「漫画を見て興味を持った」という声が増えています。',
-      excerpt_en: 'By converting to manga, the appeal of the job is communicated directly to job seekers.',
       thumbnail: 'https://contentsx.jp/material/manga/bms-unso/01.webp',
       img_position: 'center',
       tag: '営業'
@@ -38,9 +36,7 @@
     {
       id: 0,
       heading: '研修の理解度が大幅に向上',
-      heading_en: 'Training comprehension significantly improved',
       excerpt: 'テキストだけのマニュアルでは何度説明しても伝わらなかった内容が、漫画にした途端スッと理解してもらえるようになりました。',
-      excerpt_en: 'Content that was never understood with text-only manuals is now easily grasped once converted to manga.',
       thumbnail: 'https://contentsx.jp/material/manga/life-school/01.webp',
       img_position: 'center',
       tag: '研修'
@@ -48,9 +44,7 @@
     {
       id: 0,
       heading: '商談がスムーズになった',
-      heading_en: 'Business negotiations became smoother',
       excerpt: '漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。',
-      excerpt_en: 'By converting to manga, our business negotiations with customers have become smoother.',
       thumbnail: 'https://contentsx.jp/material/manga/ichinohe-home/01.webp',
       img_position: 'center',
       tag: '営業'
@@ -58,9 +52,7 @@
     {
       id: 0,
       heading: 'SNSでの反応が3倍に',
-      heading_en: '3x increase in social media engagement',
       excerpt: '漫画コンテンツはSNSでの拡散力が段違いでした。広告費を抑えながら認知拡大ができ、費用対効果に大変満足しています。',
-      excerpt_en: 'Manga content spreads far more effectively on social media.',
       thumbnail: 'https://contentsx.jp/material/manga/seko/01.webp',
       img_position: 'center',
       tag: 'プロモーション'
@@ -77,7 +69,7 @@
       card.className = 'bm-tm-list-card';
 
       var tagHtml = item.tag
-        ? '<span class="bm-tm-list-tag" data-ja="' + esc(item.tag) + '">' + esc(item.tag) + '</span>'
+        ? '<span class="bm-tm-list-tag">' + esc(item.tag) + '</span>'
         : '';
 
       /* 全フィールド esc()/safePos() でサニタイズ済み（XSS対策） */
@@ -87,8 +79,8 @@
         '</div>' +
         '<div class="bm-tm-list-body">' +
           tagHtml +
-          '<h3 class="bm-tm-list-title" data-ja="' + esc(item.heading) + '" data-en="' + esc(item.heading_en) + '">' + esc(item.heading) + '</h3>' +
-          '<p class="bm-tm-list-text" data-ja="' + esc(item.excerpt) + '" data-en="' + esc(item.excerpt_en) + '">' + esc(item.excerpt) + '</p>' +
+          '<h3 class="bm-tm-list-title">' + esc(item.heading) + '</h3>' +
+          '<p class="bm-tm-list-text">' + esc(item.excerpt) + '</p>' +
         '</div>';
 
       // クリックで詳細ページへ遷移

@@ -53,8 +53,8 @@ def open_and_wait(page: Page, path: str) -> None:
     # domcontentloaded + 対象要素の attached 待ちで確定させる
     page.goto(BASE + path, wait_until="domcontentloaded", timeout=10000)
     page.wait_for_selector("#bmHamburger", state="attached", timeout=5000)
-    # bm-nav.js(defer) の実行完了 = .bm-lang-switch が挿入されるまで待つ
-    page.wait_for_selector(".bm-lang-switch", state="attached", timeout=5000)
+    # bm-nav.js(defer) の初期化完了 = ナビゲーションリンクが生成済み
+    page.wait_for_selector("#bmNav .bm-nav-link", state="attached", timeout=5000)
 
 
 def check_mobile(page: Page, path: str) -> None:

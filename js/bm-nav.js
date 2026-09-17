@@ -1,69 +1,68 @@
 /**
- * BizManga ナビゲーション + 言語切替（ContentsXと同じUI）
- * 全ページで共通メニュー＆JP/EN切替を統一。
+ * BizManga 共通ナビゲーション（ContentsXと同じUI）
+ * 全ページで共通メニューを統一する。
  */
 (function() {
+  // 廃止した言語設定を消去し、既存訪問者も日本語表示にする。
+  try { localStorage.removeItem('bm-lang'); } catch (e) {}
+
   var NAV_ITEMS = [
-    { label: 'ホーム',     labelEn: 'Home',       href: '/' },
+    { label: 'ホーム',       href: '/' },
     /* ビズ書庫＝実物を読む場所、制作事例＝実績を見る場所。どちらも「作った漫画を見る」
        入口なので、ビズ書庫のメガメニューに制作事例をまとめている（2026-08-30）。
        独立していた「制作事例」項目はここへ統合したため削除した（入口の二重化を避ける） */
-    { label: 'ビズ書庫',   labelEn: 'Library',    href: '/biz-library', mega: true, columns: [
+    { label: 'ビズ書庫',    href: '/biz-library', mega: true, columns: [
       {
         heading: '漫画を読む',
-        headingEn: 'Read',
         items: [
-          { label: 'ビズ書庫（全作品）', labelEn: 'Biz Library', href: '/biz-library' },
+          { label: 'ビズ書庫（全作品）', href: '/biz-library' },
           /* children を持つ項目はホバーで右側にサブメニューが開く（第3階層） */
-          { label: '制作事例（一覧）', labelEn: 'All Works', href: '/works', children: [
-            { label: '採用マンガ',     labelEn: 'Recruit',  href: '/works/category/recruit' },
-            { label: '営業マンガ',     labelEn: 'Sales',    href: '/works/category/sales' },
-            { label: '商品紹介マンガ', labelEn: 'Product',  href: '/works/category/product' },
-            { label: '会社紹介マンガ', labelEn: 'Company',  href: '/works/category/company' },
-            { label: '研修マンガ',     labelEn: 'Training', href: '/works/category/training' },
-            { label: 'マンガ広告',     labelEn: 'Manga Ad', href: '/works/category/ad' },
-            { label: 'IR漫画',         labelEn: 'IR',       href: '/works/category/ir' }
+          { label: '制作事例（一覧）', href: '/works', children: [
+            { label: '採用マンガ',  href: '/works/category/recruit' },
+            { label: '営業マンガ',    href: '/works/category/sales' },
+            { label: '商品紹介マンガ',  href: '/works/category/product' },
+            { label: '会社紹介マンガ',  href: '/works/category/company' },
+            { label: '研修マンガ', href: '/works/category/training' },
+            { label: 'マンガ広告', href: '/works/category/ad' },
+            { label: 'IR漫画',       href: '/works/category/ir' }
           ]}
         ]
       }
     ]},
-    { label: '漫画家紹介', labelEn: 'Artists',    href: '/artists' },
-    { label: 'ビズアニメ', labelEn: 'Biz Anime',  href: '/bizanime' },
-    { label: 'サービス',   labelEn: 'Services',   href: '/product-manga', mega: true, columns: [
+    { label: '漫画家紹介',    href: '/artists' },
+    { label: 'ビズアニメ',  href: '/bizanime' },
+    { label: 'サービス',   href: '/product-manga', mega: true, columns: [
       {
         heading: 'マーケ・広報部門向け',
-        headingEn: 'For Marketing & PR',
         items: [
-          { label: '商品紹介マンガ',     labelEn: 'Product Manga',   href: '/product-manga' },
-          { label: 'マンガ広告',         labelEn: 'Manga Ad',        href: '/manga-ad-lp' },
-          { label: 'インバウンド漫画',   labelEn: 'Inbound Manga',   href: '/inbound-manga' },
-          { label: '会社紹介マンガ',     labelEn: 'Company Manga',   href: '/company-manga' }
+          { label: '商品紹介マンガ',   href: '/product-manga' },
+          { label: 'マンガ広告',        href: '/manga-ad-lp' },
+          { label: 'インバウンド漫画',   href: '/inbound-manga' },
+          { label: '会社紹介マンガ',   href: '/company-manga' }
         ]
       },
       {
         heading: '人事・営業部門向け',
-        headingEn: 'For HR & Sales',
         items: [
-          { label: '採用マンガ',         labelEn: 'Recruit Manga',   href: '/recruit-manga' },
-          { label: '営業資料マンガ',     labelEn: 'Sales Manga',     href: '/sales-manga' },
-          { label: '研修マンガ',         labelEn: 'Training Manga',  href: '/training-manga' },
-          { label: 'IR・周年史マンガ',   labelEn: 'IR Manga',        href: '/ir-manga' }
+          { label: '採用マンガ',   href: '/recruit-manga' },
+          { label: '営業資料マンガ',     href: '/sales-manga' },
+          { label: '研修マンガ',  href: '/training-manga' },
+          { label: 'IR・周年史マンガ',        href: '/ir-manga' }
         ]
       },
       {
         heading: 'ビズマンガを知る',
-        headingEn: 'About BizManga',
         items: [
-          { label: '漫画制作会社 比較',  labelEn: 'Company Comparison', href: '/manga-production-company' },
-          { label: '強み',               labelEn: 'Strengths',       href: '/strength' },
-          { label: 'マンガの種類',       labelEn: 'Manga Types',     href: '/manga-types' },
-          { label: '活用場面',           labelEn: 'Use Cases',       href: '/use-cases' }
+          { label: '漫画制作会社 比較', href: '/manga-production-company' },
+          { label: '強み',       href: '/strength' },
+          { label: 'マンガの種類',     href: '/manga-types' },
+          { label: '活用場面',       href: '/use-cases' }
         ]
       }
     ]},
-    { label: '料金',       labelEn: 'Pricing',    href: '/pricing' },
-    { label: 'コラム',     labelEn: 'Column',     href: '/column' },
-    { label: 'FAQ',        labelEn: 'FAQ',        href: '/faq' }
+    { label: '料金',    href: '/pricing' },
+    { label: 'コラム',     href: '/column' },
+    { label: 'FAQ',        href: '/faq' }
   ];
 
   var path = location.pathname;
@@ -76,9 +75,6 @@
     return normalizedHref === currentFile;
   }
 
-  // ===== 言語状態の管理 =====
-  var currentLang = 'ja';
-  try { currentLang = localStorage.getItem('bm-lang') || 'ja'; } catch(e) {}
 
   // ===== ナビ生成 =====
   var nav = document.getElementById('bmNav');
@@ -94,9 +90,7 @@
       var a = document.createElement('a');
       a.href = item.href;
       a.className = 'bm-nav-link bm-nav-dropdown-toggle';
-      a.setAttribute('data-ja', item.label);
-      a.setAttribute('data-en', item.labelEn);
-      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+      a.textContent = item.label;
 
       var arrow = document.createElement('span');
       arrow.className = 'bm-nav-dropdown-arrow';
@@ -113,9 +107,7 @@
 
         var h = document.createElement('div');
         h.className = 'bm-nav-megamenu-heading';
-        h.setAttribute('data-ja', col.heading);
-        h.setAttribute('data-en', col.headingEn || col.heading);
-        h.textContent = currentLang === 'en' ? (col.headingEn || col.heading) : col.heading;
+        h.textContent = col.heading;
         colEl.appendChild(h);
 
         col.items.forEach(function(child) {
@@ -123,9 +115,7 @@
           ca.href = child.href;
           ca.className = 'bm-nav-dropdown-item bm-nav-megamenu-item';
           if (isCurrent(child.href)) { ca.className += ' active'; anyActive = true; }
-          ca.setAttribute('data-ja', child.label);
-          ca.setAttribute('data-en', child.labelEn);
-          ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+          ca.textContent = child.label;
 
           /* 第3階層。children があればホバーで右側にサブメニューを開く。
              項目自体はリンクのままなので、押せば親ページ(/works)へ行ける */
@@ -138,9 +128,7 @@
               ga.href = gc.href;
               ga.className = 'bm-nav-dropdown-item bm-nav-submenu-item';
               if (isCurrent(gc.href)) { ga.className += ' active'; anyActive = true; }
-              ga.setAttribute('data-ja', gc.label);
-              ga.setAttribute('data-en', gc.labelEn);
-              ga.textContent = currentLang === 'en' ? gc.labelEn : gc.label;
+              ga.textContent = gc.label;
               sub.appendChild(ga);
             });
 
@@ -170,9 +158,7 @@
       a.href = item.href;
       a.className = 'bm-nav-link bm-nav-dropdown-toggle';
       if (isCurrent(item.href)) a.className += ' active';
-      a.setAttribute('data-ja', item.label);
-      a.setAttribute('data-en', item.labelEn);
-      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+      a.textContent = item.label;
 
       var arrow = document.createElement('span');
       arrow.className = 'bm-nav-dropdown-arrow';
@@ -188,9 +174,7 @@
         ca.href = child.href;
         ca.className = 'bm-nav-dropdown-item';
         if (isCurrent(child.href)) { ca.className += ' active'; childActive = true; }
-        ca.setAttribute('data-ja', child.label);
-        ca.setAttribute('data-en', child.labelEn);
-        ca.textContent = currentLang === 'en' ? child.labelEn : child.label;
+        ca.textContent = child.label;
         sub.appendChild(ca);
       });
       if (childActive) a.className += ' active';
@@ -201,9 +185,7 @@
       a.href = item.href;
       a.className = 'bm-nav-link';
       if (isCurrent(item.href)) a.className += ' active';
-      a.setAttribute('data-ja', item.label);
-      a.setAttribute('data-en', item.labelEn);
-      a.textContent = currentLang === 'en' ? item.labelEn : item.label;
+      a.textContent = item.label;
       nav.appendChild(a);
     }
   });
@@ -224,8 +206,8 @@
   var PATH_LINE = 'M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z';
   var PATH_TEL = 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z';
   var mobileCtas = [
-    { href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831', label: 'LINEで相談', labelEn: 'Chat on LINE', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
-    { href: 'tel:03-6261-0764', label: '03-6261-0764 に電話', labelEn: 'Call 03-6261-0764', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
+    { href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831', label: 'LINEで相談', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
+    { href: 'tel:03-6261-0764', label: '03-6261-0764 に電話', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
   ];
   mobileCtas.forEach(function(c) {
     var a = document.createElement('a');
@@ -234,90 +216,10 @@
     if (c.target) { a.target = c.target; a.rel = 'noopener'; }
     a.appendChild(buildSvg(c.pathD));
     var span = document.createElement('span');
-    span.setAttribute('data-ja', c.label);
-    span.setAttribute('data-en', c.labelEn);
-    span.textContent = currentLang === 'en' ? c.labelEn : c.label;
+    span.textContent = c.label;
     a.appendChild(span);
     nav.appendChild(a);
   });
-
-  // ===== 言語切替ボタンの挿入 =====
-  var headerRight = document.querySelector('.bm-header-right');
-  if (headerRight) {
-    var existing = headerRight.querySelector('.bm-lang-switch');
-    if (existing) existing.remove();
-
-    var langSwitch = document.createElement('div');
-    langSwitch.className = 'bm-lang-switch';
-    langSwitch.id = 'bmLangSwitch';
-    // 言語ボタンのラベルは絶対に翻訳しない（i18n辞書ヒットで幅が変わりレイアウト崩れ）
-    langSwitch.innerHTML =
-      '<button class="bm-lang-btn' + (currentLang === 'ja' ? ' active' : '') + '" data-lang="ja" data-i18n-skip>\u65E5\u672C\u8A9E</button>' +
-      '<button class="bm-lang-btn' + (currentLang === 'en' ? ' active' : '') + '" data-lang="en" data-i18n-skip>EN</button>';
-
-    // お問い合わせボタンの前に挿入
-    var cta = headerRight.querySelector('.bm-nav-cta');
-    if (cta) {
-      headerRight.insertBefore(langSwitch, cta);
-    } else {
-      var hamburger = headerRight.querySelector('.bm-hamburger');
-      if (hamburger) {
-        headerRight.insertBefore(langSwitch, hamburger);
-      } else {
-        headerRight.appendChild(langSwitch);
-      }
-    }
-  }
-
-  // ===== 言語切替ロジック =====
-  // bm-i18n.js が読み込まれていればそちらに委譲
-  // bm-i18n.js は JSON辞書ベースの翻訳 + MutationObserver で動的DOM対応
-  function switchLang(lang) {
-    if (window.i18n && typeof window.i18n.switchLang === 'function') {
-      // i18n システムに委譲（辞書翻訳 + data-ja/data-en + 自動検出すべて処理）
-      window.i18n.switchLang(lang);
-    } else {
-      // フォールバック: i18n.js 未読み込み時は従来方式
-      currentLang = lang;
-      try { localStorage.setItem('bm-lang', lang); } catch(e) {}
-
-      document.querySelectorAll('.bm-lang-btn').forEach(function(b) {
-        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-      });
-
-      document.querySelectorAll('[data-ja][data-en]').forEach(function(el) {
-        var newText = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-ja');
-        var arrow = el.querySelector('.bm-nav-dropdown-arrow');
-        if (arrow) {
-          el.firstChild.textContent = newText;
-        } else {
-          el.textContent = newText;
-        }
-      });
-
-      document.querySelectorAll('.bm-nav-cta').forEach(function(el) {
-        el.textContent = lang === 'en' ? 'Contact' : 'お問い合わせ';
-      });
-
-      document.documentElement.lang = lang;
-    }
-  }
-
-  // ボタンにイベント登録
-  document.querySelectorAll('.bm-lang-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      switchLang(btn.getAttribute('data-lang'));
-    });
-  });
-
-  // 初回: localStorageにENが保存されていればEN表示に切替
-  if (currentLang === 'en') {
-    // bm-i18n.js の init() が辞書ロード後に自動で EN 適用するので、
-    // i18n が存在する場合は二重実行を避ける
-    if (!window.i18n) {
-      switchLang('en');
-    }
-  }
 
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
@@ -603,8 +505,8 @@
       var a = document.createElement('a');
       a.className = 'bm-fab__btn ' + opts.cls;
       a.href = opts.href;
-      a.setAttribute('aria-label', opts.labelJa);
-      a.setAttribute('data-tooltip', opts.labelJa);
+      a.setAttribute('aria-label', opts.label);
+      a.setAttribute('data-tooltip', opts.label);
       if (opts.external) { a.target = '_blank'; a.rel = 'noopener'; }
 
       var wrap = document.createElement('span');
@@ -612,9 +514,7 @@
 
       var textBox = document.createElement('span');
       textBox.className = 'bm-fab__text';
-      textBox.setAttribute('data-ja', opts.labelJa);
-      textBox.setAttribute('data-en', opts.labelEn);
-      textBox.textContent = opts.labelJa;
+      textBox.textContent = opts.label;
       wrap.appendChild(textBox);
 
       var iconBox = document.createElement('span');
@@ -650,16 +550,14 @@
       cls: 'bm-fab__btn--line',
       href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831',
       external: true,
-      labelJa: 'LINEで相談',
-      labelEn: 'Chat on LINE',
+      label: 'LINEで相談',
       iconFill: true,
       paths: [{ tag: 'path', attrs: { d: 'M12 2C6.48 2 2 5.58 2 10c0 2.83 1.85 5.3 4.65 6.71-.2.72-.74 2.7-.85 3.12-.14.52.19.51.4.37.16-.11 2.57-1.75 3.61-2.46.72.1 1.45.16 2.19.16 5.52 0 10-3.58 10-8S17.52 2 12 2zM7.4 12.6h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.2h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2zm1.6-.2c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm4.3 0c0 .1-.1.2-.2.2h-.3c-.06 0-.12-.03-.16-.08l-1.85-2.5v2.38c0 .1-.1.2-.2.2h-.3c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h.3c.06 0 .11.03.15.07l1.86 2.51V8.6c0-.1.1-.2.2-.2h.3c.1 0 .2.1.2.2v3.8zm3-3.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.4v.8h1.4c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2h-1.9c-.1 0-.2-.1-.2-.2V8.6c0-.1.1-.2.2-.2h1.9c.1 0 .2.1.2.2v.4c0 .1-.1.2-.2.2z' } }]
     }));
     fab.appendChild(buildFabBtn({
       cls: 'bm-fab__btn--contact',
       href: '/contact',
-      labelJa: 'お問い合わせ',
-      labelEn: 'Contact',
+      label: 'お問い合わせ',
       iconFill: false,
       paths: [
         { tag: 'path', attrs: { d: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' } },
@@ -669,19 +567,13 @@
     fab.appendChild(buildFabBtn({
       cls: 'bm-fab__btn--tel',
       href: 'tel:03-6261-0764',
-      labelJa: '電話で相談',
-      labelEn: 'Call us',
+      label: '電話で相談',
       iconFill: true,
       paths: [{ tag: 'path', attrs: { d: 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z' } }]
     }));
     document.body.appendChild(fab);
-    if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en' && window.i18n.translateAll) {
-      window.i18n.translateAll();
-    }
   }
 
-  // グローバルに公開
-  window.bmSwitchLang = switchLang;
 })();
 
 /* =====================================================================

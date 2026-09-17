@@ -40,7 +40,6 @@
   var wdCurrentPage = 0;
   var wdTotalPages = 0;
 
-  function getLang() { return document.documentElement.lang || 'ja'; }
   function esc(s) {
     return window.bmSanitize ? window.bmSanitize.html(s) : (s || '');
   }
@@ -73,21 +72,14 @@
     if (!work) return false;
     showLoader();
 
-    var isEn = getLang() === 'en';
     var titleJa = work.title_ja || '';
-    var titleEn = work.title_en || titleJa;
     var catJa = work.category || '';
-    var catEn = work.category_en || catJa;
 
     if (wdTitle) {
-      wdTitle.setAttribute('data-ja', titleJa);
-      wdTitle.setAttribute('data-en', titleEn);
-      wdTitle.textContent = isEn ? titleEn : titleJa;
+      wdTitle.textContent = titleJa;
     }
     if (wdCategory) {
-      wdCategory.setAttribute('data-ja', catJa);
-      wdCategory.setAttribute('data-en', catEn);
-      wdCategory.textContent = isEn ? catEn : catJa;
+      wdCategory.textContent = catJa;
     }
     if (wdMedia) {
       wdMedia.innerHTML = (work.media || []).map(function(m) {
@@ -98,24 +90,15 @@
       var spec = work.spec || {};
       var pagesV = esc(spec.pages || (work.pages ? work.pages + 'P' : '—'));
       var periodV = esc(spec.period || '—');
-      var periodEn = esc(spec.period_en || spec.period || '—');
       wdSpec.innerHTML =
-        '<li data-ja="ページ数：' + pagesV + '" data-en="Pages: ' + pagesV + '">' +
-          (isEn ? 'Pages: ' : 'ページ数：') + pagesV + '</li>' +
-        '<li data-ja="納期：' + periodV + '" data-en="Delivery: ' + periodEn + '">' +
-          (isEn ? 'Delivery: ' + periodEn : '納期：' + periodV) + '</li>';
+        '<li>ページ数：' + pagesV + '</li>' +
+        '<li>納期：' + periodV + '</li>';
     }
     if (wdPoint) {
-      var pointEn = work.point_en || work.point || '';
-      wdPoint.setAttribute('data-ja', work.point || '');
-      wdPoint.setAttribute('data-en', pointEn);
-      wdPoint.textContent = isEn ? pointEn : (work.point || '');
+      wdPoint.textContent = work.point || '';
     }
     if (wdComment) {
-      var commentEn = work.comment_en || work.comment || '';
-      wdComment.setAttribute('data-ja', work.comment || '');
-      wdComment.setAttribute('data-en', commentEn);
-      wdComment.textContent = isEn ? commentEn : (work.comment || '');
+      wdComment.textContent = work.comment || '';
     }
     // 「詳細を見る」→ 個別作品ページ
     if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);
@@ -200,7 +183,6 @@
     wdOverlay.scrollTop = 0;
     document.body.style.overflow = 'hidden';
 
-    if (isEn && window.i18n && window.i18n.translateAll) window.i18n.translateAll();
     return true;
   }
 

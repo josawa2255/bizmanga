@@ -13,9 +13,7 @@
   <meta name="robots" content="index, follow">
   <meta http-equiv="last-modified" content="{{modified_ymd}}T03:00:00+09:00">
   <link rel="canonical" href="{{url}}">
-  <link rel="alternate" hreflang="ja" href="{{url}}">
-  <link rel="alternate" hreflang="x-default" href="{{url}}">
-  <!-- OGP -->
+<!-- OGP -->
   <meta property="og:title" content="{{title_ja}} | コラム | ビズマンガ">
   <meta property="og:description" content="{{description}}">
   <meta property="og:type" content="article">
@@ -259,7 +257,7 @@
           <a href="/column">コラム</a>
           <a href="/faq">FAQ</a>
           <a href="/contact">お問い合わせ</a>
-          <a href="/privacy-policy" data-ja="プライバシーポリシー" data-en="Privacy Policy">プライバシーポリシー</a>
+          <a href="/privacy-policy">プライバシーポリシー</a>
         </div>
       </div>
       <div class="bm-footer-bottom">
@@ -270,8 +268,7 @@
   </footer>
 
   <script src="/js/bm-sanitize.js"></script>
-  <script src="/js/bm-i18n.js" defer></script>
-  <script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-hubspot.js" defer></script>
 </body>
 </html>

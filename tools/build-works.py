@@ -212,7 +212,6 @@ def update_works_html(works):
 def build_detail_page(w, template):
     slug = w["id"]
     title_ja = w.get("title_ja") or slug
-    title_en = w.get("title_en") or title_ja
     # ヒーロー表示用は gallery[0] のフル解像度を優先 (WP thumbnail は 188x300 の小さなサムネで、
     # 1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため)。
     # fallback として従来の thumbnail → gallery[0] 順で参照。
@@ -342,7 +341,6 @@ def build_detail_page(w, template):
     replacements = {
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
-        "{{title_en}}": esc(title_en),
         "{{category_kw}}": esc(category_kw),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
@@ -552,19 +550,14 @@ def build_category_works_json(works):
         payload.append({
             "id": w.get("id"),
             "title_ja": w.get("title_ja") or "",
-            "title_en": w.get("title_en") or "",
             "category": w.get("category") or "",
-            "category_en": w.get("category_en") or "",
             "media": w.get("media") or [],
             "spec": {
                 "pages": spec.get("pages") or "",
                 "period": spec.get("period") or "",
-                "period_en": spec.get("period_en") or "",
             },
             "point": w.get("point") or "",
-            "point_en": w.get("point_en") or "",
             "comment": w.get("comment") or "",
-            "comment_en": w.get("comment_en") or "",
             "pages": w.get("pages") or 0,
             "view_type": w.get("view_type") or "",
             "gallery": (w.get("gallery") or [])[:5],

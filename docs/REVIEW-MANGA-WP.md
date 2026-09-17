@@ -64,7 +64,7 @@ python3 tools/smoke-manga-wp.py --serve .
 - 縦読み作品（`view_type: vertical` / `vertical_only`）と見開き作品を**1つずつ**開く。判定は `window.bmViewType.*` に委譲されているか（自前判定を足していないか、#012/#013）
 - ホーム: 横読み/縦読みの2グループに分かれている、新作の並び順が WP の「表示順」どおり（`cx_sort_order` 昇順）
 - `/works/{slug}`（静的ページ）と `/works` 一覧のカテゴリフィルタ
-- EN 切替でビューアのUI文言が壊れない（読込順 i18n → nav、`translateAll` 無条件呼び禁止、#005/#008）
+- `bm-lang=en` が残ったブラウザでも、ビューアのUI文言が初回表示・動的読込後とも日本語のままである
 - CSP メタを触った場合: `connect-src` / `img-src` に `https:`（cms.contentsx.jp）が残っている
 
 ## 3. WP 接続を触った場合の追加確認

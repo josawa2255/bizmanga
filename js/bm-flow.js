@@ -121,8 +121,4 @@
   gallery.addEventListener('wheel', resetAuto, { passive: true });
   flowSteps.forEach(function(el) { el.addEventListener('click', resetAuto); });
 
-  // i18n対応
-  if (window.i18n && window.i18n.getLang && window.i18n.getLang() === 'en') {
-    window.i18n.translateAll();
-  }
 })();

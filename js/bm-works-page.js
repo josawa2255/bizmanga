@@ -12,36 +12,32 @@
   var filterContainer = document.getElementById('bmCategoryFilter');
   if (!grid) return;
 
-  // ===== 言語ヘルパー =====
-  function getLang() { return document.documentElement.lang || 'ja'; }
-  function t(ja) {
-    if (getLang() !== 'en') return ja;
-    if (window.i18n && window.i18n.t) {
-      var result = window.i18n.t(ja);
-      return (result !== ja) ? result : ja;
-    }
-    return ja;
-  }
-
-  // ===== カテゴリ英訳マップ =====
-  var CATEGORY_EN = {
-    'すべて': 'All',
-    '営業': 'Sales',
-    '採用': 'Recruitment',
-    '研修': 'Training',
-    '集客': 'Marketing',
-    '紹介': 'Introduction',
-    'ブランド': 'Branding',
-    'IP': 'IP',
-    'プロモーション': 'Promotion',
-    'その他': 'Other',
-    '創業ストーリー': 'Founding Story'
-  };
+  // ===== フォールバック用データ =====
+  var FALLBACK_WORKS = [
+    { id: 'seko', title_ja: '施工会社紹介', pages: 8, category: '営業',
+      media: ['営業ツール'], spec: { pages: '8P', period: '10日間' },
+      point: '施工実績を漫画でビジュアル化。',
+      comment: '信頼感が増しました。' },
+    { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, category: 'プロモーション',
+      media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間' },
+      point: 'イベント告知を漫画で訴求。',
+      comment: '集客効果がありました。' },
+    { id: 'lady-column', title_ja: 'レディコラム', pages: 6, category: 'その他',
+      media: ['Webコラム'], spec: { pages: '6P', period: '1週間' },
+      point: 'コラム連載の漫画化。',
+      comment: 'PVが伸びました。' },
+    { id: 'ichinohe-home', title_ja: '一戸ホーム', pages: 22, category: '営業',
+      media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間' },
+      point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。',
+      comment: '商談がスムーズになりました。' },
+    { id: 'bms-unso', title_ja: 'BMS運送', pages: 10, category: '創業ストーリー',
+      media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間' },
+      point: 'リメイク版で新たな魅力を訴求。',
+      comment: '応募者の質が上がりました。' }
+  ];
 
   // ===== カテゴリ → カテゴリページ slug マップ =====
-  // データ上のカテゴリ名 (JA) を /works/category/{slug} の slug に対応付ける。
-  // build-works.py の CATEGORY_PAGES と整合。フィルターボタンを
-  // 該当カテゴリページへの内部リンクに変換するために使用。
+  // build-works.py の CATEGORY_PAGES と整合させる。
   var CATEGORY_SLUG = {
     '採用': 'recruit',
     '商品紹介': 'product',
@@ -53,52 +49,6 @@
     '研修': 'training',
     'IR': 'ir'
   };
-
-  // ===== メディア英訳マップ =====
-  var MEDIA_EN = {
-    '採用パンフレット': 'Recruitment Pamphlet',
-    'Web掲載': 'Web Publication',
-    '研修資料': 'Training Material',
-    '営業資料': 'Sales Material',
-
-    'SNS': 'SNS',
-    'メールマガジン': 'Email Newsletter',
-    'Webサイト': 'Website',
-    '営業ツール': 'Sales Tool',
-    'イベント配布': 'Event Distribution',
-    'Web': 'Web',
-    'イベント': 'Event',
-    'Webコラム': 'Web Column',
-    '採用サイト': 'Recruitment Site',
-    'パンフレット': 'Pamphlet',
-    '社内説明・営業研修': 'Internal Briefing / Sales Training',
-    'Webサイト（製品紹介ページ）': 'Website (Product Page)',
-    'SNS（X・Instagram）': 'SNS (X / Instagram)'
-  };
-
-  // ===== フォールバック用データ（bm-hero.jsと同じ構造） =====
-  var FALLBACK_WORKS = [
-    { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, category: '営業',
-      media: ['営業ツール'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
-      point: '施工実績を漫画でビジュアル化。', point_en: 'Construction achievements visualized through manga.',
-      comment: '信頼感が増しました。', comment_en: 'Trust and credibility increased.' },
-    { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, category: 'プロモーション',
-      media: ['イベント', 'SNS'], spec: { pages: '8P', period: '10日間', period_en: '10 days' },
-      point: 'イベント告知を漫画で訴求。', point_en: 'Event promotion through manga.',
-      comment: '集客効果がありました。', comment_en: 'Effective in attracting visitors.' },
-    { id: 'lady-column', title_ja: 'レディコラム', title_en: 'Lady Column', pages: 6, category: 'その他',
-      media: ['Webコラム'], spec: { pages: '6P', period: '1週間', period_en: '1 week' },
-      point: 'コラム連載の漫画化。', point_en: 'Serialized column converted to manga.',
-      comment: 'PVが伸びました。', comment_en: 'Page views increased.' },
-    { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, category: '営業',
-      media: ['営業ツール', 'Web掲載'], spec: { pages: '22P', period: '3週間', period_en: '3 weeks' },
-      point: '住宅メーカーの魅力をストーリー漫画で伝える営業ツール。', point_en: 'A sales tool that conveys the appeal of a home builder through story manga.',
-      comment: '商談がスムーズになりました。', comment_en: 'Business negotiations became smoother.' },
-    { id: 'bms-unso', title_ja: 'BMS運送', title_en: 'BMS Transport', pages: 10, category: '創業ストーリー',
-      media: ['採用サイト', 'パンフレット'], spec: { pages: '10P', period: '2週間', period_en: '2 weeks' },
-      point: 'リメイク版で新たな魅力を訴求。', point_en: 'Remake version showcasing renewed appeal.',
-      comment: '応募者の質が上がりました。', comment_en: 'Quality of applicants improved.' }
-  ];
 
   // ===== O(1) ルックアップ用マップ =====
   var worksMap = {};
@@ -166,7 +116,6 @@
     var pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
     grid.innerHTML = '';
-    var isEn = getLang() === 'en';
     var frag = document.createDocumentFragment();
     pageItems.forEach(function(w) {
       var card = document.createElement('article');
@@ -176,11 +125,6 @@
       var coverSrc = w.thumbnail || 'https://contentsx.jp/material/manga/' + w.id + '/01.webp';
       var mediaArr = (w.media || []);
       var mediaStrJa = mediaArr.join(' / ');
-      var mediaStrEn = mediaArr.map(function(m) { return MEDIA_EN[m] || m; }).join(' / ');
-
-      var catEn = w.category_en || CATEGORY_EN[w.category] || w.category || '';
-      var titleEn = w.title_en || w.title_ja || '';
-      var pointEn = w.point_en || w.point || '';
 
       var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
       card.innerHTML =
@@ -188,11 +132,11 @@
           '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy" width="400" height="560">' +
         '</div>' +
         '<div class="bm-works-card-body">' +
-          '<span class="bm-works-card-category" data-ja="' + esc(w.category) + '" data-en="' + esc(catEn) + '">' + esc(w.category) + '</span>' +
-          '<h3 class="bm-works-card-title" data-ja="' + esc(w.title_ja) + '" data-en="' + esc(titleEn) + '">' + esc(w.title_ja) + '</h3>' +
-          (w.point ? '<p class="bm-works-card-desc" data-ja="' + esc(w.point) + '" data-en="' + esc(pointEn) + '">' + esc(w.point) + '</p>' : '') +
+          '<span class="bm-works-card-category">' + esc(w.category) + '</span>' +
+          '<h3 class="bm-works-card-title">' + esc(w.title_ja) + '</h3>' +
+          (w.point ? '<p class="bm-works-card-desc">' + esc(w.point) + '</p>' : '') +
           '<div class="bm-works-card-meta">' +
-            (mediaStrJa ? '<span class="bm-works-card-media" data-ja="' + esc(mediaStrJa) + '" data-en="' + esc(mediaStrEn) + '">' + esc(mediaStrJa) + '</span>' : '') +
+            (mediaStrJa ? '<span class="bm-works-card-media">' + esc(mediaStrJa) + '</span>' : '') +
           '</div>' +
         '</div>';
 
@@ -212,17 +156,8 @@
     // ページネーション構築
     buildPagination(filtered.length, currentPage);
 
-    // 英語反映
-    if (isEn) {
-      if (window.i18n && window.i18n.translateAll) {
-        window.i18n.translateAll();
-      } else if (typeof window.bmSwitchLang === 'function') {
-        window.bmSwitchLang('en');
-      }
-    }
   }
 
-  // ===== ページネーション構築 =====
   function buildPagination(totalItems, activePage) {
     var paginationEl = document.getElementById('bmWorksPagination');
     if (!paginationEl) return;
@@ -231,8 +166,7 @@
 
     var html = '';
     // Previous
-    html += '<button class="pg-btn' + (activePage <= 1 ? ' disabled' : '') + '" data-page="' + (activePage - 1) + '">' +
-      (getLang() === 'en' ? '‹ Previous' : '‹ 前へ') + '</button>';
+    html += '<button class="pg-btn' + (activePage <= 1 ? ' disabled' : '') + '" data-page="' + (activePage - 1) + '">‹ 前へ</button>';
 
     for (var i = 1; i <= totalPages; i++) {
       if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - activePage) > 1) {
@@ -243,8 +177,7 @@
     }
 
     // Next
-    html += '<button class="pg-btn' + (activePage >= totalPages ? ' disabled' : '') + '" data-page="' + (activePage + 1) + '">' +
-      (getLang() === 'en' ? 'Next ›' : '次へ ›') + '</button>';
+    html += '<button class="pg-btn' + (activePage >= totalPages ? ' disabled' : '') + '" data-page="' + (activePage + 1) + '">次へ ›</button>';
 
     paginationEl.innerHTML = html;
 
@@ -270,22 +203,16 @@
         categories[w.category] = (categories[w.category] || 0) + 1;
       }
     });
-
-    var isEn = getLang() === 'en';
     var currentWorks = works;
     Object.keys(categories).forEach(function(cat) {
-      var catEn = CATEGORY_EN[cat] || cat;
       var labelJa = cat + '（' + categories[cat] + '）';
-      var labelEn = catEn + ' (' + categories[cat] + ')';
 
       if (cat === 'すべて') {
         // 「すべて」はフィルター解除ボタン（/works に留まる）
         var allBtn = document.createElement('button');
         var isActive = !activeCategory;
         allBtn.className = 'bm-filter-btn' + (isActive ? ' active' : '');
-        allBtn.setAttribute('data-ja', labelJa);
-        allBtn.setAttribute('data-en', labelEn);
-        allBtn.textContent = isEn ? labelEn : labelJa;
+        allBtn.textContent = labelJa;
         allBtn.addEventListener('click', function() {
           renderWorks(currentWorks, null, 1);
         });
@@ -299,17 +226,13 @@
         var link = document.createElement('a');
         link.className = 'bm-filter-btn';
         link.href = '/works/category/' + slug;
-        link.setAttribute('data-ja', labelJa);
-        link.setAttribute('data-en', labelEn);
-        link.textContent = isEn ? labelEn : labelJa;
+        link.textContent = labelJa;
         filterContainer.appendChild(link);
       } else {
         // 未マップのカテゴリは従来通り JS フィルター（保険）
         var fbtn = document.createElement('button');
         fbtn.className = 'bm-filter-btn';
-        fbtn.setAttribute('data-ja', labelJa);
-        fbtn.setAttribute('data-en', labelEn);
-        fbtn.textContent = isEn ? labelEn : labelJa;
+        fbtn.textContent = labelJa;
         fbtn.addEventListener('click', function() {
           renderWorks(currentWorks, cat, 1);
         });
@@ -345,29 +268,20 @@
     var work = worksMap[workId];
     if (!work) return;
     showWdLoader();
-
-    var isEn = getLang() === 'en';
     var titleJa = work.title_ja || '';
-    var titleEn = work.title_en || titleJa;
     var catJa = work.category || '';
-    var catEn = work.category_en || CATEGORY_EN[catJa] || catJa;
 
     if (wdTitle) {
-      wdTitle.setAttribute('data-ja', titleJa);
-      wdTitle.setAttribute('data-en', titleEn);
-      wdTitle.textContent = isEn ? titleEn : titleJa;
+      wdTitle.textContent = titleJa;
     }
     if (wdCategory) {
-      wdCategory.setAttribute('data-ja', catJa);
-      wdCategory.setAttribute('data-en', catEn);
-      wdCategory.textContent = isEn ? catEn : catJa;
+      wdCategory.textContent = catJa;
     }
     /* 全フィールド escM() 済み（XSS対策） */
     var escM = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
     if (wdMedia) {
       wdMedia.innerHTML = (work.media || []).map(function(m) {
-        var mEn = MEDIA_EN[m] || m;
-        return '<li data-ja="' + escM(m) + '" data-en="' + escM(mEn) + '">' + escM(isEn ? mEn : m) + '</li>';
+        return '<li>' + escM(m) + '</li>';
       }).join('');
     }
     if (wdSpec) {
@@ -377,22 +291,15 @@
       var galleryLenForSpec = (work.gallery && work.gallery.length) || 0;
       var pagesV = escM(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
       var periodV = escM(spec.period || '—');
-      var periodEn = escM(spec.period_en || spec.period || '—');
       wdSpec.innerHTML =
-        '<li data-ja="ページ数：' + pagesV + '" data-en="Pages: ' + pagesV + '">' + (isEn ? 'Pages: ' : 'ページ数：') + pagesV + '</li>' +
-        '<li data-ja="納期：' + periodV + '" data-en="Delivery: ' + periodEn + '">' + (isEn ? 'Delivery: ' + periodEn : '納期：' + periodV) + '</li>';
+        '<li>ページ数：' + pagesV + '</li>' +
+        '<li>納期：' + periodV + '</li>';
     }
     if (wdPoint) {
-      var pointEn = work.point_en || work.point || '';
-      wdPoint.setAttribute('data-ja', work.point || '');
-      wdPoint.setAttribute('data-en', pointEn);
-      wdPoint.textContent = isEn ? pointEn : (work.point || '');
+      wdPoint.textContent = work.point || '';
     }
     if (wdComment) {
-      var commentEn = work.comment_en || work.comment || '';
-      wdComment.setAttribute('data-ja', work.comment || '');
-      wdComment.setAttribute('data-en', commentEn);
-      wdComment.textContent = isEn ? commentEn : (work.comment || '');
+      wdComment.textContent = work.comment || '';
     }
     // 「詳細を見る」→ 個別作品ページ
     if (wdLink) wdLink.href = '/works/' + encodeURIComponent(work.id);

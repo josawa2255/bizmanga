@@ -137,38 +137,24 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
 .bm-header-inner {
-  /* 2026-08-29「漫画家紹介」追加でナビが9項目になり、JAで13px溢れて
-     FAQ が言語切替の下に潜った（BUGS #003/#014 の再発）。
-     gap(12px)も文字サイズも既に詰めきっているため、ヘッダーだけ
-     1200→1280px に広げて回収した（本文コンテナ1200pxはそのまま）。
-     ⚠️ これ以上ナビ項目を増やす場合はメガメニューへ入れること */
+  /* ナビ9項目とCTAを横幅1280px内に収める。 */
   max-width: 1280px; margin: 0 auto; padding: 0 16px;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; /* ナビと言語切替/CTAが接触するのを防ぐ最低間隔 */
+  gap: 12px; /* ナビとCTAの最低間隔 */
   height: 100%;
   min-width: 0; /* flex overflow 防止 */
 }
 /* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
 .bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
 .bm-logo-img { height: clamp(38px, 4.4vw, 58px); width: auto; max-width: none; flex-shrink: 0; aspect-ratio: 1316 / 370; }
-/* ナビ8項目(ホーム/制作事例/ビズ書庫/ビズアニメ/サービス/料金/コラム/FAQ)＋言語切替＋CTA＋
-   アイコン2個で横幅がぎりぎり。gapを詰めないと FAQ が言語切替の下に潜る(BUGS #003/#014)。
-   2026-08-22 ビズアニメ追加時に 24px→14px。1280〜1920px・日英両方で溢れゼロを実測済み。 */
+/* ナビ9項目とCTAを1280〜1920pxで収める。 */
 .bm-nav {
-  /* 2026-08-29「漫画家紹介」追加でナビが8→9項目になり、JAで58px/ENで19px 溢れて
-     コラム・FAQ が言語切替の下に潜った（BUGS #003/#014 の再発）。
-     gap は既に14pxまで詰めていて10箇所ぶんでは足りないため、
-     gap 14→11px + 文字 15→14.5px + 字送りの圧縮で回収している。
-     ⚠️ これ以上ナビ項目を増やす場合はメガメニューへ入れること（gapの余地はもう無い） */
+  /* 項目追加時はメガメニューへの集約を検討する。 */
   display: flex; align-items: center; gap: 11px;
   min-width: 0; flex-shrink: 1;
 }
 /* モバイル専用CTA(.bm-nav-mobile-cta)はデスクトップでは常に非表示 */
 .bm-nav-mobile-cta { display: none; }
-/* EN モードは英単語が日本語より幅広い (Services / Pricing / Column) ため、
-   ナビ間隔と文字サイズをわずかに圧縮して言語スイッチ・CTAとの被りを回避 */
-html[lang="en"] .bm-nav { gap: 9px; }
-html[lang="en"] .bm-nav-link { font-size: 14px; letter-spacing: 0.01em; }
 .bm-header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .bm-nav-link {
   position: relative;
@@ -891,40 +877,6 @@ body:has(.manga-modal.open) .bm-fab { display: none !important; }
   box-shadow: 0 14px 22px -8px rgba(0, 0, 0, 0.45);
 }
 .bm-cta-icon--tel .bm-cta-tooltip { background: #1a1a1a; }
-
-/* 言語切替ボタン */
-.bm-lang-switch {
-  display: flex;
-}
-.bm-lang-btn {
-  width: 64px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  font-family: inherit;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  border: 1.5px solid var(--bm-accent);
-  transition: background 0.25s ease, color 0.25s ease;
-  background: transparent;
-  color: var(--bm-accent);
-}
-.bm-lang-btn:first-child {
-  border-right: 0.75px solid var(--bm-accent);
-}
-.bm-lang-btn:last-child {
-  border-left: 0.75px solid var(--bm-accent);
-}
-.bm-lang-btn.active {
-  background: var(--bm-accent);
-  color: #ffffff;
-}
-.bm-lang-btn:not(.active):hover {
-  background: var(--bm-accent-light);
-}
 
 /* Hamburger */
 .bm-hamburger {
@@ -4822,7 +4774,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-nav { gap: 16px; }
   .bm-nav-link { font-size: 13px; }
   .bm-nav-cta { padding: 8px 14px; font-size: 13px; }
-  .bm-lang-btn { width: 52px; font-size: 12px; }
 }
 
 @media (max-width: 1024px) {
@@ -5147,19 +5098,12 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   body.bm-nav-locked {
     overflow: hidden;
   }
-  /* モバイル: お問い合わせ(.bm-nav-cta)はヘッダーから省く。
-     ロゴを正しい比率で表示すると横幅があふれるため。
-     お問い合わせは画面下部の追従CTA(.bm-fab)で全ページ常時到達できる。
-     ヘッダー右は「言語切替 + ハンバーガー」のみ。 */
+  /* モバイル: お問い合わせはヘッダーから省き、追従CTAで常時到達可能にする。 */
   .bm-header-right .bm-nav-cta { display: none; }
-  .bm-header-right .bm-lang-switch { order: -1; }
-
-  /* モバイル: ヘッダーの丸アイコンCTA(LINE/電話)は丸ごと非表示
+/* モバイル: ヘッダーの丸アイコンCTA(LINE/電話)は丸ごと非表示
      お問い合わせ(.bm-nav-cta)のみ常時可視。LINE/電話はハンバーガー末尾に集約 */
   .bm-cta-icons { display: none; }
-  .bm-lang-btn { width: 52px; height: 32px; font-size: 11px; padding: 0 4px; white-space: nowrap; }
-
-  /* カテゴリフィルター: スマホ用コンパクト表示 */
+/* カテゴリフィルター: スマホ用コンパクト表示 */
   .bm-category-filter {
     gap: 8px;
     padding: 12px 16px;

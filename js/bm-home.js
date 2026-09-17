@@ -14,9 +14,9 @@
 
   // ===== フォールバック用データ (sitemap除外作品は載せない) =====
   var FALLBACK_WORKS = [
-    { id: 'ichinohe-home', title_ja: '一戸ホーム', title_en: 'Ichinohe Home', pages: 22, added: '2026-03-12' },
-    { id: 'seko', title_ja: '施工会社紹介', title_en: 'Construction Company Story', pages: 8, added: '2026-03-05' },
-    { id: 'life-buzfes', title_ja: 'ライフバズフェス', title_en: 'Life BuzzFes', pages: 8, added: '2026-02-28' }
+    { id: 'ichinohe-home', title_ja: '一戸ホーム', pages: 22, added: '2026-03-12' },
+    { id: 'seko', title_ja: '施工会社紹介', pages: 8, added: '2026-03-05' },
+    { id: 'life-buzfes', title_ja: 'ライフバズフェス', pages: 8, added: '2026-02-28' }
   ];
 
   var allWorksData = [];
@@ -31,9 +31,7 @@
 
     var coverSrc = item.thumbnail || 'https://contentsx.jp/material/manga/' + item.id + '/01.webp';
     var titleJa = item.title_ja || '';
-    var titleEn = item.title_en || titleJa;
     var labelJa = item.subtitle_ja || titleJa;
-    var labelEn = item.subtitle_en || titleEn;
 
     var coverWrap = document.createElement('div');
     coverWrap.className = 'bm-gallery-card-cover';
@@ -45,8 +43,6 @@
 
     var titleEl = document.createElement('p');
     titleEl.className = 'bm-gallery-card-title';
-    titleEl.setAttribute('data-ja', labelJa);
-    titleEl.setAttribute('data-en', labelEn);
     titleEl.textContent = labelJa;
 
     card.appendChild(coverWrap);
@@ -104,15 +100,6 @@
       emptyEl.hidden = (mangaItems.length + webtoonItems.length) > 0;
     }
 
-    // 英語表示中なら i18n を再適用
-    var lang = document.documentElement.lang || 'ja';
-    if (lang === 'en') {
-      if (window.i18n && window.i18n.translateAll) {
-        window.i18n.translateAll();
-      } else if (typeof window.bmSwitchLang === 'function') {
-        window.bmSwitchLang('en');
-      }
-    }
   }
 
   // ===== 初期表示 (フォールバック) =====

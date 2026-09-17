@@ -32,7 +32,7 @@ body.ba-page {
 }
 
 /* ヘッダーは他ページと完全に共通（2026-08-22 ユーザー指示）。
-   白背景・ロゴ・ナビ配色・言語切替・追従CTA すべて bizmanga.css のまま使う。
+   白背景・ロゴ・ナビ配色・追従CTAは bizmanga.css のまま使う。
    ⚠️ ここに body.ba-page 用の上書きを足さないこと。足すとこのページだけ
       ヘッダーが違う見た目になり、サイト全体の統一が崩れる。
    ヘッダーは position:fixed で本文に覆いかぶさるため、Hero 側に
@@ -40,7 +40,7 @@ body.ba-page {
 /* ロゴ横「| BIZ ANIME」— ヘッダー内のサービス名表示 */
 /* ロゴ横のサービス名。
    ⚠️ ヘッダーは [ロゴ][nav flex:1][右CTA] の3分割で、ナビは約480px必要。
-      ここに要素を差し込むとナビのリンクが溢れて言語切替の下へ潜り込む(#003/#014と同種)。
+      ここに要素を差し込むとナビのリンクが溢れる。
       そこでヘッダーの通常フローからは外し(absolute)、ロゴの右に重ねて置く。
       ナビの幅計算に一切影響させないことが要点。 */
 .ba-header-brand {
@@ -57,7 +57,7 @@ body.ba-page {
 body.ba-page .bm-header-inner { position: relative; }
 
 /* ナビと重なる幅ではサービス名を隠す（ロゴ内に BizManga があるので情報は失われない） */
-/* 既存ナビ(7項目)＋言語切替＋CTA＋アイコン2個で、1920pxでもロゴ右の余白は約70pxしかない。
+/* 既存ナビ・CTA・アイコン2個で、1920pxでもロゴ右の余白は約70pxしかない。
    サービス名を置くとナビ項目と物理的に重なるため、ヘッダーでは表示しない。
    「BIZ ANIME」はHero本文のH1で大きく出るので、情報としては失われない。 */
 .ba-header-brand { display: none; }
@@ -641,7 +641,7 @@ body.ba-page { overflow-x: clip; }
    ========================================================================== */
 @media (max-width: 1024px) {
   /* --- ヘッダー: スマホだけ Hero と一体化させる（2026-08-22 指示）---
-     PC は他ページと完全共通のまま。スマホは黒背景・コンパクト・言語切替なしにして、
+     PC は他ページと完全共通のまま。スマホは黒背景・コンパクトにして、
      1画面に収まる情報量を増やす。 */
   body.ba-page .bm-header {
     background: rgba(5,5,5,.92);
@@ -652,8 +652,6 @@ body.ba-page { overflow-x: clip; }
   }
   body.ba-page .bm-header-inner { height: 56px; }
   body.ba-page .bm-logo-img { filter: brightness(0) invert(1); height: 30px; }
-  /* 言語切替はスマホでは出さない（ハンバーガー内から切替できる） */
-  body.ba-page .bm-lang-switch { display: none; }
   /* ハンバーガーの線を白に */
   body.ba-page .bm-hamburger span { background: #fff; }
   /* ロゴ横の「| BIZ ANIME」を出す。PCではナビと衝突するため隠しているが、

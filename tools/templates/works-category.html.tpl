@@ -26,9 +26,7 @@
   <meta name="keywords" content="{{keywords}}">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{url}}">
-  <link rel="alternate" hreflang="ja" href="{{url}}">
-  <link rel="alternate" hreflang="x-default" href="{{url}}">
-  <!-- OG -->
+<!-- OG -->
   <meta property="og:title" content="{{title_seo}}">
   <meta property="og:description" content="{{description}}">
   <meta property="og:type" content="website">
@@ -96,10 +94,10 @@
       </a>
       <nav class="bm-nav" id="bmNav"></nav>
       <div class="bm-header-right">
-        <a href="/contact" class="bm-nav-cta" data-ja="お問い合わせ" data-en="Contact">お問い合わせ</a>
+        <a href="/contact" class="bm-nav-cta">お問い合わせ</a>
         <a href="https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831" class="bm-nav-cta bm-nav-cta--line" target="_blank" rel="noopener" aria-label="LINEで相談">
           <svg class="bm-nav-cta-line-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z"/></svg>
-          <span data-ja="LINEで相談" data-en="Chat on LINE">LINEで相談</span>
+          <span>LINEで相談</span>
         </a>
         <button class="bm-hamburger" id="bmHamburger" aria-label="メニュー">
           <span></span><span></span><span></span>
@@ -217,23 +215,23 @@
           <span class="work-detail-category" id="workDetailCategory"></span>
         </div>
         <div class="work-detail-section">
-          <h3 class="work-detail-heading" data-ja="使用媒体" data-en="Media Used">使用媒体</h3>
+          <h3 class="work-detail-heading">使用媒体</h3>
           <ul class="work-detail-list" id="workDetailMedia"></ul>
         </div>
         <div class="work-detail-section">
-          <h3 class="work-detail-heading" data-ja="導入内容" data-en="Implementation Details">導入内容</h3>
+          <h3 class="work-detail-heading">導入内容</h3>
           <ul class="work-detail-list" id="workDetailSpec"></ul>
         </div>
         <div class="work-detail-section">
-          <h3 class="work-detail-heading" data-ja="演出ポイント" data-en="Key Points">演出ポイント</h3>
+          <h3 class="work-detail-heading">演出ポイント</h3>
           <p class="work-detail-text" id="workDetailPoint"></p>
         </div>
         <div class="work-detail-section">
-          <h3 class="work-detail-heading" data-ja="客先コメント" data-en="Client Comment">客先コメント</h3>
+          <h3 class="work-detail-heading">客先コメント</h3>
           <p class="work-detail-quote" id="workDetailComment"></p>
         </div>
         <div class="work-detail-cta-wrap">
-          <a class="work-detail-cta" id="workDetailLink" href="/works" data-ja="詳細を見る" data-en="View details">詳細を見る</a>
+          <a class="work-detail-cta" id="workDetailLink" href="/works">詳細を見る</a>
         </div>
       </div>
     </div>
@@ -243,8 +241,7 @@
   <script type="application/json" id="bmWorksModalData">{{works_json}}</script>
 
   <script src="/js/bm-sanitize.js" defer></script>
-  <script src="/js/bm-i18n.js" defer></script>
-  <script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
   <script src="/js/bm-kinsoku.js" defer></script>
   <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-fuwa.js" defer></script>

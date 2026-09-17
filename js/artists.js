@@ -44,9 +44,7 @@
       id: 'A',
       slug: 'isekai-fantasy',
       title: '異世界・ファンタジーの縦読み',
-      titleEn: 'Fantasy Vertical Scroll',
       summary: '異世界ファンタジーを縦読みで読ませる作家。キャラクターデザインからネームまで一貫して対応できます。',
-      summaryEn: 'Fantasy storytelling built for vertical scroll reading.',
       thumbnail: IMG + 'creator-a.webp',
       gallery: [
         { src: IMG + 'creator-a-1.webp', alt: '異世界・ファンタジーの作例1' },
@@ -66,9 +64,7 @@
       id: 'B',
       slug: 'shonen-school',
       title: '少年漫画・学園／アクション',
-      titleEn: 'Shonen & School Action',
       summary: '少年漫画テイストの読み切りを手がける作家。学園もの・アクションの見せゴマに強みがあります。',
-      summaryEn: 'Shonen-style one-shots with strong action framing.',
       thumbnail: IMG + 'creator-b.webp',
       gallery: [
         { src: IMG + 'creator-b-1.webp', alt: '少年漫画・学園の作例1' },
@@ -88,9 +84,7 @@
       id: 'C',
       slug: 'character-illust',
       title: 'キャラクターイラスト・ビズキャラ開発',
-      titleEn: 'Character Illustration',
       summary: 'カラーのキャラクターイラストが主戦場。自社キャラクターを立てたSNS運用にも対応できます。',
-      summaryEn: 'Full-color character art for brand mascots and SNS.',
       thumbnail: IMG + 'creator-c.webp',
       gallery: [
         { src: IMG + 'creator-c-1.webp', alt: 'キャラクターイラストの作例1' },
@@ -110,9 +104,7 @@
       id: 'D',
       slug: 'retro-pop',
       title: 'レトロポップ・4コマ／企業広報',
-      titleEn: 'Retro Pop & 4-Koma',
       summary: 'レトロポップな色使いで企業広報を描く作家。4コマ・パンフレット漫画・書籍装丁まで対応します。',
-      summaryEn: 'Retro-pop corporate comms, 4-koma and book covers.',
       thumbnail: IMG + 'creator-d.webp',
       gallery: [
         { src: IMG + 'creator-d-1.webp', alt: 'レトロポップ・4コマの作例1' },
@@ -132,9 +124,7 @@
       id: 'E',
       slug: 'gekiga-serious',
       title: '劇画・重厚タッチ／経営者ストーリー',
-      titleEn: 'Gekiga & Executive Stories',
       summary: '経営者の評伝や重いテーマを、緻密な劇画タッチで描く作家。実績30年のベテランです。',
-      summaryEn: 'Weighty gekiga art for executive biographies.',
       thumbnail: IMG + 'creator-e.webp',
       gallery: [
         { src: IMG + 'creator-e-1.webp', alt: '劇画・重厚タッチの作例1' },
@@ -154,9 +144,7 @@
       id: 'F',
       slug: 'business-person',
       title: 'ビジネス人物描写／採用・研修',
-      titleEn: 'Business Character Drawing',
       summary: '採用・研修漫画のビジネス人物描写を得意とする作家。短納期の案件にも対応します。',
-      summaryEn: 'Business character work for recruiting and training.',
       thumbnail: IMG + 'creator-f.webp',
       gallery: [
         { src: IMG + 'creator-f-1.webp', alt: 'ビジネス人物描写の作例1' },
@@ -176,9 +164,7 @@
       id: 'G',
       slug: 'corporate-documentary',
       title: '実録・企業漫画／ドキュメンタリー',
-      titleEn: 'Corporate Documentary',
       summary: '実際の出来事をドキュメンタリータッチで再現する作家。単行本の実績もあります。',
-      summaryEn: 'Documentary-style retelling of real business events.',
       thumbnail: IMG + 'creator-g.webp',
       gallery: [
         { src: IMG + 'creator-g-1.webp', alt: '実録・企業漫画の作例1' },
@@ -198,9 +184,7 @@
       id: 'H',
       slug: 'romance-drama',
       title: '恋愛・ドラマ性の縦読み／エッセイ',
-      titleEn: 'Romance Drama & Essay',
       summary: '恋愛やドラマ性で読ませる作家。コミックエッセイの作画も長期連載で担当しています。',
-      summaryEn: 'Romance-driven vertical scroll and comic essays.',
       thumbnail: IMG + 'creator-h.webp',
       gallery: [
         { src: IMG + 'creator-h-1.webp', alt: '恋愛・ドラマ性の作例1' },
@@ -220,9 +204,7 @@
       id: 'I',
       slug: 'anime-3dcg',
       title: 'アニメ品質の作画・3DCG',
-      titleEn: 'Anime Quality & 3DCG',
       summary: 'アニメの原画・3DCGディレクションまで手がける作家。メカ・背景の描き込みが要る案件に。',
-      summaryEn: 'Anime-grade art and 3DCG for mecha and detailed backgrounds.',
       thumbnail: IMG + 'creator-i.webp',
       gallery: [
         { src: IMG + 'creator-i-1.webp', alt: 'アニメ作画・3DCGの作例1' },
@@ -242,9 +224,7 @@
       id: 'J',
       slug: 'romance-comedy',
       title: '女性向け恋愛漫画（横読み）',
-      titleEn: 'Romance Comedy',
       summary: '日常のときめきを描くラブコメ作家。商業連載の実績が複数あります。',
-      summaryEn: 'Everyday romantic comedy with commercial credits.',
       thumbnail: IMG + 'creator-j.webp',
       gallery: [
         { src: IMG + 'creator-j-1.webp', alt: '女性向け恋愛漫画の作例1' },
@@ -264,9 +244,7 @@
       id: 'K',
       slug: 'business-versatile',
       title: 'ビジネスドラマ調〜マスコット4コマ',
-      titleEn: 'Versatile Business Manga',
       summary: 'ビジネスドラマ調からマスコット4コマまで、幅広いタッチに対応できる作家です。',
-      summaryEn: 'From business drama to mascot 4-koma, a wide range.',
       thumbnail: IMG + 'creator-k.webp',
       gallery: [
         { src: IMG + 'creator-k-1.webp', alt: 'ビジネス4コマの作例1' },
@@ -296,38 +274,12 @@
   /* CRM の creator_tags（category = style / genre / audience / medium）に対応。
      用途(usecase)だけは CRM に無く、営業資料の記述から付与している。 */
   var FILTERS = [
-    { key: 'styleTags',    label: '画風',   labelEn: 'Style' },
-    { key: 'usecaseTags',  label: '用途',   labelEn: 'Purpose' },
-    { key: 'genreTags',    label: 'ジャンル', labelEn: 'Genre' },
-    { key: 'audienceTags', label: '読者層', labelEn: 'Audience' },
-    { key: 'mediaTags',    label: '媒体',   labelEn: 'Media' }
+    { key: 'styleTags',    label: '画風' },
+    { key: 'usecaseTags',  label: '用途' },
+    { key: 'genreTags',    label: 'ジャンル' },
+    { key: 'audienceTags', label: '読者層' },
+    { key: 'mediaTags',    label: '媒体' }
   ];
-
-  var EN = {
-    'すべて': 'All',
-    /* 画風 */
-    'キレイめ・美麗': 'Refined', '可愛い・デフォルメ': 'Cute / Chibi',
-    'かっこいい・スタイリッシュ': 'Stylish', 'ポップ・親しみやすい': 'Pop / Friendly',
-    'リアル・劇画調': 'Realistic / Gekiga', 'アニメ調': 'Anime style',
-    /* 用途 */
-    '採用': 'Recruitment', '会社紹介': 'Company', '商品紹介': 'Product',
-    '営業資料': 'Sales', '研修': 'Training', '集客・広告': 'Advertising',
-    'SNS': 'SNS', 'IR・周年史': 'IR',
-    /* ジャンル */
-    '少年漫画': 'Shonen', '少女漫画': 'Shojo', '青年漫画': 'Seinen', '女性漫画': 'Josei',
-    'TL（ティーンズラブ）': 'Teens Love', '恋愛': 'Romance', 'ギャグ・コメディ': 'Comedy',
-    'SF・ファンタジー': 'SF / Fantasy', 'ホラー・サスペンス': 'Horror', 'スポーツ': 'Sports',
-    '日常・ほのぼの': 'Slice of life', '歴史・時代劇': 'Historical', 'かわいい系': 'Kawaii',
-    '4コマ漫画': '4-Koma', 'ビジネス・IT': 'Business / IT', '医療・ヘルスケア': 'Medical',
-    '教育・学習・育児': 'Education', '横読み漫画': 'Horizontal', '縦読み漫画': 'Vertical scroll',
-    /* 読者層 */
-    '10代': 'Teens', '20代': '20s', '30代': '30s', '40代以上': '40+',
-    '幅広い年代': 'All ages', '男性': 'Male', '女性': 'Female', 'どちらも': 'Both',
-    /* 媒体 */
-    '週刊誌': 'Weekly', '月刊誌': 'Monthly', '隔週/不定期誌': 'Biweekly',
-    '商業誌': 'Commercial', 'Webコミックサイト/アプリ': 'Web / App', '同人誌': 'Doujin',
-    '学習教材': 'Educational', 'パンフレットなどに載る漫画': 'Brochure'
-  };
 
   /* ===== DOM ===== */
   var grid = document.getElementById('artGrid');
@@ -351,23 +303,10 @@
   FILTERS.forEach(function(f) { selected[f.key] = []; });
   var lastFocused = null;
 
-  function isEn() {
-    return (document.documentElement.lang || 'ja') === 'en';
-  }
-
-  function t(ja) {
-    return isEn() ? (EN[ja] || ja) : ja;
-  }
-
-  /* 日英ペアを持つ要素。テキストは textContent 固定なので XSS しない */
-  function el(tag, cls, ja, en) {
+  function el(tag, cls, text) {
     var node = document.createElement(tag);
     if (cls) node.className = cls;
-    if (ja != null) {
-      node.setAttribute('data-ja', ja);
-      node.setAttribute('data-en', en || ja);
-      node.textContent = isEn() ? (en || ja) : ja;
-    }
+    if (text != null) node.textContent = text;
     return node;
   }
 
@@ -424,13 +363,13 @@
 
       var body = document.createElement('span');
       body.className = 'art-card__body';
-      body.appendChild(el('span', 'art-card__title', item.title, item.titleEn));
-      body.appendChild(el('span', 'art-card__summary', item.summary, item.summaryEn));
+      body.appendChild(el('span', 'art-card__title', item.title));
+      body.appendChild(el('span', 'art-card__summary', item.summary));
 
       /* タグはカードに出さず、詳細モーダル内にだけ表示する。
          一覧は「絵＋画風の見出し」で見比べる場所にして、
          タグの読み込みは詳細を開いてからにするため */
-      body.appendChild(el('span', 'art-card__more', 'この作家を詳しく見る', 'View this artist'));
+      body.appendChild(el('span', 'art-card__more', 'この作家を詳しく見る'));
       card.appendChild(body);
 
       card.addEventListener('click', function() { openModal(item); });
@@ -443,17 +382,13 @@
        絞り込み無しのときに「11名」と出すと "11人しかいない" と読まれてしまうので、
        抜粋である旨だけを出す。絞り込み中は何件ヒットしたか分からないと使えないので件数を出す。 */
     if (resultEl) {
-      var ja, en;
+      var text;
       if (activeCount() === 0) {
-        ja = '在籍作家の一部を掲載しています';
-        en = 'Showing a selection of our artists';
+        text = '在籍作家の一部を掲載しています';
       } else {
-        ja = '条件に合う作家 ' + shown + ' 名を表示中';
-        en = shown + ' artist' + (shown === 1 ? '' : 's') + ' match your filters';
+        text = '条件に合う作家 ' + shown + ' 名を表示中';
       }
-      resultEl.setAttribute('data-ja', ja);
-      resultEl.setAttribute('data-en', en);
-      resultEl.textContent = isEn() ? en : ja;
+      resultEl.textContent = text;
     }
     if (resetBtn) resetBtn.hidden = activeCount() === 0;
   }
@@ -495,14 +430,14 @@
 
       var row = document.createElement('div');
       row.className = 'art-filter__row';
-      row.appendChild(el('span', 'art-filter__label', f.label, f.labelEn));
+      row.appendChild(el('span', 'art-filter__label', f.label));
 
       var chips = document.createElement('div');
       chips.className = 'art-filter__chips';
 
       shownValues.forEach(function(v) {
         var on = selected[f.key].indexOf(v) !== -1;
-        var btn = el('button', 'art-chip' + (on ? ' is-active' : ''), v, EN[v]);
+        var btn = el('button', 'art-chip' + (on ? ' is-active' : ''), v);
         btn.type = 'button';
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         btn.addEventListener('click', function() {
@@ -522,15 +457,10 @@
         more.className = 'art-more';
         more.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         if (isOpen) {
-          more.setAttribute('data-ja', '閉じる');
-          more.setAttribute('data-en', 'Close');
-          more.textContent = isEn() ? 'Close' : '閉じる';
+          more.textContent = '閉じる';
         } else {
-          var ja = 'すべて見る（+' + hiddenCount + '）';
-          var en = 'Show all (+' + hiddenCount + ')';
-          more.setAttribute('data-ja', ja);
-          more.setAttribute('data-en', en);
-          more.textContent = isEn() ? en : ja;
+          var label = 'すべて見る（+' + hiddenCount + '）';
+          more.textContent = label;
         }
         more.addEventListener('click', function() {
           expanded[f.key] = !expanded[f.key];
@@ -556,16 +486,16 @@
   }
 
   /* ===== モーダル ===== */
-  function addMetaRow(dl, labelJa, labelEn, values, translate) {
+  function addMetaRow(dl, label, values) {
     if (!values || !values.length) return;
     var row = document.createElement('div');
     row.className = 'art-modal__meta-row';
-    row.appendChild(el('dt', 'art-modal__meta-key', labelJa, labelEn));
+    row.appendChild(el('dt', 'art-modal__meta-key', label));
 
     var dd = document.createElement('dd');
     dd.className = 'art-modal__meta-vals';
     values.forEach(function(v) {
-      dd.appendChild(el('span', 'art-modal__meta-val', v, translate ? EN[v] : v));
+      dd.appendChild(el('span', 'art-modal__meta-val', v));
     });
     row.appendChild(dd);
     dl.appendChild(row);
@@ -576,16 +506,8 @@
     lastFocused = document.activeElement;
 
     if (mdLabel) mdLabel.textContent = item.id;
-    if (mdTitle) {
-      mdTitle.setAttribute('data-ja', item.title);
-      mdTitle.setAttribute('data-en', item.titleEn);
-      mdTitle.textContent = isEn() ? item.titleEn : item.title;
-    }
-    if (mdLead) {
-      mdLead.setAttribute('data-ja', item.summary);
-      mdLead.setAttribute('data-en', item.summaryEn || item.summary);
-      mdLead.textContent = isEn() ? (item.summaryEn || item.summary) : item.summary;
-    }
+    if (mdTitle) mdTitle.textContent = item.title;
+    if (mdLead) mdLead.textContent = item.summary;
     if (mdDetail) mdDetail.textContent = item.detail || '';
 
     if (mdGallery) {
@@ -606,15 +528,15 @@
 
     if (mdMeta) {
       mdMeta.textContent = '';
-      addMetaRow(mdMeta, '画風・テイスト', 'Style', item.styleTags, true);
-      addMetaRow(mdMeta, '向いている用途', 'Best for', item.usecaseTags, true);
-      addMetaRow(mdMeta, '得意ジャンル', 'Genres', item.genreTags, true);
-      addMetaRow(mdMeta, '読者層', 'Audience', item.audienceTags, true);
-      addMetaRow(mdMeta, '媒体', 'Media', item.mediaTags, true);
+      addMetaRow(mdMeta, '画風・テイスト', item.styleTags);
+      addMetaRow(mdMeta, '向いている用途', item.usecaseTags);
+      addMetaRow(mdMeta, '得意ジャンル', item.genreTags);
+      addMetaRow(mdMeta, '読者層', item.audienceTags);
+      addMetaRow(mdMeta, '媒体', item.mediaTags);
       if (item.yearsActive && item.yearsActive !== '—') {
-        addMetaRow(mdMeta, '活動歴', 'Experience', [item.yearsActive], false);
+        addMetaRow(mdMeta, '活動歴', [item.yearsActive]);
       }
-      addMetaRow(mdMeta, '代表作', 'Works', item.works, false);
+      addMetaRow(mdMeta, '代表作', item.works);
     }
 
     overlay.classList.add('is-open');
@@ -645,11 +567,7 @@
   renderFilters();
   renderCards();
 
-  /* 言語切替に追従（テキストノードを自前で書いているため再描画する） */
-  window.addEventListener('bm-lang-change', function() {
-    renderFilters();
-    renderCards();
-  });
+
 
   /* ===== 追従CTA（.bm-fab）の開閉 =====
      共通CTAは幅200px×3個=600pxあり、カードの1列目に被って作例が隠れる。

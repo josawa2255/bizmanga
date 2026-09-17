@@ -14,12 +14,12 @@
   /* ---------- フォールバックデータ ---------- */
   var FALLBACK = {
     red: [
-      { key: 'pre-red-bms',      title: 'BMS 運送 赤入れ',              title_en: 'BMS Transport Red Pen',          path: 'https://contentsx.jp/material/pre/red/bms-unso-red/',  pages: 8 },
-      { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ',             title_en: 'Ichinohe Home Red Pen',           path: 'https://contentsx.jp/material/pre/red/ichinohe-red/',   pages: 20 }
+      { key: 'pre-red-bms',      title: 'BMS 運送 赤入れ',              path: 'https://contentsx.jp/material/pre/red/bms-unso-red/',  pages: 8 },
+      { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ',             path: 'https://contentsx.jp/material/pre/red/ichinohe-red/',   pages: 20 }
     ],
     name: [
-      { key: 'pre-name-fax',      title: 'BMS FAX ネーム',     title_en: 'BMS FAX Rough',        path: 'https://contentsx.jp/material/pre/name/bmsfax/',         pages: 9 },
-      { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム',   title_en: 'Ichinohe Home Rough',  path: 'https://contentsx.jp/material/pre/name/ichinohe-name/',  pages: 20 }
+      { key: 'pre-name-fax',      title: 'BMS FAX ネーム',     path: 'https://contentsx.jp/material/pre/name/bmsfax/',         pages: 9 },
+      { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム',   path: 'https://contentsx.jp/material/pre/name/ichinohe-name/',  pages: 20 }
     ]
   };
 
@@ -55,7 +55,6 @@
         allSlides.push({
           key: item.key,
           title: item.title,
-          title_en: item.title_en || item.title,
           page: p,
           totalPages: item.pages,
           src: src
@@ -81,11 +80,8 @@
         imgWrap.appendChild(img);
 
         var titleJa = s.title + '\uFF08' + s.page + '/' + s.totalPages + '\uFF09';
-        var titleEn = (s.title_en || s.title) + ' (' + s.page + '/' + s.totalPages + ')';
         var title = document.createElement('div');
         title.className = 'bm-pre-slide-title';
-        title.setAttribute('data-ja', titleJa);
-        title.setAttribute('data-en', titleEn);
         title.textContent = titleJa;
 
         slide.appendChild(imgWrap);
@@ -109,15 +105,6 @@
       scrollPos = 0;
       startAutoScroll();
 
-      // 現在の言語が英語なら即座に反映（i18n システムに委譲）
-      var lang = document.documentElement.lang || 'ja';
-      if (lang === 'en') {
-        if (window.i18n && window.i18n.translateAll) {
-          window.i18n.translateAll();
-        } else if (typeof window.bmSwitchLang === 'function') {
-          window.bmSwitchLang('en');
-        }
-      }
     });
 
     // 自動スクロール（毎フレーム連続移動）
@@ -206,7 +193,6 @@
           var entry = {
             key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-' + item.id,
             title: item.title,
-            title_en: item.title_en || item.title,
             path: '',
             pages: item.pages,
             gallery: item.gallery

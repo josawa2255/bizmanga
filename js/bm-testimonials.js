@@ -30,9 +30,7 @@
     {
       id: 0,
       heading: '採用応募数が2倍に増加',
-      heading_en: 'Application numbers doubled',
       excerpt: '漫画にしたことで、求職者に仕事の魅力がダイレクトに伝わるようになりました。面接でも「漫画を見て興味を持った」という声が増えています。',
-      excerpt_en: 'By converting to manga, the appeal of the job is communicated directly to job seekers.',
       thumbnail: 'https://contentsx.jp/material/manga/bms-unso/01.webp',
       img_position: 'center',
       tag: '営業'
@@ -40,9 +38,7 @@
     {
       id: 0,
       heading: '研修の理解度が大幅に向上',
-      heading_en: 'Training comprehension significantly improved',
       excerpt: 'テキストだけのマニュアルでは何度説明しても伝わらなかった内容が、漫画にした途端スッと理解してもらえるようになりました。',
-      excerpt_en: 'Content that was never understood with text-only manuals is now easily grasped once converted to manga.',
       thumbnail: 'https://contentsx.jp/material/manga/life-school/01.webp',
       img_position: 'center',
       tag: '研修'
@@ -50,9 +46,7 @@
     {
       id: 0,
       heading: '商談がスムーズになった',
-      heading_en: 'Business negotiations became smoother',
       excerpt: '漫画にしたことで、お客様との商談がスムーズになりました。紙面だけでは伝わらなかった住まいへの想いが伝わるようになったと感じています。',
-      excerpt_en: 'By converting to manga, our business negotiations with customers have become smoother.',
       thumbnail: 'https://contentsx.jp/material/manga/ichinohe-home/01.webp',
       img_position: 'center',
       tag: '営業'
@@ -60,9 +54,7 @@
     {
       id: 0,
       heading: 'SNSでの反応が3倍に',
-      heading_en: '3x increase in social media engagement',
       excerpt: '漫画コンテンツはSNSでの拡散力が段違いでした。広告費を抑えながら認知拡大ができ、費用対効果に大変満足しています。',
-      excerpt_en: 'Manga content spreads far more effectively on social media.',
       thumbnail: 'https://contentsx.jp/material/manga/seko/01.webp',
       img_position: 'center',
       tag: 'プロモーション'
@@ -70,12 +62,6 @@
   ];
 
   /* ---------- タグ英訳マップ ---------- */
-  var TAG_EN = {
-    '営業': 'Sales', '採用': 'Recruitment', '研修': 'Training',
-    '集客': 'Marketing', '紹介': 'Introduction', 'ブランド': 'Branding',
-    'IP': 'IP', 'プロモーション': 'Promotion', 'その他': 'Other'
-  };
-
   /* ---------- カード生成 ---------- */
   function buildCards(items) {
     grid.innerHTML = '';
@@ -85,10 +71,8 @@
       var card = document.createElement('div');
       card.className = 'bm-testimonial-card';
       if (item.id) card.id = 'testimonial-' + item.id;
-
-      var tagEn = item.tag_en || TAG_EN[item.tag] || item.tag || '';
       var tagHtml = item.tag
-        ? '<span class="bm-testimonial-tag" data-ja="' + esc(item.tag) + '" data-en="' + esc(tagEn) + '">' + esc(item.tag) + '</span>'
+        ? '<span class="bm-testimonial-tag">' + esc(item.tag) + '</span>'
         : '';
 
       /* 全フィールド esc()/safePos() 済み（XSS対策） */
@@ -97,8 +81,8 @@
           (item.thumbnail ? '<img src="' + esc(item.thumbnail) + '" alt="" loading="lazy" style="object-position:' + safePos(item.img_position) + ';">' : '') +
         '</div>' +
         tagHtml +
-        '<h3 class="bm-testimonial-title" data-ja="' + esc(item.heading) + '" data-en="' + esc(item.heading_en) + '">' + esc(item.heading) + '</h3>' +
-        '<p class="bm-testimonial-text" data-ja="' + esc(item.excerpt) + '" data-en="' + esc(item.excerpt_en) + '">' + esc(item.excerpt) + '</p>';
+        '<h3 class="bm-testimonial-title">' + esc(item.heading) + '</h3>' +
+        '<p class="bm-testimonial-text">' + esc(item.excerpt) + '</p>';
 
       // クリックで詳細ページへ遷移（API IDがある場合のみ）
       if (item.id > 0) {
@@ -125,15 +109,7 @@
       }
     }
 
-    // 現在の言語が英語なら即座に反映（i18n システムに委譲）
-    var lang = document.documentElement.lang || 'ja';
-    if (lang === 'en') {
-      if (window.i18n && window.i18n.translateAll) {
-        window.i18n.translateAll();
-      } else if (typeof window.bmSwitchLang === 'function') {
-        window.bmSwitchLang('en');
-      }
-    }
+
   }
 
   /* ---------- 詳細モーダル ---------- */

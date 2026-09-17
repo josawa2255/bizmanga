@@ -17,7 +17,6 @@
 
   // ===== タグライン1文字ずつ分割 =====
   // .tl-seg(前半/後半セグメント)があればセグメント単位で分割。
-  // セグメントは i18n の data-ja/data-en とSP非表示(.tl-seg-pre)を担うため温存する。
   var tagline = document.getElementById('heroTagline');
   if (tagline) {
     var segs = tagline.querySelectorAll('.tl-seg');

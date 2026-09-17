@@ -70,9 +70,7 @@ def to_creator(a, index):
         "id": symbol,
         "slug": a.get("slug") or "",
         "title": a.get("title") or "",
-        "titleEn": a.get("title") or "",
         "summary": a.get("summary") or "",
-        "summaryEn": a.get("summary") or "",
         "thumbnail": a.get("thumbnail") or "",
         "gallery": [
             {"src": u, "alt": f"{a.get('title','')}の作例{i+1}"}

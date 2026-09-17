@@ -234,11 +234,6 @@
   word-break: keep-all; overflow-wrap: break-word;
 }
 
-/* 英語は同じ font-size だと1行に入る文字数が減って行数が増える（CTAが
-   ファーストビューから押し出される）。bm-i18n.js が documentElement.lang を
-   切り替えるので、それを使って英語だけ一段小さくする。 */
-html[lang="en"] .mt-v2 .mt-hero-title { font-size: clamp(36px, 4.1vw, 74px); }
-
 /* SEOキーワード（ページ主題）を可視のキッカー行として必ず残す */
 .mt-v2 .mt-hero-kicker {
   font-size: clamp(12px, 0.95vw, 13.5px);

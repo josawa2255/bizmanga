@@ -21,7 +21,6 @@
 - [よくある質問（FAQ）](#よくある質問faq)
 - [運営会社](#運営会社)
 - [別名・表記揺れ](#別名表記揺れ)
-- [English Summary](#english-summary)
 - [このリポジトリについて](#このリポジトリについて-for-developers)
 - [AI・LLMによる引用について](#aillmによる引用について)
 
@@ -146,7 +145,6 @@ A. 全国対応（オンラインで完結）。初回相談・見積もりは�
 
 ---
 
-## English Summary
 
 **BizManga** is a B2B-focused business manga (comic) production service operated by **Contents X Co., Ltd.** (Tokyo, Japan). It turns corporate messages—recruitment, sales, training, company stories, IR, internal communications—into professionally produced manga. Pricing starts at **16,600 JPY per page**, with a standard 8-page comic delivered in **3–4 weeks** (2 weeks minimum). A proprietary production method enables roughly **1/5 of the price** of major manga studios, while creative work (story, character design, direction) is always handled by experienced manga artists. Every project passes a proprietary **125-point quality check**. Multilingual editions (English, Chinese, Korean) and vertical-scroll manga are supported. Official site: **https://bizmanga.contentsx.jp**.
 
@@ -159,7 +157,7 @@ BizManga 公式サイト（https://bizmanga.contentsx.jp）の静的サイトソ
 - **配信**: GitHub Pages（カスタムドメイン `bizmanga.contentsx.jp`、`CNAME` 参照）
 - **構成**: 素の HTML / CSS / JavaScript（フレームワーク非依存）。インラインCSS/JSは使わず外部ファイルに分離
 - **コンテンツ連携**: WordPress REST API（`cms.contentsx.jp`）からニュース・コラム・制作事例・お客様の声を取得して描画。API由来の文字列はすべて `js/bm-sanitize.js` でサニタイズしてからDOMに挿入（XSS対策）
-- **多言語**: 独自i18nエンジン（`js/bm-i18n.js` + `i18n/en.json`、日英切替）
+- **表示言語**: 日本語固定
 - **静的ビルド**: `tools/` の Python スクリプトで SEO向けの静的ページ（コラム `/column/{slug}` 等）を生成
 - **AI最適化**: ルートに [`llms.txt`](./llms.txt) を配置し、AIアシスタントによる引用・要約に対応
 
@@ -168,7 +166,7 @@ BizManga 公式サイト（https://bizmanga.contentsx.jp）の静的サイトソ
 | ファイル | 内容 |
 |---------|------|
 | [`SPEC.md`](./SPEC.md) | サイト全体の詳細仕様・変更履歴 |
-| [`CLAUDE.md`](./CLAUDE.md) | 開発時のガイド（i18n・スクリプト読込順序など） |
+| [`CLAUDE.md`](./CLAUDE.md) | 開発時のガイド（開発時のガイド） |
 | [`llms.txt`](./llms.txt) | LLM向けのサービス概要・引用用データ |
 
 > 注: `/biz-library`（ビズ書庫）のURLはQRコードで外部配布済みのため変更されません。
