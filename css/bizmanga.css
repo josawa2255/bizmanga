@@ -4497,7 +4497,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 .bm-img-hero--reason {
   aspect-ratio: 12 / 5;
   height: auto;
-  background: url('../material/images/reasons/reason-01-price.webp') center top / cover no-repeat;
+  background: url('../material/images/pricing-hero-revised.png') center top / cover no-repeat;
 }
 .bm-img-hero--reason::after {
   background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 66%, rgba(0,0,0,0.9) 100%);
