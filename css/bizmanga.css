@@ -4555,6 +4555,19 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   text-shadow: 0 1px 8px rgba(0,0,0,0.6);
 }
 
+/* 料金ページ: 価格表示が埋め込まれた4:3素材を全体表示 */
+.bm-img-hero--reason {
+  height: auto;
+}
+.bm-img-hero--reason::after {
+  display: none;
+}
+.bm-img-hero--reason img {
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  object-position: center;
+}
+
 /* ============================================
    制作事例モーダル (ContentsX同様 2カラム)
    ============================================ */
