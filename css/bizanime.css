@@ -92,7 +92,7 @@ body.ba-page .bm-header-inner { position: relative; }
   height: clamp(820px, max(calc(100vh - var(--ba-header-h)), 56.25vw), 1040px);
   /* 共通ヘッダーは position:fixed。その下に潜り込まないよう本体を押し下げる */
   margin-top: var(--ba-header-h);
-  overflow: hidden;
+  overflow: clip; /* Crop decorative art without creating a hidden scroll container. */
   background-color: var(--ba-black);
   isolation: isolate; /* 内部の mix-blend が外へ漏れないように */
 }
@@ -644,6 +644,7 @@ body.ba-page { overflow-x: clip; }
      PC は他ページと完全共通のまま。スマホは黒背景・コンパクトにして、
      1画面に収まる情報量を増やす。 */
   body.ba-page .bm-header {
+    --bm-header-height: 56px;
     background: rgba(5,5,5,.92);
     -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
@@ -672,7 +673,7 @@ body.ba-page { overflow-x: clip; }
     /* ヘッダーが 72px→56px に縮むぶんを合わせる */
     margin-top: 56px;
     padding: clamp(20px, 4vw, 40px) 0 clamp(28px, 6vw, 56px);
-    overflow: hidden;
+    overflow: clip;
   }
   .ba-hero-inner { height: auto; }
 
@@ -1014,9 +1015,9 @@ body.ba-modal-open { overflow: hidden; }
 
 /* ==========================================================================
    スクロール演出のスマホ対応（〜1024px）
-   Heroの中身は1画面に収まる高さ（実測約700px）なので、PCと同じ
-   sticky 方式がそのまま成立する。倍率や移動量は基準寸法から動的に
-   計算しているため、幅ごとの個別チューニングは不要。
+   本文が1画面に収まる場合だけ、PCと同じsticky方式を使う。
+   収まらない場合は末尾の .ba-hero--flow とJSの実測判定で通常表示に戻す。
+   倍率や移動量は基準寸法から動的に計算する。
    ========================================================================== */
 @media (max-width: 1024px) {
   /* スマホのヘッダーは56px。sticky中の貼り付き位置と初期余白を合わせる */
@@ -1686,7 +1687,7 @@ body.ba-modal-open { overflow: hidden; }
   .ba-range-view { opacity: 1; }   /* タッチではhover非依存: 常時表示 */
 
   /* FAQ: 1列 */
-  .ba-faq-grid { grid-template-columns: 1fr; }
+  .ba-faq-grid { grid-template-columns: minmax(0, 1fr); }
   .ba-faq-cta { text-align: center; }
 }
 
@@ -1721,4 +1722,47 @@ body.ba-modal-open { overflow: hidden; }
     align-items: center;
   }
   .ba-why-thumb { min-height: 60px; }   /* 16:9のまま十分なタップ面を確保 */
+}
+
+.ba-faq-grid > *, .ba-faq-q button > span { min-width: 0; }
+.ba-faq-q button { overflow-wrap: anywhere; word-break: normal; }
+
+/* Content, rather than a fixed screen-height breakpoint, determines whether
+   the complete hero fits in a sticky viewport. JS measures this natural layout
+   after fonts/images load and on resize. Keep clipping for the decorative art. */
+.ba-hero.ba-hero--sticky { min-height: 0; }
+.ba-hero.ba-hero--flow {
+  position: relative;
+  height: auto;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.ba-hero--flow + .ba-stage { display: none; }
+@media (min-width: 1025px) {
+  .ba-hero--flow .ba-hero-inner {
+    height: auto;
+    padding-top: 9vh;
+    padding-bottom: 32px;
+  }
+  .ba-hero--flow .ba-copy { position: relative; top: auto; }
+}
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .ba-hero--flow .ba-hero-inner { padding-top: 12vh; }
+}
+@media (min-width: 1025px) and (max-width: 1360px) {
+  .ba-hero--flow .ba-hero-inner { padding-top: 11.5vh; }
+}
+@media (max-width: 1024px) {
+  .ba-hero--sticky:not(.ba-hero--flow) .ba-hero-inner { height: 100%; }
+  /* The audio control must not cover the last media label in natural flow. */
+  .ba-hero--flow .ba-audio,
+  .ba-hero:not(.ba-hero--sticky) .ba-audio {
+    position: relative;
+    order: 7;
+    align-self: flex-end;
+    right: auto;
+    bottom: auto;
+    margin: 16px clamp(18px, 5vw, 32px) 0;
+    flex-shrink: 0;
+  }
 }

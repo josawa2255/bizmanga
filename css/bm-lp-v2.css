@@ -474,7 +474,11 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   box-shadow: var(--lpv2-shadow-panel-sm);
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 100%;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .lpv2-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--lpv2-rule); }
 .lpv2-btn:active { transform: translate(0, 0); box-shadow: 2px 2px 0 var(--lpv2-rule); }
@@ -1148,20 +1152,22 @@
 /* 連結グリッド: gap(3px)に黒背景を覗かせて「罫線共有」を表現。
    隙間=罫線なので二重線にならず note.com 参考のように全カードがくっつく */
 .lpv2-flow-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--lpv2-border-w);
   background: var(--lpv2-ink);
   border: var(--lpv2-border-w) solid var(--lpv2-ink);
   max-width: 1180px; margin: 0 auto;
 }
-@media (max-width: 1000px) { .lpv2-flow-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1000px) { .lpv2-flow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px)  { .lpv2-flow-grid { grid-template-columns: 1fr; } }
 
-/* セル = フリップのパースペクティブ枠。通常はフラット(影なし)
-   表に説明文を載せるため高さは多め。最長の説明(08)が収まる高さ */
+/* 本文を通常フローに置き、各行で一番長い説明に高さを揃える。
+   最低高は従来の見た目を保ち、折り返しが増えた分だけ伸びる。 */
 .lpv2-flow-step {
   position: relative;
-  height: 268px;
+  display: grid;
+  min-width: 0;
+  min-height: 268px;
   margin: 0; padding: 0; border: 0;
   background: transparent;
   cursor: pointer;
@@ -1170,12 +1176,14 @@
   -webkit-appearance: none; appearance: none;
   perspective: 1200px;
 }
-@media (max-width: 1000px) { .lpv2-flow-step { height: 230px; } }
-@media (max-width: 560px)  { .lpv2-flow-step { height: 210px; } }
+@media (max-width: 1000px) { .lpv2-flow-step { min-height: 230px; } }
+@media (max-width: 560px)  { .lpv2-flow-step { min-height: 210px; } }
 
 /* 回転する本体 */
 .lpv2-flow-step__inner {
-  position: absolute; inset: 0;
+  position: relative;
+  display: grid;
+  min-width: 0;
   transform-style: preserve-3d;
   transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
   z-index: 1;
@@ -1207,6 +1215,8 @@
 }
 /* 表面: 番号 + 名前 + 説明 + 「イメージを見る」ヒント */
 .lpv2-flow-step__front {
+  position: relative;
+  min-width: 0;
   background: #fff;
   justify-content: flex-start; gap: 4px;
 }

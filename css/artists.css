@@ -94,10 +94,19 @@
   opacity: .96;
 }
 
-/* PCでは Hero 枠そのものを画像の縦横比(1600:800=2:1)にして、見切れも余白も出さない。
-   ⚠️ .art-hero__bg は absolute のまま（relative に変えると bg と inner の高さが
-   足し算されて Hero が倍近く伸びる）。高さは .art-hero の height が決める。
-   ⚠️ 2:1 は旧素材(3:1)より縦に長い。画面高を超えないよう上限を max() で抑える。 */
+/* 本文の高さを優先する。背景はabsoluteのまま、各画面幅の最低高だけを指定する。 */
+.art-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 104px) var(--container-pad);
+  /* 画像(2000x666=約1/3)に合わせた高さ。下限はコピーが収まる値 */
+  min-height: clamp(360px, 33.3vw, 520px);
+  display: flex;
+  align-items: center;
+}
+
 @media (min-width: 900px) {
   /* ヘッダーは position:fixed なので、その高さぶん下げないと Hero 上部が隠れる。
      比率は画像部分にだけ効かせたいので、padding-top で押し下げ、
@@ -111,7 +120,8 @@
        ずれるので、aspect-ratio は使わず vw で直接指定する。
        ただし 2:1 だとワイド画面で Hero だけで1画面を超えるため、
        画面高の 76% を上限にする（超えたぶんは cover で左右を詰める） */
-    height: calc(min(100vw * 800 / 1600, 76vh) + 72px);
+    min-height: calc(min(100vw * 800 / 1600, 76vh) + 72px);
+    height: auto;
     background: linear-gradient(90deg, #fff 0%, #fff 38%, #fdf6ee 100%);
   }
   .art-hero__bg {
@@ -123,10 +133,10 @@
     object-position: right center;
   }
   .art-hero__inner {
-    min-height: 0;               /* 高さは .art-hero 側に任せる */
-    height: 100%;
-    padding-top: 0;
-    padding-bottom: 0;
+    height: auto;
+    min-height: min(50vw, 76vh);
+    padding-top: clamp(32px, 4vw, 72px);
+    padding-bottom: clamp(32px, 4vw, 72px);
   }
 }
 
@@ -167,7 +177,8 @@
        ⚠️ 上限 720px で頭打ち。下限 620px は 320px幅でも eyebrow が
        固定ヘッダー(72px)の下に収まり、CTA下に絵の帯が残る実測値。
        ここを縮めるとヘッダーに eyebrow・見出しが潜り込む */
-    height: clamp(620px, 100vw * 1472 / 828, 720px);
+    min-height: clamp(620px, 100vw * 1472 / 828, 720px);
+    height: auto;
   }
   .art-hero__bg img {
     object-fit: cover;
@@ -194,17 +205,6 @@
   }
 }
 
-.art-hero__inner {
-  position: relative;
-  z-index: 1;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: clamp(48px, 7vw, 104px) var(--container-pad);
-  /* 画像(2000x666=約1/3)に合わせた高さ。下限はコピーが収まる値 */
-  min-height: clamp(360px, 33.3vw, 520px);
-  display: flex;
-  align-items: center;
-}
 
 .art-hero__text {
   max-width: min(560px, 100%);
@@ -981,4 +981,22 @@ body.art-page .bm-fab.is-open .bm-fab__text { opacity: 1; }
     --bm-fab-w: 150px;
   }
   .art-fab-toggle { width: 38px; height: 48px; }
+}
+
+/* Compact artist CTA overrides the common mobile bar dimensions. */
+@media (max-width: 768px) {
+  body.art-page .bm-fab {
+    right: auto; width: auto; max-width: calc(100% - 32px);
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    flex-wrap: nowrap;
+  }
+  body.art-page .bm-fab__btn {
+    flex: 0 0 auto; width: 48px; height: 48px; min-height: 48px;
+  }
+  body.art-page .bm-fab__icon-box { display: flex; }
+  body.art-page .bm-fab.is-open { flex-direction: column; align-items: flex-start; }
+  body.art-page .bm-fab.is-open .bm-fab__btn { width: min(190px, calc(100vw - 32px)); }
+  body.art-page .bm-fab.is-open .bm-fab__icon-box { display: none; }
+  body.art-page .bm-fab.is-open .bm-fab__text { top: 0; }
+  .art-fab-toggle { width: 48px; height: 48px; }
 }

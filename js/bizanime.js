@@ -35,6 +35,43 @@
   var reduceMotion = window.matchMedia
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* A viewport-height stage is safe only when all of the hero content fits.
+     Measure normal flow (offsetHeight ignores the scroll animation transforms),
+     including late font/image/player changes. The same fallback also protects
+     the static hero when WordPress is unavailable or motion is reduced. */
+  var heroNeedsFlow = false;
+  var onHeroLayout = null;
+  var layoutFrame = null;
+  function measureHeroLayout() {
+    hero.classList.add('ba-hero--flow');
+    // Small viewport units and the current visible viewport can differ while
+    // mobile browser controls expand/collapse. Content must fit both.
+    var available = Math.min(window.innerHeight,
+      parseFloat(getComputedStyle(hero).minHeight) || window.innerHeight);
+    heroNeedsFlow = hero.offsetHeight > available + 1;
+    hero.classList.toggle('ba-hero--flow', heroNeedsFlow);
+    if (onHeroLayout) onHeroLayout();
+  }
+  function queueHeroLayout() {
+    if (layoutFrame !== null) return;
+    layoutFrame = requestAnimationFrame(function () {
+      layoutFrame = null;
+      measureHeroLayout();
+    });
+  }
+  measureHeroLayout();
+  window.addEventListener('resize', queueHeroLayout, { passive: true });
+  window.addEventListener('load', queueHeroLayout, { passive: true });
+  if (document.fonts) {
+    document.fonts.ready.then(queueHeroLayout);
+    document.fonts.addEventListener('loadingdone', queueHeroLayout);
+  }
+  if (window.ResizeObserver) {
+    var heroObserver = new ResizeObserver(queueHeroLayout);
+    heroObserver.observe(hero.querySelector('.ba-hero-inner'));
+    heroObserver.observe(hero.querySelector('.ba-copy'));
+  }
+
   /* ================================================================
      1. 登場アニメーション（既存挙動を維持）
      ================================================================ */
@@ -178,7 +215,7 @@
     wrap.appendChild(stage);
     hero.classList.add('ba-hero--sticky');
     // クラス適用後の寸法で基準を取り直す
-    requestAnimationFrame(function () { measureBase(); update(); });
+    queueHeroLayout();
 
     var current = -1;      // いま画面に出している動画の index
 
@@ -192,6 +229,8 @@
     var rafId  = null;
 
     function computeTarget() {
+      // Do not fade content before a short viewport can scroll to it.
+      if (heroNeedsFlow) return 0;
       /* 進捗はラッパー（Hero+ステージ）全体で測る。
          ⚠️ ステージ基準にすると、ステージが画面に達するまでの最初の1画面分
             （約100vh）のスクロールが進捗0のままになり、「スクロールし始めても
@@ -360,10 +399,12 @@
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', function () {
-      measureBase();   // 幅が変わると素の寸法も変わる
-      onScroll();
-    }, { passive: true });
+    onHeroLayout = function () {
+      measureBase();
+      // Rotation can switch between natural flow and sticky. Reset progress
+      // immediately so a previous enlarged/faded frame cannot survive it.
+      update();
+    };
     // 初回の動画生成はページ読込完了まで遅らせている（LCP対策）。
     // 読込完了時に一度 update を回して、遅延していた生成を発火させる。
     window.addEventListener('load', onScroll, { passive: true });

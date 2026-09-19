@@ -223,7 +223,75 @@
 
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
+  var header = nav.closest('.bm-header');
+  var drawerMedia = window.matchMedia('(max-width: 1024px)');
+
+  function updateDropdownAria(dropdown) {
+    var toggle = dropdown.querySelector('.bm-nav-dropdown-toggle');
+    if (!toggle) return;
+    var expanded = !dropdown.classList.contains('bm-nav-dropdown-dismissed') &&
+      (dropdown.classList.contains('is-open') || (!drawerMedia.matches &&
+      (dropdown.classList.contains('is-mega-open') || dropdown.matches(':focus-within'))));
+    toggle.setAttribute('aria-expanded', String(expanded));
+  }
+
+  function clearDismissed(dropdown) {
+    dropdown.classList.remove('bm-nav-dropdown-dismissed');
+    if (dropdown.__bmDismissCleanup) dropdown.__bmDismissCleanup();
+  }
+
+  function resetDropdown(dropdown) {
+    clearDismissed(dropdown);
+    if (dropdown.__bmCancelClose) dropdown.__bmCancelClose();
+    dropdown.classList.remove('is-open', 'is-mega-open');
+    dropdown.querySelectorAll('.bm-nav-submenu-wrap').forEach(function(wrap) {
+      if (wrap.__bmCloseSubmenu) wrap.__bmCloseSubmenu();
+    });
+    dropdown.querySelectorAll('[aria-expanded]').forEach(function(toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   if (hamburger) {
+    var lastPointerType = '';
+    var navigationFocus = null;
+    nav.addEventListener('pointerdown', function(e) { lastPointerType = e.pointerType; });
+    var isTouchClick = function(e) {
+      return e.pointerType === 'touch' || e.pointerType === 'pen' ||
+        (e.detail !== 0 && (lastPointerType === 'touch' || lastPointerType === 'pen'));
+    };
+    var inertBackground = new Map();
+    var isolateDrawer = function() {
+      for (var branch = header; branch && branch !== document.body; branch = branch.parentElement) {
+        Array.prototype.forEach.call(branch.parentElement.children, function(el) {
+          if (el === branch || /^(SCRIPT|STYLE|LINK)$/.test(el.tagName) || inertBackground.has(el)) return;
+          inertBackground.set(el, el.hasAttribute('inert'));
+          el.setAttribute('inert', '');
+        });
+      }
+    };
+    var backgroundObserver = new MutationObserver(function() {
+      if (nav.classList.contains('open')) isolateDrawer();
+    });
+    var restoreBackground = function() {
+      backgroundObserver.disconnect();
+      inertBackground.forEach(function(wasInert, el) {
+        if (!wasInert) el.removeAttribute('inert');
+      });
+      inertBackground.clear();
+    };
+    var drawerFocusables = function() {
+      return Array.prototype.filter.call(header.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'), function(el) {
+        if (el.closest('[inert]')) return false;
+        for (var a = el; a && a !== header.parentElement; a = a.parentElement) {
+          var style = getComputedStyle(a);
+          if (style.display === 'none' || style.visibility !== 'visible' || Number(style.opacity) === 0) return false;
+        }
+        var rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      });
+    };
+    var focusWithoutScroll = function(el) { if (el) el.focus({ preventScroll: true }); };
     /* a11y初期属性 */
     hamburger.setAttribute('aria-expanded', 'false');
     hamburger.setAttribute('aria-controls', 'bmNav');
@@ -236,12 +304,19 @@
       hamburger.setAttribute('aria-expanded', 'false');
       hamburger.setAttribute('aria-label', 'メニューを開く');
       document.body.classList.remove('bm-nav-locked');
-      nav.querySelectorAll('.bm-nav-dropdown.is-open').forEach(function(d) {
-        d.classList.remove('is-open');
-        var t = d.querySelector('.bm-nav-dropdown-toggle');
-        if (t) t.setAttribute('aria-expanded', 'false');
-      });
+      restoreBackground();
+      nav.querySelectorAll('.bm-nav-dropdown').forEach(resetDropdown);
     };
+    drawerMedia.addEventListener('change', function() {
+      // A browser can blur a link as soon as the new media rule hides it,
+      // before this change event is delivered. Retain that hidden focus target.
+      var moveFocus = nav.contains(document.activeElement) || document.activeElement === hamburger ||
+        (document.activeElement === document.body && navigationFocus);
+      closeMenu();
+      if (moveFocus) {
+        focusWithoutScroll(drawerMedia.matches ? hamburger : nav.querySelector('.bm-nav-link:not(.bm-nav-dropdown-toggle)'));
+      }
+    });
     var bmToggleMenu = function(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       var willOpen = !nav.classList.contains('open');
@@ -252,6 +327,10 @@
         hamburger.setAttribute('aria-expanded', 'true');
         hamburger.setAttribute('aria-label', 'メニューを閉じる');
         document.body.classList.add('bm-nav-locked');
+        isolateDrawer();
+        backgroundObserver.observe(document.body, { childList: true, subtree: true });
+        nav.scrollTop = 0;
+        focusWithoutScroll(nav.querySelector('.bm-nav-link'));
       } else {
         closeMenu();
       }
@@ -260,28 +339,77 @@
     hamburger.addEventListener('touchend', function(e) { bmToggleMenu(e); }, { passive: false });
     /* ESC キーで閉じる */
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && nav.classList.contains('open')) {
-        closeMenu();
-        hamburger.focus();
+      if (e.key === 'Tab' && nav.classList.contains('open')) {
+        var focusables = drawerFocusables();
+        var index = focusables.indexOf(document.activeElement);
+        var next = e.shiftKey ? (index <= 0 ? focusables.length - 1 : index - 1) : (index + 1) % focusables.length;
+        e.preventDefault();
+        focusWithoutScroll(focusables[next] || hamburger);
+        return;
       }
+      if (e.key === 'Escape' && (nav.classList.contains('open') || nav.querySelector('.is-open, .is-mega-open, .bm-nav-dropdown:focus-within'))) {
+        var dropdown = nav.querySelector('.bm-nav-dropdown:focus-within, .bm-nav-dropdown.is-open, .bm-nav-dropdown.is-mega-open');
+        var opener = dropdown && dropdown.querySelector('.bm-nav-dropdown-toggle');
+        closeMenu();
+        if (drawerMedia.matches) hamburger.focus();
+        else if (opener) {
+          opener.focus();
+          dismissDesktopDropdown(dropdown);
+        }
+      }
+    });
+    document.addEventListener('focusin', function(e) {
+      navigationFocus = nav.contains(e.target) || e.target === hamburger ? e.target : null;
+      if (!nav.classList.contains('open')) return;
+      if (!header.contains(e.target)) {
+        focusWithoutScroll(nav.querySelector('.bm-nav-link'));
+      } else if (nav.contains(e.target)) {
+        var box = e.target.getBoundingClientRect();
+        var viewport = nav.getBoundingClientRect();
+        if (box.top < viewport.top + 4) nav.scrollTop -= viewport.top + 4 - box.top;
+        else if (box.bottom > viewport.bottom - 4) nav.scrollTop += box.bottom - viewport.bottom + 4;
+      }
+    });
+    document.addEventListener('focusout', function(e) {
+      if (e.target === navigationFocus && (e.relatedTarget || e.target.getClientRects().length)) navigationFocus = null;
     });
     /* PC: サブメニュークリック後、マウスが離れるまでドロップダウンを閉じたままにする */
     var dismissDesktopDropdown = function(dropdown) {
       if (!dropdown) return;
+      clearDismissed(dropdown);
       dropdown.classList.add('bm-nav-dropdown-dismissed');
-      var reset = function() {
-        dropdown.classList.remove('bm-nav-dropdown-dismissed');
-        dropdown.removeEventListener('mouseleave', reset);
+      updateDropdownAria(dropdown);
+      var reset = function(e) {
+        if (e.type === 'focusout' && dropdown.contains(e.relatedTarget)) return;
+        if (e.type === 'mouseleave' && dropdown.contains(document.activeElement)) return;
+        clearDismissed(dropdown);
+        updateDropdownAria(dropdown);
       };
+      dropdown.__bmDismissCleanup = function() {
+        dropdown.removeEventListener('mouseenter', reset);
+        dropdown.removeEventListener('mouseleave', reset);
+        dropdown.removeEventListener('focusout', reset);
+        dropdown.__bmDismissCleanup = null;
+      };
+      dropdown.addEventListener('mouseenter', reset);
       dropdown.addEventListener('mouseleave', reset);
+      dropdown.addEventListener('focusout', reset);
     };
     nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', closeMenu);
     });
     nav.querySelectorAll('.bm-nav-dropdown-item').forEach(function(link) {
-      link.addEventListener('click', function() {
+      link.addEventListener('click', function(e) {
+        var wrap = link.closest('.bm-nav-submenu-wrap');
+        if (!drawerMedia.matches && link.classList.contains('bm-nav-has-sub') && isTouchClick(e) &&
+            !wrap.classList.contains('is-touch-open')) {
+          e.preventDefault();
+          wrap.classList.add('is-touch-open');
+          wrap.__bmOpenSubmenu();
+          return;
+        }
         closeMenu();
-        if (window.innerWidth > 768) {
+        if (!drawerMedia.matches) {
           dismissDesktopDropdown(link.closest('.bm-nav-dropdown'));
         }
       });
@@ -291,22 +419,27 @@
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-haspopup', 'true');
       toggle.addEventListener('click', function(e) {
-        if (nav.classList.contains('open')) {
+        clearDismissed(this.closest('.bm-nav-dropdown'));
+        if (nav.classList.contains('open') || isTouchClick(e)) {
           var dd = this.closest('.bm-nav-dropdown');
           if (!dd.classList.contains('is-open')) {
             e.preventDefault();
             nav.querySelectorAll('.bm-nav-dropdown.is-open').forEach(function(other) {
               if (other !== dd) {
-                other.classList.remove('is-open');
-                var ot = other.querySelector('.bm-nav-dropdown-toggle');
-                if (ot) ot.setAttribute('aria-expanded', 'false');
+                resetDropdown(other);
               }
             });
             dd.classList.add('is-open');
             toggle.setAttribute('aria-expanded', 'true');
+            if (drawerMedia.matches) dd.querySelectorAll('.bm-nav-has-sub').forEach(function(link) {
+              link.setAttribute('aria-expanded', 'true');
+            });
           }
         }
       });
+    });
+    document.addEventListener('pointerdown', function(e) {
+      if (!drawerMedia.matches && !nav.contains(e.target)) closeMenu();
     });
   }
 
@@ -315,31 +448,72 @@
      項目の下端を外れた瞬間に閉じてしまう（実測で移動の50%地点で消えた）。
      閉じる方を少し遅らせて、斜めの移動やわずかな行き過ぎを許容する。
      ⚠️ ドロワー(モバイル)では常時展開しておりホバーも無いので何もしない。 */
-  nav.querySelectorAll('.bm-nav-submenu-wrap').forEach(function(wrap) {
+  nav.querySelectorAll('.bm-nav-submenu-wrap').forEach(function(wrap, index) {
     var closeTimer = null;
+    var subEl = wrap.querySelector('.bm-nav-submenu');
+    var subToggle = wrap.querySelector('.bm-nav-has-sub');
+    subEl.id = 'bmNavSubmenu' + index;
+    subToggle.setAttribute('aria-controls', subEl.id);
+    subToggle.setAttribute('aria-haspopup', 'true');
+    subToggle.setAttribute('aria-expanded', 'false');
+
+    // Place the flyout inside the actual viewport, including short landscape windows.
+    var positionSubmenu = function() {
+      if (drawerMedia.matches) return;
+      var margin = 8;
+      var topLimit = header.getBoundingClientRect().bottom + margin;
+      subEl.style.maxHeight = Math.max(0, window.innerHeight - topLimit - margin) + 'px';
+      var anchor = wrap.getBoundingClientRect();
+      var box = subEl.getBoundingClientRect();
+      var left = anchor.right;
+      if (left + box.width > window.innerWidth - margin) left = anchor.left - box.width;
+      left = Math.max(margin, Math.min(left, window.innerWidth - box.width - margin));
+      var top = Math.max(topLimit, Math.min(anchor.top - 8, window.innerHeight - box.height - margin));
+      subEl.style.left = (left - anchor.left) + 'px';
+      subEl.style.right = 'auto';
+      subEl.style.top = (top - anchor.top) + 'px';
+    };
+    var close = function() {
+      clearTimeout(closeTimer);
+      wrap.classList.remove('is-sub-open', 'is-touch-open');
+      wrap.__bmInZone = false;
+      subToggle.setAttribute('aria-expanded', 'false');
+      ['left', 'right', 'top', 'max-height'].forEach(function(prop) { subEl.style.removeProperty(prop); });
+    };
     var CLOSE_DELAY = 320;   /* 斜め移動に十分／意図して離れた時は気にならない程度 */
 
     var open = function() {
-      if (nav.classList.contains('open')) return;   // ドロワー中は触らない
+      if (drawerMedia.matches) return;   // ドロワー幅ではホバーで開かない
       clearTimeout(closeTimer);
       /* 他のサブメニューは閉じる（複数開きっぱなしを防ぐ）。
          ⚠️ ただし今カーソルがその判定域の中にいる場合は閉じない。
          項目の真下へ抜けると下の兄弟に入るが、そこで強制的に閉じると
          斜め移動でサブメニューへ辿り着けなくなるため（実測で確認） */
       nav.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
-        if (o !== wrap && !o.__bmInZone) o.classList.remove('is-sub-open');
+        if (o !== wrap && !o.__bmInZone) o.__bmCloseSubmenu();
       });
       wrap.classList.add('is-sub-open');
+      subToggle.setAttribute('aria-expanded', 'true');
+      positionSubmenu();
     };
     var scheduleClose = function() {
-      if (nav.classList.contains('open')) return;
+      if (drawerMedia.matches) return;
       clearTimeout(closeTimer);
       closeTimer = setTimeout(function() {
-        wrap.classList.remove('is-sub-open');
+        if (wrap.contains(document.activeElement)) return;
+        close();
         var mw = wrap.closest('.bm-nav-megamenu-wrap');
-        if (mw) mw.classList.remove('is-mega-open');
+        if (mw) {
+          mw.classList.remove('is-mega-open');
+          updateDropdownAria(mw);
+        }
       }, CLOSE_DELAY);
     };
+    wrap.__bmOpenSubmenu = open;
+    wrap.__bmCloseSubmenu = close;
+    window.addEventListener('resize', function() {
+      if (wrap.classList.contains('is-sub-open')) positionSubmenu();
+    });
     /* サブメニュー上に入ったら、予約されている「閉じる」を取り消す */
     var cancelClose = function() { clearTimeout(closeTimer); };
 
@@ -350,7 +524,6 @@
        その外に出ているため、DOMの mouseleave だけだと項目を1px出た時点で
        「離れた」扱いになり、斜め移動の途中で閉じてしまう（実測で確認）。
        項目とサブメニューを内包する矩形＋余白の中にカーソルがある限り開いたままにする。 */
-    var subEl = wrap.querySelector('.bm-nav-submenu');
     var PAD = 24;   /* 経路のブレを吸収する余白 */
 
     /* ① 項目・サブメニューの上にいるか（素直な矩形判定） */
@@ -407,6 +580,9 @@
        カーソルがメガメニュー本体から離れると縮んで、中にあるサブメニューごと
        切り取られてしまう（実測: 下側5件がクリック不能、うち1件は誤遷移した）。 */
     var megaWrap = wrap.closest('.bm-nav-megamenu-wrap');
+    if (megaWrap) megaWrap.addEventListener('transitionend', function(e) {
+      if (e.target.classList.contains('bm-nav-megamenu') && wrap.classList.contains('is-sub-open')) positionSubmenu();
+    });
 
     var onMove = function(e) {
       if (!wrap.classList.contains('is-sub-open')) {
@@ -416,6 +592,7 @@
         if (megaWrap && megaWrap.classList.contains('is-mega-open') &&
             !megaWrap.matches(':hover')) {
           megaWrap.classList.remove('is-mega-open');
+          updateDropdownAria(megaWrap);
         }
         return;
       }
@@ -428,6 +605,7 @@
         scheduleClose();
         if (megaWrap) megaWrap.classList.remove('is-mega-open');
       }
+      if (megaWrap) updateDropdownAria(megaWrap);
     };
     document.addEventListener('mousemove', onMove);
 
@@ -452,26 +630,37 @@
 
   nav.querySelectorAll('.bm-nav-megamenu-wrap').forEach(function(mw) {
     var megaTimer = null;
+    mw.__bmCancelClose = function() { clearTimeout(megaTimer); };
+
+    mw.addEventListener('focusin', function(e) {
+      if (!e.target.classList.contains('bm-nav-dropdown-toggle')) clearDismissed(mw);
+      updateDropdownAria(mw);
+    });
+    mw.addEventListener('focusout', function() {
+      setTimeout(function() { updateDropdownAria(mw); }, 0);
+    });
 
     mw.addEventListener('mouseenter', function() {
-      if (nav.classList.contains('open')) return;
+      if (drawerMedia.matches) return;
+      clearDismissed(mw);
       clearTimeout(megaTimer);
       mw.classList.add('is-mega-open');
+      updateDropdownAria(mw);
     });
 
     mw.addEventListener('mouseleave', function() {
-      if (nav.classList.contains('open')) return;
+      if (drawerMedia.matches) return;
       clearTimeout(megaTimer);
       megaTimer = setTimeout(function() {
         /* 戻ってきていたら閉じない。サブメニュー上に残っている場合も同様（誤爆防止） */
         var subHovered = !!mw.querySelector('.bm-nav-submenu:hover');
-        if (mw.matches(':hover') || subHovered) return;
+        if (mw.matches(':hover') || subHovered || mw.contains(document.activeElement)) return;
 
         mw.querySelectorAll('.bm-nav-submenu-wrap.is-sub-open').forEach(function(o) {
-          o.classList.remove('is-sub-open');
-          o.__bmInZone = false;
+          o.__bmCloseSubmenu();
         });
         mw.classList.remove('is-mega-open');
+        updateDropdownAria(mw);
       }, MEGA_CLOSE_DELAY);
     });
   });

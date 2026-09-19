@@ -26,6 +26,7 @@
   var preData = FALLBACK;
   var SCROLL_SPEED = 1.0; // px per frame
   var GAP = 8;
+  var carouselCleanups = {};
 
   /* ---------- 漫画を開く（ビズ書庫のビューアに遷移） ---------- */
   function openManga(key) {
@@ -37,13 +38,16 @@
     var trackId = type === 'name' ? 'bmNameTrack' : 'bmRedTrack';
     var track = document.getElementById(trackId);
     if (!track) return;
+    if (carouselCleanups[type]) carouselCleanups[type]();
 
     var items = preData[type];
     if (!items || items.length === 0) return;
 
     var scrollPos = 0;
     var animId = null;
+    var measureId = null;
     var singleSetWidth = 0;
+    var disposed = false;
 
     // 全ページをスライドに展開
     var allSlides = [];
@@ -94,32 +98,45 @@
     }
     track.appendChild(frag);
 
-    // 1セット分の幅を計算
-    requestAnimationFrame(function () {
+    function normalize(position) {
+      return singleSetWidth > 0
+        ? ((position % singleSetWidth) + singleSetWidth) % singleSetWidth : 0;
+    }
+
+    function move(delta) {
+      scrollPos = normalize(scrollPos + delta);
+      track.style.transform = 'translateX(' + (-scrollPos) + 'px)';
+    }
+
+    // 回転・画面分割でカード幅が変わっても、同じカード位置を保つ。
+    // computed widthはhoverの拡大を含まないため、操作中も周期が変わらない。
+    function measureLoop() {
       var slideEls = track.querySelectorAll('.bm-pre-carousel-slide');
       var half = Math.floor(slideEls.length / 2);
       if (half === 0) return;
-      var lastCard = slideEls[half - 1];
-      singleSetWidth = lastCard.offsetLeft + lastCard.offsetWidth + GAP;
+      var width = parseFloat(getComputedStyle(slideEls[0]).width);
+      if (!(width > 0)) return;
+      var progress = singleSetWidth > 0 ? normalize(scrollPos) / singleSetWidth : 0;
+      singleSetWidth = (width + GAP) * half;
+      scrollPos = progress * singleSetWidth;
+      move(0);
+    }
 
-      scrollPos = 0;
-      startAutoScroll();
-
-    });
+    function queueMeasure() {
+      if (disposed || measureId !== null) return;
+      measureId = requestAnimationFrame(function () {
+        measureId = null;
+        if (!disposed) measureLoop();
+      });
+    }
 
     // 自動スクロール（毎フレーム連続移動）
     function startAutoScroll() {
       if (animId) cancelAnimationFrame(animId);
 
       function step() {
-        scrollPos += SCROLL_SPEED;
-
-        // 1セット分スクロールしたらリセット（無限ループ）
-        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-          scrollPos -= singleSetWidth;
-        }
-
-        track.style.transform = 'translateX(' + (-scrollPos) + 'px)';
+        if (disposed) return;
+        move(SCROLL_SPEED);
         animId = requestAnimationFrame(step);
       }
 
@@ -128,7 +145,7 @@
 
     // 横スクロール（マウスホイール）対応
     var carousel = track.parentElement;
-    carousel.addEventListener('wheel', function (e) {
+    function onWheel(e) {
       // 横スクロール（トラックパッド横スワイプ or Shift+ホイール）のみカルーセルを操作
       // 縦スクロール（deltaYが主体）はページスクロールとして通す
       var isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
@@ -136,45 +153,59 @@
       if (isHorizontal || isShiftWheel) {
         var delta = isShiftWheel ? e.deltaY : e.deltaX;
         e.preventDefault();
-        scrollPos += delta * 0.8;
-        if (scrollPos < 0) scrollPos += singleSetWidth;
-        if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-          scrollPos -= singleSetWidth;
-        }
+        move(delta * 0.8);
       }
       // deltaYが主体の場合はpreventDefaultしない → ページが縦スクロールする
-    }, { passive: false });
+    }
+    carousel.addEventListener('wheel', onWheel, { passive: false });
 
     // タッチスワイプ対応
     var touchStartX = 0;
-    carousel.addEventListener('touchstart', function (e) {
+    function onTouchStart(e) {
       touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-    carousel.addEventListener('touchmove', function (e) {
+    }
+    function onTouchMove(e) {
       var dx = touchStartX - e.touches[0].clientX;
       touchStartX = e.touches[0].clientX;
-      scrollPos += dx;
-      if (scrollPos < 0) scrollPos += singleSetWidth;
-      if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-        scrollPos -= singleSetWidth;
-      }
-    }, { passive: true });
+      move(dx);
+    }
+    carousel.addEventListener('touchstart', onTouchStart, { passive: true });
+    carousel.addEventListener('touchmove', onTouchMove, { passive: true });
 
     // ボタン操作
     var prevBtn = carousel.querySelector('.prev');
     var nextBtn = carousel.querySelector('.next');
-    if (prevBtn) prevBtn.addEventListener('click', function (e) {
+    function onPrev(e) {
       e.stopPropagation();
-      scrollPos -= 400;
-      if (scrollPos < 0) scrollPos += singleSetWidth;
-    });
-    if (nextBtn) nextBtn.addEventListener('click', function (e) {
+      move(-400);
+    }
+    function onNext(e) {
       e.stopPropagation();
-      scrollPos += 400;
-      if (singleSetWidth > 0 && scrollPos >= singleSetWidth) {
-        scrollPos -= singleSetWidth;
-      }
-    });
+      move(400);
+    }
+    if (prevBtn) prevBtn.addEventListener('click', onPrev);
+    if (nextBtn) nextBtn.addEventListener('click', onNext);
+
+    var resizeObserver = window.ResizeObserver ? new ResizeObserver(queueMeasure) : null;
+    if (resizeObserver) resizeObserver.observe(carousel);
+    window.addEventListener('resize', queueMeasure, { passive: true });
+    queueMeasure();
+    startAutoScroll();
+
+    // API取得後の差し替えでは、以前の自走・イベント・監視を引き継がない。
+    carouselCleanups[type] = function () {
+      disposed = true;
+      if (animId !== null) cancelAnimationFrame(animId);
+      if (measureId !== null) cancelAnimationFrame(measureId);
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', queueMeasure);
+      carousel.removeEventListener('wheel', onWheel);
+      carousel.removeEventListener('touchstart', onTouchStart);
+      carousel.removeEventListener('touchmove', onTouchMove);
+      if (prevBtn) prevBtn.removeEventListener('click', onPrev);
+      if (nextBtn) nextBtn.removeEventListener('click', onNext);
+      delete carouselCleanups[type];
+    };
   }
 
   /* ---------- WP API から制作過程データ取得（専用エンドポイント） ---------- */
