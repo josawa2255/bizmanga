@@ -1,0 +1,52 @@
+== WP API: https://cms.contentsx.jp/wp-json/contentsx/v1
+PASS  API /works?site=bizmanga 件数>0  — 26件
+PASS  API /works 各作品に id/gallery/view_type/thumbnail
+PASS  API /works view_type が既知の値  — spread, vertical_only
+PASS  API /works-new?site=bizmanga 件数>0  — 15件
+PASS  API /library 件数>0  — 26件
+PASS  API /library 各作品に gallery あり
+PASS  API /manga/gaudia の枚数が /library と一致  — library=4 manga=4
+PASS  API gallery 画像URLが到達可能（先頭2枚）
+PASS  API /news 件数>0  — 14件
+PASS  API /columns 件数>0  — 38件
+== ブラウザ: http://127.0.0.1:5500  CORS: 実際の許可オリジンのまま  検証作品: gaudia（FALLBACK_WORKS に無い作品）
+PASS  ホーム: Hero マーキーに表紙がある  — 92枚 (data:already)
+PASS  ホーム: /works-new をブラウザでも同じ件数で受信（フォールバックしていない）  — ブラウザ=15 API=15
+PASS  ホーム: ギャラリーのカード数が仕様どおり（横読み/縦読み 各10件まで）  — 画面=14 期待=14（横読み11件・縦読み4件）
+PASS  ホーム: WP API を実際の CORS 許可設定のまま取得できた  — http://127.0.0.1:5500
+PASS  ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移  — biz-library?manga=gaudia
+PASS  ホーム: JSエラー無し
+PASS  ホーム: サイト/WP/素材への 404 無し
+PASS  制作事例: カードが表示される  — 20件
+PASS  制作事例: カードクリックでモーダルが開く
+PASS  制作事例: モーダル内の漫画画像が読み込まれる
+PASS  制作事例: モーダル内に読み込み失敗の画像が無い
+PASS  制作事例: モーダルを閉じられる
+PASS  制作事例: JSエラー無し
+PASS  制作事例: サイト/WP/素材への 404 無し
+PASS  ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）  — 画面=26 API=26
+PASS  ビズ書庫: クリックでビューアが開く
+PASS  ビズ書庫: ビューアの漫画画像が読み込まれる
+PASS  ビズ書庫: ビューア内に読み込み失敗の画像が無い
+PASS  ビズ書庫: サイト内クリックでは qr-mode にならない
+PASS  ビズ書庫: ビューアを閉じられる
+PASS  ビズ書庫: JSエラー無し
+PASS  ビズ書庫: サイト/WP/素材への 404 無し
+PASS  QR直リンク ?manga=gaudia: ビューアが自動で開き画像が出る（/manga/{id} 経由）
+PASS  QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）
+PASS  QR直リンク: JSエラー無し
+PASS  QR直リンク: サイト/WP/素材への 404 無し
+PASS  サイト内遷移 ?manga=: referrer ありなら qr-mode にならない
+PASS  サイト内遷移: JSエラー無し
+PASS  サイト内遷移: サイト/WP/素材への 404 無し
+PASS  埋込ビューア embed-viewer?manga=&manual=1: 画像が出る
+PASS  埋込ビューア: JSエラー無し
+PASS  埋込ビューア: サイト/WP/素材への 404 無し
+PASS  スマホ(390px) ?manga=: ビューアが開き画像が出る
+PASS  スマホ(390px): 縦スクロールモード(mode-vertical)で開く（SPデフォルト）  — mode=vertical
+PASS  スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る
+PASS  スマホ(390px): 横スクロール無し
+PASS  スマホ: JSエラー無し
+PASS  スマホ: サイト/WP/素材への 404 無し
+
+== 結果: 48 PASS / 0 FAIL

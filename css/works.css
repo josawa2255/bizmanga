@@ -706,15 +706,15 @@ body {
 /* ===== PC layout ===== */
 @media (min-width: 769px) {
   .modal-thumb-sidebar { display: flex; }
-  .modal-header { left: 100px; }
-  .modal-progress { left: 100px; }
-  .manga-modal { padding-left: 100px; }
+  .manga-modal.mode-vertical .modal-header { left: 100px; }
+  .manga-modal.mode-vertical .modal-progress { left: 100px; }
+  .manga-modal.mode-vertical { padding-left: 100px; }
   .modal-manga img {
     border-radius: 2px;
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
   }
   .modal-side-indicator { right: 16px; }
-  .modal-zoom-controls { left: calc(50% + 50px); }
+  .manga-modal.mode-vertical .modal-zoom-controls { left: calc(50% + 50px); }
 }
 /* ===== Mobile layout ===== */
 @media (max-width: 768px) {

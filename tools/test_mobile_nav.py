@@ -18,6 +18,7 @@ index.html は Hero の大量画像で networkidle が来ないため domcontent
 from __future__ import annotations
 
 import functools
+import argparse
 import sys
 from dataclasses import dataclass
 from playwright.sync_api import sync_playwright, Page, TimeoutError as PWTimeout
@@ -131,9 +132,14 @@ def check_desktop(page: Page, path: str) -> None:
 
 
 def main() -> int:
+    global BASE
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--base', default=BASE)
+    args = parser.parse_args()
+    BASE = args.base.rstrip('/')
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        ctx = browser.new_context()
+        ctx = browser.new_context(ignore_https_errors=True)
         page = ctx.new_page()
 
         for path in TARGET_PAGES:
@@ -145,6 +151,25 @@ def main() -> int:
                 check_desktop(page, path)
             except Exception as e:
                 record(path, "desktop run crashed", False, str(e)[:160])
+
+        # Tablet drawers must fill the viewport and reset when switching to desktop.
+        for path in ['/pricing', '/artists', '/company-manga', '/bizanime']:
+            try:
+                page.set_viewport_size({'width': 820, 'height': 1180})
+                open_and_wait(page, path)
+                page.locator('#bmHamburger').click()
+                page.wait_for_function("getComputedStyle(document.querySelector('#bmNav')).transform === 'none'")
+                box = page.locator('#bmNav').bounding_box()
+                record(path, 'tablet drawer fills viewport below header',
+                       bool(box and abs(box['y'] + box['height'] - 1180) < 2), str(box))
+                page.set_viewport_size({'width': 1180, 'height': 820})
+                page.wait_for_timeout(200)
+                reset = page.evaluate("""() => !document.querySelector('#bmNav').classList.contains('open')
+                    && !document.body.classList.contains('bm-nav-locked')
+                    && document.querySelector('#bmHamburger').getAttribute('aria-expanded') === 'false'""")
+                record(path, 'tablet rotation resets drawer and scroll lock', reset)
+            except Exception as e:
+                record(path, 'tablet run crashed', False, str(e)[:160])
 
         browser.close()
 

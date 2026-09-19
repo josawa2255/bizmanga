@@ -147,9 +147,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
 /* ロゴアンカーは絶対に縮ませない（縮むと img の max-width:100% で横潰れする） */
 /* 漫画家紹介・LP系ページもヘッダーだけは共通フォントに固定し、
    本文用フォント差によるナビ・CTAの文字幅とベースラインのずれを防ぐ */
-body.art-page .bm-header,
-body.lpv2-page .bm-header,
-body.mpc-page .bm-header {
+.bm-header {
   font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
 }
 .bm-logo { flex-shrink: 0; display: inline-flex; align-items: center; }
@@ -158,7 +156,7 @@ body.mpc-page .bm-header {
 .bm-nav {
   /* 項目追加時はメガメニューへの集約を検討する。 */
   display: flex; align-items: center; gap: 11px;
-  min-width: 0; flex-shrink: 1;
+  min-width: 0; flex: 1 1 0%;
 }
 /* モバイル専用CTA(.bm-nav-mobile-cta)はデスクトップでは常に非表示 */
 .bm-nav-mobile-cta { display: none; }
@@ -271,6 +269,7 @@ body.mpc-page .bm-header {
 /* クリック後の強制閉じ */
 .bm-nav-dropdown.bm-nav-dropdown-dismissed:hover .bm-nav-dropdown-menu,
 .bm-nav-dropdown.bm-nav-dropdown-dismissed:focus-within .bm-nav-dropdown-menu {
+  visibility: hidden !important;
   max-height: 0 !important;
   opacity: 0 !important;
   pointer-events: none !important;
@@ -394,6 +393,7 @@ body.mpc-page .bm-header {
 }
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.bm-nav-dropdown-dismissed:focus-within .bm-nav-megamenu {
+  visibility: hidden !important;
   max-height: 0 !important;
   opacity: 0 !important;
   pointer-events: none !important;
@@ -579,7 +579,8 @@ body.mpc-page .bm-header {
   pointer-events: none;
 }
 /* 漫画ビューア（manga-modal）が開いている間は全ページでFABを隠す */
-body:has(.manga-modal.open) .bm-fab { display: none !important; }
+body:has(.manga-modal.open) .bm-fab,
+body:has(.art-modal.is-open) .bm-fab { display: none !important; }
 .bm-fab__btn {
   --bm-fab-w: 200px;
   --bm-fab-h: 52px;
@@ -4789,7 +4790,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-included-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .bm-nav { display: none; }
   .bm-hamburger {
     display: flex;
@@ -4804,6 +4805,11 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     min-height: 48px;
   }
   .bm-header { isolation: isolate; }
+  /* A backdrop filter would make the fixed drawer relative to the 72px header. */
+  .bm-header:has(.bm-nav.open) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .bm-header-right { position: relative; z-index: 10; }
   /* ===== モバイルナビ（Toyotaスタイル: フルヘイトドロワー） ===== */
   .bm-nav.open {
@@ -4811,7 +4817,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     flex-direction: column;
     align-items: stretch;
     position: fixed;
-    top: 72px;
+    top: var(--bm-header-height, 72px);
     left: 0;
     right: 0;
     bottom: 0;
@@ -4832,6 +4838,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   /* 各メニュー項目: 大きく、チェブロン付き */
   .bm-nav.open .bm-nav-link,
   .bm-nav.open .bm-nav-dropdown-toggle {
+    white-space: normal;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -4994,6 +5001,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     padding: 0;
   }
   .bm-nav.open .bm-nav-dropdown-item {
+    white-space: normal;
     display: flex;
     align-items: center;
     padding: 18px 24px 18px 44px;
@@ -5105,19 +5113,22 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   body.bm-nav-locked {
     overflow: hidden;
   }
-  /* モバイル: お問い合わせはヘッダーから省き、追従CTAで常時到達可能にする。 */
-  .bm-header-right .bm-nav-cta { display: none; }
-/* モバイル: ヘッダーの丸アイコンCTA(LINE/電話)は丸ごと非表示
-     お問い合わせ(.bm-nav-cta)のみ常時可視。LINE/電話はハンバーガー末尾に集約 */
+  /* Tablet contact stays visible; LINE and phone move into the drawer. */
   .bm-cta-icons { display: none; }
-/* カテゴリフィルター: スマホ用コンパクト表示 */
+}
+
+@media (max-width: 768px) {
+  .bm-header-right .bm-nav-cta { display: none; }
   .bm-category-filter {
     gap: 8px;
     padding: 12px 16px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .bm-filter-btn {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
     padding: 9px 14px;
     font-size: 12.5px;
     justify-content: center;
@@ -5686,8 +5697,9 @@ h1, h2, h3, h4,
   line-break: strict;
   text-wrap: balance;
   /* Chrome 119+ の日本語フレーズ認識。未対応環境では無視される */
+  word-break: normal; /* Fallback for engines without auto-phrase. */
   word-break: auto-phrase;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* 段落・抜粋: pretty で最終行孤立回避。Japanese対応のため overflow-wrap も指定 */
@@ -5698,8 +5710,9 @@ html[lang="ja"] p,
 .bm-column-featured-excerpt {
   text-wrap: pretty;
   line-break: strict;
+  word-break: normal; /* Fallback for engines without auto-phrase. */
   word-break: auto-phrase;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* リード段落は balance を明示的に使用（2-3行で行長均等化が効く） */
@@ -6076,4 +6089,26 @@ body:has(> .bm-floating-comics-bg) {
 }
 .bm-home-comparison-banner a:hover {
   color: var(--bm-accent-hover);
+}
+
+/* Text must shrink inside the video information flex column. */
+.bm-video-info > * { min-width: 0; max-width: 100%; }
+.bm-video-title, .bm-video-desc { align-self: stretch; }
+
+/* Tables scroll locally; the article retains its available width. */
+.bm-table-wrap { min-width: 0; max-width: 100%; margin: 32px 0; }
+.bm-table-scroll { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.bm-table-scroll:focus-visible { outline: 2px solid var(--bm-accent); outline-offset: 2px; }
+.bm-table-wrap .bm-table-scroll table { margin: 0; }
+.bm-table-hint { margin: 0 0 8px; font-size: 12px; color: var(--bm-text-sub); }
+.bm-table-hint[hidden] { display: none; }
+
+@media (min-width: 1025px) {
+  .bm-nav-dropdown.is-open > .bm-nav-dropdown-menu,
+  .bm-nav-dropdown.is-open > .bm-nav-megamenu {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    max-height: 80vh; overflow: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .bm-nav-dropdown.is-open > .bm-nav-megamenu { padding: 24px 28px; gap: 24px; }
 }

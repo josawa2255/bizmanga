@@ -40,7 +40,7 @@
 ```
 
 ### 0.5 参考実装 (この原則で動いている既存セクション)
-- `.s3d-section` (3Dスマホ showcase) — タイル幅 `clamp(260px, 19vw, 320px)` + gap `clamp(40px, 8vw, 220px)`
+- `.s3d-section` (3Dスマホ showcase) — PCタイル幅 `clamp(220px, 19vw, 320px)` + gap `clamp(24px, 5vw, 120px)`。1024px以下は縦1列
 - `.bm-about` — `padding: var(--section-py)`、SP は layout (grid→block) のみ media query で切替
 - `.bm-whatis-fold-*` — 見出し/バッジ/本文/リストすべて clamp、SP の media query は 2列→1列のみ
 
@@ -716,30 +716,33 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 スマホでハンバーガーが押せない問題が過去に再発した履歴あり。**ヘッダー変更時は必ず以下を守る**:
 
 1. `.bm-hamburger` に `order: 10` + `flex-shrink: 0` + `min-width/height: 48px` + `z-index: 99999`
-2. 言語ボタンは `width: 40px; height: 32px` 程度に縮小
+2. ナビの境界は1024px。769〜1024pxはロゴ・問い合わせ・ハンバーガー、768px以下は問い合わせもヘッダーから省く（言語ボタンは廃止済み）
 3. `.bm-header-right` は `gap: 8px` + `flex-wrap: nowrap` + `min-width: 0`
 4. `.bm-header-inner` の padding は 16px 以下
 5. `touchend` イベントも `click` と一緒に登録（iOS Safari対策）
 6. **320px (iPhone SE) まで想定して計算**
 
+2026-09-19更新: 共通ヘッダー高72px、ビズアニメは1024px以下で黒背景・56px。ドロワー上端はその高さに連動する。境界を跨ぐとメニュー・子メニュー・ARIA・スクロールロックをリセット。本文の768px境界は変更しない。ナビは `flex: 1 1 0%` と共通フォントを使い、HTML内の初期表示CSSも同期する。
+
 ### 6.1a ヘッダーCTA主従ルール（2026-05-13）
 - **`.bm-nav-cta`（お問い合わせ）= プライマリ**: 塗り強調（`background: var(--bm-accent)` + 白文字）、padding `12px 26px`、font-size 15px、`min-height: 44px`
 - **`.bm-nav-cta--line`（LINE相談）= セカンダリ**: 白背景+緑outline、padding `8px 16px`、font-size 13px、`min-height: 38px`
-- モバイル(≤768px): `.bm-nav-cta--line` は `display: none`（追従CTA `.bm-fab` で代替）、`.bm-nav-cta` は常時可視（padding `10px 18px` に縮小）
+- 1024px以下: LINE・電話はドロワー内へ集約。問い合わせは769〜1024pxでヘッダーに表示、768px以下は非表示。
 - 過去の outline-only スタイルは廃止。プライマリCTAはサイト全体で塗り強調に統一
 
 ### 6.1b ヘッダーCTA ハイブリッド構成（お問い合わせ pill + LINE/電話 丸アイコン、2026-05-17）
 - ヘッダー右上 `.bm-header-right` の構成: **`.bm-nav-cta`（お問い合わせ orange pill）→ `<ul class="bm-cta-icons">` 内に LINE + 電話 の丸アイコン** （[BizManga/css/bizmanga.css](css/bizmanga.css)）
 - **お問い合わせ**: 旧 `.bm-nav-cta` 主従ルール（§6.1a）を継続。プライマリCTAとしてテキスト+オレンジpillで強調
 - **LINE / 電話（`<ul class="bm-cta-icons">`）**:
-  - **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が**下**にポップ（上は画面外で見切れるため、2026-05-17修正）
+  - **PC(≥1025px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が**下**にポップ（上は画面外で見切れるため、2026-05-17修正）
     - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
-  - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示（お問い合わせpillのみ可視）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
+  - **タブレット・モバイル(≤1024px)**: `.bm-cta-icons { display:none }`。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約。お問い合わせは769px以上で表示
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
 - **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視
 
 ### 6.2 ドロップダウン仕様
 - PC: hover で展開
+- タッチ・ペン: 初回タップで子項目を開き、2回目で親ページへ移動。PC幅でも適用する。キーボードのフォーカスで開き、Escapeで閉じる。
 - モバイル: 1回目タップで展開、2回目タップで遷移（親リンクあり）
 - ドロップダウン展開中は他のドロップダウンを自動で閉じる
 
@@ -775,8 +778,9 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - CTA: タイル直下に「詳しくはギャラリーで!」(`.s3d-cta` → `#newWorks`)
 - **デバイス別 動的レイアウト**（2026-05-14 追加 / 同日改訂）:
   - **重なり対策**: stage を `flex-direction: column; justify-content: flex-start; padding-top: 120px` に変更し、heading → labels → screens を必ずフロー積み上げ。以前は heading/labels 双方 `position: absolute` でタイル高が伸びると衝突したが、絶対配置を全廃して物理的に重ならない構造に
-  - PC / Tablet (>768px): 横3列。`--s3d-tile-w: clamp(260px, 19vw, 320px)` で原寸 280px 前後に追従。`--s3d-gap: clamp(40px, 8vw, 220px)` でワイドモニタほど gap を広げ 3 端末を edge-to-edge に伸ばす。アスペクト比 280:580 は維持。説明文 (`.s3d-label-desc`) は PC では非表示
-  - SP (≤768px): 縦1列中央揃え。`.s3d-screens-wrap` を `display: grid; grid-template-columns: 1fr`、`.s3d-labels` と `.s3d-screens` を `display: contents` で展開、`order` でラベル→端末→ラベル→端末を縦に積む。タイル幅 `clamp(220px, 60vw, 300px)`
+  - PC (>1024px): 横3列。`--s3d-tile-w: clamp(220px, 19vw, 320px)`、`--s3d-gap: clamp(24px, 5vw, 120px)` で画面内に収める。アスペクト比280:580は維持。説明文 (`.s3d-label-desc`) はPCでは非表示
+  - タブレット・SP (≤1024px): 縦1列中央揃え。`.s3d-screens-wrap` を `display: grid; grid-template-columns: 1fr`、`.s3d-labels` と `.s3d-screens` を `display: contents` で展開、`order` でラベル→端末→ラベル→端末を縦に積む。タイル幅 `clamp(220px, 60vw, 300px)`
+  - CSSとGSAPの境界は1024pxで統一。`gsap.matchMedia()`で境界変更時のtransformとScrollTriggerを戻して再設定する
   - SP のラベルは title / sub に加え `.s3d-label-desc` で 1-2 文の補足説明を表示 (`<p>` 要素、JA/EN 両対応)
 - スクロール演出（GSAP ScrollTrigger + pin）:
   - 初期: 中央1枚 scale 1.55（PC）/ 1（SP=Z字レイアウトでは zoom-in なし）
@@ -1198,7 +1202,7 @@ WordPress で works を追加・更新したら以下いずれか:
 8. **⭐ 住所は「東京都目黒区中目黒1-8-8 目黒F2ビル1F」に統一 / 郵便番号は `153-0061`** → 旧住所「目黒2-11-15 8階」を 2026-04-21 に統一。同日に郵便番号も `153-0042 / 153-0051 / 153-0063` の3系統混在を `153-0061`（中目黒1丁目の正式番号）に統一。新規ページ追加時は必ず新住所 + 日本語の表示内容 + 正しい郵便番号を記述。NAP一貫性 (Name/Address/Phone) は Trust / Local SEO 直結
 9. **⭐ works ヒーロー画像は `gallery[0]` を使う（`thumbnail` フィールドは使わない）** → WP API の `thumbnail` は 188x300 の自動生成サムネが返ることがあり、1200x630 として引き延ばすと画質劣化 + LCP要素として Lighthouse に認識されない。2026-04-21 に build-works.py を `gallery[0]` 優先に修正
 10. **⭐ 空のお客様コメントは「—」ではなくセクション自体を非表示に** → WP側に `comment` が未入力の場合は `<section>お客様コメント</section>` 全体をレンダリングしない。空欄ダミーは SEO (Helpful Content / E-E-A-T) 減点要因。2026-04-21 build-works.py で条件分岐化
-11. **⭐ メガメニューはモバイルで `position: static` に上書き必須** → `.bm-nav-megamenu` はデスクトップで `position: absolute` + `:hover/:focus-within` 展開。モバイルドロワー（`.bm-nav.open`）では絶対配置のままだと他ナビ項目（料金/コラム/FAQ）に被さってスクロールできない。`@media (max-width: 880px)` 内で `.bm-nav.open .bm-nav-megamenu` を `position: static; display: none;`、`.is-open` 時に `display: block` で展開し、`:hover/:focus-within` 由来のフロート展開を打ち消すこと。2026-04-26 修正
+11. **⭐ メガメニューはモバイルで `position: static` に上書き必須** → `.bm-nav-megamenu` はデスクトップで `position: absolute` + `:hover/:focus-within` 展開。モバイルドロワー（`.bm-nav.open`）では絶対配置のままだと他ナビ項目（料金/コラム/FAQ）に被さってスクロールできない。`@media (max-width: 1024px)` 内で `.bm-nav.open .bm-nav-megamenu` を `position: static; display: none;`、`.is-open` 時に `display: block` で展開し、`:hover/:focus-within` 由来のフロート展開を打ち消すこと。2026-04-26 修正
 12. **⭐ LP CASE STUDY は静的詳細を持つ作品だけに絞る** → `tools/build-lp-cases.py` が `/works/{slug}` リンクで CASE STUDY カードを生成するが、`build-works.py` は `show_site=="both"` の作品しか静的詳細ページを作らない。それ以外（`shohin-shokai` / `merumaga` 等）を CASE STUDY に出すと、404→`404.html` 内の自動リダイレクトで `/biz-library?manga={slug}` (漫画ビューア) に飛ばされる。`build-lp-cases.py` の `filter_for_lp` で `has_static_detail()` を必ず通すこと。2026-04-27 修正
 13. **⭐ CSS Grid 親要素の子に新タグを追加する時は必ず `grid-area` を指定** → `manga-production-company.html` の `.mpc-pain-entry` は `grid-template-areas: "num quote" / "num body"` の2カラム3行Grid。子に `<ul>` を追加した際、`grid-area` 未指定で auto-placement により細い `num` 列(96px)に配置されてレンダリング崩壊した。Grid親に追加する子要素は (1) `grid-template-areas` を拡張 (2) 子に `grid-area: <name>` を必ず付与の2点セット。2026-04-29 修正
 14. **⭐ `<ul>` の直接の子に `<p>` を置かない** → 同じく 2026-04-29 mpc改善時、`<ul>` 直下に `<p class="mpc-pain-examples-title">` を置いて HTML仕様違反 + ブラウザの暗黙閉じタグでレイアウト崩れ。リスト見出しは `<ul>` の外側 `<div>` でラップして `<span>` か `<p>` で配置すること
@@ -1231,6 +1235,8 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 ### 16.1 モバイルヘッダー（ハンバーガー）回帰テスト
 
 [tools/test_mobile_nav.py](tools/test_mobile_nav.py) — Playwright でハンバーガーの表示/クリック可/開閉/ESC/scroll lock を6ページ分検証。
+
+2026-09-19: 既存48項目に、4ページのタブレット表示・回転解除8項目を追加（計56）。全101ページの寸法検査、操作・WP障害・HTTPS埋め込み検査の実行方法と結果は [レスポンシブ検証記録](docs/RESPONSIVE-20260919.md) を参照。コラムは `bm-responsive-tables.js` で表だけを横スクロール化し、静的テンプレートにも読込を維持する。漫画ビューアの100px余白は769px以上かつ `.mode-vertical` のみ。
 
 **実行**（cwd は BizManga/ 直下）:
 ```bash

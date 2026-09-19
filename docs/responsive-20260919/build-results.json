@@ -1,0 +1,22 @@
+[
+  {
+    "builder": "build-works.py",
+    "exit": 0
+  },
+  {
+    "builder": "build-columns.py",
+    "exit": 0
+  },
+  {
+    "builder": "build-artists.py",
+    "exit": 0
+  },
+  {
+    "builder": "build-lp-cases.py",
+    "exit": 0
+  },
+  {
+    "staticArticleTableHelper": true,
+    "criticalNavPreserved": true
+  }
+]

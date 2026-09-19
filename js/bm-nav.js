@@ -224,6 +224,9 @@
   // ===== ハンバーガーメニュー =====
   var hamburger = document.getElementById('bmHamburger');
   if (hamburger) {
+    var drawerMedia = window.matchMedia('(max-width: 1024px)');
+    var lastPointerType = '';
+    nav.addEventListener('pointerdown', function(e) { lastPointerType = e.pointerType; });
     /* a11y初期属性 */
     hamburger.setAttribute('aria-expanded', 'false');
     hamburger.setAttribute('aria-controls', 'bmNav');
@@ -241,7 +244,12 @@
         var t = d.querySelector('.bm-nav-dropdown-toggle');
         if (t) t.setAttribute('aria-expanded', 'false');
       });
+      nav.querySelectorAll('.is-mega-open, .is-sub-open, .bm-nav-dropdown-dismissed').forEach(function(d) {
+        d.classList.remove('is-mega-open', 'is-sub-open', 'bm-nav-dropdown-dismissed');
+        d.__bmInZone = false;
+      });
     };
+    drawerMedia.addEventListener('change', closeMenu);
     var bmToggleMenu = function(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       var willOpen = !nav.classList.contains('open');
@@ -260,20 +268,30 @@
     hamburger.addEventListener('touchend', function(e) { bmToggleMenu(e); }, { passive: false });
     /* ESC キーで閉じる */
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && nav.classList.contains('open')) {
+      if (e.key === 'Escape' && (nav.classList.contains('open') || nav.querySelector('.is-open, .is-mega-open, .bm-nav-dropdown:focus-within'))) {
+        var dropdown = nav.querySelector('.bm-nav-dropdown:focus-within, .bm-nav-dropdown.is-open, .bm-nav-dropdown.is-mega-open');
+        var opener = dropdown && dropdown.querySelector('.bm-nav-dropdown-toggle');
         closeMenu();
-        hamburger.focus();
+        if (drawerMedia.matches) hamburger.focus();
+        else if (opener) {
+          opener.focus();
+          dismissDesktopDropdown(dropdown);
+        }
       }
     });
     /* PC: サブメニュークリック後、マウスが離れるまでドロップダウンを閉じたままにする */
     var dismissDesktopDropdown = function(dropdown) {
       if (!dropdown) return;
       dropdown.classList.add('bm-nav-dropdown-dismissed');
-      var reset = function() {
+      var reset = function(e) {
+        if (e.type === 'focusout' && dropdown.contains(e.relatedTarget)) return;
+        if (e.type === 'mouseleave' && dropdown.contains(document.activeElement)) return;
         dropdown.classList.remove('bm-nav-dropdown-dismissed');
         dropdown.removeEventListener('mouseleave', reset);
+        dropdown.removeEventListener('focusout', reset);
       };
       dropdown.addEventListener('mouseleave', reset);
+      dropdown.addEventListener('focusout', reset);
     };
     nav.querySelectorAll('.bm-nav-link:not(.bm-nav-dropdown-toggle)').forEach(function(link) {
       link.addEventListener('click', closeMenu);
@@ -281,7 +299,7 @@
     nav.querySelectorAll('.bm-nav-dropdown-item').forEach(function(link) {
       link.addEventListener('click', function() {
         closeMenu();
-        if (window.innerWidth > 768) {
+        if (!drawerMedia.matches) {
           dismissDesktopDropdown(link.closest('.bm-nav-dropdown'));
         }
       });
@@ -291,7 +309,8 @@
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-haspopup', 'true');
       toggle.addEventListener('click', function(e) {
-        if (nav.classList.contains('open')) {
+        this.closest('.bm-nav-dropdown').classList.remove('bm-nav-dropdown-dismissed');
+        if (nav.classList.contains('open') || lastPointerType === 'touch' || lastPointerType === 'pen') {
           var dd = this.closest('.bm-nav-dropdown');
           if (!dd.classList.contains('is-open')) {
             e.preventDefault();
@@ -307,6 +326,9 @@
           }
         }
       });
+    });
+    document.addEventListener('pointerdown', function(e) {
+      if (!drawerMedia.matches && !nav.contains(e.target)) closeMenu();
     });
   }
 

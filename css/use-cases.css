@@ -684,7 +684,7 @@ body.uc-v2 { overflow-x: clip; }
   grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
   gap: 64px; align-items: start;
 }
-.uc-v2 .uc-why-body { max-width: 760px; }   /* 本文の読みやすい最大幅 */
+.uc-v2 .uc-why-body { min-width: 0; max-width: 760px; }   /* 本文の読みやすい最大幅 */
 
 /* --- 右カラム: 効果データの数字を抜き出したサイドカード（本文の余白を埋める） --- */
 .uc-v2 .uc-why-aside {
@@ -783,7 +783,7 @@ body.uc-v2 { overflow-x: clip; }
 }
 
 @media (max-width: 960px) {
-  .uc-v2 .uc-why-grid { grid-template-columns: 1fr; gap: 40px; }
+  .uc-v2 .uc-why-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .uc-v2 .uc-why-aside { position: static; }
 }
 

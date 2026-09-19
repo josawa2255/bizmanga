@@ -192,6 +192,8 @@
     var rafId  = null;
 
     function computeTarget() {
+      // Let the full hero scroll naturally on short landscape screens.
+      if (window.matchMedia('(max-width: 1024px) and (max-height: 600px)').matches) return 0;
       /* 進捗はラッパー（Hero+ステージ）全体で測る。
          ⚠️ ステージ基準にすると、ステージが画面に達するまでの最初の1画面分
             （約100vh）のスクロールが進捗0のままになり、「スクロールし始めても

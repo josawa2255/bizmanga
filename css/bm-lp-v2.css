@@ -474,7 +474,11 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   box-shadow: var(--lpv2-shadow-panel-sm);
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 100%;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .lpv2-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--lpv2-rule); }
 .lpv2-btn:active { transform: translate(0, 0); box-shadow: 2px 2px 0 var(--lpv2-rule); }

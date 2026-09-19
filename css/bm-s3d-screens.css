@@ -33,7 +33,7 @@
   box-sizing: border-box;
   z-index: 1;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-stage {
     min-height: auto;
     padding-top: 24px;
@@ -153,7 +153,7 @@
     0 60px 80px -20px rgba(0,0,0,0.35);
 }
 .s3d-screen.is-ready { opacity: 1; }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* SP: PC とほぼ同じディテール (タイル自体が 220-300px と十分大きいため) */
   .s3d-screen { border-radius: 36px; border-width: 6px; width: var(--s3d-tile-w); height: var(--s3d-tile-h); }
 }
@@ -172,7 +172,7 @@
   pointer-events: none;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.9);
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-notch { top: 8px; height: 20px; max-width: 85px; border-radius: 14px; }
 }
 
@@ -190,7 +190,7 @@
   pointer-events: none;
   mix-blend-mode: difference;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-home-indicator { bottom: 6px; height: 3px; max-width: 100px; }
 }
 
@@ -406,7 +406,7 @@
   letter-spacing: 0.02em;
   line-height: 1.2;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-heading {
     max-width: 100%;
     width: 100%;
@@ -424,17 +424,17 @@
   transform-origin: 50% 0%;
   /* タイル幅は原寸 280px 前後を中心に viewport に追従。
      アスペクト比は 280:580 (≒1:2.07) を維持 */
-  --s3d-tile-w: clamp(260px, 19vw, 320px);
+  --s3d-tile-w: clamp(220px, 19vw, 320px);
   --s3d-tile-h: calc(var(--s3d-tile-w) * 580 / 280);
   /* タイルは控えめサイズ、gap で 3 端末を viewport 幅いっぱいに広げる */
-  --s3d-gap: clamp(40px, 8vw, 220px);
+  --s3d-gap: clamp(24px, 5vw, 120px);
   /* ラベルを screens の真上にフロー積み上げ */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 18px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-screens-wrap {
     /* SP: 1 カラム縦並び。説明テキストを端末の真上に確実に積む。
        Z字 = 端末の左右配置を行ごとに切替 (端末1=左, 端末2=右, 端末3=左) */
@@ -466,7 +466,7 @@
   align-items: end;
 }
 /* SP: 1 カラム縦並び。ラベル → 端末 を 3 セット中央に積む (真っ直ぐ) */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-labels {
     position: static;
     display: contents;
@@ -503,7 +503,7 @@
   max-width: 100%;
 }
 .s3d-heading-row h2 { margin: 0; }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* SP では h2 と CTA を縦に積む（横並びだと 393px に収まらず CTA がスマホ画像に被る） */
   .s3d-heading-row {
     display: flex;
@@ -556,7 +556,7 @@
   box-shadow: 4px 5px 17px -4px rgba(var(--bm-accent-rgb), 0.5);
 }
 .s3d-heading-cta:hover::before { width: 260%; }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-heading-cta { padding: 11px 24px; font-size: 12px; }
 }
 
@@ -590,7 +590,7 @@
 }
 /* 説明文は SP のみ表示 (PC では情報過多になるため非表示) */
 .s3d-label-desc { display: none; margin: 0; }
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* SP: ラベルは端末の真上、端末と同じ横幅で中央寄せ */
   .s3d-label {
     width: var(--s3d-tile-w);
@@ -640,7 +640,7 @@
   50% { transform: translateY(10px); opacity: 0.3; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .s3d-screens { margin-bottom: 0; }
   .s3d-screens-wrap { text-align: center; }
 }

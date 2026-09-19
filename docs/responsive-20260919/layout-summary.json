@@ -1,0 +1,617 @@
+{
+  "uniqueConditions": 2222,
+  "failures": [],
+  "provenance": [
+    "all/results.json",
+    "layout-final/results.json (supersedes bizanime.html, column/index.html, works.html)",
+    "critical-final/results.json (12 HTML with critical CSS updated; 264 passing reruns)"
+  ],
+  "pages": [
+    {
+      "page": "404.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "artists.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "biz-library.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "bizanime.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column-detail.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/1koma-business-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/4koma-business-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/4koma-manga-beginner.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-4koma-lead-generation.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-manga-cvr-saas-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-manga-cvr-saas.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-manga-features.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-manga-lp-lead-generation.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/btob-video-parapara-manga-roi.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-demerit.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-effect.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-production-guide-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-production-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-sales-recruiting.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/business-manga-types-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/comic-creation-tool-business.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/company-newsletter-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/index.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/ir-manga-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-ad-roi.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-ad-selection.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-case-study.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-flyer.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-inhouse-vs-outsourcing.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-lp-vs-standard-lp.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-marketing-btob-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-plot-guide-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/manga-production-cost.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/philosophy-manga-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/recruitment-manga-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/sales-material-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/seo-manga-memory-retention.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/service-explainer-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/training-manga-production-checklist.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/vertical-manga-business.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/what-is-business-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/whitepaper-manga-guide.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/why-business-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "column/x-twitter-business-manga-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "company-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "contact.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "embed-viewer.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "faq.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "inbound-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "index.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "ir-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "manga-ad-lp.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "manga-production-company.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "manga-types.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "news-detail.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "news.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "pricing.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "privacy-policy.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "product-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "recruit-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "sales-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "strength.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "testimonial-detail.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "testimonials.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "training-manga.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "use-cases.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/asobi-kyary.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/birdman.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/bms-unso.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/ad.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/company.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/ir.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/product.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/recruit.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/sales.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/category/training.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/diamond.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/gaudia-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/gaudia-3.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/gaudia-4.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/gaudia.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/hamada-masatada.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/hana.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/ichinohe-home.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/lady-column.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/life-buzfes.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/macnica-ai-school.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/mama-saiyo.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-2.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-3.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-4.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-5.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-english.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-new.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja-rohto.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/omatome-ninja.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/seko.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/torutoru-kun.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    },
+    {
+      "page": "works/uike-law.html",
+      "chromium": 18,
+      "webkit": 4,
+      "pass": true
+    }
+  ]
+}
