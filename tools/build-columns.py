@@ -26,10 +26,11 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
 from html.parser import HTMLParser
+from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
 DESC_OVERRIDES = {
-    "business-manga-production-guide": "ビジネスマンガ制作の完全ガイド。企画ヒアリング・シナリオ設計・ネーム・作画・修正・納品の7ステップと、業界相場40,000〜100,000円/ページに対するビズマンガ16,600円〜の透明料金体系を解説。発注前に読むべき完全マニュアル。",
+    "business-manga-production-guide": "ビジネスマンガ制作の完全ガイド。企画ヒアリング・シナリオ設計・ネーム・作画・修正・納品の7ステップと、業界相場40,000〜100,000円/ページに対するビズマンガ1ページ25,740円〜（税抜・原稿料別途）の透明料金体系を解説。発注前に読むべき完全マニュアル。",
 }
 
 
@@ -170,11 +171,11 @@ class _Sanitizer(HTMLParser):
         self.out.append(html.escape(data, quote=False))
 
 
-def normalize_brand_text(text):
+def normalize_brand_text(text, *, prices=True):
     """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
     - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
       （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
-    - 旧ページ単価 14,700円 → 16,600円（料金マスター pricing.html 準拠。BUGS #038系）
+    - 旧料金コピー → 現行基本料金25,740円〜（税抜・原稿料別途）
     WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
     """
     if not text:
@@ -192,8 +193,7 @@ def normalize_brand_text(text):
     text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
     text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
     text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
-    text = text.replace('14,700', '16,600').replace('14700', '16,600')
-    return text
+    return normalize_price_text(text) if prices else text
 
 
 def sanitize_content_html(raw):
@@ -203,7 +203,8 @@ def sanitize_content_html(raw):
     p = _Sanitizer()
     p.feed(raw)
     p.close()
-    return normalize_brand_text("".join(p.out))
+    # 料金文言がstrong等で分かれていても揃える。タグ・URLは変更しない。
+    return normalize_brand_text(normalize_price_html("".join(p.out)), prices=False)
 
 
 def fetch_json(url):
@@ -301,7 +302,7 @@ def build_toc_and_inject_ids(content_html):
 def build_card(c):
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
-    title_ja = c.get("title_ja", "")
+    title_ja = normalize_price_text(c.get("title_ja", ""))
     category = c.get("category") or "その他"
     excerpt = normalize_brand_text(c.get("excerpt_ja", ""))
     date = c.get("date", "")
@@ -363,8 +364,8 @@ def update_column_html(columns):
         "categories": sorted_cats,
         "featured": {
             "slug": make_slug(featured),
-            "title": featured.get("title_ja", ""),
-            "excerpt": featured.get("excerpt_ja", ""),
+            "title": normalize_price_text(featured.get("title_ja", "")),
+            "excerpt": normalize_price_text(featured.get("excerpt_ja", "")),
             "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
             "category": featured.get("category") or "",
             "date": featured.get("date", ""),
@@ -395,7 +396,7 @@ def update_column_html(columns):
                 "@type": "ListItem",
                 "position": i,
                 "url": f"{SITE}/column/{make_slug(c)}",
-                "name": c.get("title_ja") or str(c["id"]),
+                "name": normalize_price_text(c.get("title_ja") or str(c["id"])),
             }
             for i, c in enumerate(columns, start=1)
         ],
@@ -419,7 +420,7 @@ def update_column_html(columns):
 
 def build_detail_page(col, detail_data, template):
     slug = make_slug(col)
-    title_ja = col.get("title_ja") or slug
+    title_ja = normalize_price_text(col.get("title_ja") or slug)
     thumb = col.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     category = col.get("category") or ""
     date = col.get("date") or ""
@@ -557,6 +558,7 @@ def update_sitemap(columns):
 
 
 def main():
+    write_browser_script()
     try:
         columns = fetch_columns()
     except Exception as e:

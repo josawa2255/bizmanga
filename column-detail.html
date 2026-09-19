@@ -369,6 +369,7 @@ p{margin:0 0 16px;}
   <script src="js/bm-kinsoku.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/bm-wp-config.js" defer></script>
+  <script src="/js/bm-pricing.js" defer></script>
   <script defer>
     document.addEventListener('DOMContentLoaded', async function() {
       var params = new URLSearchParams(window.location.search);
@@ -399,7 +400,7 @@ p{margin:0 0 16px;}
           }
           throw new Error('HTTP ' + res.status);
         }
-        var data = await res.json();
+        var data = window.bmPricing.post(await res.json());
 
         /* プレビュー表示バナー（画面上部・閉じれない） */
         if (isPreview) {
@@ -506,7 +507,7 @@ p{margin:0 0 16px;}
       try {
         var res = await fetch(apiBase + '/columns?site=bizmanga&per_page=50');
         if (!res.ok) return;
-        var all = await res.json();
+        var all = window.bmPricing.post(await res.json());
         var sameCat = all.filter(function(c) { return c.id !== parseInt(currentId) && c.category === category; });
         var others = all.filter(function(c) { return c.id !== parseInt(currentId) && c.category !== category; });
         var related = sameCat.concat(others).slice(0, 3);

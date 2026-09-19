@@ -13,6 +13,7 @@ import sys
 import urllib.request
 from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
+from bm_pricing import normalize_price_text
 
 API_BASE = "https://cms.contentsx.jp/wp-json/contentsx/v1"
 SITE_URL = "https://bizmanga.contentsx.jp"
@@ -41,6 +42,9 @@ def build_item(post, kind):
     slug = post.get("slug", "")
     title = post.get("title_ja", "").strip()
     excerpt = post.get("excerpt_ja", "").strip()
+    if kind == "column":
+        title = normalize_price_text(title)
+        excerpt = normalize_price_text(excerpt)
     if not excerpt:
         excerpt = "ビジネス漫画制作の詳細記事はサイトでご覧ください。"
     date_ymd = post.get("date_ymd") or post.get("modified_ymd", "2026-01-01")

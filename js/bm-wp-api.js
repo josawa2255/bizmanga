@@ -202,6 +202,7 @@
   async function loadColumns() {
     var data = await apiFetch('/columns?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
+    if (window.bmPricing) data = window.bmPricing.post(data);
     window.BM_COLUMNS_DATA = data;
 
     var grid = document.getElementById('bmColumnGrid');
