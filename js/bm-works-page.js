@@ -79,6 +79,8 @@
       card.addEventListener('click', function(ev) {
         // Cmd/Ctrl+Click, 中クリックは個別ページへ
         if (ev.ctrlKey || ev.metaKey || ev.button === 1) return;
+        // WP待機中・取得失敗時も、データ未取得の作品は静的詳細ページを開ける。
+        if (!worksMap[workId]) return;
         ev.preventDefault();
         openWorkDetail(workId);
       });
