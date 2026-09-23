@@ -13,7 +13,7 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); gtag('event', 'conversion', {'send_to': 'AW-18108125426/9tNKCNH49agcEPKh0LpD'}); });
+    window.addEventListener('load', function() { gtag('js', new Date()); gtag('config', 'G-Q1T3033Q3W'); gtag('config', 'AW-18108125426'); });
   </script>
   <!-- Microsoft Clarity (load後・render-blocking解消) -->
   <script type="text/javascript">
@@ -21,13 +21,13 @@
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wd18nkhvy8");
   });
   </script>
-  <title>ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】最短即日返答｜ビズマンガ</title>
+  <title>ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】｜ビズマンガ</title>
   <meta name="description" content="ビジネス漫画制作のご相談・お見積もりを完全無料で受付中。初回30分のヒアリングで貴社の課題に最適な企画を無料提案。メール・LINE・Zoom対応、2〜3営業日以内に担当者から返信します。LINEでの気軽な相談も歓迎。まずはお気軽にどうぞ。">
   <meta name="keywords" content="ビジネス漫画 相談,漫画制作 問い合わせ,マンガ制作 見積もり,LINE 相談,無料相談">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://bizmanga.contentsx.jp/contact">
 <!-- OG Tags -->
-  <meta property="og:title" content="ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】最短即日返答｜ビズマンガ">
+  <meta property="og:title" content="ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】｜ビズマンガ">
   <meta property="og:description" content="ビジネス漫画制作のご相談・お見積もりを完全無料で受付中。初回30分のヒアリングで貴社の課題に最適な企画を無料提案。メール・LINE・Zoom対応、2〜3営業日以内に担当者から返信します。LINEでの気軽な相談も歓迎。まずはお気軽にどうぞ。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://bizmanga.contentsx.jp/contact">
@@ -41,7 +41,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:creator" content="@Bizmanga_">
-  <meta name="twitter:title" content="ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】最短即日返答｜ビズマンガ">
+  <meta name="twitter:title" content="ビジネス漫画制作の無料相談・お問い合わせ【初回30分無料】｜ビズマンガ">
   <meta name="twitter:description" content="ビジネス漫画制作のご相談・お見積もりを完全無料で受付中。初回30分のヒアリングで貴社の課題に最適な企画を無料提案。メール・LINE・Zoom対応、2〜3営業日以内に担当者から返信します。LINEでの気軽な相談も歓迎。まずはお気軽にどうぞ。">
   <meta name="twitter:image:alt" content="ビジネス漫画制作の無料相談・お問い合わせ">
   <meta name="twitter:image" content="https://bizmanga.contentsx.jp/material/images/og/og-contact.webp">
@@ -346,9 +346,15 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
           return res.text().then(function(t) { throw new Error(t); });
         })
         .then(function() {
-          // Google広告コンバージョン: お問合せフォーム送信完了サンクス
+          // HubSpotが正常に受理した時だけ、実問い合わせとして計測する。
           if (typeof gtag === 'function') {
+            // Google広告: お問合せフォーム送信完了
             gtag('event', 'conversion', {'send_to': 'AW-18108125426/F13ECI3R3qgcEPKh0LpD'});
+            // GA4: 推奨イベント generate_lead。PIIは送らない。
+            gtag('event', 'generate_lead', {
+              'send_to': 'G-Q1T3033Q3W',
+              'method': 'contact_form'
+            });
           }
           var form = document.getElementById('bmContactForm');
           var thanks = document.createElement('div');
