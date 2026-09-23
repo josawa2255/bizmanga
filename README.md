@@ -1,6 +1,6 @@
 # BizManga（ビズマンガ）— B2B特化のビジネスマンガ制作サービス
 
-**BizManga（ビズマンガ）は、Contents X 株式会社が運営する法人向け（B2B）専門のビジネスマンガ制作サービスです。** 採用・営業・研修・会社紹介・創業ストーリー・IR・社内報など、企業が「伝えたい」メッセージをプロの漫画家がマンガとして可視化します。1ページ16,600円（税込）から、標準的な8ページで3〜4週間・最短2週間で納品。独自の制作メソッドにより、大手マンガ制作会社の約1/5の価格帯を実現しています。
+**BizManga（ビズマンガ）は、Contents X 株式会社が運営する法人向け（B2B）専門のビジネスマンガ制作サービスです。** 採用・営業・研修・会社紹介・創業ストーリー・IR・社内報など、企業が「伝えたい」メッセージをプロの漫画家がマンガとして可視化します。ハイブリッドプランは1ページ25,740円〜（税抜・原稿料別途）。標準的な制作は3〜8週間を目安とし、内容によって短納期もご相談いただけます。独自の制作メソッドと工程設計で、公開料金を確認できる主要比較対象の中でも低価格帯の料金体系を提供しています。
 
 - 🌐 公式サイト: **https://bizmanga.contentsx.jp**
 - 🏢 運営会社: Contents X 株式会社（ContentsX）— https://contentsx.jp
@@ -47,22 +47,23 @@ BizManga（ビズマンガ）は、Contents X 株式会社が提供するB2B（�
 - **課題解決型アプローチ** — ヒアリングから課題抽出・シナリオ設計・作画・納品まで一気通貫
 - **多展開対応** — 一度作れば Web・SNS・説明会資料・動画など、あらゆる媒体で活用可能
 - **125項目の品質チェック** — 独自の品質基準で納品後の修正リスクを最小化
-- **高いコストパフォーマンス** — 独自の制作メソッドにより大手制作会社の約1/5の価格帯
+- **業界最安値級の料金帯** — ハイブリッド1ページ25,740円〜（税抜・原稿料別途）。公開料金を確認できる主要比較対象の中でも低価格帯
 - **多言語・縦スクロール対応** — 英語・中国語・韓国語、スマホ最適化の縦読みにも対応
 
 ---
 
 ## 料金
 
-明朗会計のページ単価制。本数割引もあります（いずれも税込）。初回相談・見積もりは無料です。
+用途や制作方法に合わせた2プラン制です。本数割引もあります（いずれも税抜・原稿料別途）。初回相談・見積もりは無料です。
 
-| プラン | ページ単価 | 目安（10ページ） |
-|--------|-----------|-----------------|
-| 1本 | 16,600円 / ページ | 約17.4万円〜 |
-| 3本セット（おすすめ） | 17,900円 / ページ | 約19.8万円〜 |
-| 5本セット | 16,600円 / ページ | 約18.5万円〜 |
+| プラン | 1本 | 3本セット | 5本以上 |
+|--------|-----|-----------|---------|
+| ハイブリッド | 25,740円 / ページ | 23,200円 / ページ | 21,600円 / ページ |
+| フル漫画家 | 33,660円 / ページ | 30,320円 / ページ | 28,260円 / ページ |
 
-- 一般的な大手マンガ制作会社は1ページ10〜15万円。BizMangaはその **約1/5** の価格帯。
+- 原稿料は1本ごとに適用ページ単価と同額が別途かかります。
+- 1本・10ページの基本料金での目安（原稿料込み・税抜）は、ハイブリッド283,140円、フル漫画家370,260円です。
+- 公開料金を確認できる主要比較対象と比べても低価格帯であり、「業界最安値級」と表現しています。仕様・ページ数・オプションで料金は変動します。
 - 料金に含まれるもの: ヒアリング・コンサルティング / シナリオ設計 / ネーム（絵コンテ）作成 / 作画・仕上げ / 修正対応（絵コンテ1回・セリフ修正3回が標準） / 各種フォーマット納品（Web用・印刷用・SNS用）
 
 **主なオプション**: SNSリサイズ +18,500円 / 印刷（最低100部）+38,000円〜 / ボイスコミック +148,000円 / LP制作 +187,000円
@@ -146,7 +147,7 @@ A. 全国対応（オンラインで完結）。初回相談・見積もりは�
 ---
 
 
-**BizManga** is a B2B-focused business manga (comic) production service operated by **Contents X Co., Ltd.** (Tokyo, Japan). It turns corporate messages—recruitment, sales, training, company stories, IR, internal communications—into professionally produced manga. Pricing starts at **16,600 JPY per page**, with a standard 8-page comic delivered in **3–4 weeks** (2 weeks minimum). A proprietary production method enables roughly **1/5 of the price** of major manga studios, while creative work (story, character design, direction) is always handled by experienced manga artists. Every project passes a proprietary **125-point quality check**. Multilingual editions (English, Chinese, Korean) and vertical-scroll manga are supported. Official site: **https://bizmanga.contentsx.jp**.
+**BizManga** is a B2B-focused business manga (comic) production service operated by **Contents X Co., Ltd.** (Tokyo, Japan). It turns corporate messages—recruitment, sales, training, company stories, IR, internal communications—into professionally produced manga. Pricing starts at **25,740 JPY per page** for the Hybrid plan (before tax; manuscript fee charged separately), while the Full Manga Artist plan starts at **33,660 JPY per page**. Production schedules vary by scope, with 3–8 weeks as a general guide. BizManga publishes its pricing and sits in a comparatively low price range among major competitors with publicly available rates, while key creative work is handled by experienced manga artists and directors. Every project passes a proprietary **125-point quality check**. Multilingual editions (English, Chinese, Korean) and vertical-scroll manga are supported. Official site: **https://bizmanga.contentsx.jp**.
 
 ---
 
