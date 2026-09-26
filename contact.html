@@ -5,7 +5,7 @@
   <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net https://contentsx-crm.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss: https://contentsx-crm.vercel.app; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
@@ -233,15 +233,6 @@ p{margin:0 0 16px;}
       var HUBSPOT_PORTAL_ID = '48367061';
       var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
-      // Contents X CRM の受信箱に問い合わせを流す（HubSpotへの送信とは独立）。
-      // CRM側は受信箱に溜めるだけで、担当者が承認して初めて会社・活動が作られる。
-      // ここのトークンは静的サイトに埋まる＝機密ではない。総当たり抑止用の門番で、
-      // 実質のスパム対策はCRM側のレート制限とハニーポット。
-      // エンドポイントは Vercel の本番URL。独自ドメイン crm.contentsx.jp は
-      // 割当が保留中（現在NXDOMAIN）のため、割当後にここを差し替える。
-      var CRM_ENDPOINT = 'https://contentsx-crm.vercel.app/api/inbound/web';
-      var CRM_TOKEN    = 'ENoK7H4O60a8KdKlTal12exoV2rqSNlIb841sj3dSeo=';
-
       // プランパラメータ自動入力
       var params = new URLSearchParams(window.location.search);
       var plan = params.get('plan');
@@ -303,35 +294,10 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
           }
         };
 
-        // CRM受信箱へも送る（HubSpotとは独立。失敗しても送信者には影響させない＝
-        // CRMが落ちていてもHubSpot側の受付とサンクス表示は従来どおり動く）
-        try {
-          fetch(CRM_ENDPOINT, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + CRM_TOKEN
-            },
-            body: JSON.stringify({
-              site: 'bizmanga',
-              company_name: company,
-              department: department,
-              full_name: fullName,
-              email: email,
-              message: message,
-              page_url: window.location.href,
-              utm_source: utmSource,
-              utm_medium: utmMedium,
-              utm_campaign: utmCampaign,
-              referrer: document.referrer || null,
-              hp: document.getElementById('bmWebsite') ? document.getElementById('bmWebsite').value : ''
-            })
-          }).catch(function (err) {
-            console.warn('CRM inbound failed (ignored):', err);
-          });
-        } catch (err) {
-          console.warn('CRM inbound skipped:', err);
-        }
+        // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
+        // 送信はページ末尾で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行い、
+        // 項目は name 属性から自動判別される。ボット対策の隠し欄（#bmWebsite）も自動で認識する。
+        if (window.BizcarteInbound) window.BizcarteInbound.sendForm(e.target);
 
         var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
           + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
@@ -413,5 +379,7 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
 <script src="/js/bm-hubspot.js" defer></script>
 <!-- End of HubSpot Embed Code -->
   <script src="js/bm-fuwa.js" defer></script>
+<!-- Contents X CRM 受信箱連携（送信は上の送信処理から手動で呼ぶため data-auto="false"） -->
+<script src="https://contentsx-crm.vercel.app/embed/inbound-v1.js" data-source-key="60235146e3d11473ea106ca2b89780df" data-auto="false" async></script>
 </body>
 </html>
