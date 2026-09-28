@@ -61,6 +61,7 @@
 | 強み | `strength.html` | `bm-nav` + `bm-kinsoku` + `bm-lp-v2.js` | **2026-08-05 LP v2 デザインへ全面刷新**（旧 Bento グリッド `str-*` 独自デザインと `js/bm-strength.js` は廃止）。ヒーローは product-manga / manga-ad-lp と完全同型（`recruit-hero-v2` 全面背景 + 左コピー + pill CTA 2本）。構成: Hero→強みインデックス5枚→CH01 PROBLEM(3 pain)→BRIDGE→CH02 MECHANISM(merit 5枚・5枚目のみ横長)→CH03 PROOF(ネーム→完成 Before/After + 3 KPI)→CH04 COMPARISON(他社比較表)→CH05 FAQ(6問)+比較ガイドaside→RELATED(用途別LP 8本)→END CTA。CSS は `css/bm-lp-v2.css` + `css/strength.css`（全セレクタを `body.str-v2` でスコープ、他LPに非干渉）。**本文は他LPよりワンサイズ大きい**（悩み15.5px / 仕組み15.5px / FAQ15.5px、行長38em上限）— 読ませる文章量が多いページのため。**中央揃えの字送り補正あり**: `letter-spacing` は末尾文字の後ろにも効くため中央寄せテキストが ls/2 だけ左にズレる（SOLUTION / TO BE CONTINUED で実測 −3.0px）。`padding-left` に同量を足して相殺（`text-indent` と違い2行目以降にも効く）。**この症状は8本のLP全部に存在するが、未修正**。画像13枚は `images/strength/` に配置済み（ChatGPT Image 2.0 生成、水彩＋線画でrecruit系に統一。生成プロンプトと画風の正本は [docs/strength-image-prompts.md](docs/strength-image-prompts.md)）。**2026-08-19 セクション刷新**: 「5つの強み」はFORMATSカード型から `.str-panels`（PC上段2枚+下段3枚／タブレット2列／SP1列）のコマ割りへ変更。「お悩み」は `.str-pain`（大きな数値を主役にした横並び行）へ変更し、黒/オレンジの斜め割りバナーを追加。**旧「常時表示の本文」は `.str-pain__detail`（開閉）へ移動**し、行末の締め文3つと導入の「この3つに集約されます」は削除（2026-09-16 レビューで記録）。見出し横の半分カット吹き出しと集中線は日本語固定表示に伴い常時表示する。レイアウト依存の調整は各段組でのみ適用する。パネルの浮き上がりは `@media (hover: hover)` と `prefers-reduced-motion` でガード。料金表記は現行の1ページ25,740円〜を維持。 |
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
+| 資料ダウンロード | `download.html` | `bm-nav` + `bm-tracking` + `js/bm-download.js` + CRM `inbound-v1.js` | 2026-09-28 新設。フォーム入力でサービス資料PDFをその場でダウンロード、CRM の受信箱「資料DL」へ届ける。詳細は §5.2 |
 | 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役 |
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。旧 `production-flow.html`（リダイレクト用HTML）は削除済み・sitemapにも無し |
@@ -662,6 +663,25 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - フラグを false に戻すのは **`.catch` のみ**。成功時は戻さない＝完了画面から再送信されない
 - **失敗時の文言で無条件に再送を促さない**: fetch の失敗は「応答が取れなかった」であって「届かなかった」ではない。送信直後の通信断ではサーバーに届いているため、「もう一度お試しください」と促すと重複する。現行文言は「送信結果を確認できませんでした／すでに送信が完了している場合があります」＋電話番号の案内
 
+### 5.2 資料ダウンロード（`/download`・2026-09-28 新設）
+
+会社名・氏名・メール等を入れると、その場でサービス資料（PDF）がダウンロードされるページ。**問い合わせ内容の欄は無い**。入力内容は CRM の受信箱「資料DL」の箱に届き、担当者が承認すると顧客として登録される。
+
+| 項目 | 内容 |
+|---|---|
+| ファイル | `download.html` / `css/bm-download.css`（`.bm-dl-*`）/ `js/bm-download.js`。入力欄・送信ボタンはお問い合わせと同じ部品（`.bm-form-*` / `.cb-submit`） |
+| 資料 | `material/docs/bizmanga-service-guide-202609.pdf`（全22ページ・約6.2MB。元は Canva 書き出しの 20.4MB。画像だけを JPEG q85 に置き換えて圧縮し、透明マスク・色空間は保持、全ページを元と描画比較して差が見えないことを確認）。表紙画像 `material/images/download/bizmanga-service-guide-cover.webp`、OG `material/images/og/og-download.webp` |
+| 資料を差し替えるとき | `js/bm-download.js` の `PDF_URL` / `PDF_FILENAME`、`download.html` の `data-crm-document`（CRM に届く資料名）・ページ内の「全22ページ」「約6MB」「2026年9月版」・メタ説明を合わせて直す |
+| PDF の公開範囲 | **フォームを通らない場所（ナビ・本文）に PDF への直接リンクを置かない**。URL は `js/bm-download.js` と送信後に出す「始まらない場合」リンクだけ。`robots.txt` で `/material/docs/` を全クローラーに Disallow、sitemap にも載せない（`/download` ページ自体は sitemap・llms.txt に掲載） |
+| 項目 | 会社名（必須 `company`）/ お名前（必須 `name`）/ メール（必須 `type=email`）/ 電話（任意 `type=tel name=tel`）/ 部署名（任意 `department`＝お問い合わせと同じ name）/ プライバシーポリシー同意（必須チェックボックス）/ ハニーポット `#dlWebsite`（`name="website"`＋`tabindex="-1"`、画面外）。各欄に `data-crm-field` を付けて CRM 側の項目判別を固定している |
+| 入力チェック | ブラウザ標準（必須・`type=email`・同意）に加えて、`js/bm-download.js` がドメインに「.」の無いメール（`a@b`）を `setCustomValidity` で止める。二重送信ガードは §5.1 と同じフラグ方式 |
+| 送信の順番 | 入力チェック通過後 ①HubSpot（`SEND_TO_HUBSPOT`）②CRM（`BizcarteInbound.sendForm(form)`）③PDF のダウンロード開始（`<a download>` をクリック）＋お礼と「始まらない場合」リンクを表示。**①②の応答は待たない**（失敗してもダウンロードは止めない） |
+| CRM | `download.html` の `</body>` 直前で `https://contentsx-crm.vercel.app/embed/inbound-v1.js`（`data-source-key`＝本サイトの公開キー・`data-auto="false"`・`async`）を読み込む。フォームの目印 `<form id="download-form" data-crm-form="download" data-crm-document="ビズマンガ サービス資料（2026年9月版）">` により、送信本文に `form_kind: "download"` と資料名が付く（スクリプト v1.1 以降）。CSP は `download.html` の `script-src`／`connect-src` に CRM ドメインを追加済み。⚠️ **CRM 側の設定（設定＞プラグイン＞ホームページ連携）で「資料ダウンロード」がオンでないと受け付けられない** |
+| HubSpot | お問い合わせと同じフォーム（Portal `48367061` / Form `b6da14d0-…`）に、**お問い合わせと同じ項目の組み合わせ**（company / busyo / lastname / firstname / email / message）で送る。HubSpot 側に「資料DL」を表す欄が無いため、`message` の先頭に `【資料ダウンロード】<資料名>` と電話番号・流入元を入れて区別する（`pageName` は `BizManga - 資料ダウンロード`）。HubSpot 廃止（2026年11月予定）時は `js/bm-download.js` の `SEND_TO_HUBSPOT` を `false` にする |
+| 計測 | GA4・Google広告のコンバージョンは**付けていない**（付けるかは平澤さんの判断待ち。付けるなら②の直後で、お問い合わせの `generate_lead` と区別できる名前にする） |
+| 導線 | ヘッダー（`js/bm-nav.js` が「お問い合わせ」の左に `.bm-nav-dl` を差し込む。1280px 以上は文字入り、1025〜1279px は丸アイコン＋吹き出し、769〜1024px は文字入り、768px 以下は非表示）／ハンバーガーメニュー末尾（`mobileCtas` の先頭）／フッターのリンク列（`bm-nav.js` が「お問い合わせ」の直後に差し込む）／共通CTA `bm-cta.js` の3つ目のボタン `.bm-cta-btn--dl`。ヘッダー・フッターは各HTMLとテンプレートに直書きのため、**JS から1か所で足している**（テンプレート＝レビュー必須領域を触らずに生成ページにも効く）。追従CTA（`.bm-fab`）はこのページでは出さない（§7.1） |
+| レイアウト | PC（861px〜）: 左に表紙・形式と「この資料でわかること」、右にフォーム（sticky）。スマホ（〜860px）: 表紙 → フォーム → わかること の順（`grid-template-areas`。HTML も同じ順） |
+
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
@@ -746,7 +766,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 ## 7. ホームページ特殊動作
 
 ### 7.1 追従CTA（`.bm-fab`）— 全ページ共通
-- `js/bm-nav.js` が `contact.html` / `biz-library.html` 以外の全ページで自動注入（2026-04-24〜）
+- `js/bm-nav.js` が `contact.html` / `biz-library.html` / `download.html` 以外の全ページで自動注入（2026-04-24〜。`download.html` は 2026-09-28 追加＝フォームに集中してもらうため）
   - `biz-library.html` は漫画ビューアが全画面で開くとFABが被って読書体験を阻害するため除外（[js/bm-nav.js:268](js/bm-nav.js#L268)）
 - **漫画ビューア表示中は全ページで非表示**: `body:has(.manga-modal.open) .bm-fab { display: none }` を [css/bizmanga.css](css/bizmanga.css) に定義。index/works等から漫画モーダルを開いた際も必ずFABが消える
 - **2ボタン構成**: LINEで相談（`#06C755`）/ お問い合わせ（`var(--bm-accent)`）

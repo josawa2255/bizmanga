@@ -108,6 +108,7 @@ BizMangaの独自の制作メソッドは、著作権リスクを最小化する
 - [コラム](https://bizmanga.contentsx.jp/column) — ビジネス漫画に関する知見・ノウハウ記事
 - [よくある質問](https://bizmanga.contentsx.jp/faq) — FAQ・納期・権利関係
 - [お問い合わせ](https://bizmanga.contentsx.jp/contact) — 見積もり・相談フォーム
+- [資料ダウンロード](https://bizmanga.contentsx.jp/download) — サービス資料（PDF・22ページ：効果・料金・事例・制作の流れ）の無料ダウンロード
 - [プライバシーポリシー](https://bizmanga.contentsx.jp/privacy-policy) — 個人情報の取り扱い
 
 ## コラム記事

@@ -39,6 +39,15 @@
               '</span>' +
             '</span>' +
           '</a>' +
+          // 資料ダウンロード（/download）: 相談の前に資料だけ見たい人向けの控えめな3つ目
+          '<a href="/download" class="bm-cta-btn bm-cta-btn--dl" data-tooltip="無料でダウンロード">' +
+            '<span class="bm-btn-wrap">' +
+              '<span class="bm-btn-text">資料ダウンロード</span>' +
+              '<span class="bm-btn-icon">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>' +
+              '</span>' +
+            '</span>' +
+          '</a>' +
         '</div>' +
         '<div class="bm-cta-badges">' +
           '<span class="bm-cta-badge"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> 2〜3営業日以内に返信</span>' +

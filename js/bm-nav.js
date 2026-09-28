@@ -190,7 +190,7 @@
     }
   });
 
-  // ===== モバイル専用CTA: LINE + 電話 (ハンバーガーメニューの末尾に追加) =====
+  // ===== モバイル専用CTA: 資料ダウンロード + LINE + 電話 (ハンバーガーメニューの末尾に追加) =====
   function buildSvg(pathD) {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
@@ -205,7 +205,9 @@
   }
   var PATH_LINE = 'M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z';
   var PATH_TEL = 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z';
+  var PATH_DL = 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z';
   var mobileCtas = [
+    { href: '/download', label: '資料ダウンロード', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--dl', pathD: PATH_DL },
     { href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831', label: 'LINEで相談', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
     { href: 'tel:03-6261-0764', label: '03-6261-0764 に電話', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
   ];
@@ -687,8 +689,9 @@
     }, { passive: true });
   }
 
-  // ===== 追従CTA（LINE + お問い合わせ）— contact.html / biz-library.html 以外 =====
-  if (currentFile !== 'contact' && currentFile !== 'biz-library') {
+  // ===== 追従CTA（LINE + お問い合わせ）— contact.html / biz-library.html / download.html 以外 =====
+  // （フォームのページでは入力に集中してもらうため出さない）
+  if (currentFile !== 'contact' && currentFile !== 'biz-library' && currentFile !== 'download') {
     var svgNS = 'http://www.w3.org/2000/svg';
     function buildFabBtn(opts) {
       var a = document.createElement('a');
@@ -763,6 +766,61 @@
     document.body.appendChild(fab);
   }
 
+})();
+
+/* =====================================================================
+ * 資料ダウンロード（/download）への導線（2026-09-28）
+ * ---------------------------------------------------------------------
+ * ヘッダーの「お問い合わせ」の左にボタンを、フッターのリンク列に1行を差し込む。
+ * ヘッダー・フッターは各HTMLとビルド用テンプレート（tools/templates/）に直書きされて
+ * いるため、ここで1か所から足す（静的ページ・build-* が生成するページの全てに効く）。
+ * スマホのメニュー（ハンバーガー）末尾は上の main IIFE の mobileCtas に入れてある。
+ * 表示の出し分け（1280px 未満はアイコンのみ・768px 以下は非表示）は bizmanga.css の .bm-nav-dl。
+ * ⚠️ main IIFE は #bmNav が無いページで早期 return するので、ここは独立させる。
+ * ===================================================================== */
+(function () {
+  var DL_HREF = '/download';
+  var isDownloadPage = /^\/download(\.html)?\/?$/.test(location.pathname);
+
+  var right = document.querySelector('.bm-header-right');
+  if (right && !right.querySelector('.bm-nav-dl')) {
+    var a = document.createElement('a');
+    a.href = DL_HREF;
+    a.className = 'bm-nav-dl';
+    a.setAttribute('aria-label', '資料ダウンロード');
+    a.setAttribute('data-tooltip', '資料ダウンロード');
+    if (isDownloadPage) a.setAttribute('aria-current', 'page');
+
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '18');
+    svg.setAttribute('height', '18');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z');
+    svg.appendChild(path);
+    a.appendChild(svg);
+
+    var label = document.createElement('span');
+    label.className = 'bm-nav-dl__label';
+    label.textContent = '資料ダウンロード';
+    a.appendChild(label);
+
+    right.insertBefore(a, right.querySelector('.bm-nav-cta') || right.firstChild);
+  }
+
+  var footers = document.querySelectorAll('.bm-footer-links');
+  for (var i = 0; i < footers.length; i++) {
+    var links = footers[i];
+    if (links.querySelector('a[href="' + DL_HREF + '"]')) continue;
+    var link = document.createElement('a');
+    link.href = DL_HREF;
+    link.textContent = '資料ダウンロード';
+    var contact = links.querySelector('a[href="/contact"], a[href="contact"], a[href="contact.html"], a[href$="/contact"]');
+    if (contact) contact.insertAdjacentElement('afterend', link);
+    else links.appendChild(link);
+  }
 })();
 
 /* =====================================================================

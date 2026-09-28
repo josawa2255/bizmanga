@@ -24,6 +24,7 @@
 | 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
 | FAQ | faq.html | （なし） |
 | お問い合わせ | contact.html | bm-hubspot.js |
+| 資料ダウンロード | download.html | bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
 | お客様の声 | testimonials.html | bm-testimonials-page.js |
 | コラム一覧/詳細 | column.html / column-detail.html | bm-wp-api.js |
 | ニュース | news.html / news-detail.html | bm-wp-api.js |
