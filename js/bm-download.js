@@ -36,6 +36,10 @@
   var emailInput = form.elements.email;
   var submitBtn = form.querySelector('button[type="submit"]');
 
+  // 送信ボタンは download.html で disabled にしてあり、この JS が動いてから押せるようにする
+  // （JS の読み込み前・失敗時にブラウザ標準の送信で入力内容が URL や計測へ載るのを防ぐ。form も method="post"）
+  submitBtn.disabled = false;
+
   // 二重送信ガード: ボタンの disabled だけだと Enter 等の経路をすり抜ける（BUGS #046）
   var isSubmitting = false;
 
@@ -123,9 +127,24 @@
     isSubmitting = true;
     submitBtn.disabled = true;
 
+    // ボット対策の隠し欄（#dlWebsite）に値がある送信は、どこへも送らずお礼だけ出す（ボットに気付かせない）
+    var honeypot = form.elements.website;
+    if (honeypot && String(honeypot.value || '').trim()) {
+      showThanks();
+      return;
+    }
+
     if (SEND_TO_HUBSPOT) sendToHubSpot();
-    // CRM の受信箱（資料DL）へも送る。失敗してもダウンロードは止めない
-    if (window.BizcarteInbound) window.BizcarteInbound.sendForm(form);
+    // CRM の受信箱（資料DL）へも送る。外部のスクリプトなので try で囲む（壊れていてもダウンロードは止めない）
+    try {
+      if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
+        window.BizcarteInbound.sendForm(form);
+      } else {
+        console.warn('CRM inbound script not loaded; skipped CRM send (download continues)');
+      }
+    } catch (err) {
+      console.warn('CRM inbound failed (ignored):', err);
+    }
 
     startDownload();
     showThanks();

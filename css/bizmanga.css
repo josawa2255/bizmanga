@@ -833,6 +833,12 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
   outline: 2px solid var(--bm-accent);
   outline-offset: 3px;
 }
+/* ビズアニメのページは 1024px 以下でヘッダーが黒（css/bizanime.css）。黒地に黒で見えなくならないよう白抜きにする */
+@media (max-width: 1024px) {
+  body.ba-page .bm-nav-dl { color: #fff; border-color: rgba(255,255,255,.7); }
+  body.ba-page .bm-nav-dl:hover,
+  body.ba-page .bm-nav-dl[aria-current="page"] { background: #fff; color: #1a1a1a; }
+}
 @media (max-width: 1100px) {
   .bm-nav-dl { padding: 0 14px; font-size: 13px; }
 }
