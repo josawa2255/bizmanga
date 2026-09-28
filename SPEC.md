@@ -839,6 +839,11 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - 画像参照: ContentX側の `https://contentsx.jp/material/images/{clients,partners}/...` を絶対URLで参照（[[reference_bugs_md]] #020 同様、ContentX/material/ の画像を消すときは両サイトgrep必須）
 - レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
+- キャンペーン見出し（`.bm-campaign-link`）⭐2026-09-29 更新: 月桂冠SVG付きで「**[Chatworkロゴ]広告限定シナリオ制作無料キャンペーン実施中**」を表示し `/contact` へリンク（旧「9月限定」→ Chatwork広告限定へ切替、#52）
+  - 「Chatwork」は文字ではなく公式ロゴ画像 `material/images/campaign/chatwork-logo.webp`（背景透過・実寸350×70。ユーザー支給PNGの白背景を、各画素を白＋ブランド2色〈紺#16202E／赤#DD494E〉の混色として解いて透過化＝輪郭の白フチなし）。`<img>` は `width="350" height="70"`（実比5:1、[BUGS.md #023](../BUGS.md)）、表示は `height:1.25em`、`alt="Chatwork"`
+  - 改行: PC（769px〜）は1行。SP（≤768px）は `.bm-campaign-br` で「ロゴ+広告限定／シナリオ制作無料／キャンペーン実施中」の3行
+  - `.bm-campaign-cw`（ロゴ+広告限定）は `word-break:keep-all`。`nowrap` にすると320〜390px×Android文字拡大1.4倍で月桂冠に被るため、入り切らない時だけロゴ直後で折り返す（1.0/1.4/1.6倍×320〜768pxで溢れなしを実測）
+  - 文言変更時は index.html の `<span>` と `aria-label` の2箇所を更新。`<title>`/OGの【シナリオ制作無料】は別管理
 
 ### 7.2c 対談・動画セクション（`.bm-videos` / `#videos`）⭐2026-08-29追加
 - 位置: ニュース（`#news`）の直後、コラム（`#columns`）の直前
