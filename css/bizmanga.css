@@ -801,6 +801,87 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
 .bm-nav-cta--line:hover::before { width: 260%; }
 .bm-nav-cta-line-icon { flex-shrink: 0; }
 
+/* 資料ダウンロード（js/bm-nav.js が .bm-nav-cta の左に差し込む）: お問い合わせより控えめなダークのアウトライン。
+   ナビ9項目との間隔は 1025px 幅で約115px しかないため、1025〜1279px はアイコンのみ（下の @media）。
+   ナビが消える 769〜1024px は余裕があるので文字入りに戻し、768px 以下は非表示（メニュー内の導線を使う） */
+.bm-nav-dl {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #1a1a1a;
+  border-radius: 50px;
+  background: transparent;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.bm-nav-dl svg { flex-shrink: 0; }
+.bm-nav-dl:hover,
+.bm-nav-dl[aria-current="page"] {
+  background: #1a1a1a;
+  color: #fff;
+}
+.bm-nav-dl:hover { transform: translateY(-1px); }
+.bm-nav-dl:focus-visible {
+  outline: 2px solid var(--bm-accent);
+  outline-offset: 3px;
+}
+/* ビズアニメのページは 1024px 以下でヘッダーが黒（css/bizanime.css）。黒地に黒で見えなくならないよう白抜きにする */
+@media (max-width: 1024px) {
+  body.ba-page .bm-nav-dl { color: #fff; border-color: rgba(255,255,255,.7); }
+  body.ba-page .bm-nav-dl:hover,
+  body.ba-page .bm-nav-dl[aria-current="page"] { background: #fff; color: #1a1a1a; }
+}
+@media (max-width: 1100px) {
+  .bm-nav-dl { padding: 0 14px; font-size: 13px; }
+}
+@media (min-width: 1025px) and (max-width: 1279px) {
+  .bm-nav-dl { width: 44px; padding: 0; }
+  .bm-nav-dl__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* アイコンだけのときは、ほかの丸アイコン（.bm-cta-tooltip）と同じ吹き出しで名前を出す */
+  .bm-nav-dl::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.3s ease, opacity 0.25s ease;
+    z-index: 5;
+  }
+  .bm-nav-dl:hover::after,
+  .bm-nav-dl:focus-visible::after {
+    top: calc(100% + 10px);
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .bm-header-right .bm-nav-dl { display: none; }
+}
+
 /* ===== ヘッダー右上 3CTA(丸アイコン): お問い合わせ / LINE / 電話 =====
    PC: 白丸アイコン+ツールチップ(ホバーで上に浮上&ブランドカラー化)
    SP: 既存のピル形ボタンに切替(下部 @media max-width:768px で上書き)
@@ -3450,6 +3531,19 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   box-shadow: 0 12px 32px rgba(6,199,85,0.45);
   transform: translateY(-2px);
 }
+
+/* 資料ダウンロード: 白枠のゴースト（相談ボタンより控えめ）。オレンジ地に白文字だと
+   コントラストが足りないため、下地を少し暗くして白文字を読みやすくする */
+.bm-cta-btn--dl {
+  background: rgba(0,0,0,0.18);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.9);
+}
+.bm-cta-btn--dl .bm-btn-text,
+.bm-cta-btn--dl .bm-btn-icon { color: #fff; }
+.bm-cta-btn--dl:hover {
+  background: rgba(0,0,0,0.28);
+  transform: translateY(-2px);
+}
 /* --- Trust Badges --- */
 .bm-cta-badges {
   display: flex;
@@ -4965,6 +5059,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   }
   .bm-nav.open .bm-nav-mobile-cta--line { color: #06C755; }
   .bm-nav.open .bm-nav-mobile-cta--tel  { color: var(--bm-accent); }
+  .bm-nav.open .bm-nav-mobile-cta--dl   { color: #1a1a1a; }
   .bm-nav.open .bm-nav-mobile-cta:active { background: rgba(0, 0, 0, 0.04); }
   .bm-nav.open .bm-nav-mobile-cta svg { flex-shrink: 0; }
   /* ドロップダウン矢印 */

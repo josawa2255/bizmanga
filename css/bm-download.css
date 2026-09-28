@@ -1,0 +1,251 @@
+/* ============================================
+   資料ダウンロード（download.html）
+   入力欄・送信ボタンはお問い合わせと同じ部品（.bm-form-* / .cb-submit、bizmanga.css）を使い、
+   ここではページの配置と資料の紹介部分だけを定義する。
+   ============================================ */
+.bm-dl-page {
+  padding: clamp(40px, 6vw, 72px) 0 clamp(64px, 8vw, 104px);
+}
+/* PC: 左に「表紙・形式」と「わかること」、右にフォーム（2行ぶち抜き）。
+   スマホ: 表紙 → フォーム → わかること の順（フォームまでのスクロールを短くする）。
+   HTML もこの順（表紙 → フォーム → わかること）に並べてあり、キーボード操作の順と一致する */
+.bm-dl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-areas:
+    "visual form"
+    "points form";
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(32px, 5vw, 64px);
+  row-gap: 0;
+  align-items: start;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.bm-dl-grid > * { min-width: 0; }
+.bm-dl-visual { grid-area: visual; }
+.bm-dl-card { grid-area: form; }
+.bm-dl-points { grid-area: points; }
+
+/* --- 資料の紹介（左） --- */
+.bm-dl-cover {
+  margin: 0 0 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.bm-dl-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.bm-dl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+}
+.bm-dl-meta li {
+  padding: 4px 12px;
+  border: 1px solid rgba(var(--bm-accent-rgb), 0.25);
+  border-radius: 999px;
+  background: var(--bm-accent-light);
+  color: var(--bm-accent-deep);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.bm-dl-points h2 {
+  margin: 0 0 20px;
+  color: #000;
+  font-size: var(--fs-xl);
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+.bm-dl-points ol {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: bm-dl;
+}
+.bm-dl-points li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.bm-dl-points li::before {
+  counter-increment: bm-dl;
+  content: counter(bm-dl, decimal-leading-zero);
+  color: var(--bm-accent-deep);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.6;
+}
+.bm-dl-points strong {
+  display: block;
+  color: #000;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.bm-dl-points li span {
+  display: block;
+  color: var(--bm-text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+
+/* --- フォーム（右） --- */
+.bm-dl-card {
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid var(--bm-border);
+  border-radius: var(--bm-radius);
+  background: #fff;
+  box-shadow: var(--bm-card-shadow);
+}
+.bm-dl-card h2 {
+  margin: 0 0 6px;
+  color: #000;
+  font-size: var(--fs-lg);
+  word-break: auto-phrase;
+  line-break: strict;
+}
+.bm-dl-lead {
+  margin: 0 0 24px;
+  color: var(--bm-text-muted);
+  font-size: 14px;
+}
+.bm-dl-card .bm-form-group { margin-bottom: 20px; }
+.bm-form-label .bm-optional {
+  margin-left: 6px;
+  color: var(--bm-text-muted);
+  font-size: 11px;
+}
+.bm-dl-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 4px 0 24px;
+  color: var(--bm-text);
+  font-size: 14px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.bm-dl-consent input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--bm-accent);
+  cursor: pointer;
+}
+.bm-dl-consent a {
+  color: var(--bm-accent-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bm-dl-submit {
+  width: 100%;
+  justify-content: center;
+}
+.bm-dl-note {
+  margin: 12px 0 0;
+  color: var(--bm-text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+/* ボット対策の隠し欄: display:none を無視するボットがいるため画面外に飛ばす */
+.bm-dl-hp {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* --- 送信後 --- */
+.bm-dl-thanks { text-align: center; }
+.bm-dl-thanks:focus { outline: none; }
+.bm-dl-thanks__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: var(--bm-accent-light);
+  color: var(--bm-accent-deep);
+}
+.bm-dl-thanks__title {
+  margin: 0 0 8px;
+  color: #000;
+  font-size: var(--fs-lg);
+  font-weight: 900;
+}
+.bm-dl-thanks p {
+  font-size: 14px;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+.bm-dl-thanks__fallback a {
+  color: var(--bm-accent-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bm-dl-thanks__next {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--bm-border);
+}
+.bm-dl-thanks__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 50px;
+  background: var(--bm-accent-deep);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  transition: background 0.3s, transform 0.25s;
+}
+.bm-dl-thanks__cta:hover {
+  background: #9c3700;
+  transform: translateY(-1px);
+}
+
+/* 1カラム: 表紙 → フォーム → わかること の順に縦へ積む */
+@media (max-width: 860px) {
+  .bm-dl-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "visual"
+      "form"
+      "points";
+    grid-template-rows: none;
+  }
+  .bm-dl-meta { margin-bottom: 24px; }
+  .bm-dl-points { margin-top: 48px; }
+}
+/* 2カラム時はフォームを追従させ、左の説明を読みながら入力できるようにする */
+@media (min-width: 861px) {
+  .bm-dl-card {
+    position: sticky;
+    top: 96px;
+  }
+}

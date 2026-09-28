@@ -46,6 +46,12 @@
     <lastmod>2026-04-24</lastmod>
   </url>
 
+  <!-- 資料ダウンロード（PDF本体 /material/docs/ は robots.txt で除外。フォームを通して配布する） -->
+  <url>
+    <loc>https://bizmanga.contentsx.jp/download</loc>
+    <lastmod>2026-09-28</lastmod>
+  </url>
+
   <!-- ニュース一覧 -->
   <url>
     <loc>https://bizmanga.contentsx.jp/news</loc>
