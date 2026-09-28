@@ -1410,7 +1410,7 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
   flex: 0 0 auto;
   text-align: center;
 }
-/* シナリオ制作無料キャンペーン: クリックでお問い合わせへ */
+/* Chatwork広告限定シナリオ制作無料キャンペーン: クリックでお問い合わせへ */
 .bm-campaign-link {
   text-decoration: none;
   color: var(--bm-accent);
@@ -1419,8 +1419,19 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
 }
 .bm-campaign-link:hover { transform: translateY(-1px); filter: brightness(1.05); }
 .bm-campaign-link:hover > span { text-decoration: underline; text-underline-offset: 4px; }
-/* キャンペーン文言: PCは1行、SPのみ「無料」と「キャンペーン」の間で改行 */
+/* キャンペーン文言: PCは1行、SPのみ「ロゴ+広告限定 / シナリオ制作無料 / キャンペーン実施中」の3行 */
 .bm-campaign-br { display: none; }
+/* Chatworkロゴ(背景透過・実寸350x70)は文字の「Chatwork」の代わり。
+   keep-all で「広告限定」は割らず、Android文字拡大で入り切らない時だけロゴの直後で折り返す
+   (nowrap だと320〜390px×1.4倍で月桂冠に被る) */
+.bm-campaign-cw { word-break: keep-all; }
+.bm-campaign-cw-logo {
+  display: inline-block;
+  height: 1.25em;
+  width: auto;
+  vertical-align: -0.26em;
+  margin-right: 0.2em;
+}
 /* 補足キャプション: 大手企業からスタートアップまで幅広くご支援 */
 .bm-client-logos-caption {
   margin: 10px auto 0;
