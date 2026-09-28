@@ -5,7 +5,7 @@
   <meta http-equiv="last-modified" content="2026-04-28T03:00:00+09:00">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net https://contentsx-crm.vercel.app; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss: https://contentsx-crm.vercel.app; frame-src https: data:; object-src 'none'; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net https://contentsx-crm.vercel.app/embed/inbound-v1.js; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
@@ -154,23 +154,23 @@ p{margin:0 0 16px;}
         <form id="bmContactForm">
           <div class="bm-form-group">
             <label class="bm-form-label"> 会社名 <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="text" id="bmCompany" name="company" placeholder="Contents X 株式会社" required>
+            <input class="bm-form-input" type="text" id="bmCompany" name="company" placeholder="Contents X 株式会社" required data-crm-field="company_name">
           </div>
           <div class="bm-form-group">
             <label class="bm-form-label">部署</label>
-            <input class="bm-form-input" type="text" id="bmDepartment" name="department" placeholder="マーケティング部">
+            <input class="bm-form-input" type="text" id="bmDepartment" name="department" placeholder="マーケティング部" data-crm-field="department">
           </div>
           <div class="bm-form-group">
             <label class="bm-form-label">お名前 <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="text" id="bmName" name="fullName" placeholder="佐藤 太郎" required>
+            <input class="bm-form-input" type="text" id="bmName" name="fullName" placeholder="佐藤 太郎" required data-crm-field="full_name">
           </div>
           <div class="bm-form-group">
             <label class="bm-form-label">メールアドレス <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="email" id="bmEmail" name="email" placeholder="example@company.com" required>
+            <input class="bm-form-input" type="email" id="bmEmail" name="email" placeholder="example@company.com" required data-crm-field="email">
           </div>
           <div class="bm-form-group">
             <label class="bm-form-label">お問い合わせ内容 <span class="bm-required">必須</span></label>
-            <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required></textarea>
+            <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required data-crm-field="message"></textarea>
           </div>
           <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
                値が入っていた送信はCRM側で黙って破棄する。
@@ -295,9 +295,18 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
         };
 
         // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
-        // 送信はページ末尾で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行い、
-        // 項目は name 属性から自動判別される。ボット対策の隠し欄（#bmWebsite）も自動で認識する。
-        if (window.BizcarteInbound) window.BizcarteInbound.sendForm(e.target);
+        // 送信はページ末尾で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行う。
+        // 項目は各欄の data-crm-field で指定、ボット対策の隠し欄はスクリプトタグの data-honeypot で指定。
+        // ⚠️ 外部のスクリプトなので try で囲む（壊れていても HubSpot の送信・完了表示・広告CVを止めない）
+        try {
+          if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
+            window.BizcarteInbound.sendForm(e.target);
+          } else {
+            console.warn('CRM inbound script not loaded; skipped CRM send (HubSpot continues)');
+          }
+        } catch (err) {
+          console.warn('CRM inbound failed (ignored):', err);
+        }
 
         var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
           + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
@@ -380,6 +389,6 @@ document.getElementById('bmContactForm').addEventListener('submit', function(e) 
 <!-- End of HubSpot Embed Code -->
   <script src="js/bm-fuwa.js" defer></script>
 <!-- Contents X CRM 受信箱連携（送信は上の送信処理から手動で呼ぶため data-auto="false"） -->
-<script src="https://contentsx-crm.vercel.app/embed/inbound-v1.js" data-source-key="60235146e3d11473ea106ca2b89780df" data-auto="false" async></script>
+<script src="https://contentsx-crm.vercel.app/embed/inbound-v1.js" data-source-key="60235146e3d11473ea106ca2b89780df" data-auto="false" data-honeypot="#bmWebsite" async></script>
 </body>
 </html>
