@@ -157,8 +157,8 @@ p{margin:0 0 16px;}
             <input class="bm-form-input" type="text" id="bmCompany" name="company" placeholder="Contents X 株式会社" required data-crm-field="company_name">
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label">部署</label>
-            <input class="bm-form-input" type="text" id="bmDepartment" name="department" placeholder="マーケティング部" data-crm-field="department">
+            <label class="bm-form-label">部署 <span class="bm-required">必須</span></label>
+            <input class="bm-form-input" type="text" id="bmDepartment" name="department" placeholder="マーケティング部" required data-crm-field="department">
           </div>
           <div class="bm-form-group">
             <label class="bm-form-label">お名前 <span class="bm-required">必須</span></label>
@@ -248,8 +248,21 @@ p{margin:0 0 16px;}
       // ボタンを経由しない送信経路をすり抜ける。フォーム単位のフラグで塞ぐ（BUGS #046）
       var bmIsSubmitting = false;
 
+      // 部署は HubSpot のフォーム側で必須（空だと送信が拒否される）。HTML の required は
+      // 空白だけの入力を通すので、送信時に前後の空白を除いて空なら止める
+      var bmDepartmentInput = document.getElementById('bmDepartment');
+      bmDepartmentInput.addEventListener('input', function () {
+        bmDepartmentInput.setCustomValidity('');
+      });
+
 document.getElementById('bmContactForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        if (!bmDepartmentInput.value.trim()) {
+          bmDepartmentInput.setCustomValidity('部署を入力してください');
+          bmDepartmentInput.reportValidity();
+          return;
+        }
 
         if (bmIsSubmitting) return;
         bmIsSubmitting = true;

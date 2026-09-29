@@ -47,6 +47,13 @@
     emailInput.setCustomValidity('');
   });
 
+  // 部署名は HubSpot のフォーム側で必須（空だと HubSpot への送信が拒否される）。
+  // HTML の required は空白だけの入力を通すので、送信時に前後の空白を除いて空なら止める
+  var departmentInput = form.elements.department;
+  departmentInput.addEventListener('input', function () {
+    departmentInput.setCustomValidity('');
+  });
+
   function value(name) {
     var el = form.elements[name];
     return el ? String(el.value || '').trim() : '';
@@ -121,6 +128,11 @@
     if (!EMAIL_RE.test(value('email'))) {
       emailInput.setCustomValidity('メールアドレスの形式をご確認ください（例: name@company.co.jp）');
       emailInput.reportValidity();
+      return;
+    }
+    if (!value('department')) {
+      departmentInput.setCustomValidity('部署名を入力してください');
+      departmentInput.reportValidity();
       return;
     }
 
