@@ -5,11 +5,17 @@
 (function() {
   'use strict';
 
+  // 二重読込でもログ・イベントリスナーを重複させない。
+  if (window.__bmTrackingInitialized) return;
+  window.__bmTrackingInitialized = true;
+
   var STORAGE_KEY = 'bm_tracking';
 
   function getTracking() {
     try {
-      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
+      var data = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
+      // null・配列・プリミティブが残っていてもフォーム用ログを壊さない。
+      return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
     } catch(e) { return {}; }
   }
 
@@ -20,7 +26,7 @@
   // ===== ページ訪問記録 =====
   var t = getTracking();
   if (!t.startTime) t.startTime = Date.now();
-  if (!t.pages) t.pages = [];
+  if (!Array.isArray(t.pages)) t.pages = [];
   var currentPage = location.pathname.replace(/\.html$/, '').replace(/^\//, '') || 'home';
   if (t.pages.indexOf(currentPage) === -1) t.pages.push(currentPage);
   saveTracking(t);
@@ -29,9 +35,12 @@
   var maxScroll = 0;
   var scrollKey = 'scroll_' + currentPage;
   window.addEventListener('scroll', function() {
-    var scrollPct = Math.round(
-      (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
-    );
+    var scrollRange = document.documentElement.scrollHeight - window.innerHeight;
+    if (scrollRange <= 0) return;
+    // 短いページのゼロ除算と、端末のオーバースクロールを除外。
+    var scrollPct = Math.max(0, Math.min(100,
+      Math.round((window.scrollY / scrollRange) * 100)
+    ));
     if (scrollPct > maxScroll) {
       maxScroll = scrollPct;
       var t = getTracking();
@@ -48,7 +57,7 @@
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           var t = getTracking();
-          if (!t[viewedKey]) t[viewedKey] = [];
+          if (!Array.isArray(t[viewedKey])) t[viewedKey] = [];
           var name = entry.target.id || entry.target.className.split(' ')[0];
           if (t[viewedKey].indexOf(name) === -1) {
             t[viewedKey].push(name);
@@ -64,7 +73,7 @@
   document.querySelectorAll('.bm-faq-q').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var t = getTracking();
-      if (!t.faqClicked) t.faqClicked = [];
+      if (!Array.isArray(t.faqClicked)) t.faqClicked = [];
       var q = btn.textContent.trim().slice(0, 30);
       if (t.faqClicked.indexOf(q) === -1) {
         t.faqClicked.push(q);
@@ -75,15 +84,72 @@
 
   // ===== 制作事例カテゴリフィルタートラッキング =====
   document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.bm-filter-btn, .filter-btn');
+    var target = e.target;
+    if (!target || typeof target.closest !== 'function') return;
+    var btn = target.closest('.bm-filter-btn, .filter-btn');
     if (!btn) return;
     var t = getTracking();
-    if (!t.categoryViewed) t.categoryViewed = [];
+    if (!Array.isArray(t.categoryViewed)) t.categoryViewed = [];
     var cat = btn.textContent.trim().replace(/\(\d+\)/, '').trim();
     if (cat && cat !== 'すべて' && t.categoryViewed.indexOf(cat) === -1) {
       t.categoryViewed.push(cat);
       saveTracking(t);
     }
+  });
+
+  // ===== 相談導線のGA4計測（クリックと送信成功は必ず別イベント） =====
+  // 既存のGoogle広告CV・generate_lead・拡張計測clickは変更しない。
+  // これらのクリックイベントは補助指標。主要CVへの登録は行わない。
+  function normalizedPath(path) {
+    return path.replace(/\/+$/, '').replace(/\.html$/, '') || '/';
+  }
+
+  function sendIntentEvent(eventName) {
+    var eventParams = {
+      send_to: 'G-Q1T3033Q3W',
+      page_path: normalizedPath(location.pathname)
+    };
+    function send() {
+      // 計測失敗がリンク遷移やフォームの操作に影響しないよう分離。
+      try {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', eventName, eventParams);
+        }
+      } catch (e) {}
+    }
+    // 既存ページのheadで登録されたload時のgtag configを先に実行する。
+    if (document.readyState === 'complete') send();
+    else window.addEventListener('load', send, { once: true });
+  }
+
+  document.addEventListener('click', function(e) {
+    // ローカル確認や自動クリックで、本番の行動指標を増やさない。
+    if (location.hostname !== 'bizmanga.contentsx.jp' || e.isTrusted === false) return;
+    if (e.button != null && e.button !== 0) return;
+    var target = e.target;
+    if (!target || typeof target.closest !== 'function') return;
+    var link = target.closest('a[href]');
+    if (!link) return;
+    var rawHref = link.getAttribute('href');
+    if (!rawHref || rawHref.charAt(0) === '#') return;
+    var url;
+    try { url = new URL(rawHref, location.href); } catch (err) { return; }
+
+    if (url.protocol === 'tel:') {
+      sendIntentEvent('phone_click');
+    } else if (url.protocol === 'https:' &&
+      (url.hostname === 'line.me' || url.hostname === 'lin.ee')) {
+      sendIntentEvent('line_click');
+    } else if (url.origin === location.origin) {
+      var path = normalizedPath(url.pathname);
+      if (path === '/contact' && normalizedPath(location.pathname) !== '/contact') {
+        sendIntentEvent('contact_link_click');
+      } else if (path === '/download' && normalizedPath(location.pathname) !== '/download') {
+        sendIntentEvent('download_link_click');
+      }
+    }
+    // 氏名・メール・電話番号・リンクの全文/クエリはイベントに付加しない。
+    // preventDefault/stopPropagationを使わず既存の導線をそのまま維持する。
   });
 
   // ===== トラッキングデータをテキスト化（フォーム送信時に使用） =====
@@ -98,7 +164,7 @@
     }
 
     // 訪問ページ
-    if (t.pages && t.pages.length > 0) {
+    if (Array.isArray(t.pages) && t.pages.length > 0) {
       lines.push('訪問ページ: ' + t.pages.join(' → '));
     }
 
@@ -115,12 +181,12 @@
     }
 
     // 閲覧FAQ
-    if (t.faqClicked && t.faqClicked.length > 0) {
+    if (Array.isArray(t.faqClicked) && t.faqClicked.length > 0) {
       lines.push('閲覧FAQ: ' + t.faqClicked.join(', '));
     }
 
     // 関心カテゴリ
-    if (t.categoryViewed && t.categoryViewed.length > 0) {
+    if (Array.isArray(t.categoryViewed) && t.categoryViewed.length > 0) {
       lines.push('関心カテゴリ: ' + t.categoryViewed.join(', '));
     }
 
