@@ -287,7 +287,8 @@ def check_dynamic_content(page, state):
         expect(page.locator(body)).to_contain_text('Safe body')
         assert page.locator(body + ' script, ' + body + ' [onerror]').count() == 0
         assert page.evaluate('window.injected !== true')
-        expect(page.locator('#url-probe')).not_to_have_attribute('href')
+        expect(page.locator('#url-probe')).to_have_count(1)
+        expect(page.locator('#url-probe[href]')).to_have_count(0)
         page.locator('#url-probe').click()
         assert page.evaluate('window.injected !== true')
         print('PASS ' + path + ': external script initialization and sanitized API content')
@@ -333,7 +334,8 @@ def check_static_content(page, state):
         lambda request: request.fulfill(content_type='text/html', body=rendered),
     )
     page.goto(state.base + '/column/url-probe', wait_until='domcontentloaded')
-    expect(page.locator('#url-probe')).not_to_have_attribute('href')
+    expect(page.locator('#url-probe')).to_have_count(1)
+    expect(page.locator('#url-probe[href]')).to_have_count(0)
     page.locator('#url-probe').click()
     assert page.evaluate('window.injected !== true')
     print('PASS static column: builder removes the executable URL before browser rendering')
