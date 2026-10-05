@@ -133,7 +133,7 @@
     }
 
     var body = modal.querySelector('.bm-tm-modal-body');
-    body.innerHTML = '<p style="text-align:center;padding:40px;color:#999;">読み込み中…</p>';
+    body.innerHTML = '<p class="bm-tm-loading">読み込み中…</p>';
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 

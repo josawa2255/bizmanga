@@ -27,7 +27,7 @@ Why:
 from bm_build import API_BASE, SITE_URL
 from bm_build import fetch_json as _fetch_json, output_batch, write_text, script_json
 from bm_build import replace_block
-import html
+from bm_build import escape_html as esc
 import json
 import pathlib
 import sys
@@ -52,10 +52,6 @@ TAG_MAP = {
 }
 
 
-def esc(s):
-    return html.escape(str(s if s is not None else ""), quote=True)
-
-
 def fetch_artists():
     return _fetch_json(API, timeout=TIMEOUT, user_agent="bizmanga-build/1.0")
 
@@ -73,7 +69,7 @@ def to_creator(a, index):
         "summary": a.get("summary") or "",
         "thumbnail": a.get("thumbnail") or "",
         "gallery": [
-            {"src": u, "alt": f"{a.get('title','')}の作例{i+1}"}
+            {"src": u, "alt": f"{a.get('title', '')}の作例{i + 1}"}
             for i, u in enumerate(a.get("gallery") or [])
         ],
         "detail": a.get("detail") or "",

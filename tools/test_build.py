@@ -1,10 +1,9 @@
 """Offline regression tests for builder boundaries and existing output contracts."""
+
 from contextlib import redirect_stdout
 from html.parser import HTMLParser
-import importlib.util
 import io
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,27 +12,21 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from bm_build import output_batch, remove_file, render_template, replace_block, safe_slug, script_json, write_text
+from bm_build import (
+    output_batch,
+    remove_file,
+    render_template,
+    replace_block,
+    safe_slug,
+    script_json,
+    write_text,
+)
+from bm_test_support import git_runner, git_test_env, load_tool as module
 from bm_content import make_slug
 from bm_html import _Sanitizer
 import bm_pricing
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def module(filename):
-    spec = importlib.util.spec_from_file_location(filename.replace('-', '_'), ROOT / 'tools' / filename)
-    result = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(result)
-    return result
-
-
-def git_test_env():
-    # Isolate test identities, config and signing from the user's setup.
-    return dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
-                GIT_AUTHOR_NAME='Test', GIT_AUTHOR_EMAIL='test@example.test',
-                GIT_COMMITTER_NAME='Test', GIT_COMMITTER_EMAIL='test@example.test',
-                GIT_TERMINAL_PROMPT='0', GIT_EDITOR='true')
 
 
 def workflow_checkout_ref(workflow):
@@ -61,7 +54,10 @@ class BuildTests(unittest.TestCase):
     def test_json_and_html_are_separate_contexts(self):
         value = 'quote " & newline\n</script>{{other}}'
         from html import escape
-        template = '<h1>{{title}}</h1><script type="application/ld+json">{"name":"{{title}}"}</script>'
+
+        template = (
+            '<h1>{{title}}</h1><script type="application/ld+json">{"name":"{{title}}"}</script>'
+        )
         result = render_template(template, {'{{title}}': escape(value), '{{other}}': 'wrong'})
         self.assertIn('<h1>' + escape(value) + '</h1>', result)
         payload = re.search(r'application/ld\+json">(.*?)</script>', result, re.S)[1]
@@ -74,14 +70,22 @@ class BuildTests(unittest.TestCase):
         title = 'quoted " title\nsecond line & more </script>'
         outputs = [
             columns.build_detail_page(
-                {'id': 1, 'slug': 'example', 'title_ja': title}, {'content': '<p>Body</p>'},
-                columns.TEMPLATE_PATH.read_text(encoding='utf-8')),
-            works.build_detail_page({'id': 'example', 'title_ja': title},
-                                   works.TEMPLATE_PATH.read_text(encoding='utf-8')),
+                {'id': 1, 'slug': 'example', 'title_ja': title},
+                {'content': '<p>Body</p>'},
+                columns.TEMPLATE_PATH.read_text(encoding='utf-8'),
+            ),
+            works.build_detail_page(
+                {'id': 'example', 'title_ja': title},
+                works.TEMPLATE_PATH.read_text(encoding='utf-8'),
+            ),
         ]
         for output in outputs:
-            docs = [json.loads(m[1]) for m in re.finditer(
-                r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', output, re.S)]
+            docs = [
+                json.loads(m[1])
+                for m in re.finditer(
+                    r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', output, re.S
+                )
+            ]
             self.assertTrue(any(d.get('headline', d.get('name')) == title for d in docs))
 
     def test_void_tags_do_not_swallow_following_content(self):
@@ -100,7 +104,9 @@ class BuildTests(unittest.TestCase):
                 if tag == case['tag']:
                     self.value = dict(attrs).get(case['attribute'])
 
-        cases = json.loads((ROOT / 'tools/fixtures/rich-html-urls.json').read_text(encoding='utf-8'))
+        cases = json.loads(
+            (ROOT / 'tools/fixtures/rich-html-urls.json').read_text(encoding='utf-8')
+        )
         for case in cases:
             with self.subTest(html=case['html']):
                 sanitizer = _Sanitizer()
@@ -112,8 +118,10 @@ class BuildTests(unittest.TestCase):
 
     def test_rich_html_rejects_literal_c0_and_del_in_urls(self):
         for codepoint in (*range(32), 127):
-            for url in (chr(codepoint) + 'javascript:window.injected=true',
-                        'java' + chr(codepoint) + 'script:window.injected=true'):
+            for url in (
+                chr(codepoint) + 'javascript:window.injected=true',
+                'java' + chr(codepoint) + 'script:window.injected=true',
+            ):
                 with self.subTest(url=repr(url)):
                     sanitizer = _Sanitizer()
                     sanitizer.feed('<a href="' + url + '">probe</a>')
@@ -135,6 +143,7 @@ class BuildTests(unittest.TestCase):
 
     def test_commit_rollback_and_unchanged_mtime(self):
         import bm_build
+
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             a, b = root / 'a.html', root / 'b.html'
@@ -166,6 +175,7 @@ class BuildTests(unittest.TestCase):
 
     def test_rollback_attempts_every_file_and_preserves_all_errors(self):
         import bm_build
+
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             a, b, c, d, new = (root / name for name in ('a', 'b', 'c', 'd', 'new'))
@@ -187,8 +197,9 @@ class BuildTests(unittest.TestCase):
                     with output_batch(root):
                         for path in (a, new, b, c, d):
                             write_text(path, 'after')
-            self.assertEqual(raised.exception.exceptions,
-                             (commit_error, restore_errors[c], restore_errors[b]))
+            self.assertEqual(
+                raised.exception.exceptions, (commit_error, restore_errors[c], restore_errors[b])
+            )
             for path, error in restore_errors.items():
                 self.assertIn(str(path), '\n'.join(error.__notes__))
                 self.assertEqual(path.read_bytes(), b'after')
@@ -204,8 +215,9 @@ class BuildTests(unittest.TestCase):
         columns = module('build-columns.py')
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            with patch.object(columns, 'COLUMN_DIR', root), patch.object(
-                columns, 'fetch_column_detail', side_effect=OSError('offline')
+            with (
+                patch.object(columns, 'COLUMN_DIR', root),
+                patch.object(columns, 'fetch_column_detail', side_effect=OSError('offline')),
             ):
                 with self.assertRaises(RuntimeError):
                     with output_batch(root):
@@ -241,8 +253,10 @@ class BuildTests(unittest.TestCase):
             (root / 'tools/templates/bm-pricing.js.tpl').write_bytes(template.read_bytes())
             with patch.object(bm_pricing, 'ROOT', root):
                 bm_pricing.write_browser_script()
-            self.assertEqual((root / 'js/bm-pricing.js').read_text(encoding='utf-8'),
-                             (ROOT / 'js/bm-pricing.js').read_text(encoding='utf-8'))
+            self.assertEqual(
+                (root / 'js/bm-pricing.js').read_text(encoding='utf-8'),
+                (ROOT / 'js/bm-pricing.js').read_text(encoding='utf-8'),
+            )
 
     def test_price_normalization_preserves_html_attributes(self):
         source = '<a href="/16,600円"><strong>1ページ</strong>16,600円〜</a>'
@@ -254,23 +268,44 @@ class BuildTests(unittest.TestCase):
 
     def test_feed_uses_canonical_slug_and_valid_xml(self):
         from xml.etree import ElementTree
+
         feed = module('build-feed.py')
-        result = feed.build_item({'id': 7, 'slug': '../outside', 'title_ja': 'A & B',
-                                  'thumbnail': 'https://contentsx.jp/a?x=1&y="2"'}, 'column')
+        result = feed.build_item(
+            {
+                'id': 7,
+                'slug': '../outside',
+                'title_ja': 'A & B',
+                'thumbnail': 'https://contentsx.jp/a?x=1&y="2"',
+            },
+            'column',
+        )
         item = ElementTree.fromstring(result)
         self.assertTrue(item.findtext('link').endswith('/column/column-7'))
 
     def test_indexnow_covers_entire_push_and_initial_push(self):
         indexnow = module('indexnow-ping.py')
         before, after = 'a' * 40, 'b' * 40
-        with patch.dict('os.environ', {'INDEXNOW_BEFORE': before, 'INDEXNOW_AFTER': after}), \
-                patch.object(indexnow.subprocess, 'check_output', return_value='index.html\nworks/test.html\nsitemap.xml\njs/test.js\n') as git:
-            self.assertEqual(indexnow.get_changed_urls(), [
-                'https://bizmanga.contentsx.jp/', 'https://bizmanga.contentsx.jp/works/test',
-                'https://bizmanga.contentsx.jp/sitemap.xml'])
+        with (
+            patch.dict('os.environ', {'INDEXNOW_BEFORE': before, 'INDEXNOW_AFTER': after}),
+            patch.object(
+                indexnow.subprocess,
+                'check_output',
+                return_value='index.html\nworks/test.html\nsitemap.xml\njs/test.js\n',
+            ) as git,
+        ):
+            self.assertEqual(
+                indexnow.get_changed_urls(),
+                [
+                    'https://bizmanga.contentsx.jp/',
+                    'https://bizmanga.contentsx.jp/works/test',
+                    'https://bizmanga.contentsx.jp/sitemap.xml',
+                ],
+            )
             self.assertEqual(git.call_args.args[0][-3:], [before, after, '--'])
-        with patch.dict('os.environ', {'INDEXNOW_BEFORE': '0' * 40, 'INDEXNOW_AFTER': after}), \
-                patch.object(indexnow.subprocess, 'check_output', return_value='index.html\n') as git:
+        with (
+            patch.dict('os.environ', {'INDEXNOW_BEFORE': '0' * 40, 'INDEXNOW_AFTER': after}),
+            patch.object(indexnow.subprocess, 'check_output', return_value='index.html\n') as git,
+        ):
             indexnow.get_changed_urls()
             self.assertEqual(git.call_args.args[0][1], 'ls-tree')
 
@@ -280,15 +315,19 @@ class BuildTests(unittest.TestCase):
             root = Path(directory)
             data = root / 'artists-data.js'
             data.write_text('original', encoding='utf-8')
-            with patch.object(artists, 'ROOT', root), patch.object(artists, 'DATA_PATH', data), \
-                    patch.object(artists, 'HTML_PATH', root / 'missing.html'), \
-                    patch.object(artists, 'fetch_artists', return_value=[{'title': 'Artist'}]):
+            with (
+                patch.object(artists, 'ROOT', root),
+                patch.object(artists, 'DATA_PATH', data),
+                patch.object(artists, 'HTML_PATH', root / 'missing.html'),
+                patch.object(artists, 'fetch_artists', return_value=[{'title': 'Artist'}]),
+            ):
                 with self.assertRaises(FileNotFoundError):
                     artists.main()
             self.assertEqual(data.read_text(encoding='utf-8'), 'original')
 
     def test_xml_validation_prevents_publishing_invalid_feed(self):
         from xml.etree.ElementTree import ParseError
+
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'feed.xml'
             with self.assertRaises(ParseError):
@@ -300,7 +339,12 @@ class PublishTests(unittest.TestCase):
     """Exercise rebases against a local bare remote, never the project remote."""
 
     def test_generators_keep_pending_runs_and_checkout_latest_branch(self):
-        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml', 'rank-tracker.yml'):
+        for workflow in (
+            'build-works.yml',
+            'build-columns.yml',
+            'build-lp-cases.yml',
+            'rank-tracker.yml',
+        ):
             with self.subTest(workflow=workflow):
                 source = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8')
                 concurrency = re.search(r'^concurrency:\n((?: {2}[^\n]+\n)+)', source, re.M)[1]
@@ -311,39 +355,57 @@ class PublishTests(unittest.TestCase):
 
     def test_queued_sitemap_generators_preserve_both_updates(self):
         from xml.etree import ElementTree
+
         builders = {'works': module('build-works.py'), 'columns': module('build-columns.py')}
 
         def render(kind, root, date):
-            record = {'id': 'review-work' if kind == 'works' else 7,
-                      'slug': 'review-column', 'modified_ymd': date}
+            record = {
+                'id': 'review-work' if kind == 'works' else 7,
+                'slug': 'review-column',
+                'modified_ymd': date,
+            }
             with patch.object(builders[kind], 'ROOT', root), redirect_stdout(io.StringIO()):
                 with output_batch(root):
                     builders[kind].update_sitemap([record])
 
         # Both schedules can start at the same SHA. Test either queue order.
         for first, second in (('works', 'columns'), ('columns', 'works')):
-            with self.subTest(first=first), tempfile.TemporaryDirectory(prefix='bm-queue-test-') as directory:
+            with (
+                self.subTest(first=first),
+                tempfile.TemporaryDirectory(prefix='bm-queue-test-') as directory,
+            ):
                 folder = Path(directory)
-                remote, writer, queued = (folder / name for name in ('remote.git', 'writer', 'queued'))
+                remote, writer, queued = (
+                    folder / name for name in ('remote.git', 'writer', 'queued')
+                )
                 env = git_test_env()
 
-                def git(cwd, *args):
-                    return subprocess.check_output(['git', *args], cwd=cwd, env=env,
-                                                   stderr=subprocess.STDOUT, text=True)
+                git = git_runner(env)
 
                 def publish(cwd):
                     result = subprocess.run(
-                        [sys.executable, '-B', str(ROOT / 'tools/commit-generated.py'),
-                         '--message', 'generated sitemap', 'sitemap.xml'], cwd=cwd,
+                        [
+                            sys.executable,
+                            '-B',
+                            str(ROOT / 'tools/commit-generated.py'),
+                            '--message',
+                            'generated sitemap',
+                            'sitemap.xml',
+                        ],
+                        cwd=cwd,
                         env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
                     )
                     self.assertEqual(result.returncode, 0, result.stdout)
 
                 git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
                 git(folder, 'clone', str(remote), str(writer))
                 (writer / 'sitemap.xml').write_text(
-                    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>', encoding='utf-8')
+                    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>',
+                    encoding='utf-8',
+                )
                 render('works', writer, '2026-01-01')
                 render('columns', writer, '2026-01-01')
                 git(writer, 'add', 'sitemap.xml')
@@ -356,15 +418,24 @@ class PublishTests(unittest.TestCase):
                 git(queued, 'fetch', 'origin', 'main')
                 # Match checkout's explicit branch versus default event-SHA behavior.
                 ref = workflow_checkout_ref(f'build-{second}.yml')
-                git(queued, 'checkout', '--detach', 'origin/main' if ref == '${{ github.ref_name }}' else event_sha)
+                git(
+                    queued,
+                    'checkout',
+                    '--detach',
+                    'origin/main' if ref == '${{ github.ref_name }}' else event_sha,
+                )
                 self.assertEqual(git(queued, 'rev-parse', 'HEAD'), git(remote, 'rev-parse', 'main'))
                 render(second, queued, '2026-10-06')
                 publish(queued)
                 xml = ElementTree.fromstring(git(remote, 'show', 'main:sitemap.xml'))
                 ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-                dates = {entry.findtext(ns + 'loc'): entry.findtext(ns + 'lastmod') for entry in xml}
-                urls = {'works': 'https://bizmanga.contentsx.jp/works/review-work',
-                        'columns': 'https://bizmanga.contentsx.jp/column/review-column'}
+                dates = {
+                    entry.findtext(ns + 'loc'): entry.findtext(ns + 'lastmod') for entry in xml
+                }
+                urls = {
+                    'works': 'https://bizmanga.contentsx.jp/works/review-work',
+                    'columns': 'https://bizmanga.contentsx.jp/column/review-column',
+                }
                 self.assertEqual(dates[urls[first]], '2026-10-05')
                 self.assertEqual(dates[urls[second]], '2026-10-06')
 
@@ -380,9 +451,7 @@ class PublishTests(unittest.TestCase):
             remote, writer, human = (folder / name for name in ('remote.git', 'writer', 'human'))
             env = git_test_env()
 
-            def git(cwd, *args):
-                return subprocess.check_output(['git', *args], cwd=cwd, env=env,
-                                               stderr=subprocess.STDOUT, text=True)
+            git = git_runner(env)
 
             git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
             git(folder, 'clone', str(remote), str(writer))
@@ -398,21 +467,36 @@ class PublishTests(unittest.TestCase):
             git(human, 'push')
             (writer / 'generated.txt').write_text('generated\n', encoding='utf-8')
             result = subprocess.run(
-                [sys.executable, '-B', str(ROOT / 'tools/commit-generated.py'),
-                 '--message', 'generated output', 'generated.txt'], cwd=writer,
+                [
+                    sys.executable,
+                    '-B',
+                    str(ROOT / 'tools/commit-generated.py'),
+                    '--message',
+                    'generated output',
+                    'generated.txt',
+                ],
+                cwd=writer,
                 env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
             )
             self.assertEqual(result.returncode == 0, not conflict, result.stdout)
-            self.assertEqual(git(remote, 'show', 'main:generated.txt').strip(),
-                             'human' if conflict else 'generated')
+            self.assertEqual(
+                git(remote, 'show', 'main:generated.txt').strip(),
+                'human' if conflict else 'generated',
+            )
             if not conflict:
                 self.assertEqual(git(remote, 'show', 'main:human.txt').strip(), 'human')
                 # Re-running without generated changes makes no extra commit.
                 before = git(remote, 'rev-parse', 'main')
-                again = subprocess.run(result.args, cwd=writer,
-                                       env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                                       capture_output=True, text=True)
+                again = subprocess.run(
+                    result.args,
+                    cwd=writer,
+                    env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
+                    capture_output=True,
+                    text=True,
+                )
                 self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
                 self.assertEqual(git(remote, 'rev-parse', 'main'), before)
 

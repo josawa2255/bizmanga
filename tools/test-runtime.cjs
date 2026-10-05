@@ -101,3 +101,30 @@ test('shared lead transport preserves field mapping and caller keepalive choice'
   assert.equal('keepalive' in calls[0][1], false);
   assert.equal(calls[1][1].keepalive, true);
 });
+
+test('lead attribution keeps caller labels, field order, full URL and behavior note', () => {
+  const window = { location: { href: 'https://example.test/contact?plan=full#form' },
+    bmGetTrackingNote: () => '\nBehavior note' };
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'js/bm-lead.js'), 'utf8'), { window });
+  const lines = ['[Contact]', 'Plan: Full'];
+  const params = new URLSearchParams('utm_source=search&utm_medium=&utm_campaign=campaign&source=pricing');
+  assert.equal(window.bmLead.trackingNote(params, lines, [
+    ['utm_source', '流入元'], ['utm_medium', '媒体'], ['utm_campaign', 'キャンペーン'], ['source', '参照ページ']
+  ]), '\n\n---\n[Contact]\nPlan: Full\n流入元: search\nキャンペーン: campaign\n参照ページ: pricing\nページ: ' + window.location.href + '\nBehavior note');
+  assert.deepEqual(lines, ['[Contact]', 'Plan: Full']);
+  delete window.bmGetTrackingNote;
+  assert.equal(window.bmLead.trackingNote(new URLSearchParams(), ['[Download]'], []),
+    '\n\n---\n[Download]\nページ: ' + window.location.href);
+});
+
+test('conversion helper keeps the callback fallback when gtag is unavailable', () => {
+  const window = {};
+  const handlers = [];
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'js/bm-conversions.js'), 'utf8'), {
+    window, document: { addEventListener: (...args) => handlers.push(args) }
+  });
+  assert.equal(handlers[0][0], 'click');
+  assert.equal(handlers[0][2], true);
+  assert.equal(window.bmReportConversion('label', '/contact'), false);
+  assert.equal(window.location, '/contact');
+});

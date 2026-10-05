@@ -7,6 +7,7 @@ GSC Search Analytics 日次ランク追跡スクリプト
 - ターゲットキーワードごとの position / clicks / impressions を取得
 - tools/rank-history.jsonl に1行追記
 """
+
 import json
 import os
 import sys
@@ -86,12 +87,14 @@ def get_access_token():
     client_id = os.environ["GSC_CLIENT_ID"].strip()
     client_secret = os.environ["GSC_CLIENT_SECRET"].strip()
     refresh_token = os.environ["GSC_REFRESH_TOKEN"].strip()
-    data = urllib.parse.urlencode({
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "refresh_token": refresh_token,
-        "grant_type": "refresh_token",
-    }).encode()
+    data = urllib.parse.urlencode(
+        {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "refresh_token": refresh_token,
+            "grant_type": "refresh_token",
+        }
+    ).encode()
     req = urllib.request.Request(
         "https://oauth2.googleapis.com/token",
         data=data,
@@ -106,7 +109,10 @@ def get_access_token():
         print(f"OAuth token refresh failed: HTTP {e.code}", file=sys.stderr)
         print(f"Response body: {body}", file=sys.stderr)
         if os.environ.get("DEBUG_OAUTH"):
-            print(f"client_id length: {len(client_id)}, secret length: {len(client_secret)}, refresh_token length: {len(refresh_token)}", file=sys.stderr)
+            print(
+                f"client_id length: {len(client_id)}, secret length: {len(client_secret)}, refresh_token length: {len(refresh_token)}",
+                file=sys.stderr,
+            )
         raise
 
 
@@ -208,7 +214,9 @@ def main():
             continue
         for q, row in data["targets"].items():
             if row:
-                print(f"  [{q}] pos={row['position']} clicks={row['clicks']} impr={row['impressions']}")
+                print(
+                    f"  [{q}] pos={row['position']} clicks={row['clicks']} impr={row['impressions']}"
+                )
             else:
                 print(f"  [{q}] no data")
 

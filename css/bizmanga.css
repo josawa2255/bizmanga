@@ -6221,3 +6221,9 @@ body:has(> .bm-floating-comics-bg) {
 }
 .bm-table-hint { margin: 0 0 8px; font-size: 12px; color: var(--bm-text-sub); }
 .bm-table-hint[hidden] { display: none; }
+
+/* Fixed UI states shared by the page controllers. */
+.bm-tm-modal-body .bm-tm-loading { text-align: center; padding: 40px; color: #999; }
+.bm-contact-thanks { text-align: center; padding: 40px 0; }
+.bm-contact-thanks .bm-contact-thanks-title { font-size: 20px; font-weight: 700; color: var(--bm-accent); margin-bottom: 12px; }
+.bm-contact-thanks .bm-contact-thanks-text { font-size: 15px; color: var(--bm-text-muted); }

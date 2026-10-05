@@ -15,6 +15,7 @@ index.html は Hero の大量画像で networkidle が来ないため domcontent
 テスト対象ページ:
     / (index), /works, /pricing, /biz-library, /faq, /contact
 """
+
 from __future__ import annotations
 
 import functools
@@ -27,7 +28,7 @@ print = functools.partial(print, flush=True)  # type: ignore[assignment]
 
 BASE = "http://localhost:8000"
 TARGET_PAGES = ["/", "/works", "/pricing", "/biz-library", "/faq", "/contact"]
-MOBILE_VIEWPORT = {"width": 375, "height": 667}      # iPhone SE 相当
+MOBILE_VIEWPORT = {"width": 375, "height": 667}  # iPhone SE 相当
 DESKTOP_VIEWPORT = {"width": 1280, "height": 800}
 
 
@@ -63,7 +64,6 @@ def check_mobile(page: Page, path: str) -> None:
     open_and_wait(page, path)
 
     hamburger = page.locator("#bmHamburger")
-    nav = page.locator("#bmNav")
 
     record(path, "hamburger visible on mobile", hamburger.is_visible())
 
@@ -88,9 +88,7 @@ def check_mobile(page: Page, path: str) -> None:
     aria = hamburger.get_attribute("aria-expanded")
     record(path, 'aria-expanded="true" after open', aria == "true", f"actual={aria}")
 
-    body_locked = page.evaluate(
-        "() => document.body.classList.contains('bm-nav-locked')"
-    )
+    body_locked = page.evaluate("() => document.body.classList.contains('bm-nav-locked')")
     record(path, "body gets .bm-nav-locked (scroll lock)", body_locked)
 
     # 再クリックで閉じる

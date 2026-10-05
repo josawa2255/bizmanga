@@ -4,6 +4,7 @@
 For GitHub Actions only; concurrent generator workflows share one concurrency
 group. A conflicting human edit fails the job for review rather than overwriting it.
 """
+
 import argparse
 import os
 import subprocess

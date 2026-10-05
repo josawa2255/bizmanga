@@ -1,60 +1,41 @@
 .bm-col-static { padding: 140px 0 80px; min-height: 60vh; }
-    .bm-col-static .bm-container { max-width: 780px; }
-    .bm-col-static-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500); text-decoration: none; margin-bottom: 40px; letter-spacing: 0.04em; text-transform: uppercase; transition: opacity 0.25s; }
-    .bm-col-static-back:hover { opacity: 0.6; }
-    .bm-col-static-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
-    .bm-col-static-date { font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500); font-variant-numeric: tabular-nums; }
-    .bm-col-static-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--bm-accent, #e85500); padding: 4px 12px; border-radius: 2px; }
-    .bm-col-static-title { font-size: clamp(26px, 4vw, 38px); font-weight: 900; color: #1a1a1a; margin-bottom: 36px; line-height: 1.45; letter-spacing: -0.01em; }
-    .bm-col-static-hero { width: 100%; max-height: 480px; overflow: hidden; margin-bottom: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-    .bm-col-static-hero img { max-width: 100%; max-height: 480px; width: auto; height: auto; object-fit: contain; display: block; }
-    .bm-col-static-content { font-size: 16px; line-height: 1.85; color: #333; max-width: 720px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 36px; }
-    .bm-col-static-content p { margin-bottom: 1.4em; }
-    .bm-col-static-content strong { color: #1a1a1a; }
-    .bm-col-static-content a { color: var(--bm-accent, #e85500); text-decoration: underline; text-underline-offset: 3px; }
-    .bm-col-static-content img { max-width: 100%; height: auto; border-radius: 6px; margin: 32px 0; box-shadow: 0 4px 24px -8px rgba(0,0,0,0.1); }
-    .bm-col-static-content h2 { font-size: clamp(20px, 2.5vw, 24px); font-weight: 900; color: #1a1a1a; line-height: 1.4; margin: 56px 0 20px; padding: 0 0 0 20px; border-left: 4px solid var(--bm-accent, #e85500); }
-    .bm-col-static-content h2:first-child { margin-top: 0; }
-    .bm-col-static-content h3 { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 40px 0 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.06); }
-    .bm-col-static-content ul, .bm-col-static-content ol { margin: 20px 0 20px 24px; }
-    .bm-col-static-content li { margin-bottom: 10px; line-height: 1.75; padding-left: 4px; }
-    .bm-col-static-content li::marker { color: var(--bm-accent, #e85500); }
-    .bm-col-static-content blockquote { position: relative; border: none; padding: 32px 32px 32px 56px; margin: 40px 0; background: #faf8f5; border-radius: 4px; font-style: normal; color: #444; font-size: 15px; line-height: 1.8; }
-    .bm-col-static-content blockquote::before { content: '\201C'; position: absolute; left: 16px; top: 16px; font-size: 48px; font-weight: 900; color: var(--bm-accent, #e85500); opacity: 0.3; line-height: 1; font-family: Georgia, serif; }
-    .bm-col-static-content table { width: 100%; border-collapse: collapse; margin: 32px 0; font-size: 14px; }
-    .bm-col-static-content th { background: #1a1a1a; color: #fff; font-weight: 700; padding: 14px 16px; text-align: left; font-size: 13px; }
-    .bm-col-static-content td { padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); color: #444; }
-    .bm-col-static-content tr:nth-child(even) td { background: #faf8f5; }
-    .bm-col-static-content th:last-child { color: var(--bm-accent, #e85500); }
-    .bm-col-static-content td:last-child { color: var(--bm-accent, #e85500); font-weight: 700; }
-    /* 目次 (本文先頭にインライン配置) */
-    .bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
-    .bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
-    .bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
-    .bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
-    .bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
-    .bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
-    .bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
-    .bm-col-static-content h2 { scroll-margin-top: 100px; }
-    @media (max-width: 768px) {
-      .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
-      .bm-col-static-title { margin-bottom: 28px; }
-      .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
-      .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
-      .bm-col-toc-list a { font-size: 13.5px; }
-    }
-    /* 参考文献 */
-    .bm-col-static-refs { max-width: 720px; margin: 56px 0 0; padding: 32px 36px; background: #faf8f5; border-radius: 6px; border-left: 4px solid #1a1a1a; }
-    .bm-col-static-refs-title { font-size: 15px; font-weight: 800; letter-spacing: 0.06em; color: #1a1a1a; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.1); }
-    .bm-col-static-refs-list { margin: 0; padding: 0; list-style: none; }
-    .bm-col-static-refs-list li { font-size: 13px; line-height: 1.7; color: #555; padding: 8px 0 8px 16px; position: relative; border-bottom: 1px solid rgba(0,0,0,0.04); }
-    .bm-col-static-refs-list li:last-child { border-bottom: none; }
-    .bm-col-static-refs-list li::before { content: '·'; position: absolute; left: 0; top: 7px; color: var(--bm-accent, #e85500); font-weight: 900; font-size: 18px; }
-    .bm-col-static-refs-list cite { font-style: normal; color: #1a1a1a; font-weight: 600; }
-    .bm-col-static-refs-list em { font-style: italic; }
-    .bm-col-static-refs-list a { color: var(--bm-accent, #e85500); text-decoration: underline; text-underline-offset: 2px; }
-    @media (max-width: 768px) {
-      .bm-col-static-refs { padding: 24px 20px; margin-top: 40px; }
-      .bm-col-static-refs-title { font-size: 14px; }
-      .bm-col-static-refs-list li { font-size: 12.5px; }
-    }
+.bm-col-static .bm-container { max-width: 780px; }
+.bm-col-static-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500); text-decoration: none; margin-bottom: 40px; letter-spacing: 0.04em; text-transform: uppercase; transition: opacity 0.25s; }
+.bm-col-static-back:hover { opacity: 0.6; }
+.bm-col-static-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.bm-col-static-date { font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500); font-variant-numeric: tabular-nums; }
+.bm-col-static-cat { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--bm-accent, #e85500); padding: 4px 12px; border-radius: 2px; }
+.bm-col-static-title { font-size: clamp(26px, 4vw, 38px); font-weight: 900; color: #1a1a1a; margin-bottom: 36px; line-height: 1.45; letter-spacing: -0.01em; }
+.bm-col-static-hero { width: 100%; max-height: 480px; overflow: hidden; margin-bottom: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.bm-col-static-hero img { max-width: 100%; max-height: 480px; width: auto; height: auto; object-fit: contain; display: block; }
+/* 目次 (本文先頭にインライン配置) */
+.bm-col-toc { margin: 0 0 40px; padding: 24px 28px; background: #faf8f5; border-left: 3px solid var(--bm-accent, #e85500); border-radius: 4px; }
+.bm-col-toc-label { font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bm-accent, #e85500); margin: 0 0 14px; }
+.bm-col-toc-list { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+.bm-col-toc-list li { padding: 6px 0 6px 38px; position: relative; counter-increment: toc; line-height: 1.55; }
+.bm-col-toc-list li::before { content: counter(toc, decimal-leading-zero); position: absolute; left: 0; top: 6px; font-size: 12px; font-weight: 800; color: var(--bm-accent, #e85500); font-feature-settings: "tnum" 1, "lnum" 1; letter-spacing: -0.01em; }
+.bm-col-toc-list a { color: #1a1a1a; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; border-bottom: 1px solid transparent; padding-bottom: 1px; }
+.bm-col-toc-list a:hover { color: var(--bm-accent, #e85500); border-bottom-color: var(--bm-accent, #e85500); }
+.bm-col-static-content h2 { scroll-margin-top: 100px; }
+@media (max-width: 768px) {
+  .bm-col-static-hero, .bm-col-static-hero img { max-height: 280px; }
+  .bm-col-static-title { margin-bottom: 28px; }
+  .bm-col-static-content h2 { margin-top: 40px; padding-left: 16px; }
+  .bm-col-toc { padding: 18px 20px; margin-bottom: 32px; }
+  .bm-col-toc-list a { font-size: 13.5px; }
+}
+/* 参考文献 */
+.bm-col-static-refs { max-width: 720px; margin: 56px 0 0; padding: 32px 36px; background: #faf8f5; border-radius: 6px; border-left: 4px solid #1a1a1a; }
+.bm-col-static-refs-title { font-size: 15px; font-weight: 800; letter-spacing: 0.06em; color: #1a1a1a; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.bm-col-static-refs-list { margin: 0; padding: 0; list-style: none; }
+.bm-col-static-refs-list li { font-size: 13px; line-height: 1.7; color: #555; padding: 8px 0 8px 16px; position: relative; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.bm-col-static-refs-list li:last-child { border-bottom: none; }
+.bm-col-static-refs-list li::before { content: '·'; position: absolute; left: 0; top: 7px; color: var(--bm-accent, #e85500); font-weight: 900; font-size: 18px; }
+.bm-col-static-refs-list cite { font-style: normal; color: #1a1a1a; font-weight: 600; }
+.bm-col-static-refs-list em { font-style: italic; }
+.bm-col-static-refs-list a { color: var(--bm-accent, #e85500); text-decoration: underline; text-underline-offset: 2px; }
+@media (max-width: 768px) {
+  .bm-col-static-refs { padding: 24px 20px; margin-top: 40px; }
+  .bm-col-static-refs-title { font-size: 14px; }
+  .bm-col-static-refs-list li { font-size: 12.5px; }
+}

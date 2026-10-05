@@ -8,6 +8,7 @@ LP事例自動注入スクリプト
 
 GitHub Actions で週1 + 手動実行。実行後は git commit & push。
 """
+
 from bm_build import API_BASE, SITE_URL
 from bm_build import fetch_json as _fetch_json, output_batch, write_text, safe_slug, require_records
 import re
@@ -21,25 +22,25 @@ WP_API = API_BASE + '/works'
 
 # 各 LP のターゲットカテゴリ（複数可。順序は優先度）
 LP_CATEGORIES = {
-    "product-manga":  ["商品紹介", "紹介"],
-    "recruit-manga":  ["採用"],
-    "manga-ad-lp":    ["広告", "集客", "IP"],
-    "company-manga":  ["会社紹介", "企業紹介", "ブランド"],
-    "sales-manga":    ["営業資料", "営業"],
+    "product-manga": ["商品紹介", "紹介"],
+    "recruit-manga": ["採用"],
+    "manga-ad-lp": ["広告", "集客", "IP"],
+    "company-manga": ["会社紹介", "企業紹介", "ブランド"],
+    "sales-manga": ["営業資料", "営業"],
     "training-manga": ["研修"],
-    "inbound-manga":  ["インバウンド", "英語版", "海外版", "多言語", "集客"],
-    "ir-manga":       ["IR"],
+    "inbound-manga": ["インバウンド", "英語版", "海外版", "多言語", "集客"],
+    "ir-manga": ["IR"],
 }
 
 LP_NAMES = {
-    "product-manga":  "商品紹介マンガ",
-    "recruit-manga":  "採用マンガ",
-    "manga-ad-lp":    "マンガ広告",
-    "company-manga":  "会社紹介マンガ",
-    "sales-manga":    "営業資料マンガ",
+    "product-manga": "商品紹介マンガ",
+    "recruit-manga": "採用マンガ",
+    "manga-ad-lp": "マンガ広告",
+    "company-manga": "会社紹介マンガ",
+    "sales-manga": "営業資料マンガ",
     "training-manga": "研修マンガ",
-    "inbound-manga":  "インバウンド漫画",
-    "ir-manga":       "IR漫画・周年史マンガ",
+    "inbound-manga": "インバウンド漫画",
+    "ir-manga": "IR漫画・周年史マンガ",
 }
 
 MAX_CASES_PER_LP = 3
@@ -90,9 +91,11 @@ def filter_for_lp(works, lp_slug):
 
 def select_top(works, n):
     """hero_order_bm の昇順、なければ pages の降順、で上位 n 件。"""
+
     def key(w):
         order = w.get("hero_order_bm") or w.get("hero_order_cx") or 9999
         return (order, -int(w.get("pages") or 0))
+
     return sorted(works, key=key)[:n]
 
 
@@ -112,7 +115,6 @@ def render_card(work, v2=False):
     """1事例分の静的 HTML カード。v2 で .lpv2-* クラス、それ以外で従来の .pm-* クラス。"""
     wid = work.get("id", "")
     title = html_escape(work.get("title_ja", ""))
-    subtitle = html_escape(work.get("subtitle_ja", "") or "")
     client = html_escape(work.get("client", ""))
     pages = int(work.get("pages") or 0)
     spec = work.get("spec") or {}
@@ -125,7 +127,11 @@ def render_card(work, v2=False):
     cats_display = " / ".join(html_escape(c) for c in get_work_categories(work))
 
     # サムネ ALT 文言: 作品名 + クライアント
-    alt = f"{work.get('title_ja', '')}（{work.get('client', '')}）" if client else work.get("title_ja", "")
+    alt = (
+        f"{work.get('title_ja', '')}（{work.get('client', '')}）"
+        if client
+        else work.get("title_ja", "")
+    )
 
     if v2:
         # lpv2 markup
@@ -145,7 +151,9 @@ def render_card(work, v2=False):
             + (f" / {period}" if period else "")
             + "</p>"
         )
-        parts.append(f'              <h3 class="lpv2-case__title"><a href="/works/{wid}">{title}</a></h3>')
+        parts.append(
+            f'              <h3 class="lpv2-case__title"><a href="/works/{wid}">{title}</a></h3>'
+        )
         if client:
             parts.append(
                 f'              <p class="lpv2-case__client">クライアント: {client}'
@@ -158,7 +166,9 @@ def render_card(work, v2=False):
             parts.append(
                 f'              <blockquote class="lpv2-case__quote">「{comment}」</blockquote>'
             )
-        parts.append(f'              <a class="lpv2-case__more" href="/works/{wid}">この事例を詳しく見る →</a>')
+        parts.append(
+            f'              <a class="lpv2-case__more" href="/works/{wid}">この事例を詳しく見る →</a>'
+        )
         parts.append("            </div>")
         parts.append("          </article>")
         return "\n".join(parts)
@@ -182,20 +192,24 @@ def render_card(work, v2=False):
         + (f" / {period}" if period else "")
         + "</span>"
     )
-    parts.append(f'              <h3 class="pm-case-title">')
+    parts.append('              <h3 class="pm-case-title">')
     parts.append(f'                <a href="/works/{wid}">{title}</a>')
-    parts.append(f"              </h3>")
+    parts.append("              </h3>")
     if client:
-        parts.append(f'              <p class="pm-case-client">クライアント: {client}'
-                     + (f"／媒体: {media}" if media else "")
-                     + "</p>")
+        parts.append(
+            f'              <p class="pm-case-client">クライアント: {client}'
+            + (f"／媒体: {media}" if media else "")
+            + "</p>"
+        )
     if point:
         parts.append(f'              <p class="pm-case-point">{point}</p>')
     if comment:
         parts.append(
             f'              <blockquote class="pm-case-comment">「{comment}」</blockquote>'
         )
-    parts.append(f'              <a class="pm-case-more" href="/works/{wid}">この事例を詳しく見る →</a>')
+    parts.append(
+        f'              <a class="pm-case-more" href="/works/{wid}">この事例を詳しく見る →</a>'
+    )
     parts.append("            </div>")
     parts.append("          </article>")
     return "\n".join(parts)
@@ -319,14 +333,23 @@ def patch_lp(slug, section_html):
 
     def insert_at(position):
         # Canonical boundary whitespace prevents every rebuild adding blank lines.
-        return (src[:position].rstrip() + "\n" + section_html.strip("\n") +
-                "\n\n    " + src[position:].lstrip())
+        return (
+            src[:position].rstrip()
+            + "\n"
+            + section_html.strip("\n")
+            + "\n\n    "
+            + src[position:].lstrip()
+        )
 
     # 3. 配置位置を確定
     #   v2 LP: CHAPTER 05 LIBRARY (id="chapter-05-library") の直前
     #   旧 LP: ビズ書庫埋込 (id="library") のセクション開始タグ直前
-    m_v2 = re.search(r'(\s*<!--[^\n]*CHAPTER 05[^\n]*-->\s*\n)?(\s*<section[^>]*\bid="chapter-05-library")', src)
-    m = re.search(r'(\s*<!--[^\n]*ビズ書庫埋込[^\n]*-->\s*\n)?(\s*<section[^>]*\bid="library")', src)
+    m_v2 = re.search(
+        r'(\s*<!--[^\n]*CHAPTER 05[^\n]*-->\s*\n)?(\s*<section[^>]*\bid="chapter-05-library")', src
+    )
+    m = re.search(
+        r'(\s*<!--[^\n]*ビズ書庫埋込[^\n]*-->\s*\n)?(\s*<section[^>]*\bid="library")', src
+    )
     if m_v2:
         start = m_v2.start()
         new_src = insert_at(start)
@@ -374,7 +397,9 @@ def _build():
     print("\n=== 各LPへの注入結果 ===")
     for slug, info in summary.items():
         v2flag = " [v2]" if info.get("v2") else ""
-        print(f"  {slug}{v2flag}: matched={info['matched']}, shown={info['shown']}, patched={info['patched']}")
+        print(
+            f"  {slug}{v2flag}: matched={info['matched']}, shown={info['shown']}, patched={info['patched']}"
+        )
         for t in info["titles"]:
             print(f"      - {t}")
 

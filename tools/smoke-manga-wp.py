@@ -26,16 +26,15 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
 終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
 """
+
 import argparse
 import json
 import os
 import re
 import sys
-import threading
 import urllib.error
 import urllib.request
-from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from bm_test_support import start_server
 from urllib.parse import urlparse
 
 DEFAULT_API = "https://cms.contentsx.jp/wp-json/contentsx/v1"
@@ -91,50 +90,6 @@ def img_url(entry):
 
 
 # ------------------------------------------------------- Built-in server
-def make_handler(directory):
-    """リポジトリ直下の serve.py（クリーンURL）を再利用。無ければ同等の最小実装で代替"""
-    base_cls = SimpleHTTPRequestHandler
-    if os.path.isfile(os.path.join(directory, "serve.py")):
-        try:
-            sys.path.insert(0, directory)
-            import serve  # noqa: E402  (BizManga/serve.py)
-            base_cls = serve.CleanURLHandler
-        except Exception:
-            base_cls = SimpleHTTPRequestHandler
-        finally:
-            if sys.path and sys.path[0] == directory:
-                sys.path.pop(0)
-
-    class Handler(base_cls):
-        def translate_path(self, path):
-            full = super().translate_path(path)
-            # serve.py が無いときの保険: /foo → foo.html（ディレクトリより .html を優先）
-            if not os.path.exists(full) and not os.path.splitext(full)[1] and os.path.isfile(full + ".html"):
-                return full + ".html"
-            return full
-
-        def list_directory(self, path):
-            # GitHub Pages はディレクトリ一覧を出さない（index.html が無ければ 404）
-            self.send_error(404, "Not Found")
-            return None
-
-        def end_headers(self):
-            self.send_header("Cache-Control", "no-store")
-            super().end_headers()
-
-        def log_message(self, *a):
-            pass
-
-    return Handler
-
-
-def start_server(directory, port):
-    handler = partial(make_handler(directory), directory=directory)
-    httpd = ThreadingHTTPServer(("127.0.0.1", port), handler)
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    return httpd
-
-
 # ---------------------------------------------------------------- API
 def check_api(api):
     data = {"works": [], "works_new": [], "library": [], "manga_one": None}
@@ -142,19 +97,39 @@ def check_api(api):
         works = get_json(f"{api}/works?site=bizmanga")
         data["works"] = works if isinstance(works, list) else []
         rec("API /works?site=bizmanga 件数>0", len(data["works"]) > 0, f"{len(data['works'])}件")
-        bad = [w.get("id") for w in data["works"]
-               if not (w.get("id") and isinstance(w.get("gallery"), list) and w["gallery"]
-                       and w.get("view_type") and w.get("thumbnail"))]
-        rec("API /works 各作品に id/gallery/view_type/thumbnail", not bad, f"欠落: {bad[:5]}" if bad else "")
+        bad = [
+            w.get("id")
+            for w in data["works"]
+            if not (
+                w.get("id")
+                and isinstance(w.get("gallery"), list)
+                and w["gallery"]
+                and w.get("view_type")
+                and w.get("thumbnail")
+            )
+        ]
+        rec(
+            "API /works 各作品に id/gallery/view_type/thumbnail",
+            not bad,
+            f"欠落: {bad[:5]}" if bad else "",
+        )
         vts = sorted({str(w.get("view_type")) for w in data["works"]})
-        rec("API /works view_type が既知の値", set(vts) <= {"spread", "vertical", "vertical_only"}, ", ".join(vts))
+        rec(
+            "API /works view_type が既知の値",
+            set(vts) <= {"spread", "vertical", "vertical_only"},
+            ", ".join(vts),
+        )
     except Exception as e:
         rec("API /works?site=bizmanga", False, str(e)[:140])
 
     try:
         new = get_json(f"{api}/works-new?site=bizmanga")
         data["works_new"] = new if isinstance(new, list) else []
-        rec("API /works-new?site=bizmanga 件数>0", len(data["works_new"]) > 0, f"{len(data['works_new'])}件")
+        rec(
+            "API /works-new?site=bizmanga 件数>0",
+            len(data["works_new"]) > 0,
+            f"{len(data['works_new'])}件",
+        )
     except Exception as e:
         rec("API /works-new?site=bizmanga", False, str(e)[:140])
 
@@ -162,8 +137,11 @@ def check_api(api):
         lib = get_json(f"{api}/library")
         data["library"] = lib if isinstance(lib, list) else []
         rec("API /library 件数>0", len(data["library"]) > 0, f"{len(data['library'])}件")
-        bad = [w.get("id") for w in data["library"]
-               if not (w.get("id") and isinstance(w.get("gallery"), list) and w["gallery"])]
+        bad = [
+            w.get("id")
+            for w in data["library"]
+            if not (w.get("id") and isinstance(w.get("gallery"), list) and w["gallery"])
+        ]
         rec("API /library 各作品に gallery あり", not bad, f"欠落: {bad[:5]}" if bad else "")
     except Exception as e:
         rec("API /library", False, str(e)[:140])
@@ -175,8 +153,16 @@ def check_api(api):
             data["manga_one"] = one
             n_lib = len(first.get("gallery") or [])
             n_one = len(one.get("gallery") or []) if isinstance(one, dict) else -1
-            rec(f"API /manga/{first['id']} の枚数が /library と一致", n_lib == n_one, f"library={n_lib} manga={n_one}")
-            imgs = [img_url(x) for x in (one.get("gallery") or [])[:2]] if isinstance(one, dict) else []
+            rec(
+                f"API /manga/{first['id']} の枚数が /library と一致",
+                n_lib == n_one,
+                f"library={n_lib} manga={n_one}",
+            )
+            imgs = (
+                [img_url(x) for x in (one.get("gallery") or [])[:2]]
+                if isinstance(one, dict)
+                else []
+            )
             ok = bool(imgs) and all(url_ok(u) for u in imgs)
             rec("API gallery 画像URLが到達可能（先頭2枚）", ok, "" if ok else ", ".join(imgs)[:200])
         except Exception as e:
@@ -250,7 +236,11 @@ class PageProbe:
         loc = (m.location or {}).get("url", "") if isinstance(m.location, dict) else ""
         text = m.text
         # http 配信のときだけ: 127.0.0.1 の埋込 iframe に対する CSP frame-src 違反は配信方式の差なので無視
-        if self.local_http and "Content Security Policy" in text and ("127.0.0.1" in text or "localhost" in text):
+        if (
+            self.local_http
+            and "Content Security Policy" in text
+            and ("127.0.0.1" in text or "localhost" in text)
+        ):
             return
         # 自サイト・WP・素材ホスト起因（または場所不明）のエラーだけ数える。GA/Clarity/HubSpot 等は無視
         if (not loc) or self._watched(loc):
@@ -272,6 +262,7 @@ class PageProbe:
 def check_browser(base, data):
     import logging
     from playwright.sync_api import sync_playwright
+
     # コンテキストを閉じた後に届いた中継の残りを asyncio が ERROR ログ（Traceback）として吐くが判定には無関係
     logging.getLogger("asyncio").setLevel(logging.CRITICAL)
 
@@ -282,7 +273,10 @@ def check_browser(base, data):
     lib = data.get("library") or []
     n_new = len(data.get("works_new") or [])
     wp_id, why = pick_wp_only_id(base, lib)
-    print(f"== ブラウザ: {base}  CORS: {'中継（ACAO付与。CORS設定そのものは検証しない）' if use_relay else '実際の許可オリジンのまま'}  検証作品: {wp_id}（{why}）", flush=True)
+    print(
+        f"== ブラウザ: {base}  CORS: {'中継（ACAO付与。CORS設定そのものは検証しない）' if use_relay else '実際の許可オリジンのまま'}  検証作品: {wp_id}（{why}）",
+        flush=True,
+    )
 
     def relay_cors(route, request):
         try:
@@ -342,19 +336,38 @@ def check_browser(base, data):
               const v = d.filter(isV).length, m = d.length - v;
               return { got: d.length, expected: Math.min(10, m) + Math.min(10, v), manga: m, vertical: v };
             }""")
-            rec("ホーム: /works-new をブラウザでも同じ件数で受信（フォールバックしていない）", calc["got"] == n_new and n_new > 0, f"ブラウザ={calc['got']} API={n_new}")
-            rec("ホーム: ギャラリーのカード数が仕様どおり（横読み/縦読み 各10件まで）", cards == calc["expected"] and cards > 0,
-                f"画面={cards} 期待={calc['expected']}（横読み{calc['manga']}件・縦読み{calc['vertical']}件）")
+            rec(
+                "ホーム: /works-new をブラウザでも同じ件数で受信（フォールバックしていない）",
+                calc["got"] == n_new and n_new > 0,
+                f"ブラウザ={calc['got']} API={n_new}",
+            )
+            rec(
+                "ホーム: ギャラリーのカード数が仕様どおり（横読み/縦読み 各10件まで）",
+                cards == calc["expected"] and cards > 0,
+                f"画面={cards} 期待={calc['expected']}（横読み{calc['manga']}件・縦読み{calc['vertical']}件）",
+            )
             if not use_relay:
-                rec("ホーム: WP API を実際の CORS 許可設定のまま取得できた", calc["got"] == n_new and n_new > 0, base)
+                rec(
+                    "ホーム: WP API を実際の CORS 許可設定のまま取得できた",
+                    calc["got"] == n_new and n_new > 0,
+                    base,
+                )
             if cards:
                 pg.locator(".bm-gallery-card").first.scroll_into_view_if_needed()
                 pg.locator(".bm-gallery-card").first.click()
                 try:
                     pg.wait_for_url("**/biz-library?manga=*", timeout=10000)
-                    rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", True, pg.url.split("/")[-1])
+                    rec(
+                        "ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移",
+                        True,
+                        pg.url.split("/")[-1],
+                    )
                 except Exception:
-                    rec("ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移", False, pg.url)
+                    rec(
+                        "ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移",
+                        False,
+                        pg.url,
+                    )
             pr.finish("ホーム")
 
         def works():
@@ -378,16 +391,29 @@ def check_browser(base, data):
                 rec("制作事例: カードクリックでモーダルが開く", opened)
                 if opened:
                     try:
-                        pg.wait_for_function(IMG_LOADED, arg="#workDetailCarousel img", timeout=20000)
+                        pg.wait_for_function(
+                            IMG_LOADED, arg="#workDetailCarousel img", timeout=20000
+                        )
                         rec("制作事例: モーダル内の漫画画像が読み込まれる", True)
                     except Exception:
-                        rec("制作事例: モーダル内の漫画画像が読み込まれる", False, "20秒以内に naturalWidth>0 の画像が無い")
+                        rec(
+                            "制作事例: モーダル内の漫画画像が読み込まれる",
+                            False,
+                            "20秒以内に naturalWidth>0 の画像が無い",
+                        )
                     pg.wait_for_timeout(1500)
                     broken = pg.evaluate(BROKEN_IMGS, "#workDetailCarousel img")
-                    rec("制作事例: モーダル内に読み込み失敗の画像が無い", not broken, "; ".join(broken)[:300])
+                    rec(
+                        "制作事例: モーダル内に読み込み失敗の画像が無い",
+                        not broken,
+                        "; ".join(broken)[:300],
+                    )
                     pg.locator("#workDetailClose").click()
                     pg.wait_for_timeout(500)
-                    rec("制作事例: モーダルを閉じられる", pg.locator("#workDetailOverlay.active").count() == 0)
+                    rec(
+                        "制作事例: モーダルを閉じられる",
+                        pg.locator("#workDetailOverlay.active").count() == 0,
+                    )
             pr.finish("制作事例")
 
         def library():
@@ -396,11 +422,19 @@ def check_browser(base, data):
             pg.goto(f"{base}/biz-library.html", wait_until="load")
             # works.js は自前で /library を取得し BM_* グローバルもイベントも出さないので、カード数の到達で待つ
             try:
-                pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib), timeout=25000)
+                pg.wait_for_function(
+                    "n => document.querySelectorAll('#worksGrid > *').length === n",
+                    arg=len(lib),
+                    timeout=25000,
+                )
             except Exception:
                 pass
             n_grid = pg.locator("#worksGrid > *").count()
-            rec("ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）", n_grid == len(lib) and n_grid > 0, f"画面={n_grid} API={len(lib)}")
+            rec(
+                "ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）",
+                n_grid == len(lib) and n_grid > 0,
+                f"画面={n_grid} API={len(lib)}",
+            )
             if n_grid:
                 pg.locator("#worksGrid > *").first.click()
                 try:
@@ -414,15 +448,25 @@ def check_browser(base, data):
                         pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
                         rec("ビズ書庫: ビューアの漫画画像が読み込まれる", True)
                     except Exception:
-                        rec("ビズ書庫: ビューアの漫画画像が読み込まれる", False, "20秒以内に画像が読み込まれない")
+                        rec(
+                            "ビズ書庫: ビューアの漫画画像が読み込まれる",
+                            False,
+                            "20秒以内に画像が読み込まれない",
+                        )
                     pg.wait_for_timeout(1500)
                     broken = pg.evaluate(BROKEN_IMGS, "#mangaModal img")
-                    rec("ビズ書庫: ビューア内に読み込み失敗の画像が無い", not broken, "; ".join(broken)[:300])
+                    rec(
+                        "ビズ書庫: ビューア内に読み込み失敗の画像が無い",
+                        not broken,
+                        "; ".join(broken)[:300],
+                    )
                     qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
                     rec("ビズ書庫: サイト内クリックでは qr-mode にならない", not qr)
                     pg.locator("#modalClose").click()
                     pg.wait_for_timeout(600)
-                    rec("ビズ書庫: ビューアを閉じられる", not pg.locator("#mangaModal").is_visible())
+                    rec(
+                        "ビズ書庫: ビューアを閉じられる", not pg.locator("#mangaModal").is_visible()
+                    )
             pr.finish("ビズ書庫")
 
         def qr_direct():
@@ -433,9 +477,15 @@ def check_browser(base, data):
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
                 pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", True)
+                rec(
+                    f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）",
+                    True,
+                )
             except Exception:
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", False)
+                rec(
+                    f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）",
+                    False,
+                )
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）", qr)
             pr.finish("QR直リンク")
@@ -444,7 +494,11 @@ def check_browser(base, data):
         def internal_nav():
             pr = probe(desktop)
             pg = pr.page
-            pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load", referer=f"{base}/index.html")
+            pg.goto(
+                f"{base}/biz-library.html?manga={wp_id}",
+                wait_until="load",
+                referer=f"{base}/index.html",
+            )
             pg.wait_for_timeout(1500)
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("サイト内遷移 ?manga=: referrer ありなら qr-mode にならない", not qr)
@@ -462,8 +516,13 @@ def check_browser(base, data):
             pr.finish("埋込ビューア")
 
         def mobile():
-            ctx = new_ctx(browser, viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True,
-                          user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
+            ctx = new_ctx(
+                browser,
+                viewport={"width": 390, "height": 844},
+                is_mobile=True,
+                has_touch=True,
+                user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+            )
             pr = probe(ctx)
             pg = pr.page
             pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load")
@@ -475,8 +534,14 @@ def check_browser(base, data):
                 rec("スマホ(390px) ?manga=: ビューアが開き画像が出る", False)
             # works.js: PC以外で見開き(spread)作品を開くと縦スクロール(mode-vertical)に切り替わる（SPデフォルト）。
             # #mobileView は見開き専用の要素なので、縦スクロール時は非表示が正しい。
-            mode = pg.evaluate("() => { const c=document.getElementById('mangaModal').classList; return c.contains('mode-vertical') ? 'vertical' : (c.contains('mode-spread') ? 'spread' : 'none') }")
-            rec("スマホ(390px): 縦スクロールモード(mode-vertical)で開く（SPデフォルト）", mode == "vertical", f"mode={mode}")
+            mode = pg.evaluate(
+                "() => { const c=document.getElementById('mangaModal').classList; return c.contains('mode-vertical') ? 'vertical' : (c.contains('mode-spread') ? 'spread' : 'none') }"
+            )
+            rec(
+                "スマホ(390px): 縦スクロールモード(mode-vertical)で開く（SPデフォルト）",
+                mode == "vertical",
+                f"mode={mode}",
+            )
             try:
                 pg.wait_for_function(IMG_LOADED, arg="#modalManga img", timeout=15000)
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", True)
@@ -501,12 +566,31 @@ def check_browser(base, data):
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default=f"http://127.0.0.1:{DEFAULT_PORT}", help="確認対象のサイトURL（末尾スラッシュ無し）")
-    ap.add_argument("--api", default=DEFAULT_API, help="WP API のベースURL（Python 側の確認にだけ効く）")
-    ap.add_argument("--api-only", action="store_true", help="WP API の確認だけ行う（ブラウザを使わない）")
-    ap.add_argument("--serve", metavar="DIR", help="このディレクトリを内蔵サーバーで配信して検証する（--base より優先）")
-    ap.add_argument("--port", type=int, default=DEFAULT_PORT, help=f"--serve のポート（既定 {DEFAULT_PORT}＝WP の CORS 許可オリジン）")
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument(
+        "--base",
+        default=f"http://127.0.0.1:{DEFAULT_PORT}",
+        help="確認対象のサイトURL（末尾スラッシュ無し）",
+    )
+    ap.add_argument(
+        "--api", default=DEFAULT_API, help="WP API のベースURL（Python 側の確認にだけ効く）"
+    )
+    ap.add_argument(
+        "--api-only", action="store_true", help="WP API の確認だけ行う（ブラウザを使わない）"
+    )
+    ap.add_argument(
+        "--serve",
+        metavar="DIR",
+        help="このディレクトリを内蔵サーバーで配信して検証する（--base より優先）",
+    )
+    ap.add_argument(
+        "--port",
+        type=int,
+        default=DEFAULT_PORT,
+        help=f"--serve のポート（既定 {DEFAULT_PORT}＝WP の CORS 許可オリジン）",
+    )
     args = ap.parse_args()
     base = args.base.rstrip("/")
     httpd = None
@@ -514,7 +598,10 @@ def main():
         try:
             httpd = start_server(os.path.abspath(args.serve), args.port)
         except OSError as e:
-            print(f"内蔵サーバーを 127.0.0.1:{args.port} で起動できません（{e}）。--port で別ポートを指定するか、使用中のプロセスを止めてください", file=sys.stderr)
+            print(
+                f"内蔵サーバーを 127.0.0.1:{args.port} で起動できません（{e}）。--port で別ポートを指定するか、使用中のプロセスを止めてください",
+                file=sys.stderr,
+            )
             sys.exit(2)
         base = f"http://127.0.0.1:{args.port}"
 
@@ -524,9 +611,17 @@ def main():
         try:
             check_browser(base, data)
         except ImportError:
-            rec("playwright が見つからない", False, "pip install playwright && python3 -m playwright install chromium")
+            rec(
+                "playwright が見つからない",
+                False,
+                "pip install playwright && python3 -m playwright install chromium",
+            )
         except Exception as e:
-            rec("ブラウザ検証を開始できない（Chromium 未導入・起動失敗など）", False, f"{type(e).__name__}: {str(e)[:200]}")
+            rec(
+                "ブラウザ検証を開始できない（Chromium 未導入・起動失敗など）",
+                False,
+                f"{type(e).__name__}: {str(e)[:200]}",
+            )
         finally:
             if httpd:
                 httpd.shutdown()

@@ -1772,3 +1772,6 @@ html.qr-mode .modal-close { display: none !important; }
   .bm-page-spinner-inner::before,
   .bm-page-spinner-inner::after { animation: none !important; box-shadow: .2em 0 0 0 currentcolor !important; }
 }
+
+.manga-not-found { display: flex; align-items: center; justify-content: center; height: 100vh; color: #fff; background: #1a1a1a; font-size: 16px; text-align: center; padding: 24px; }
+.manga-not-found-link { color: #eb5200; }

@@ -6,6 +6,7 @@ Googlebot / Bingbot / Feedly 等のクローラ発見に活用。
 Usage:
   python3 tools/build-feed.py
 """
+
 from bm_build import API_BASE, SITE_URL
 from bm_build import fetch_json as _fetch_json, output_batch, write_text
 import datetime
@@ -90,7 +91,9 @@ def _build():
     all_items = all_items[:30]
 
     # ビルド
-    build_time = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%a, %d %b %Y %H:%M:%S +0900")
+    build_time = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime(
+        "%a, %d %b %Y %H:%M:%S +0900"
+    )
     items_xml = "\n".join(build_item(post, kind) for kind, post, _ in all_items)
 
     rss_xml = f"""<?xml version="1.0" encoding="UTF-8"?>

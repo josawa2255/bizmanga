@@ -43,15 +43,19 @@ TAG_MAP = {
     "mediaTags": "medium",
 }
 GROUP_LABEL = {
-    "style": "画風", "usecase": "用途", "genre": "ジャンル",
-    "audience": "読者層", "medium": "媒体",
+    "style": "画風",
+    "usecase": "用途",
+    "genre": "ジャンル",
+    "audience": "読者層",
+    "medium": "媒体",
 }
 
 
 def load_auth():
     if not CRED.exists():
-        sys.exit(f"認証情報が見つかりません: {CRED}\n"
-                 "jou-wp-access スキルの §2 を参照してください。")
+        sys.exit(
+            f"認証情報が見つかりません: {CRED}\njou-wp-access スキルの §2 を参照してください。"
+        )
     user = pw = None
     for line in CRED.read_text(encoding="utf-8").splitlines():
         line = line.strip()
@@ -62,7 +66,7 @@ def load_auth():
         if k == "WP_USER":
             user = v
         elif k == "WP_APP_PASSWORD":
-            pw = v.replace(" ", "")      # 表示上の空白を除去（そのままだと401）
+            pw = v.replace(" ", "")  # 表示上の空白を除去（そのままだと401）
     if not user or not pw:
         sys.exit("WP_USER / WP_APP_PASSWORD が読み取れません")
     token = base64.b64encode(f"{user}:{pw}".encode()).decode()
@@ -99,14 +103,14 @@ def parse_creators():
             if depth == 0:
                 break
         j += 1
-    body = src[i:j + 1]
+    body = src[i : j + 1]
 
     # ファイル冒頭で定義しているパス変数（var IMG = '...' 等）を実値に展開する。
     # これを見落とすと IMG + "x.webp" が残って JSON パースに失敗する。
     consts = dict(re.findall(r"var\s+([A-Z_][A-Z0-9_]*)\s*=\s*'([^']*)'\s*;", src))
 
-    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)     # ブロックコメント
-    body = re.sub(r"//[^\n]*", "", body)                   # 行コメント
+    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)  # ブロックコメント
+    body = re.sub(r"//[^\n]*", "", body)  # 行コメント
     body = re.sub(r"(\{|,)\s*([A-Za-z_][A-Za-z0-9_]*)\s*:", r'\1"\2":', body)  # キーを "..." に
     body = body.replace("'", '"')
 
@@ -114,14 +118,14 @@ def parse_creators():
     for name, val in consts.items():
         body = re.sub(rf"\b{name}\s*\+\s*\"", '"' + val, body)
 
-    body = re.sub(r'"\s*\+\s*"', "", body)                 # "a" + "b" の連結
-    body = re.sub(r",(\s*[}\]])", r"\1", body)             # 末尾カンマ
+    body = re.sub(r'"\s*\+\s*"', "", body)  # "a" + "b" の連結
+    body = re.sub(r",(\s*[}\]])", r"\1", body)  # 末尾カンマ
 
     leftover = re.search(r"\b[A-Za-z_][A-Za-z0-9_]*\s*\+", body)
     if leftover:
         raise SystemExit(
             "artists.js に未対応の式が残っています: "
-            f"{body[max(0, leftover.start()-40):leftover.start()+40]!r}"
+            f"{body[max(0, leftover.start() - 40) : leftover.start() + 40]!r}"
         )
     return json.loads(body)
 
@@ -163,8 +167,7 @@ def ensure_group(headers, key, cache, dry):
     if dry:
         cache[slug] = 0
         return 0
-    res = req("POST", "/wp/v2/cx-artist-tags", headers,
-              {"name": GROUP_LABEL[key], "slug": slug})
+    res = req("POST", "/wp/v2/cx-artist-tags", headers, {"name": GROUP_LABEL[key], "slug": slug})
     cache[slug] = res["id"]
     return res["id"]
 
@@ -173,7 +176,9 @@ def ensure_tag(headers, name, parent, cache, dry):
     ck = f"{parent}:{name}"
     if ck in cache:
         return cache[ck]
-    got = req("GET", f"/wp/v2/cx-artist-tags?search={urllib.parse.quote(name)}&per_page=100", headers)
+    got = req(
+        "GET", f"/wp/v2/cx-artist-tags?search={urllib.parse.quote(name)}&per_page=100", headers
+    )
     for t in got:
         if t["name"] == name and t.get("parent") == parent:
             cache[ck] = t["id"]
@@ -206,10 +211,14 @@ def main():
     creators = parse_creators()
     print(f"artists.js から {len(creators)} 名を読み込みました\n")
 
-    existing = {} if dry else {
-        (p.get("meta") or {}).get("cx_artist_symbol") or p["title"]["rendered"]: p["id"]
-        for p in req("GET", "/wp/v2/cx-artists?per_page=100&status=any", headers)
-    }
+    existing = (
+        {}
+        if dry
+        else {
+            (p.get("meta") or {}).get("cx_artist_symbol") or p["title"]["rendered"]: p["id"]
+            for p in req("GET", "/wp/v2/cx-artists?per_page=100&status=any", headers)
+        }
+    )
     gcache, tcache = {}, {}
 
     for i, c in enumerate(creators):
@@ -242,7 +251,7 @@ def main():
                 tid = ensure_tag(headers, n, parent, tcache, dry)
                 if tid:
                     term_ids.append(tid)
-        print(f"    タグ {len(term_ids)} 件 / 作例 {len(gallery_ids)} 枚 / 表示順 {(i+1)*10}")
+        print(f"    タグ {len(term_ids)} 件 / 作例 {len(gallery_ids)} 枚 / 表示順 {(i + 1) * 10}")
 
         payload = {
             "title": c["title"],

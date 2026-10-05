@@ -12,6 +12,7 @@ import os
 
 PORT = 8000
 
+
 class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # Remove query string for file lookup
@@ -24,6 +25,7 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
                 self.path = html_path + ('?' + self.path.split('?')[1] if '?' in self.path else '')
 
         return super().do_GET()
+
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))

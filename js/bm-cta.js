@@ -15,6 +15,8 @@
       '</div>'
     : '';
 
+  var badgeIcon = '<svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>';
+
   mount.className = 'bm-cta';
   mount.innerHTML =
     '<div class="bm-cta-inner">' +
@@ -50,9 +52,9 @@
           '</a>' +
         '</div>' +
         '<div class="bm-cta-badges">' +
-          '<span class="bm-cta-badge"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> 2〜3営業日以内に返信</span>' +
-          '<span class="bm-cta-badge"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> 見積り無料</span>' +
-          '<span class="bm-cta-badge"><svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg> 著作権安心</span>' +
+          '<span class="bm-cta-badge">' + badgeIcon + ' 2〜3営業日以内に返信</span>' +
+          '<span class="bm-cta-badge">' + badgeIcon + ' 見積り無料</span>' +
+          '<span class="bm-cta-badge">' + badgeIcon + ' 著作権安心</span>' +
         '</div>' +
       '</div>' +
       characterHtml +

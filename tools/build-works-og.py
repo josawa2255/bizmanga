@@ -33,27 +33,36 @@ THUMB_ALLOWED_SCHEMES = {"https"}
 # Theme
 W, H = 1200, 630
 BG_COLOR = (18, 18, 18)
-ACCENT = (233, 30, 99)                 # BizManga ピンク (bizmanga brand)
+ACCENT = (233, 30, 99)  # BizManga ピンク (bizmanga brand)
 TEXT_PRIMARY = (255, 255, 255)
 TEXT_SECONDARY = (200, 200, 200)
 
+
 def find_font(variable, candidates):
     override = os.environ.get(variable)
-    for filename in ([override] if override else candidates):
+    for filename in [override] if override else candidates:
         if pathlib.Path(filename).is_file():
             return filename
     raise FileNotFoundError(f"Set {variable} to an installed font file")
 
 
 def fonts():
-    jp = find_font("BM_FONT_JP", [
-        "/System/Library/Fonts/Hiragino Sans GB.ttc",
-        "C:/Windows/Fonts/YuGothM.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-    ])
-    en = find_font("BM_FONT_EN", [
-        "/System/Library/Fonts/Helvetica.ttc", "C:/Windows/Fonts/arial.ttf", jp,
-    ])
+    jp = find_font(
+        "BM_FONT_JP",
+        [
+            "/System/Library/Fonts/Hiragino Sans GB.ttc",
+            "C:/Windows/Fonts/YuGothM.ttc",
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        ],
+    )
+    en = find_font(
+        "BM_FONT_EN",
+        [
+            "/System/Library/Fonts/Helvetica.ttc",
+            "C:/Windows/Fonts/arial.ttf",
+            jp,
+        ],
+    )
     return jp, en
 
 

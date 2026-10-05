@@ -4,6 +4,17 @@
   var endpoint = 'https://api.hsforms.com/submissions/v3/integration/submit/' +
     '48367061/b6da14d0-d60d-4357-89fc-0015ed32b704';
 
+  function trackingNote(params, lines, fields) {
+    var tracking = lines.slice();
+    fields.forEach(function (field) {
+      var value = params.get(field[0]);
+      if (value) tracking.push(field[1] + ': ' + value);
+    });
+    tracking.push('ページ: ' + window.location.href);
+    var behavior = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
+    return '\n\n---\n' + tracking.join('\n') + behavior;
+  }
+
   function payload(values, message, pageName) {
     return {
       fields: [
@@ -27,5 +38,5 @@
     return fetch(endpoint, options);
   }
 
-  window.bmLead = { payload: payload, send: send };
+  window.bmLead = { payload: payload, send: send, trackingNote: trackingNote };
 })();

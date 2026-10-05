@@ -29,4 +29,4 @@
 ^tools/bm_[a-z0-9_]+\.py$
 ^tools/commit-generated\.py$
 ^js/bm-(embed-viewer|column-detail|news-detail|testimonial-detail)\.js$
-^css/bm-(embed-viewer|column-detail|column-static|news-detail|testimonial-detail)\.css$
+^css/bm-(embed-viewer|column-body|column-detail|column-static|news-detail|testimonial-detail)\.css$
