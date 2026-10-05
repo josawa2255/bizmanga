@@ -1,4 +1,5 @@
 """Shared, standard-library-only helpers for the static site builders."""
+
 from contextlib import contextmanager
 from contextvars import ContextVar
 import html
@@ -15,6 +16,11 @@ ROOT = Path(__file__).resolve().parents[1]
 API_BASE = "https://cms.contentsx.jp/wp-json/contentsx/v1"
 SITE_URL = "https://bizmanga.contentsx.jp"
 _pending = ContextVar("build_outputs", default=None)
+
+
+def escape_html(value):
+    """Escape text/attributes, treating None as an empty string."""
+    return html.escape(str(value if value is not None else ""), quote=True)
 
 
 def fetch_json(url, timeout=30, user_agent="BizManga-Builder/1.0"):
@@ -80,6 +86,7 @@ def render_template(template, replacements):
             if match[0] not in values:
                 raise ValueError(f"Unknown template placeholder: {match[0]}")
             return values[match[0]]
+
         return token.sub(value, source)
 
     def json_block(match):
@@ -104,7 +111,7 @@ def render_template(template, replacements):
     # parsed again as a template (or as a script element).
     parts, offset = [], 0
     for match in pattern.finditer(template):
-        parts.append(substitute(template[offset:match.start()], replacements))
+        parts.append(substitute(template[offset : match.start()], replacements))
         parts.append(json_block(match))
         offset = match.end()
     parts.append(substitute(template[offset:], replacements))

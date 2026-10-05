@@ -17,17 +17,25 @@ WP API `/columns` からコラム記事を取得し、以下を自動生成す�
     - 日次の定期実行（GitHub Actions）
 """
 
-import html
 import pathlib
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
+from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
-    fetch_json as _fetch_json, output_batch, remove_file, render_template,
-    replace_block, require_records, script_json, write_text,
+    escape_html as esc,
+    fetch_json as _fetch_json,
+    output_batch,
+    remove_file,
+    render_template,
+    replace_block,
+    require_records,
+    script_json,
+    write_text,
 )
+from bm_brand import normalize_brand_text
 from bm_content import make_slug
 from bm_html import _Sanitizer
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
@@ -46,34 +54,6 @@ TEMPLATE_PATH = ROOT / "tools" / "templates" / "column-detail.html.tpl"
 COLUMN_DIR = ROOT / "column"
 
 DETAIL_FETCH_WORKERS = 5
-
-def esc(s):
-    return html.escape(str(s if s is not None else ""), quote=True)
-
-
-def normalize_brand_text(text, *, prices=True):
-    """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
-    - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
-      （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
-    - 旧料金コピー → 現行基本料金25,740円〜（税抜・原稿料別途）
-    WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
-    """
-    if not text:
-        return text
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」の体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割の体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割', '独自の制作メソッド', text)
-    text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
-    return normalize_price_text(text) if prices else text
 
 
 def sanitize_content_html(raw):
@@ -149,7 +129,7 @@ def build_toc_and_inject_ids(content_html):
             continue
 
         items.append((sec_id, toc_text))
-        pieces.append(content_html[last_end:m.start()])
+        pieces.append(content_html[last_end : m.start()])
         pieces.append(new_h2)
         last_end = m.end()
 
@@ -160,8 +140,7 @@ def build_toc_and_inject_ids(content_html):
         return "", content_html
 
     li_html = "".join(
-        f'        <li><a href="#{esc(sid)}">{esc(text)}</a></li>\n'
-        for sid, text in items
+        f'        <li><a href="#{esc(sid)}">{esc(text)}</a></li>\n' for sid, text in items
     )
     toc_html = (
         '      <nav class="bm-col-toc" aria-label="この記事の目次">\n'
@@ -240,14 +219,22 @@ def update_column_html(columns):
             "category": featured.get("category") or "",
             "date": featured.get("date", ""),
             "readtime": featured.get("_readtime", 5),
-        } if featured else None,
+        }
+        if featured
+        else None,
     }
     data_tag = (
         '<script type="application/json" id="bm-column-data">\n'
         + script_json(data_payload, indent=2)
         + "\n</script>"
     )
-    s, _ = replace_block(s, '<script type="application/json" id="bm-column-data">', "</script>", data_tag, required=True)
+    s, _ = replace_block(
+        s,
+        '<script type="application/json" id="bm-column-data">',
+        "</script>",
+        data_tag,
+        required=True,
+    )
 
     # ItemList JSON-LD
     ld = {
@@ -270,7 +257,13 @@ def update_column_html(columns):
         + script_json(ld, indent=2)
         + "\n</script>"
     )
-    s, _ = replace_block(s, '<script type="application/ld+json" id="column-itemlist-ld">', "</script>", ld_tag, required=True)
+    s, _ = replace_block(
+        s,
+        '<script type="application/ld+json" id="column-itemlist-ld">',
+        "</script>",
+        ld_tag,
+        required=True,
+    )
 
     write_text(p, s)
     print(f"Updated {p}")
@@ -301,9 +294,7 @@ def build_detail_page(col, detail_data, template):
         raw_desc = re.sub(r"<[^>]+>", "", excerpt or content).replace("\n", " ").strip()
         description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
 
-    cat_html = (
-        f'<span class="bm-col-static-cat">{esc(category)}</span>' if category else ""
-    )
+    cat_html = f'<span class="bm-col-static-cat">{esc(category)}</span>' if category else ""
     hero_html = ""
     if thumb:
         hero_html = (
@@ -350,7 +341,11 @@ def generate_details(columns):
     with ThreadPoolExecutor(max_workers=DETAIL_FETCH_WORKERS) as executor:
         results = list(executor.map(_fetch_detail_safe, columns))
 
-    failures = [str(c["id"]) for c, detail, err in results if err is not None or not isinstance(detail, dict)]
+    failures = [
+        str(c["id"])
+        for c, detail, err in results
+        if err is not None or not isinstance(detail, dict)
+    ]
     if failures:
         raise RuntimeError("Column detail fetch failed: " + ", ".join(failures))
     require_records([{"id": make_slug(c)} for c in columns], label="column slugs")
@@ -380,10 +375,7 @@ def update_sitemap(columns):
     p = ROOT / "sitemap.xml"
     s = p.read_text(encoding="utf-8")
 
-    pattern = re.compile(
-        r"\s*<!-- BUILD:COLUMNS[^>]*?-->[\s\S]*?<!-- /BUILD:COLUMNS -->\s*"
-    )
-    s = pattern.sub("\n\n", s)
+    s = remove_blocks(s, "COLUMNS")
 
     entries = []
     for c in columns:
@@ -391,21 +383,16 @@ def update_sitemap(columns):
         # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
         # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
         modified = c.get("modified_ymd") or c.get("date_ymd") or ""
-        lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
-            "  <url>\n"
-            f"    <loc>{SITE}/column/{slug}</loc>\n"
-            f"{lastmod_line}"
-            "    <changefreq>monthly</changefreq>\n"
-            "    <priority>0.6</priority>\n"
-            "  </url>"
+            url_entry(
+                f"{SITE}/column/{slug}",
+                modified,
+                frequency="monthly",
+                priority="0.6",
+            )
         )
-    block = (
-        "  <!-- BUILD:COLUMNS (auto-generated by tools/build-columns.py) -->\n"
-        + "\n".join(entries)
-        + "\n  <!-- /BUILD:COLUMNS -->\n"
-    )
-    s = s.replace("</urlset>", block + "\n</urlset>")
+    block = build_block("COLUMNS", entries, generator="tools/build-columns.py")
+    s = append_blocks(s, block)
     write_text(p, s)
     print(f"Updated {p}")
 
