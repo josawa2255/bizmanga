@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (isPreview) {
           var banner = document.createElement('div');
           banner.setAttribute('role', 'status');
-          banner.style.cssText = 'position:sticky;top:0;z-index:9999;background:#ffb800;color:#222;padding:10px 16px;text-align:center;font-weight:700;font-size:14px;box-shadow:0 1px 0 rgba(0,0,0,0.08);';
+          banner.className = 'bm-col-preview-banner';
           banner.textContent = 'プレビュー中（status: ' + (data.post_status || 'unknown') + '）— 公開中のページには反映されていません';
           document.body.insertBefore(banner, document.body.firstChild);
         }

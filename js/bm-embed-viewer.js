@@ -36,11 +36,7 @@
       up:    'M6 15l6-6 6 6',   down:  'M6 9l6 6 6-6'
     };
     var SVGNS = 'http://www.w3.org/2000/svg';
-    function makeNav(modifier, dir, label) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'ev-nav ev-nav--' + modifier;
-      b.setAttribute('aria-label', label);
+    function makeChevron(dir) {
       var svg = document.createElementNS(SVGNS, 'svg');
       svg.setAttribute('viewBox', '0 0 24 24');
       svg.setAttribute('fill', 'none');
@@ -51,7 +47,14 @@
       var path = document.createElementNS(SVGNS, 'path');
       path.setAttribute('d', CHEVRON[dir]);
       svg.appendChild(path);
-      b.appendChild(svg);
+      return svg;
+    }
+    function makeNav(modifier, dir, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ev-nav ev-nav--' + modifier;
+      b.setAttribute('aria-label', label);
+      b.appendChild(makeChevron(dir));
       return b;
     }
     // 横読み用 左右タップゾーン（side=配置, chevronDir=向きヒント）
@@ -60,17 +63,7 @@
       b.type = 'button';
       b.className = 'ev-tap ev-tap--' + side;
       b.setAttribute('aria-label', label);
-      var svg = document.createElementNS(SVGNS, 'svg');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2.4');
-      svg.setAttribute('stroke-linecap', 'round');
-      svg.setAttribute('stroke-linejoin', 'round');
-      var path = document.createElementNS(SVGNS, 'path');
-      path.setAttribute('d', CHEVRON[chevronDir]);
-      svg.appendChild(path);
-      b.appendChild(svg);
+      b.appendChild(makeChevron(chevronDir));
       return b;
     }
 

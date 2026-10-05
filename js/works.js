@@ -25,11 +25,6 @@ function prepareImgLoad(imgEl, containerEl) {
   imgEl.addEventListener('load', markLoaded, { once: true });
   imgEl.addEventListener('error', markLoaded, { once: true });
 }
-// 後方互換
-function watchImgLoad(imgEl, containerEl) { prepareImgLoad(imgEl, containerEl); }
-function showMangaLoader() {}
-function hideMangaLoader() {}
-
 // ===== Header scroll effect =====
 const header = document.getElementById('header');
 if (header) {
@@ -742,8 +737,7 @@ function openManga(key) {
     if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
     if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
 
-    // Show modal immediately with loading indicator
-    showMangaLoader();
+    // Show modal immediately while the first pages preload.
     mangaModal.classList.add('open');
     document.body.style.overflow = 'hidden';
 
@@ -762,10 +756,8 @@ function openManga(key) {
       });
     }
 
-    // Preload in background, hide loader when first pages ready
-    preloadImages(firstPages, 2000).then(function() {
-      hideMangaLoader();
-    });
+    // Preload in background.
+    preloadImages(firstPages, 2000);
   }
 
   // 画像がキャッシュ済みなら即座に、そうでなければロード後に判定
@@ -1050,7 +1042,7 @@ function openSpreadViewer(key, data) {
   } else {
     var mp = document.getElementById('mobilePage');
     mp.src = spreadPageSrc(currentMangaPath, 1);
-    watchImgLoad(mp, mobileContainer);
+    prepareImgLoad(mp, mobileContainer);
     updateSpreadUI();
   }
 }
@@ -1266,7 +1258,7 @@ function mobileFlipTo(index, direction) {
 
     currentMobilePage = index;
     mobilePage.src = spreadPageSrc(currentMangaPath, currentMobilePage + 1);
-    watchImgLoad(mobilePage, mobileContainer);
+    prepareImgLoad(mobilePage, mobileContainer);
     currentSpread = currentMobilePage === 0 ? 0 : Math.ceil(currentMobilePage / 2);
     updateSpreadUI();
     isSpreadAnimating = false;
@@ -1415,7 +1407,6 @@ function closeManga() {
 
   mangaModal.classList.remove('open');
   document.body.style.overflow = '';
-  hideMangaLoader();
   hideMangaCta();
 
   // Resume pre-production carousels from same position
@@ -1679,7 +1670,7 @@ if (isDirectMode) {
       })
       .catch(function(err) {
         console.warn('[direct-mode] manga fetch failed:', err.message);
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;">作品が見つかりませんでした。<br><br><a href="/" style="color:#eb5200;">トップページへ戻る</a></div>';
+        document.body.innerHTML = '<div class="manga-not-found">作品が見つかりませんでした。<br><br><a href="/" class="manga-not-found-link">トップページへ戻る</a></div>';
       });
   }
 }

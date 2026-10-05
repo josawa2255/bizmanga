@@ -58,19 +58,14 @@
   }
 
   function sendToHubSpot() {
-    var tracking = ['[BizManga 資料ダウンロード]'];
-    ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (key) {
-      var v = params.get(key);
-      if (v) tracking.push(key + ': ' + v);
-    });
-    tracking.push('ページ: ' + window.location.href);
-    var behaviorLog = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
-
-    var lines = ['【資料ダウンロード】' + DOCUMENT_NAME];
-    if (value('tel')) lines.push('電話番号: ' + value('tel'));
-    var message = lines.join('\n') + '\n\n---\n' + tracking.join('\n') + behaviorLog;
-
     try {
+      var trackingNote = window.bmLead.trackingNote(params, ['[BizManga 資料ダウンロード]'], [
+        ['utm_source', 'utm_source'], ['utm_medium', 'utm_medium'], ['utm_campaign', 'utm_campaign']
+      ]);
+      var lines = ['【資料ダウンロード】' + DOCUMENT_NAME];
+      if (value('tel')) lines.push('電話番号: ' + value('tel'));
+      var message = lines.join('\n') + trackingNote;
+
       // 共通JSの読込・ペイロード生成に失敗しても、CRM送信と資料提供を続ける。
       var payload = window.bmLead.payload({
         company: value('company'), department: value('department'),
