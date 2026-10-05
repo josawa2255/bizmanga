@@ -3,6 +3,7 @@
 本文の文字列だけを処理し、URL・画像・作品IDは変更しない。
 同じ置換定義からブラウザー用 js/bm-pricing.js を生成する。
 """
+
 import html
 import json
 import re
@@ -38,7 +39,7 @@ def _replace_parts(parts):
         suffix = 0
         while suffix < min(len(old), len(new)) - prefix and old[-suffix - 1] == new[-suffix - 1]:
             suffix += 1
-        replacement = new[prefix:len(new) - suffix if suffix else None]
+        replacement = new[prefix : len(new) - suffix if suffix else None]
         for match in reversed(matches):
             start, end = match.span()
             start += prefix
@@ -111,7 +112,11 @@ def normalize_price_html(value):
 def write_browser_script():
     """Pythonとブラウザーで同じ料金修正を使う。列挙順も保持する。"""
     rules = json.dumps(REPLACEMENTS, ensure_ascii=False, indent=2)
-    script = (ROOT / 'tools/templates/bm-pricing.js.tpl').read_text(encoding='utf-8').replace('__RULES__', rules)
+    script = (
+        (ROOT / 'tools/templates/bm-pricing.js.tpl')
+        .read_text(encoding='utf-8')
+        .replace('__RULES__', rules)
+    )
     path = ROOT / 'js/bm-pricing.js'
     if not path.exists() or path.read_text(encoding='utf-8') != script:
         write_text(path, script)

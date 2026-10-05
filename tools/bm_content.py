@@ -1,4 +1,5 @@
 """Canonical column URLs shared by page and feed builders."""
+
 from bm_build import safe_slug
 
 SLUG_MAP = {

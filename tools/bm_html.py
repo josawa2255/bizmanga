@@ -1,4 +1,5 @@
 """Allowlist sanitizer for WordPress article HTML."""
+
 import html
 import re
 from html.parser import HTMLParser
@@ -7,17 +8,77 @@ from html.parser import HTMLParser
 # WP管理画面が侵害された場合の持続的XSS（SPEC §15.1 S1）対策。
 # 許可タグ・許可属性以外は除去し、危険なタグは中身ごと捨てる。
 _ALLOWED_TAGS = {
-    "p", "br", "hr", "h2", "h3", "h4", "h5", "blockquote",
-    "ul", "ol", "li", "strong", "b", "em", "i", "u", "s", "small", "mark", "sub", "sup",
-    "a", "img", "figure", "figcaption", "span", "div",
-    "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption",
-    "code", "pre",
+    "p",
+    "br",
+    "hr",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "blockquote",
+    "ul",
+    "ol",
+    "li",
+    "strong",
+    "b",
+    "em",
+    "i",
+    "u",
+    "s",
+    "small",
+    "mark",
+    "sub",
+    "sup",
+    "a",
+    "img",
+    "figure",
+    "figcaption",
+    "span",
+    "div",
+    "table",
+    "thead",
+    "tbody",
+    "tfoot",
+    "tr",
+    "th",
+    "td",
+    "caption",
+    "code",
+    "pre",
 }
 # 中身ごと完全に破棄するタグ
-_VOID_DROP_TAGS = {"script", "style", "iframe", "object", "embed", "form", "noscript",
-                   "template", "svg", "math", "link", "meta", "base"}
+_VOID_DROP_TAGS = {
+    "script",
+    "style",
+    "iframe",
+    "object",
+    "embed",
+    "form",
+    "noscript",
+    "template",
+    "svg",
+    "math",
+    "link",
+    "meta",
+    "base",
+}
 _SELF_CLOSING = {"br", "hr", "img"}
-_VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
+_VOID_TAGS = {
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
 _ALLOWED_ATTRS = {
     "a": {"href", "title", "target", "rel"},
     "img": {"src", "alt", "width", "height", "loading", "decoding", "srcset", "sizes"},
@@ -39,7 +100,9 @@ def _safe_url(value, *, link=False, image=False):
         protocol = scheme[1].lower()
         if protocol in {"http", "https"} or (link and protocol in {"mailto", "tel"}):
             return v
-        if image and re.match(r"^data:image/(?:png|gif|jpeg|webp|avif|bmp|x-icon);base64,[a-zA-Z0-9+/=]+$", v, re.I):
+        if image and re.match(
+            r"^data:image/(?:png|gif|jpeg|webp|avif|bmp|x-icon);base64,[a-zA-Z0-9+/=]+$", v, re.I
+        ):
             return v
         return None
     return v
@@ -87,8 +150,9 @@ class _Sanitizer(HTMLParser):
             if name not in allowed:
                 continue
             if name in ("href", "src"):
-                value = _safe_url(value, link=tag == "a" and name == "href",
-                                  image=tag == "img" and name == "src")
+                value = _safe_url(
+                    value, link=tag == "a" and name == "href", image=tag == "img" and name == "src"
+                )
                 if value is None:
                     continue
             elif name == "srcset":
@@ -96,9 +160,7 @@ class _Sanitizer(HTMLParser):
                 if value is None:
                     continue
             kept.append((name, value or ""))
-        attr_str = "".join(
-            f' {n}="{html.escape(val, quote=True)}"' for n, val in kept
-        )
+        attr_str = "".join(f' {n}="{html.escape(val, quote=True)}"' for n, val in kept)
         if tag == "a" and not any(n == "rel" for n, _ in kept):
             attr_str += ' rel="noopener"'
         slash = "/" if tag in _SELF_CLOSING else ""

@@ -1,0 +1,11 @@
+target-version = "py311"
+line-length = 100
+include = ["tools/*.py", "serve.py"]
+extend-exclude = ["*.tmp"]
+
+[lint]
+select = ["F"]
+
+[format]
+quote-style = "preserve"
+line-ending = "lf"

@@ -177,6 +177,9 @@ OG画像生成の依存は `tools/requirements-images.txt`、ブラウザ検証�
 両方必要な場合は `python -m pip install -r tools/requirements.txt` で導入できます。
 
 ```sh
+python -m pip install ruff==0.15.17
+python -m ruff check .
+python -m ruff format --check .
 python -B tools/check-site.py
 python -B -m unittest discover -s tools -p test_build.py
 node --test tools/test-bm-tracking.cjs tools/test-runtime.cjs
@@ -186,6 +189,8 @@ python -B tools/check-browser.py
 ```
 
 `check-browser.py` は外部通信をモックし、フォーム・詳細ページ・LPの回帰を検証します。
+Pythonの整形は `python -m ruff format .`、静的チェックの設定は `ruff.toml` です。
+`bm_test_support.py` にテスト用のモジュール読込・HTTPサーバー・Git設定をまとめています。
 上記のチェックは `.github/workflows/checks.yml` でも実行します。
 公開WordPressとの接続を含めた確認は、次の2コマンドを使います。
 

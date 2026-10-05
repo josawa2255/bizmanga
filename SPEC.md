@@ -1274,6 +1274,12 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 
 ### 16.2 共通チェックと自動生成（2026-10-05）
 
+- Pythonの整形・静的チェックは `ruff.toml`（Ruff 0.15.17）で統一し、CIでも `ruff check .` と `ruff format --check .` を実行する。エディターの基本設定は `.editorconfig`。
+- `tools/bm_test_support.py` は検証用のモジュール読込・ローカル配信・Git実行環境を共有する。`check-browser.py` はフォーム送信・依存スクリプトの障害・本文表示・LP・広告計測の場面別に検証する。
+- 制作事例のカテゴリ文言・SEO辞書は `tools/bm_work_content.py`、順序付きブランド置換は `tools/bm_brand.py`、サイトマップのマークアップは `tools/bm_sitemap.py` に分離する。URL選択と更新日の方針は各ビルダーで保持する。HTMLエスケープは `bm_build.escape_html` を共有する。
+- 静的・動的コラム本文の共通スタイルは `css/bm-column-body.css`。各ページ専用CSSより前に読み込み、目次・モバイル表示などの個別指定は各CSSに保持する。
+- フォームの流入情報は `bmLead.trackingNote` で整形し、項目名・見出しは各フォームが指定する。連絡先・資料DLの送信文面、完了条件、CRM連携は従来どおり。
+- 広告計測は `js/bm-conversions.js` に分離し、`bm-nav.js` とともに全ページ・生成テンプレートで読み込む。LINE・電話のラベル、capture段階でのクリック検知、`bmReportConversion` を維持する。
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
 - `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
