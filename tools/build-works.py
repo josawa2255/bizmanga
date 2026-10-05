@@ -14,7 +14,7 @@ WP API `/works` から制作事例を取得し、以下を自動生成する:
 
 実行タイミング:
     - WordPress で works を追加・更新した後
-    - 週1回の定期実行（GitHub Actions）
+    - 日次の定期実行（GitHub Actions）
 
 Why:
     現状 works.html は JS で WP API から描画する構成のため、
@@ -28,10 +28,14 @@ import pathlib
 import re
 from datetime import date
 import sys
-import urllib.request
+from bm_build import API_BASE, SITE_URL
+from bm_build import (
+    fetch_json as _fetch_json, output_batch, remove_file, render_template,
+    replace_block, require_records, safe_slug, script_json, write_text,
+)
 
-API = "https://cms.contentsx.jp/wp-json/contentsx/v1/works"
-SITE = "https://bizmanga.contentsx.jp"
+API = API_BASE + '/works'
+SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE_PATH = ROOT / "tools" / "templates" / "work-detail.html.tpl"
 CATEGORY_TEMPLATE_PATH = ROOT / "tools" / "templates" / "works-category.html.tpl"
@@ -48,12 +52,10 @@ def esc(s):
 
 
 def fetch_works():
-    req = urllib.request.Request(API, headers={"User-Agent": "BizManga-Builder/1.0"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        data = json.loads(r.read().decode("utf-8"))
-    if not isinstance(data, list):
-        raise RuntimeError(f"Unexpected API response: {type(data)}")
-    return data
+    works = require_records(_fetch_json(API, timeout=20), label="works")
+    for work in works:
+        safe_slug(work["id"])
+    return works
 
 
 def filter_for_bm(works):
@@ -165,16 +167,7 @@ def update_works_html(works):
     start = "<!-- BUILD:WORKS_GRID -->"
     end = "<!-- /BUILD:WORKS_GRID -->"
     block = f"{start}\n{cards}      {end}"
-    pattern = re.compile(re.escape(start) + r"[\s\S]*?" + re.escape(end))
-    if pattern.search(s):
-        s = pattern.sub(block, s)
-    else:
-        # Inject inside #bmWorksGrid
-        s = s.replace(
-            '<div class="bm-works-grid" id="bmWorksGrid">',
-            f'<div class="bm-works-grid" id="bmWorksGrid">\n      {block}',
-            1,
-        )
+    s, _ = replace_block(s, start, end, block, required=True)
 
     # ItemList JSON-LD
     ld = {
@@ -194,22 +187,16 @@ def update_works_html(works):
     }
     ld_tag = (
         '<script type="application/ld+json" id="works-itemlist-ld">\n'
-        + json.dumps(ld, ensure_ascii=False, indent=2)
+        + script_json(ld, indent=2)
         + "\n</script>"
     )
-    ld_pattern = re.compile(
-        r'<script type="application/ld\+json" id="works-itemlist-ld">[\s\S]*?</script>'
-    )
-    if ld_pattern.search(s):
-        s = ld_pattern.sub(ld_tag, s)
-    else:
-        s = s.replace("</head>", f"  {ld_tag}\n</head>", 1)
+    s, _ = replace_block(s, '<script type="application/ld+json" id="works-itemlist-ld">', "</script>", ld_tag, required=True)
 
-    p.write_text(s, encoding="utf-8")
+    write_text(p, s)
     print(f"Updated {p}")
 
 
-def build_detail_page(w, template):
+def build_detail_page(w, template, all_works=()):
     slug = w["id"]
     title_ja = w.get("title_ja") or slug
     # ヒーロー表示用は gallery[0] のフル解像度を優先 (WP thumbnail は 188x300 の小さなサムネで、
@@ -307,7 +294,7 @@ def build_detail_page(w, template):
     # === 関連事例セクション ===
     # 同カテゴリの他作品から最大3件選定（self除く）
     related_works = [
-        rw for rw in _all_works_cache
+        rw for rw in all_works
         if rw.get("category") == category
         and rw.get("id") != slug
         and rw.get("show_site") == "both"
@@ -363,13 +350,7 @@ def build_detail_page(w, template):
         "{{gallery_html}}": gallery_html,
     }
 
-    out = template
-    for k, v in replacements.items():
-        out = out.replace(k, v)
-    return out
-
-
-_all_works_cache = []
+    return render_template(template, replacements)
 
 
 # ===== カテゴリページ設定 =====
@@ -602,7 +583,7 @@ def build_faq_html(faq_items):
 
 
 def build_faq_jsonld(faq_items):
-    return json.dumps(
+    return script_json(
         {
             "@context": "https://schema.org",
             "@type": "FAQPage",
@@ -615,13 +596,12 @@ def build_faq_jsonld(faq_items):
                 for item in faq_items
             ],
         },
-        ensure_ascii=False,
         indent=2,
     )
 
 
 def build_breadcrumb_jsonld(slug, kw):
-    return json.dumps(
+    return script_json(
         {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
@@ -631,13 +611,12 @@ def build_breadcrumb_jsonld(slug, kw):
                 {"@type": "ListItem", "position": 3, "name": kw, "item": f"{SITE}/works/category/{slug}"},
             ],
         },
-        ensure_ascii=False,
         indent=2,
     )
 
 
 def build_itemlist_jsonld(slug, cfg, matched):
-    return json.dumps(
+    return script_json(
         {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
@@ -661,7 +640,6 @@ def build_itemlist_jsonld(slug, cfg, matched):
                 ],
             },
         },
-        ensure_ascii=False,
         indent=2,
     )
 
@@ -669,8 +647,7 @@ def build_itemlist_jsonld(slug, cfg, matched):
 def generate_category_pages(works):
     """カテゴリページを /works/category/{slug}.html に生成"""
     if not CATEGORY_TEMPLATE_PATH.exists():
-        print(f"WARN: category template not found: {CATEGORY_TEMPLATE_PATH}", file=sys.stderr)
-        return
+        raise FileNotFoundError(CATEGORY_TEMPLATE_PATH)
     template = CATEGORY_TEMPLATE_PATH.read_text(encoding="utf-8")
     CATEGORY_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -679,7 +656,7 @@ def generate_category_pages(works):
     removed = 0
     for existing in CATEGORY_DIR.glob("*.html"):
         if existing.stem not in valid_slugs:
-            existing.unlink()
+            remove_file(existing)
             removed += 1
 
     generated = 0
@@ -691,7 +668,7 @@ def generate_category_pages(works):
             # ただし既存ファイルがあれば削除する
             stale = CATEGORY_DIR / f"{slug}.html"
             if stale.exists():
-                stale.unlink()
+                remove_file(stale)
                 removed += 1
             skipped += 1
             continue
@@ -736,10 +713,8 @@ def generate_category_pages(works):
             # APIにmodified_ymdが無い間は従来通りビルド日にフォールバック） 2026-06-12
             "{{last_modified}}": (max((w.get("modified_ymd") or "" for w in matched), default="") or date.today().isoformat()) + "T03:00:00+09:00",
         }
-        out = template
-        for k, v in replacements.items():
-            out = out.replace(k, v)
-        (CATEGORY_DIR / f"{slug}.html").write_text(out, encoding="utf-8")
+        out = render_template(template, replacements)
+        write_text(CATEGORY_DIR / f"{slug}.html", out)
         generated += 1
 
     print(
@@ -749,8 +724,6 @@ def generate_category_pages(works):
 
 
 def generate_details(works):
-    global _all_works_cache
-    _all_works_cache = list(works)
     if not TEMPLATE_PATH.exists():
         print(f"ERROR: template not found: {TEMPLATE_PATH}", file=sys.stderr)
         sys.exit(1)
@@ -762,12 +735,12 @@ def generate_details(works):
     removed = 0
     for existing in WORKS_DIR.glob("*.html"):
         if existing.stem not in current_slugs:
-            existing.unlink()
+            remove_file(existing)
             removed += 1
 
     for w in works:
-        out = build_detail_page(w, template)
-        (WORKS_DIR / f"{w['id']}.html").write_text(out, encoding="utf-8")
+        out = build_detail_page(w, template, works)
+        write_text(WORKS_DIR / f"{w['id']}.html", out)
     print(f"Generated {len(works)} detail pages, removed {removed} stale files")
 
 
@@ -834,18 +807,18 @@ def update_sitemap(works):
 
     inject = block + ("\n" + cat_block if cat_block else "") + "\n"
     s = s.replace("</urlset>", inject + "</urlset>")
-    p.write_text(s, encoding="utf-8")
+    write_text(p, s)
     print(f"Updated {p}")
 
 
-def main():
+def _build():
     try:
         all_works = fetch_works()
     except Exception as e:
         print(f"ERROR fetching works: {e}", file=sys.stderr)
         sys.exit(1)
 
-    bm_works = filter_for_bm(all_works)
+    bm_works = require_records(filter_for_bm(all_works), label="BizManga works")
     print(f"Total works from WP: {len(all_works)}")
     print(f"BizManga works (show_site='both'): {len(bm_works)}")
 
@@ -855,6 +828,11 @@ def main():
     update_sitemap(bm_works)
 
     print("Done.")
+
+
+def main():
+    with output_batch(ROOT):
+        return _build()
 
 
 if __name__ == "__main__":

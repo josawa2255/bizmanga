@@ -14,18 +14,22 @@ WP API `/columns` からコラム記事を取得し、以下を自動生成す�
 
 実行タイミング:
     - WordPress でコラムを追加・更新した後
-    - 週1回の定期実行（GitHub Actions）
+    - 日次の定期実行（GitHub Actions）
 """
 
 import html
-import json
 import pathlib
 import re
 import sys
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
-from html.parser import HTMLParser
+from bm_build import API_BASE, SITE_URL
+from bm_build import (
+    fetch_json as _fetch_json, output_batch, remove_file, render_template,
+    replace_block, require_records, script_json, write_text,
+)
+from bm_content import make_slug
+from bm_html import _Sanitizer
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
@@ -34,141 +38,17 @@ DESC_OVERRIDES = {
 }
 
 
-API_LIST = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns?site=bizmanga&per_page=100"
-API_SINGLE = "https://cms.contentsx.jp/wp-json/contentsx/v1/columns/{id}"
-SITE = "https://bizmanga.contentsx.jp"
+API_LIST = API_BASE + '/columns?site=bizmanga&per_page=100'
+API_SINGLE = API_BASE + '/columns/{id}'
+SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE_PATH = ROOT / "tools" / "templates" / "column-detail.html.tpl"
 COLUMN_DIR = ROOT / "column"
 
 DETAIL_FETCH_WORKERS = 5
 
-SLUG_MAP = {
-    "4コマ漫画をビジネス活用するには": "4koma-business-guide",
-    "4コマ漫画の簡単な作り方とビジネス活用法": "4koma-howto",
-    "ビジネス漫画の効果とは": "business-manga-effect",
-    "漫画の「プロット」とは": "manga-plot-guide",
-    "なぜ今、ビジネスに漫画なのか": "why-business-manga",
-}
-
-
-def make_slug(column):
-    slug = column.get("slug") or ""
-    if slug and slug.isascii() and "%" not in slug:
-        return slug
-    title = column.get("title_ja") or ""
-    for key, val in SLUG_MAP.items():
-        if key in title:
-            return val
-    return f"column-{column['id']}"
-
-
 def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
-
-
-# ── WP本文HTMLのallowlistサニタイズ（標準ライブラリのみ。bleach等の追加依存なし）──
-# WP管理画面が侵害された場合の持続的XSS（SPEC §15.1 S1）対策。
-# 許可タグ・許可属性以外は除去し、危険なタグは中身ごと捨てる。
-_ALLOWED_TAGS = {
-    "p", "br", "hr", "h2", "h3", "h4", "h5", "blockquote",
-    "ul", "ol", "li", "strong", "b", "em", "i", "u", "s", "small", "mark", "sub", "sup",
-    "a", "img", "figure", "figcaption", "span", "div",
-    "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption",
-    "code", "pre",
-}
-# 中身ごと完全に破棄するタグ
-_VOID_DROP_TAGS = {"script", "style", "iframe", "object", "embed", "form", "noscript",
-                   "template", "svg", "math", "link", "meta", "base"}
-_SELF_CLOSING = {"br", "hr", "img"}
-_ALLOWED_ATTRS = {
-    "a": {"href", "title", "target", "rel"},
-    "img": {"src", "alt", "width", "height", "loading", "decoding", "srcset", "sizes"},
-    "td": {"colspan", "rowspan", "data-align"},
-    "th": {"colspan", "rowspan", "data-align", "scope"},
-    "*": {"class", "id"},
-}
-
-
-def _safe_url(value):
-    """javascript:/vbscript:/data:(画像以外) を弾く。相対・http(s)・data:image は許可。"""
-    v = (value or "").strip()
-    low = re.sub(r"[\s]", "", v).lower()
-    if low.startswith(("javascript:", "vbscript:", "data:text", "data:application")):
-        return None
-    return v
-
-
-def _safe_srcset(value):
-    """srcset の各URLを検証。1つでも危険ならsrcset全体を捨てる。"""
-    if not value:
-        return None
-    parts = []
-    for chunk in value.split(","):
-        chunk = chunk.strip()
-        if not chunk:
-            continue
-        url = chunk.split()[0]
-        if _safe_url(url) is None:
-            return None
-        parts.append(chunk)
-    return ", ".join(parts) if parts else None
-
-
-class _Sanitizer(HTMLParser):
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.out = []
-        self._skip_depth = 0  # script等のネスト深さ
-
-    def handle_starttag(self, tag, attrs):
-        if tag in _VOID_DROP_TAGS:
-            if tag not in _SELF_CLOSING:
-                self._skip_depth += 1
-            return
-        if self._skip_depth:
-            return
-        if tag not in _ALLOWED_TAGS:
-            return  # 不許可タグは要素を落とす（中身テキストは残る）
-        allowed = _ALLOWED_ATTRS.get(tag, set()) | _ALLOWED_ATTRS["*"]
-        kept = []
-        for name, value in attrs:
-            name = (name or "").lower()
-            if name.startswith("on"):  # onclick 等のイベントハンドラ
-                continue
-            if name not in allowed:
-                continue
-            if name in ("href", "src"):
-                value = _safe_url(value)
-                if value is None:
-                    continue
-            elif name == "srcset":
-                value = _safe_srcset(value)
-                if value is None:
-                    continue
-            kept.append((name, value or ""))
-        attr_str = "".join(
-            f' {n}="{html.escape(val, quote=True)}"' for n, val in kept
-        )
-        if tag == "a" and not any(n == "rel" for n, _ in kept):
-            attr_str += ' rel="noopener"'
-        slash = "/" if tag in _SELF_CLOSING else ""
-        self.out.append(f"<{tag}{attr_str}{slash}>")
-
-    def handle_endtag(self, tag):
-        if tag in _VOID_DROP_TAGS and tag not in _SELF_CLOSING:
-            if self._skip_depth:
-                self._skip_depth -= 1
-            return
-        if self._skip_depth:
-            return
-        if tag in _ALLOWED_TAGS and tag not in _SELF_CLOSING:
-            self.out.append(f"</{tag}>")
-
-    def handle_data(self, data):
-        if self._skip_depth:
-            return
-        self.out.append(html.escape(data, quote=False))
 
 
 def normalize_brand_text(text, *, prices=True):
@@ -208,16 +88,11 @@ def sanitize_content_html(raw):
 
 
 def fetch_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "BizManga-Builder/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+    return _fetch_json(url)
 
 
 def fetch_columns():
-    data = fetch_json(API_LIST)
-    if not isinstance(data, list):
-        raise RuntimeError(f"Unexpected API response: {type(data)}")
-    return data
+    return require_records(fetch_json(API_LIST), label="columns")
 
 
 def fetch_column_detail(col_id):
@@ -332,9 +207,6 @@ def build_card(c):
 
 def update_column_html(columns):
     p = ROOT / "column.html"
-    if not p.exists():
-        print(f"SKIP: {p} not found")
-        return
     s = p.read_text(encoding="utf-8")
 
     # Featured = 最新1件 (日付降順の先頭)
@@ -345,9 +217,7 @@ def update_column_html(columns):
     start = "<!-- BUILD:COLUMN_GRID -->"
     end = "<!-- /BUILD:COLUMN_GRID -->"
     block = f"{start}\n{cards}      {end}"
-    pattern = re.compile(re.escape(start) + r"[\s\S]*?" + re.escape(end))
-    if pattern.search(s):
-        s = pattern.sub(block, s)
+    s, _ = replace_block(s, start, end, block, required=True)
 
     # Featured + カテゴリ一覧をJSONで埋め込む (bm-column-filter.jsが読む)
     cat_counts = {}
@@ -374,16 +244,10 @@ def update_column_html(columns):
     }
     data_tag = (
         '<script type="application/json" id="bm-column-data">\n'
-        + json.dumps(data_payload, ensure_ascii=False, indent=2)
+        + script_json(data_payload, indent=2)
         + "\n</script>"
     )
-    data_pattern = re.compile(
-        r'<script type="application/json" id="bm-column-data">[\s\S]*?</script>'
-    )
-    if data_pattern.search(s):
-        s = data_pattern.sub(data_tag, s)
-    else:
-        s = s.replace("</head>", f"  {data_tag}\n</head>", 1)
+    s, _ = replace_block(s, '<script type="application/json" id="bm-column-data">', "</script>", data_tag, required=True)
 
     # ItemList JSON-LD
     ld = {
@@ -403,18 +267,12 @@ def update_column_html(columns):
     }
     ld_tag = (
         '<script type="application/ld+json" id="column-itemlist-ld">\n'
-        + json.dumps(ld, ensure_ascii=False, indent=2)
+        + script_json(ld, indent=2)
         + "\n</script>"
     )
-    ld_pattern = re.compile(
-        r'<script type="application/ld\+json" id="column-itemlist-ld">[\s\S]*?</script>'
-    )
-    if ld_pattern.search(s):
-        s = ld_pattern.sub(ld_tag, s)
-    else:
-        s = s.replace("</head>", f"  {ld_tag}\n</head>", 1)
+    s, _ = replace_block(s, '<script type="application/ld+json" id="column-itemlist-ld">', "</script>", ld_tag, required=True)
 
-    p.write_text(s, encoding="utf-8")
+    write_text(p, s)
     print(f"Updated {p}")
 
 
@@ -472,10 +330,7 @@ def build_detail_page(col, detail_data, template):
         "{{content_html}}": content_with_ids,
     }
 
-    out = template
-    for k, v in replacements.items():
-        out = out.replace(k, v)
-    return out
+    return render_template(template, replacements)
 
 
 def _fetch_detail_safe(column):
@@ -495,17 +350,18 @@ def generate_details(columns):
     with ThreadPoolExecutor(max_workers=DETAIL_FETCH_WORKERS) as executor:
         results = list(executor.map(_fetch_detail_safe, columns))
 
+    failures = [str(c["id"]) for c, detail, err in results if err is not None or not isinstance(detail, dict)]
+    if failures:
+        raise RuntimeError("Column detail fetch failed: " + ", ".join(failures))
+    require_records([{"id": make_slug(c)} for c in columns], label="column slugs")
     current_slugs = set()
     written = 0
     for c, detail, err in results:
         slug = make_slug(c)
         current_slugs.add(slug)
-        if err is not None:
-            print(f"  WARN: failed to fetch detail for {slug}: {err}", file=sys.stderr)
-            continue
         c["_readtime"] = estimate_readtime(detail.get("content", ""))
         out = build_detail_page(c, detail, template)
-        (COLUMN_DIR / f"{slug}.html").write_text(out, encoding="utf-8")
+        write_text(COLUMN_DIR / f"{slug}.html", out)
         print(f"  Generated column/{slug}.html")
         written += 1
 
@@ -514,7 +370,7 @@ def generate_details(columns):
         if existing.stem == "index":
             continue
         if existing.stem not in current_slugs:
-            existing.unlink()
+            remove_file(existing)
             removed += 1
 
     print(f"Generated {written}/{len(columns)} column pages, removed {removed} stale files")
@@ -522,9 +378,6 @@ def generate_details(columns):
 
 def update_sitemap(columns):
     p = ROOT / "sitemap.xml"
-    if not p.exists():
-        print(f"SKIP: {p} not found")
-        return
     s = p.read_text(encoding="utf-8")
 
     pattern = re.compile(
@@ -553,11 +406,11 @@ def update_sitemap(columns):
         + "\n  <!-- /BUILD:COLUMNS -->\n"
     )
     s = s.replace("</urlset>", block + "\n</urlset>")
-    p.write_text(s, encoding="utf-8")
+    write_text(p, s)
     print(f"Updated {p}")
 
 
-def main():
+def _build():
     write_browser_script()
     try:
         columns = fetch_columns()
@@ -575,6 +428,11 @@ def main():
     update_column_html(columns)
     update_sitemap(columns)
     print("Done.")
+
+
+def main():
+    with output_batch(ROOT):
+        return _build()
 
 
 if __name__ == "__main__":

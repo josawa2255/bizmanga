@@ -156,7 +156,7 @@ A. 全国対応（オンラインで完結）。初回相談・見積もりは�
 BizManga 公式サイト（https://bizmanga.contentsx.jp）の静的サイトソースです。
 
 - **配信**: GitHub Pages（カスタムドメイン `bizmanga.contentsx.jp`、`CNAME` 参照）
-- **構成**: 素の HTML / CSS / JavaScript（フレームワーク非依存）。インラインCSS/JSは使わず外部ファイルに分離
+- **構成**: 素の HTML / CSS / JavaScript（フレームワーク非依存）。ページ固有の処理・スタイルは外部ファイル化。Critical CSS、計測の初期化、JSON-LDなどはインラインで保持
 - **コンテンツ連携**: WordPress REST API（`cms.contentsx.jp`）からニュース・コラム・制作事例・お客様の声を取得して描画。API由来の文字列はすべて `js/bm-sanitize.js` でサニタイズしてからDOMに挿入（XSS対策）
 - **表示言語**: 日本語固定
 - **静的ビルド**: `tools/` の Python スクリプトで SEO向けの静的ページ（コラム `/column/{slug}` 等）を生成
@@ -169,6 +169,37 @@ BizManga 公式サイト（https://bizmanga.contentsx.jp）の静的サイトソ
 | [`SPEC.md`](./SPEC.md) | サイト全体の詳細仕様・変更履歴 |
 | [`CLAUDE.md`](./CLAUDE.md) | 開発時のガイド（開発時のガイド） |
 | [`llms.txt`](./llms.txt) | LLM向けのサービス概要・引用用データ |
+
+### 開発・検証
+
+Python 3.11以上とNode.jsを使用します。通常の静的ビルダーは標準ライブラリだけで動作します。
+OG画像生成の依存は `tools/requirements-images.txt`、ブラウザ検証の依存は `tools/requirements-test.txt` に分けています。
+両方必要な場合は `python -m pip install -r tools/requirements.txt` で導入できます。
+
+```sh
+python -B tools/check-site.py
+python -B -m unittest discover -s tools -p test_build.py
+node --test tools/test-bm-tracking.cjs tools/test-runtime.cjs
+python -m pip install -r tools/requirements-test.txt
+python -m playwright install chromium
+python -B tools/check-browser.py
+```
+
+`check-browser.py` は外部通信をモックし、フォーム・詳細ページ・LPの回帰を検証します。
+上記のチェックは `.github/workflows/checks.yml` でも実行します。
+公開WordPressとの接続を含めた確認は、次の2コマンドを使います。
+
+```sh
+python -B tools/check-builds.py
+python -B tools/smoke-manga-wp.py --serve .
+```
+
+`check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性を検証します。
+作業ツリーを更新する場合は `tools/build-*.py` を個別に実行してください。
+漫画表示・WP接続の変更時は [確認手順](docs/REVIEW-MANGA-WP.md) も参照してください。
+
+OG画像のフォントはMac・Windows・Linuxの既知パスから検出します。別のフォントを使う場合は
+環境変数 `BM_FONT_JP` / `BM_FONT_EN` にフォントファイルのパスを指定してください。
 
 > 注: `/biz-library`（ビズ書庫）のURLはQRコードで外部配布済みのため変更されません。
 

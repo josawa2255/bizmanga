@@ -1,0 +1,106 @@
+.bm-news-detail-section {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      min-height: 60vh;
+    }
+    .bm-news-detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e85500;
+      text-decoration: none;
+      margin-bottom: 32px;
+      transition: opacity 0.3s;
+    }
+    .bm-news-detail-back:hover {
+      opacity: 0.7;
+    }
+    .bm-news-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .bm-news-detail-date {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e85500;
+    }
+    .bm-news-detail-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a1a1a;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      padding: 3px 10px;
+      border-radius: 3px;
+    }
+    .bm-news-detail-title {
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .bm-news-detail-hero {
+      width: 100%;
+      max-height: 480px;
+      background: transparent;
+      overflow: hidden;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bm-news-detail-hero img {
+      max-width: 100%;
+      max-height: 480px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+    }
+    @media (max-width: 768px) {
+      .bm-news-detail-hero,
+      .bm-news-detail-hero img {
+        max-height: 280px;
+      }
+    }
+    .bm-news-detail-content {
+      font-size: 15px;
+      line-height: 1.9;
+      color: #555;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 32px;
+    }
+    .bm-news-detail-content p {
+      margin-bottom: 1.2em;
+    }
+    .bm-news-detail-content a {
+      color: #e85500;
+      text-decoration: underline;
+    }
+    .bm-news-detail-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .bm-news-detail-loading {
+      text-align: center;
+      padding: 60px 0;
+      color: #888;
+      font-size: 14px;
+    }
+    .bm-news-detail-error {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .bm-news-detail-error p {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }

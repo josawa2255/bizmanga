@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""IndexNow ping. 直前コミットで変更されたHTML/sitemap/llmsをBing/Yandexへ即通知。
-GitHub Actions から呼ばれる前提（HEAD~1 との diff を取る）。
+"""IndexNow ping. push 全体で変更されたHTML/sitemap/llmsをBing/Yandexへ通知。
+GitHub Actions は INDEXNOW_BEFORE / AFTER を渡す。ローカルでは直前コミット。
 """
 import json
 import os
@@ -14,10 +14,20 @@ KEY = "d3aa5088bd3c49f988a9c1ead3f8206a"
 KEY_LOCATION = f"https://{HOST}/{KEY}.txt"
 
 def get_changed_urls():
-    """直前のコミットで変わったファイル → URL に変換"""
+    """push の全コミットで変わったファイル → URL に変換"""
+    before = os.environ.get("INDEXNOW_BEFORE")
+    after = os.environ.get("INDEXNOW_AFTER")
+    if before or after:
+        if not all(re.fullmatch(r"[0-9a-fA-F]{40,64}", v or "") for v in (before, after)):
+            raise ValueError("IndexNow commit IDs must be full hexadecimal hashes")
+        command = (["git", "ls-tree", "-r", "--name-only", after]
+                   if not before.strip("0") else
+                   ["git", "diff", "--name-only", before, after, "--"])
+    else:
+        command = ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--"]
     try:
         out = subprocess.check_output(
-            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+            command,
             text=True
         )
     except subprocess.CalledProcessError:

@@ -151,7 +151,11 @@ p{margin:0 0 16px;}
   <section class="bm-contact-page">
     <div class="bm-container">
       <div class="bm-contact-form">
-        <form id="bmContactForm">
+        <form id="bmContactForm" method="post">
+          <div id="bmContactStatus" class="bm-form-group" role="status">
+            <p>送信機能を準備しています。この案内が消えない場合は、入力内容を控えてからページを再読み込みしてください。</p>
+            <p>解決しない場合やお急ぎの場合は、お電話（<a href="tel:03-6261-0764">03-6261-0764</a>）にてお問い合わせください。</p>
+          </div>
           <div class="bm-form-group">
             <label class="bm-form-label"> 会社名 <span class="bm-required">必須</span></label>
             <input class="bm-form-input" type="text" id="bmCompany" name="company" placeholder="Contents X 株式会社" required data-crm-field="company_name">
@@ -180,7 +184,7 @@ p{margin:0 0 16px;}
             <label for="bmWebsite">Website (do not fill)</label>
             <input type="text" id="bmWebsite" name="website" tabindex="-1" autocomplete="off">
           </div>
-          <button type="submit" class="cb-submit bm-form-submit" aria-label="送信する">
+          <button type="submit" class="cb-submit bm-form-submit" aria-label="送信する" disabled>
             <span class="cb-label">送信する</span>
             <span class="cb-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -223,148 +227,8 @@ p{margin:0 0 16px;}
 <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-kinsoku.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
-  <script>
-    /**
-     * BizManga お問い合わせフォーム → HubSpot送信
-     * トラッキング: pageUri / pageName でビズマンガからの問い合わせと識別
-     * URLパラメータ ?plan=xxx がある場合はメッセージ欄に自動入力
-     */
-    (function() {
-      var HUBSPOT_PORTAL_ID = '48367061';
-      var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
-
-      // プランパラメータ自動入力
-      var params = new URLSearchParams(window.location.search);
-      var plan = params.get('plan');
-      if (plan) {
-        var msgField = document.getElementById('bmMessage');
-        if (msgField) {
-          var planNames = { full: 'フル漫画家プラン', hybrid: 'ハイブリッドプラン' };
-          msgField.value = '【' + (planNames[plan] || plan) + 'について】\n\n';
-        }
-      }
-
-// 二重送信ガード: ボタンの disabled だけだと、Enter や requestSubmit() など
-      // ボタンを経由しない送信経路をすり抜ける。フォーム単位のフラグで塞ぐ（BUGS #046）
-      var bmIsSubmitting = false;
-
-      // 部署は HubSpot のフォーム側で必須（空だと送信が拒否される）。HTML の required は
-      // 空白だけの入力を通すので、送信時に前後の空白を除いて空なら止める
-      var bmDepartmentInput = document.getElementById('bmDepartment');
-      bmDepartmentInput.addEventListener('input', function () {
-        bmDepartmentInput.setCustomValidity('');
-      });
-
-document.getElementById('bmContactForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (!bmDepartmentInput.value.trim()) {
-          bmDepartmentInput.setCustomValidity('部署を入力してください');
-          bmDepartmentInput.reportValidity();
-          return;
-        }
-
-        if (bmIsSubmitting) return;
-        bmIsSubmitting = true;
-
-        var submitBtn = e.target.querySelector('.bm-form-submit');
-        submitBtn.disabled = true;
-        submitBtn.classList.add('is-sending');
-
-        var company    = document.getElementById('bmCompany').value;
-        var department = document.getElementById('bmDepartment').value;
-        var fullName   = document.getElementById('bmName').value;
-        var email      = document.getElementById('bmEmail').value;
-        var message    = document.getElementById('bmMessage').value;
-
-        // 流入元トラッキング情報を付加
-        var tracking = ['[BizManga経由のお問い合わせ]'];
-        if (plan) tracking.push('選択プラン: ' + (plan.charAt(0).toUpperCase() + plan.slice(1)));
-        var utmSource   = params.get('utm_source');
-        var utmMedium   = params.get('utm_medium');
-        var utmCampaign = params.get('utm_campaign');
-        var source      = params.get('source');
-        if (utmSource)   tracking.push('流入元: ' + utmSource);
-        if (utmMedium)   tracking.push('媒体: ' + utmMedium);
-        if (utmCampaign) tracking.push('キャンペーン: ' + utmCampaign);
-        if (source)      tracking.push('参照ページ: ' + source);
-        tracking.push('ページ: ' + window.location.href);
-        var behaviorLog = typeof window.bmGetTrackingNote === 'function' ? window.bmGetTrackingNote() : '';
-        var trackingNote = '\n\n---\n' + tracking.join('\n') + behaviorLog;
-
-        var payload = {
-          fields: [
-            { name: 'company',   value: company },
-            { name: 'busyo',     value: department },
-            { name: 'lastname',  value: fullName },
-            { name: 'firstname', value: fullName },
-            { name: 'email',     value: email },
-            { name: 'message',   value: message + trackingNote }
-          ],
-          context: {
-            pageUri:  window.location.href,
-            pageName: 'BizManga - お問い合わせ'
-          }
-        };
-
-        // CRM の受信箱へも送る（失敗しても HubSpot の受付・完了表示には影響しない）。
-        // 送信はページ末尾で読み込む CRM の埋め込みスクリプト（inbound-v1.js）が行う。
-        // 項目は各欄の data-crm-field で指定、ボット対策の隠し欄はスクリプトタグの data-honeypot で指定。
-        // ⚠️ 外部のスクリプトなので try で囲む（壊れていても HubSpot の送信・完了表示・広告CVを止めない）
-        try {
-          if (window.BizcarteInbound && typeof window.BizcarteInbound.sendForm === 'function') {
-            window.BizcarteInbound.sendForm(e.target);
-          } else {
-            console.warn('CRM inbound script not loaded; skipped CRM send (HubSpot continues)');
-          }
-        } catch (err) {
-          console.warn('CRM inbound failed (ignored):', err);
-        }
-
-        var url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
-          + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID;
-
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-        .then(function(res) {
-          if (res.ok) return res.json();
-          return res.text().then(function(t) { throw new Error(t); });
-        })
-        .then(function() {
-          // HubSpotが正常に受理した時だけ、実問い合わせとして計測する。
-          if (typeof gtag === 'function') {
-            // Google広告: お問合せフォーム送信完了
-            gtag('event', 'conversion', {'send_to': 'AW-18108125426/F13ECI3R3qgcEPKh0LpD'});
-            // GA4: 推奨イベント generate_lead。PIIは送らない。
-            gtag('event', 'generate_lead', {
-              'send_to': 'G-Q1T3033Q3W',
-              'method': 'contact_form'
-            });
-          }
-          var form = document.getElementById('bmContactForm');
-          var thanks = document.createElement('div');
-          thanks.innerHTML = '<div style="text-align:center;padding:40px 0;">'
-            + '<p style="font-size:20px;font-weight:700;color:var(--bm-accent);margin-bottom:12px;">お問い合わせありがとうございます。</p>'
-            + '<p style="font-size:15px;color:var(--bm-text-muted);">3営業日以内にご連絡いたします。</p>'
-            + '</div>';
-          form.parentNode.insertBefore(thanks, form.nextSibling);
-          form.style.display = 'none';
-        })
-        .catch(function(err) {
-          console.error('HubSpot submission error:', err);
-          bmIsSubmitting = false;
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('is-sending');
-          // 応答が取れなかっただけで送信自体は届いている場合がある（送信後の通信断など）。
-          // 「もう一度お試しください」と促すと、届いているのに再送されて重複する（BUGS #046）
-          alert('送信結果を確認できませんでした。\n通信状況によっては、すでに送信が完了している場合があります。\n重複を避けるため、しばらく経ってからもう一度お試しいただくか、お電話（03-6261-0764）にてご連絡ください。');
-        });
-      });
-    })();
-  </script>
+  <script src="/js/bm-lead.js"></script>
+  <script src="/js/bm-contact.js"></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {

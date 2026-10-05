@@ -1,0 +1,174 @@
+html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', sans-serif;
+    }
+    #viewer {
+      position: absolute; inset: 0;
+      overflow: hidden;
+      background: #f8f4ef;
+    }
+
+    /* ============ 縦読み(vertical_only): 縦自動スクロール ============ */
+    #viewer.is-vertical {
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+    }
+    #viewer.is-vertical::-webkit-scrollbar { display: none; }
+    #viewer.is-vertical { -ms-overflow-style: none; scrollbar-width: none; }
+    .v-stack {
+      display: flex;
+      flex-direction: column;
+    }
+    .v-stack img {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* ============ スライドショー(slides): 1ページずつフェード ============ */
+    #viewer.is-slides { background: #fff; }
+    .s-slides {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    .s-slides img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      /* 漫画ページ全体を見切れなく表示する。cover だと縦長スマホ枠で
+         左右(または上下)がトリミングされ漫画が切れるため contain。
+         余白は #fff 背景に馴染ませる */
+      object-fit: contain;
+      object-position: center;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .s-slides img.is-active { opacity: 1; }
+
+    /* ============ 見開き(spread): 横自動カルーセル ============ */
+    #viewer.is-horizontal {
+      display: flex;
+      align-items: stretch;
+    }
+    .h-strip {
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      flex-shrink: 0;
+      will-change: transform;
+    }
+    .h-strip img {
+      height: 100%;
+      width: auto;
+      display: block;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* ローディング */
+    .loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      z-index: 50;
+    }
+    .loading::after {
+      content: '';
+      width: 18px; height: 18px;
+      margin-left: 10px;
+      border: 2px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============ 手動操作UI (manual=1): 矢印 / タップゾーン / 操作ガイド ============ */
+    /* 縦読み: 上下矢印（最下部ガイドバーの上に配置） */
+    .ev-nav {
+      position: fixed;
+      z-index: 60;
+      width: 40px; height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+      color: #e85500;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+    .ev-nav svg { width: 22px; height: 22px; }
+    .ev-nav:active { background: #fff; transform: scale(0.9); }
+    .ev-nav[disabled] { opacity: 0.3; pointer-events: none; cursor: default; }
+    .ev-nav--up   { right: 8px; bottom: 94px; }
+    .ev-nav--down { right: 8px; bottom: 48px; }
+
+    /* 横読み: 画面の左右半分タップでページ送り（左=次 / 右=前） */
+    .ev-tap {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 50%;
+      z-index: 55;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(232, 85, 0, 0.0);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ev-tap--left  { left: 0;  justify-content: flex-start; }
+    .ev-tap--right { right: 0; justify-content: flex-end; }
+    /* chevronヒントは非表示（タップゾーンの機能は維持） */
+    .ev-tap svg { display: none; }
+    .ev-tap[disabled] { pointer-events: none; }
+    .ev-tap[disabled] svg { opacity: 0.12; }
+
+    /* 縦読み: 漫画の上に出す「漫画を読む」開始ボタン（タップで読了開始） */
+    .ev-read-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: rgba(20, 20, 20, 0.30);
+      -webkit-backdrop-filter: blur(1px);
+      backdrop-filter: blur(1px);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ev-read-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      border-radius: 100px;
+      background: #e85500;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      box-shadow: 0 6px 20px rgba(232, 85, 0, 0.45);
+      pointer-events: none;
+    }
+    .ev-read-overlay:active .ev-read-btn { transform: scale(0.96); }
+    .ev-read-btn svg { width: 20px; height: 20px; }

@@ -8,22 +8,26 @@ on:
 permissions:
   contents: write
 
+# All jobs writing generated content serialize checkout/build/push.
+concurrency:
+  group: bizmanga-generated-content
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Resolve the branch tip after waiting for the other generators.
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: python3 tools/build-lp-cases.py
-      - run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add product-manga.html recruit-manga.html manga-ad-lp.html company-manga.html sales-manga.html training-manga.html inbound-manga.html ir-manga.html
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-          git commit -m "chore(lp-cases): auto-inject static cases from WP [skip ci]"
-          git push
+      - name: Commit generated files
+        run: >-
+          python tools/commit-generated.py
+          --message "chore(lp-cases): auto-inject static cases from WP [skip ci]"
+          product-manga.html recruit-manga.html manga-ad-lp.html company-manga.html sales-manga.html training-manga.html inbound-manga.html ir-manga.html

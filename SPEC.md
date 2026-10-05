@@ -837,7 +837,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - 役割: 取引/支援企業ロゴを横スクロールで自動再生し、信用補強。ContentsXトップと同じ構成・同じ社数（現在12社、`js/data/bm-client-logos.js` の `BM_CLIENT_LOGOS` 件数が正）
 - データ: [js/data/bm-client-logos.js](js/data/bm-client-logos.js) の `BM_CLIENT_LOGOS` を編集すれば追加可
 - 画像参照: ContentX側の `https://contentsx.jp/material/images/{clients,partners}/...` を絶対URLで参照（[[reference_bugs_md]] #020 同様、ContentX/material/ の画像を消すときは両サイトgrep必須）
-- レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
+- レンダリング: [js/client-logos.js](js/client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - キャンペーン見出し（`.bm-campaign-link`）⭐2026-09-29 更新: 月桂冠SVG付きで「**[Chatworkロゴ]広告限定シナリオ制作無料キャンペーン実施中**」を表示し `/contact` へリンク（旧「9月限定」→ Chatwork広告限定へ切替、#52）
   - 「Chatwork」は文字ではなく公式ロゴ画像 `material/images/campaign/chatwork-logo.webp`（背景透過・実寸350×70。ユーザー支給PNGの白背景を、各画素を白＋ブランド2色〈紺#16202E／赤#DD494E〉の混色として解いて透過化＝輪郭の白フチなし）。`<img>` は `width="350" height="70"`（実比5:1、[BUGS.md #023](../BUGS.md)）、表示は `height:1.25em`、`alt="Chatwork"`
@@ -1270,3 +1270,46 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 - 新ページ追加時（`TARGET_PAGES` に追加してから）
 
 過去に「ハンバーガー押せない」問題が複数回再発したため必須チェック化。
+
+
+### 16.2 共通チェックと自動生成（2026-10-05）
+
+- `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
+- `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
+- 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
+- `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
+- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+
+生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
+`tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
+本文URLはブラウザの `js/bm-sanitize.js` と同じ方針で検証する。C0制御文字・DELはトリム前に拒否し、
+相対URLとhttp(s)を許可する。リンクのhrefに限りmailto/tel、imgのsrcに限りPNG/GIF/JPEG/WebP/AVIF/BMP/ICOのbase64 data URLも許可する。
+srcsetは各候補を検証し、カンマ区切りと曖昧になるdata URLを許可しない。本文の外部リンクは許可し、自社ドメイン限定の `bmSanitize.url` とは分ける。
+描画がすべて成功してから出力を反映し、通常の書き込み例外では適用済みの変更も巻き戻す。
+復元中に失敗しても残りの復元を続け、元の書き込みエラーと全復元エラー（対象パス付き）をまとめて報告する。
+コラム詳細の取得失敗や不正なslug・JSON/XML・必須マーカー欠落はビルド失敗として扱う。
+プロセスの強制終了やOS停止まで含む複数ファイルの原子的な更新ではない。
+
+料金ルールは `tools/bm_pricing_rules.py`、ブラウザ向けの生成テンプレートは
+`tools/templates/bm-pricing.js.tpl`。`js/bm-pricing.js` は生成物として扱う。
+自動更新4ワークフローは共通のconcurrency groupと `queue: max` で待機ジョブを保持して直列化し、
+待機後のcheckoutでは `github.ref_name` を指定してブランチの最新状態から生成する。
+`tools/commit-generated.py` で指定された生成物だけをコミットする。push前にrebaseし、競合はジョブ失敗として残す。
+IndexNowはpushのbefore〜after全体を対象とする。
+
+### 16.3 ページ固有ファイルの配置（2026-10-05）
+
+- お問い合わせ: `js/bm-contact.js`。資料DLと共通のHubSpot項目・送信先は `js/bm-lead.js`。お問い合わせの成功待ちと資料DLの非同期送信の違いは維持。
+- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う。
+- 送信機能の準備中はHTML内の `#bmContactStatus` に再読み込み・電話連絡の案内を表示し、初期化成功後に隠す。フォームJSの読込失敗時とJavaScript無効時にも案内を残す。
+- お客様の声の詳細では、共通サニタイザーが利用できない場合に読込表示を終了してエラーを表示し、未処理の本文は挿入しない。
+- 動的詳細: `js/bm-column-detail.js`、`js/bm-news-detail.js`、`js/bm-testimonial-detail.js`。本文のブラウザサニタイズは `bm-sanitize.js` を使用。
+- 埋込ビューア: `js/bm-embed-viewer.js` と `css/bm-embed-viewer.css`。URL・DOM・実行順は維持。
+- ページCSS: `css/bm-{column-detail,news-detail,testimonial-detail,privacy-policy}.css`。静的コラムの共通CSSは `css/bm-column-static.css`（テンプレートも同期）。Critical CSSは初期描画のためインラインで維持。
+- ロゴ表示: `js/client-logos.js` が2種類のデータ・クラス名を扱う。`js/data/` のデータは従来どおり分離。
+- 8本のLPはHTML全体のv2マーカーを判定して事例セクションを生成。繰り返し実行しても空行を増やさない。
+- LP事例は最大3件、カード幅は最大340pxで中央配置し、件数に応じて空の列を残さない。0件時は準備中の案内と制作事例・ビズ書庫へのリンクを表示する。
+- 参照がなくなっていた `js/bm-flow.js`、`js/bm-product-manga.js`、`css/production-flow.css`、`css/bm-lp-template.css` は削除。画像の元データは保持。
+- Service Workerは `bm-covers-` 系の旧キャッシュだけを削除し、背景の再取得・キャッシュ保存を `waitUntil` で完了させる。

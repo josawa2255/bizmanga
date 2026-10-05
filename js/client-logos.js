@@ -8,9 +8,9 @@
 (function () {
   'use strict';
 
-  function createItem(c) {
+  function createItem(c, prefix) {
     const el = document.createElement(c.url ? 'a' : 'span');
-    el.className = 'client-logo-item';
+    el.className = prefix + 'client-logo-item';
     el.setAttribute('aria-label', c.name);
     if (c.url) {
       el.href = c.url;
@@ -27,23 +27,28 @@
       el.appendChild(img);
     } else {
       const txt = document.createElement('span');
-      txt.className = 'client-logo-text';
+      txt.className = prefix + 'client-logo-text';
       txt.textContent = c.name;
       el.appendChild(txt);
     }
     return el;
   }
 
-  function init() {
-    const track = document.getElementById('clientLogosTrack');
-    if (!track || typeof CLIENT_LOGOS === 'undefined' || !CLIENT_LOGOS.length) return;
+  function render(trackId, items, prefix) {
+    const track = document.getElementById(trackId);
+    if (!track || !items || !items.length) return;
     const fragment = document.createDocumentFragment();
     for (let n = 0; n < 6; n++) {
-      CLIENT_LOGOS.forEach(function (c) {
-        fragment.appendChild(createItem(c));
+      items.forEach(function (c) {
+        fragment.appendChild(createItem(c, prefix));
       });
     }
-    track.appendChild(fragment);
+    track.replaceChildren(fragment);
+  }
+
+  function init() {
+    render('clientLogosTrack', typeof CLIENT_LOGOS === 'undefined' ? [] : CLIENT_LOGOS, '');
+    render('bmClientLogosTrack', typeof BM_CLIENT_LOGOS === 'undefined' ? [] : BM_CLIENT_LOGOS, 'bm-');
   }
 
   if (document.readyState === 'loading') {

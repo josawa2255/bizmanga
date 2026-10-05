@@ -23,8 +23,6 @@
 
   // HubSpot は廃止予定（2026年11月）。廃止したら false にする（CRM への送信はそのまま動く）
   var SEND_TO_HUBSPOT = true;
-  var HUBSPOT_PORTAL_ID = '48367061';
-  var HUBSPOT_FORM_GUID = 'b6da14d0-d60d-4357-89fc-0015ed32b704';
 
   // ブラウザ標準の type="email" は「a@b」も通すため、ドメインに「.」があるかも見る
   var EMAIL_RE = /^[^\s@<>()]+@[^\s@<>()]+\.[^\s@<>()]+$/;
@@ -72,29 +70,13 @@
     if (value('tel')) lines.push('電話番号: ' + value('tel'));
     var message = lines.join('\n') + '\n\n---\n' + tracking.join('\n') + behaviorLog;
 
-    // 項目はお問い合わせフォーム（contact.html）と同じ組み合わせにする（HubSpot 側で受け付け済みの形）
-    var payload = {
-      fields: [
-        { name: 'company',   value: value('company') },
-        { name: 'busyo',     value: value('department') },
-        { name: 'lastname',  value: value('name') },
-        { name: 'firstname', value: value('name') },
-        { name: 'email',     value: value('email') },
-        { name: 'message',   value: message }
-      ],
-      context: {
-        pageUri: window.location.href,
-        pageName: 'BizManga - 資料ダウンロード'
-      }
-    };
-
     try {
-      fetch('https://api.hsforms.com/submissions/v3/integration/submit/' + HUBSPOT_PORTAL_ID + '/' + HUBSPOT_FORM_GUID, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        keepalive: true
-      }).catch(function (err) {
+      // 共通JSの読込・ペイロード生成に失敗しても、CRM送信と資料提供を続ける。
+      var payload = window.bmLead.payload({
+        company: value('company'), department: value('department'),
+        name: value('name'), email: value('email')
+      }, message, 'BizManga - 資料ダウンロード');
+      window.bmLead.send(payload, true).catch(function (err) {
         console.warn('HubSpot submission failed (download continues):', err);
       });
     } catch (err) {

@@ -8,17 +8,16 @@ LP事例自動注入スクリプト
 
 GitHub Actions で週1 + 手動実行。実行後は git commit & push。
 """
-import json
+from bm_build import API_BASE, SITE_URL
+from bm_build import fetch_json as _fetch_json, output_batch, write_text, safe_slug, require_records
 import re
 import sys
-import urllib.request
-import urllib.parse
 from pathlib import Path
 from datetime import date
 
 ROOT = Path(__file__).resolve().parent.parent  # BizManga/
-SITE = "https://bizmanga.contentsx.jp"
-WP_API = "https://cms.contentsx.jp/wp-json/contentsx/v1/works"
+SITE = SITE_URL
+WP_API = API_BASE + '/works'
 
 # 各 LP のターゲットカテゴリ（複数可。順序は優先度）
 LP_CATEGORIES = {
@@ -47,11 +46,12 @@ MAX_CASES_PER_LP = 3
 
 
 def fetch_works():
-    """WP API から全作品取得。"""
+    """Fetch and validate all work identities before updating any LP."""
     cb = int(date.today().strftime("%Y%m%d"))
-    url = f"{WP_API}?per_page=100&_cb={cb}"
-    with urllib.request.urlopen(url, timeout=30) as r:
-        return json.loads(r.read())
+    works = require_records(_fetch_json(f"{WP_API}?per_page=100&_cb={cb}"), label="LP works")
+    for work in works:
+        safe_slug(work["id"])
+    return works
 
 
 def get_work_categories(w):
@@ -125,7 +125,7 @@ def render_card(work, v2=False):
     cats_display = " / ".join(html_escape(c) for c in get_work_categories(work))
 
     # サムネ ALT 文言: 作品名 + クライアント
-    alt = f"{title}（{client}）" if client else title
+    alt = f"{work.get('title_ja', '')}（{work.get('client', '')}）" if client else work.get("title_ja", "")
 
     if v2:
         # lpv2 markup
@@ -287,7 +287,7 @@ def is_v2_lp(slug):
     if not path.exists():
         return False
     try:
-        head = path.read_text(encoding="utf-8")[:4000]
+        head = path.read_text(encoding="utf-8")
     except Exception:
         return False
     return "LP-DESIGN:v2" in head
@@ -296,6 +296,11 @@ def is_v2_lp(slug):
 def patch_lp(slug, section_html):
     path = ROOT / f"{slug}.html"
     src = path.read_text(encoding="utf-8")
+    original = src
+    starts = src.count("<!-- BUILD:LP-CASES:BEGIN")
+    ends = src.count("<!-- BUILD:LP-CASES:END -->")
+    if starts != ends or starts > 1:
+        raise ValueError(f"{slug}: malformed or duplicate LP cases markers")
 
     # 1. 既存の動的「CASE STUDY 制作事例」セクション (data-bm-lp-cases) を削除
     pat_dynamic = re.compile(
@@ -312,6 +317,11 @@ def patch_lp(slug, section_html):
     )
     src = pat_existing.sub("\n", src)
 
+    def insert_at(position):
+        # Canonical boundary whitespace prevents every rebuild adding blank lines.
+        return (src[:position].rstrip() + "\n" + section_html.strip("\n") +
+                "\n\n    " + src[position:].lstrip())
+
     # 3. 配置位置を確定
     #   v2 LP: CHAPTER 05 LIBRARY (id="chapter-05-library") の直前
     #   旧 LP: ビズ書庫埋込 (id="library") のセクション開始タグ直前
@@ -319,26 +329,25 @@ def patch_lp(slug, section_html):
     m = re.search(r'(\s*<!--[^\n]*ビズ書庫埋込[^\n]*-->\s*\n)?(\s*<section[^>]*\bid="library")', src)
     if m_v2:
         start = m_v2.start()
-        new_src = src[:start] + section_html + src[start:]
+        new_src = insert_at(start)
     elif m:
         # マッチ全体（コメント+セクション開始）の前に section_html を挿入
         start = m.start()
-        new_src = src[:start] + section_html + src[start:]
+        new_src = insert_at(start)
     else:
         # フォールバック: 制作フロー直前
         anchor_flow = re.compile(r'(\n    <!-- ===== 制作フロー[^>]*-->)')
         if not anchor_flow.search(src):
-            print(f"[FAIL] {slug}: anchor not found", file=sys.stderr)
-            return False
-        new_src = anchor_flow.sub(section_html + r"\1", src, count=1)
+            raise ValueError(f"{slug}: LP cases anchor not found")
+        new_src = insert_at(anchor_flow.search(src).start())
 
-    if new_src == src:
+    if new_src == original:
         return False
-    path.write_text(new_src, encoding="utf-8")
+    write_text(path, new_src)
     return True
 
 
-def main():
+def _build():
     try:
         works = fetch_works()
     except Exception as e:
@@ -368,6 +377,11 @@ def main():
         print(f"  {slug}{v2flag}: matched={info['matched']}, shown={info['shown']}, patched={info['patched']}")
         for t in info["titles"]:
             print(f"      - {t}")
+
+
+def main():
+    with output_batch(ROOT):
+        return _build()
 
 
 if __name__ == "__main__":
