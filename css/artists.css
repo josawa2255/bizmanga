@@ -24,10 +24,6 @@
   padding: var(--section-py) 0;
 }
 
-.art-section--cream {
-  background: var(--lpv2-cream, #fff8ed);
-}
-
 /* 見出し */
 .art-head {
   text-align: center;

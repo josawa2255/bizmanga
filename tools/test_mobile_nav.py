@@ -2,14 +2,11 @@
 BizManga モバイルヘッダー回帰テスト
 
 目的: ハンバーガーメニューが「押せない」「開かない」「閉じない」系の再発を防ぐ。
-参照: ~/.claude/skills/webapp-testing/SKILL.md
+実行（cwd は BizManga/ 直下）:
+    python3 serve.py              # 別のターミナルで起動したままにする
+    python3 tools/test_mobile_nav.py
 
-実行:
-    PYTHONUNBUFFERED=1 python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \\
-        --server "python3 serve.py" --port 8000 \\
-        -- python3 tools/test_mobile_nav.py
-
-前提: cwd は BizManga/ 直下。serve.py が http://localhost:8000 で起動する。
+前提: serve.py が http://localhost:8000 で配信している（.html なしのURLも解決する）。
 index.html は Hero の大量画像で networkidle が来ないため domcontentloaded + 固定待ちで対応。
 
 テスト対象ページ:
@@ -21,7 +18,9 @@ from __future__ import annotations
 import functools
 import sys
 from dataclasses import dataclass
-from playwright.sync_api import sync_playwright, Page, TimeoutError as PWTimeout
+
+from playwright.sync_api import Page, sync_playwright
+from playwright.sync_api import TimeoutError as PWTimeout
 
 # 全 print を即フラッシュ（with_server.py 経由でも出力が見えるように）
 print = functools.partial(print, flush=True)  # type: ignore[assignment]

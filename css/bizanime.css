@@ -8,8 +8,6 @@
 
 :root {
   --ba-black:    #050505;
-  --ba-ink:      #090909;
-  --ba-charcoal: #111111;
   /* アクセント=黄色（2026-08-30 指示: このページだけオレンジではなく黄色）。
      glow系のrgba()は --ba-accent-rgb を使う。
      塗り（背景が黄色）になる場所の文字は必ず暗色（--ba-on-accent）にする */
@@ -605,8 +603,6 @@ body.ba-page { overflow-x: clip; }
 /* ==========================================================================
    9. 幅ごとの調整（PC先行。1280pxまでを担保する）
    ========================================================================== */
-@media (max-width: 1600px) {
-}
 @media (max-width: 1440px) {
   .ba-copy      { width: 32%; top: 12%; }
   /* 狭い幅ではキャラを小さく・右へ寄せて、CTAとモニターの居場所を確保する */
@@ -825,8 +821,6 @@ body.ba-page { overflow-x: clip; }
 }
 
 /* 極小幅（〜360px）: 4列の機能UIが潰れるので説明文だけ落として列は維持する */
-@media (max-width: 360px) {
-}
 
 /* 極小幅（〜340px）: 説明文の行末がスカートに掛かるので、キャラを少し小さくして逃がす */
 @media (max-width: 340px) {
@@ -1765,4 +1759,11 @@ body.ba-modal-open { overflow: hidden; }
     margin: 16px clamp(18px, 5vw, 32px) 0;
     flex-shrink: 0;
   }
+}
+
+/* 1024px 以下はヘッダーが黒になるので、資料ダウンロードのボタンを白抜きにする（旧 bizmanga.css から移動） */
+@media (max-width: 1024px) {
+  body.ba-page .bm-nav-dl { color: #fff; border-color: rgba(255,255,255,.7); }
+  body.ba-page .bm-nav-dl:hover,
+  body.ba-page .bm-nav-dl[aria-current="page"] { background: #fff; color: #1a1a1a; }
 }

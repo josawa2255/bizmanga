@@ -3,17 +3,17 @@
 
 import argparse
 import json
-from dataclasses import dataclass, field
-from bm_test_support import load_tool, start_server
-from pathlib import Path
 import sys
+from dataclasses import dataclass, field
+from pathlib import Path
 from urllib.parse import urlsplit
 
-from playwright.sync_api import sync_playwright, expect
+from bm_test_support import load_tool, start_server
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from serve import CleanURLHandler
+from serve import CleanURLHandler  # noqa: E402  (serve.py is at the repository root)
 
 
 class QuietHandler(CleanURLHandler):
@@ -368,7 +368,7 @@ def check_page_layouts(page, state, screenshots):
             if screenshots and slug == 'product-manga':
                 cases.screenshot(path=str(screenshots / f'lp-cases-{width}.png'))
         # Exercise the builder's supported zero-case state using its real markup.
-        empty = lp.render_section('ir-manga', lp.LP_NAMES['ir-manga'], [], v2=True)
+        empty = lp.render_section(lp.LP_NAMES['ir-manga'], [])
         cases.evaluate('(e, html) => { e.outerHTML = html; }', empty)
         cases = check_lp_cases(page)
         # An accidentally blank section must still fail validation.

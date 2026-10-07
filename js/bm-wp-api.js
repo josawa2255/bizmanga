@@ -18,8 +18,6 @@
 
   var API = BM_WP_CONFIG.apiBase.replace(/\/+$/, '');
   var TIMEOUT = BM_WP_CONFIG.timeout || 5000;
-  var CACHE_TTL = BM_WP_CONFIG.cacheTTL || 300000;
-  var cache = {};
 
   /* XSS対策ヘルパー（bm-sanitize.js 未ロード時も最低限エスケープ） */
   function esc(s) {
@@ -34,19 +32,13 @@
 
   async function apiFetch(endpoint) {
     var url = API + endpoint;
-    var now = Date.now();
-    if (cache[url] && (now - cache[url].ts) < CACHE_TTL) {
-      return cache[url].data;
-    }
     var controller = new AbortController();
     var timer = setTimeout(function() { controller.abort(); }, TIMEOUT);
     try {
       var res = await fetch(url, { signal: controller.signal });
       clearTimeout(timer);
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      var data = await res.json();
-      cache[url] = { data: data, ts: now };
-      return data;
+      return await res.json();
     } catch(e) {
       clearTimeout(timer);
       console.warn('[BM-WP-API] ' + url + ' failed:', e.message);
@@ -59,7 +51,6 @@
     var data = await apiFetch('/works?site=bizmanga');
     if (!data || !Array.isArray(data)) return;
     window.BM_WORKS_DATA = data;
-    console.log('[BM-WP-API] 漫画事例(works page): ' + data.length + '件 loaded');
   }
 
   /* ── Hero用全作品ロード（?site= 無しで全作品取得、Hero側でshow_hero_siteで判定） ── */
@@ -67,7 +58,6 @@
     var data = await apiFetch('/works');
     if (!data || !Array.isArray(data)) return;
     window.BM_HERO_WORKS_DATA = data;
-    console.log('[BM-WP-API] 漫画事例(hero): ' + data.length + '件 loaded');
   }
 
   /* ── 新作漫画をロード ── */
@@ -75,15 +65,15 @@
     var data = await apiFetch('/works-new?site=bizmanga');
     if (!data || !Array.isArray(data)) return;
     window.BM_NEW_WORKS_DATA = data;
-    console.log('[BM-WP-API] 新作漫画: ' + data.length + '件 loaded');
   }
 
-  /* ── ビズ書庫データをロード ── */
+  /* ── ビズ書庫データをロード ──
+     BM_LIBRARY_DATA を読むスクリプトは無いが、同じURLをビズ書庫（js/works.js）も取得するため、
+     応答（max-age=300）がブラウザキャッシュに残り、続けて開いたビズ書庫の読み込みが速くなる */
   async function loadLibrary() {
     var data = await apiFetch('/library');
     if (!data || !Array.isArray(data)) return;
     window.BM_LIBRARY_DATA = data;
-    console.log('[BM-WP-API] ビズ書庫: ' + data.length + '件 loaded');
   }
 
   /* ── ニュースDOM を動的に生成 ── */
@@ -92,9 +82,6 @@
   async function loadNews() {
     var data = await apiFetch('/news?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
-
-    /* 全データをグローバルに保存（一覧ページ用） */
-    window.BM_NEWS_DATA = data;
 
     var list = document.getElementById('bmNewsList');
     if (!list) return;
@@ -192,8 +179,6 @@
       var moreLink = document.getElementById('bmNewsMore');
       if (moreLink) moreLink.style.display = '';
     }
-
-    console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
   /* ── コラムデータをロード・ホームカード描画 ── */
@@ -203,7 +188,6 @@
     var data = await apiFetch('/columns?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
     if (window.bmPricing) data = window.bmPricing.post(data);
-    window.BM_COLUMNS_DATA = data;
 
     var grid = document.getElementById('bmColumnGrid');
     if (!grid) return;
@@ -240,7 +224,6 @@
       var more = document.getElementById('bmColumnMore');
       if (more) more.style.display = '';
     }
-    console.log('[BM-WP-API] コラム: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
   /* ── 初期化（Hero優先読み込み） ── */
@@ -263,7 +246,4 @@
       console.warn('[BM-WP-API] 初期化エラー:', e);
     }
   });
-
-  // グローバルに公開（他のスクリプトから利用可能）
-  window.bmApiFetch = apiFetch;
 })();

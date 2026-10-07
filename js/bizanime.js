@@ -583,7 +583,7 @@
      一覧はサムネイルのみ（iframeを並べない §26）。
      クリック時にモーダルでプレイヤーを生成し、閉じたら破棄する（§27）。
      WPから来る title / category / poster は textContent と
-     検証済みURLでのみ扱う（bmSanitize 併用・XSS鉄則）。
+     検証済みURL（下の cssUrl）でのみ扱う（XSS鉄則）。
      ================================================================ */
   var CAT_LABEL = {
     ADVERTISING: 'ADVERTISING',
@@ -1367,6 +1367,5 @@
     try { initFaq(); } catch (e4) {
       if (window.console && console.warn) console.warn('[bizanime faq]', e4);
     }
-    window.dispatchEvent(new CustomEvent('bizanime-data', { detail: data }));
   });
 })();

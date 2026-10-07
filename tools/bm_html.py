@@ -126,6 +126,14 @@ def _safe_srcset(value):
     return ", ".join(parts) if parts else None
 
 
+def sanitize_html(raw):
+    """WP本文HTMLを allowlist でサニタイズした文字列を返す。"""
+    parser = _Sanitizer()
+    parser.feed(raw)
+    parser.close()
+    return "".join(parser.out)
+
+
 class _Sanitizer(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)

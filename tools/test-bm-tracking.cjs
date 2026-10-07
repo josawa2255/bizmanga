@@ -6,8 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(process.argv[2] || path.join(__dirname, '../js/bm-tracking.js'), 'utf8');
-let passed = 0;
-function test(name, check) { check(); passed++; console.log('PASS ' + name); }
+const test = require('node:test');
 function setup(options = {}) {
   const hits = [], winListeners = {}, docListeners = {}, faqListeners = {};
   let stored = options.stored || '{}';
@@ -123,4 +122,3 @@ test('no click emits a lead or Google Ads conversion', () => {
   const h=setup(); ['/contact','/download','tel:000','https://line.me/R/'].forEach(href=>h.click(href));
   assert.ok(h.hits.every(hit => !['generate_lead','conversion','click'].includes(hit[1])));
 });
-console.log(`\n${passed} tests passed. Network requests: 0.`);

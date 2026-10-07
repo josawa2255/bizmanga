@@ -27,7 +27,6 @@
   --mt-line: var(--lpv2-rule-soft);   /* #e4dbc6  境界線（薄ベージュ） */
   --mt-line-strong: #d3c0ad;          /* 上記より一段濃い罫線         */
   --mt-focus: #241d18;                /* フォーカスリング（白/橙どちらでも見える） */
-  --mt-accent-wash: rgba(232, 85, 0, 0.10);  /* 見出し強調の下敷き       */
   --mt-accent-tint: rgba(232, 85, 0, 0.05);  /* hover面・土台の淡い橙    */
 }
 
@@ -70,49 +69,10 @@
 }
 .mt-v2 .mt-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 18px 30px -12px rgba(185, 65, 0, 0.75); }
 
-.mt-v2 .mt-btn--ghost {
-  background: #fff; color: var(--mt-ink); border-color: var(--mt-line-strong);
-}
-.mt-v2 .mt-btn--ghost:hover { transform: translateY(-2px); border-color: var(--mt-accent-deep); color: var(--mt-accent-deep); }
-
-.mt-v2 .mt-btn--on-accent { background: #fff; color: var(--mt-accent-deep); }
-.mt-v2 .mt-btn--on-accent:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.4); }
-.mt-v2 .mt-btn--on-accent-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.75); }
-.mt-v2 .mt-btn--on-accent-ghost:hover { background: rgba(255, 255, 255, 0.14); border-color: #fff; }
-.mt-v2 .mt-btn--on-accent:focus-visible,
-.mt-v2 .mt-btn--on-accent-ghost:focus-visible { outline-color: #fff; }
-
 /* ヒーロー・相談セクション用の大きめボタン */
 .mt-v2 .mt-btn--xl { padding: 21px 40px; font-size: 16px; }
 @media (max-width: 720px) {
   .mt-v2 .mt-btn--xl { padding: 18px 30px; font-size: 15px; }
-}
-
-/* ------------------------------------------------------------------
- * 1. セクション見出し（左寄せのエディトリアル型）
- * ------------------------------------------------------------------ */
-.mt-v2 .mt-head { max-width: 760px; margin: 0 0 52px; }
-.mt-v2 .mt-head__label {
-  display: flex; align-items: center; gap: 14px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 12px; font-weight: 900;
-  letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--mt-accent-deep);
-  margin: 0 0 18px;
-}
-.mt-v2 .mt-head__label::before { content: ""; width: 42px; height: 2px; background: var(--mt-accent); flex: none; }
-.mt-v2 .mt-head__title {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(26px, 3.4vw, 42px);
-  line-height: 1.38; letter-spacing: 0.01em;
-  color: var(--mt-ink);
-  margin: 0 0 16px;
-}
-.mt-v2 .mt-head__lead {
-  font-size: 15px; line-height: 2;
-  color: var(--mt-mute);
-  margin: 0; max-width: 640px;
 }
 
 /* ------------------------------------------------------------------
@@ -1173,14 +1133,15 @@
 @media (min-width: 760px) {
   .mt-v2 .mt-chapter-panel__illust { margin: 0; }
 }
-.mt-v2 .mt-chapter-panel__illust img { width: 100%; height: 100%; object-fit: cover; display: block; }
-#mt-founding  .mt-chapter-panel__illust img { object-position: 50% 20%; }  /* 人物の表情＋青空 */
-#mt-recruit   .mt-chapter-panel__illust img { object-position: 52% 24%; }  /* 表情＋桜 */
-#mt-casestudy .mt-chapter-panel__illust img { object-position: 48% 26%; }  /* 技術者＋工場 */
-#mt-howto     .mt-chapter-panel__illust img { object-position: 50% 26%; }  /* 人物＋ペン */
-#mt-product   .mt-chapter-panel__illust img { object-position: 48% 34%; }  /* 表情＋タブレット */
-#mt-training  .mt-chapter-panel__illust img { object-position: 50% 30%; }  /* 人物＋ノート */
-#mt-profile   .mt-chapter-panel__illust img { object-position: 46% 24%; }  /* 経営者＋都市背景 */
+.mt-v2 .mt-chapter-panel__illust img { width: 100%; height: 100%; object-fit: cover; display: block; object-position: var(--mt-illust-pos, 50% 50%); }
+/* 章ごとの写真の見せ位置（#mt-* はハッシュ深リンク用の id なので、ここでは data 属性で指定する） */
+[data-mt-panel="founding"]  { --mt-illust-pos: 50% 20%; }  /* 人物の表情＋青空 */
+[data-mt-panel="recruit"]   { --mt-illust-pos: 52% 24%; }  /* 表情＋桜 */
+[data-mt-panel="casestudy"] { --mt-illust-pos: 48% 26%; }  /* 技術者＋工場 */
+[data-mt-panel="howto"]     { --mt-illust-pos: 50% 26%; }  /* 人物＋ペン */
+[data-mt-panel="product"]   { --mt-illust-pos: 48% 34%; }  /* 表情＋タブレット */
+[data-mt-panel="training"]  { --mt-illust-pos: 50% 30%; }  /* 人物＋ノート */
+[data-mt-panel="profile"]   { --mt-illust-pos: 46% 24%; }  /* 経営者＋都市背景 */
 
 .mt-v2 .mt-chapter-panel__title {
   position: relative; z-index: 1;
@@ -2219,14 +2180,4 @@
   .mt-v2 .mt-chapter-panel__link { transition: none; }
   .mt-v2 .mt-btn:hover { transform: none; }
 }
-
-/* ------------------------------------------------------------------
- * 9. 共通パーツ (bm-lp-v2.css) の小さいオレンジ文字を、このページだけ
- *    AA 準拠の accent-deep に上書きする。
- *    共通CSS本体は他8LPに影響するため触らない。
- * ------------------------------------------------------------------ */
-.mt-v2 .lpv2-guide__eyebrow,
-.mt-v2 .lpv2-guide__text a,
-.mt-v2 .lpv2-eyebrow { color: var(--mt-accent-deep); }
-.mt-v2 .lpv2-eyebrow::before { background: var(--mt-accent-deep); }
 

@@ -33,20 +33,16 @@
     ['.bm-about-heading',     'up'],
     ['.bm-about-text',        'up'],
     ['.bm-whatis-heading',    'up'],
-    ['.bm-whatis-text',       'up'],
     ['.bm-section-title',     'up'],
     ['.bm-section-sub',       'up'],
     ['.bm-testimonials-header', 'up'],
     ['.bm-testimonials-scroll', 'up'],
     ['.bm-gallery-header',    'left'],
-    ['.bm-gallery-carousel',  'up'],
     ['.bm-pre-section-title',  'up'],
-    ['.bm-pre-section-subtitle','up'],
     ['.bm-pre-carousel-wrap',  'up'],
     ['.bm-news-item',         'right'],
     ['.bm-cta h2',            'up'],
-    ['.bm-cta p',             'up'],
-    ['.bm-cta .bm-btn',       'scale']
+    ['.bm-cta p',             'up']
   ];
 
   var STEP_DELAY = 140; // 子要素間の遅延 ms

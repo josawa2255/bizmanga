@@ -1,8 +1,6 @@
-// ===== Pre-production carousel state (must be declared early for direct mode) =====
-var preCarouselTimers = [];
-function pauseAllCarousels() { if (preCarouselTimers) preCarouselTimers.forEach(t => t.pause()); }
-function resumeAllCarousels() { if (preCarouselTimers) preCarouselTimers.forEach(t => t.resume()); }
-
+// ビズ書庫（biz-library.html）の漫画ビューア。宣言をページのグローバルに出さないよう即時関数で包む。
+// （中身は字下げし直していない。差分を最小にするため）
+(function() {
 // ===== Global Image Cache Pool (Critical Optimization) =====
 // Warms browser cache by loading images; browser will serve from disk/memory cache on subsequent requests
 const imageCache = new Set();
@@ -201,8 +199,7 @@ function probeCoverImages() {
 
     function checkTall() {
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-        var ratio = img.naturalHeight / img.naturalWidth;
-        if (ratio > 1.8) {
+        if (window.bmViewType && window.bmViewType.isVerticalByRatio(img.naturalWidth, img.naturalHeight)) {
           data.tallCover = true;
           data.verticalOnly = true;
           data.viewType = 'vertical';
@@ -250,7 +247,7 @@ probeCoverImages();  // 表紙の縦長自動検出
           tags: w.tags && w.tags.length > 0 ? w.tags : [],
           category: w.category || '',
           viewType: w.view_type || 'spread',
-          verticalOnly: w.view_type === 'vertical_only',
+          verticalOnly: !!(window.bmViewType && window.bmViewType.isVerticalOnly(w)),
           tallCover: !!w.tall_cover,
           thumbnail: w.thumbnail || '',
           gallery: w.gallery || [],
@@ -284,20 +281,16 @@ probeCoverImages();  // 表紙の縦長自動検出
       }
       probeCoverImages();  // WP APIデータでも表紙の縦長自動検出
 
-      // 赤ペン・ネームカルーセルも再構築
-      if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+      // 赤ペン・ネームを QR 直リンク用に登録
+      registerPreProductionData();
 
       // ダイレクトモードで既にモーダルが開いている場合、APIの正しいviewTypeで再オープン
       if (isDirectMode && autoOpen && mangaData[autoOpen] && mangaModal.classList.contains('open')) {
         var newMode = mangaData[autoOpen].viewType || 'spread';
         if (newMode !== currentViewMode) {
           console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
-          // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
-          while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
-          if (verticalObserver) { verticalObserver.disconnect(); verticalObserver = null; }
-          modalPageEls = []; modalThumbItems = []; modalDots = [];
-          mangaModal.classList.remove('open');
-          document.body.style.overflow = '';
+          // ダイレクトモードは閉じるとページ遷移するので、UIだけリセットして開き直す
+          resetViewerDom();
           setTimeout(function() { openManga(autoOpen); }, 50);
         } else {
           // 表示モードは変わらない → 再オープン不要だが、CTA等の最新データを再適用する。
@@ -416,9 +409,6 @@ function generatePageNumbers(current, total) {
   return pages;
 }
 
-// Initial pagination render
-updateGridPagination();
-
 // ===== Manga Modal (Vertical Scroll — vertical.html style) =====
 const mangaModal = document.getElementById('mangaModal');
 const modalManga = document.getElementById('modalManga');
@@ -431,17 +421,6 @@ const modalSideIndicator = document.getElementById('modalSideIndicator');
 const modalBackToTop = document.getElementById('modalBackToTop');
 const modalZoomControls = document.getElementById('modalZoomControls');
 const modalFooter = document.getElementById('modalFooter');
-
-// Cache DOM refs for show/hide optimization
-const docsToToggle = {
-  modalManga,
-  modalThumbSidebar,
-  modalZoomControls,
-  modalSideIndicator,
-  modalBackToTop,
-  modalProgress,
-  modalFooter
-};
 
 let modalTotalPages = 0;
 let modalPageEls = [];
@@ -729,9 +708,6 @@ function openManga(key) {
     // 切り替えボタンの表示制御（PC + 非verticalOnlyのみ）
     updateViewToggle(mode, data.verticalOnly);
 
-    // Pause pre-production carousels while modal is open
-    if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
-
     // Preload first pages then open viewer immediately with loading state
     var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
     if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
@@ -794,7 +770,6 @@ function hideSpreadElements() {
 
 const book = document.getElementById('book');
 const bookArea = document.getElementById('bookArea');
-const bookSpine = document.getElementById('bookSpine');
 const pageRight = document.getElementById('pageRight');
 const pageLeft = document.getElementById('pageLeft');
 const imgRight = document.getElementById('imgRight');
@@ -802,8 +777,9 @@ const imgLeft = document.getElementById('imgLeft');
 const navScrubber = document.getElementById('navScrubber');
 const navThumbs = document.getElementById('navThumbs');
 const navPageInfo = document.getElementById('navPageInfo');
-const navPrev = document.getElementById('navPrev');
-const navNext = document.getElementById('navNext');
+// 右綴じ: 左の ◀（id="navPrev"）が次のページ、右の ▶（id="navNext"）が前のページ
+const navForward = document.getElementById('navPrev');
+const navBack = document.getElementById('navNext');
 const hintLeft = document.getElementById('hintLeft');
 const hintRight = document.getElementById('hintRight');
 
@@ -905,50 +881,37 @@ function showSpread(index, onReady) {
   const pageH = Math.min(areaHeight, 700);
   const pageW = Math.round(pageH * 0.707);
 
-  if (leftNum === null) {
-    book.classList.add('single-page');
-    pageRight.style.display = 'flex';
-    pageRight.style.width = pageW + 'px';
-    pageRight.style.height = pageH + 'px';
-    pageLeft.style.display = 'none';
+  // buildSpreads() は奇数ページの最後を 'thanks' で埋めるので、見開きは常に2ページ
+  pageRight.style.display = 'flex';
+  pageLeft.style.display = 'flex';
 
-    // リスナーを先に付けてからsrcをセット
-    prepareImgLoad(imgRight, pageRight);
-    imgRight.src = spreadPageSrc(currentMangaPath, rightNum);
-    imgRight.alt = `${modalTitle.textContent} - ${rightNum}ページ`;
+  const twoPageW = Math.min(pageW, Math.floor((areaWidth - 6) / 2));
+  const adjustedH = Math.min(pageH, Math.round(twoPageW / 0.707));
+
+  pageRight.style.width = twoPageW + 'px';
+  pageRight.style.height = adjustedH + 'px';
+  pageLeft.style.width = twoPageW + 'px';
+  pageLeft.style.height = adjustedH + 'px';
+
+  // リスナーを先に付けてからsrcをセット
+  prepareImgLoad(imgRight, pageRight);
+  prepareImgLoad(imgLeft, pageLeft);
+  imgRight.src = spreadPageSrc(currentMangaPath, rightNum);
+  imgRight.alt = `${modalTitle.textContent} - ${rightNum}ページ`;
+  // thanks画像の場合は専用パスを使う
+  if (leftNum === 'thanks') {
+    imgLeft.src = thanksPageSrc;
+    imgLeft.alt = '最後まで読んでいただきありがとうございます';
   } else {
-    book.classList.remove('single-page');
-    pageRight.style.display = 'flex';
-    pageLeft.style.display = 'flex';
-
-    const twoPageW = Math.min(pageW, Math.floor((areaWidth - 6) / 2));
-    const adjustedH = Math.min(pageH, Math.round(twoPageW / 0.707));
-
-    pageRight.style.width = twoPageW + 'px';
-    pageRight.style.height = adjustedH + 'px';
-    pageLeft.style.width = twoPageW + 'px';
-    pageLeft.style.height = adjustedH + 'px';
-
-    // リスナーを先に付けてからsrcをセット
-    prepareImgLoad(imgRight, pageRight);
-    prepareImgLoad(imgLeft, pageLeft);
-    imgRight.src = spreadPageSrc(currentMangaPath, rightNum);
-    imgRight.alt = `${modalTitle.textContent} - ${rightNum}ページ`;
-    // thanks画像の場合は専用パスを使う
-    if (leftNum === 'thanks') {
-      imgLeft.src = thanksPageSrc;
-      imgLeft.alt = '最後まで読んでいただきありがとうございます';
-    } else {
-      imgLeft.src = spreadPageSrc(currentMangaPath, leftNum);
-      imgLeft.alt = `${modalTitle.textContent} - ${leftNum}ページ`;
-    }
+    imgLeft.src = spreadPageSrc(currentMangaPath, leftNum);
+    imgLeft.alt = `${modalTitle.textContent} - ${leftNum}ページ`;
   }
 
   // Preload next 3 spreads ahead (optimized)
   for (let s = Math.max(0, index - 1); s <= Math.min(spreads.length - 1, index + 3); s++) {
     if (s !== index) {
       getCachedImage(getPageSrc(currentMangaPath, spreads[s][0]));
-      if (spreads[s][1]) getCachedImage(getPageSrc(currentMangaPath, spreads[s][1]));
+      getCachedImage(getPageSrc(currentMangaPath, spreads[s][1]));
     }
   }
 
@@ -956,16 +919,11 @@ function showSpread(index, onReady) {
 
   // 画像ロード完了コールバック（goNext/goPrev で isSpreadAnimating 解除に使用）
   if (typeof onReady === 'function') {
-    if (leftNum === null || pageLeft.style.display === 'none') {
-      // 右ページのみ
-      waitForImage(imgRight, onReady);
-    } else {
-      // 両ページのロード待ち
-      var count = 2;
-      function check() { if (--count <= 0) onReady(); }
-      waitForImage(imgRight, check);
-      waitForImage(imgLeft, check);
-    }
+    // 両ページのロード待ち
+    var count = 2;
+    function check() { if (--count <= 0) onReady(); }
+    waitForImage(imgRight, check);
+    waitForImage(imgLeft, check);
   }
 }
 
@@ -981,17 +939,12 @@ function updateSpreadUI() {
     const rightNum = spread[0];
     const leftNum = spread[1];
 
-    if (leftNum) {
-      modalPage.textContent = `${rightNum}-${leftNum} / ${spreadTotalPages}`;
-      navPageInfo.textContent = `${rightNum}-${leftNum} / ${spreadTotalPages}`;
-    } else {
-      modalPage.textContent = `${rightNum} / ${spreadTotalPages}`;
-      navPageInfo.textContent = `${rightNum} / ${spreadTotalPages}`;
-    }
+    modalPage.textContent = `${rightNum}-${leftNum} / ${spreadTotalPages}`;
+    navPageInfo.textContent = `${rightNum}-${leftNum} / ${spreadTotalPages}`;
 
     navScrubber.value = currentSpread;
-    navPrev.classList.toggle('disabled', currentSpread >= spreads.length - 1);
-    navNext.classList.toggle('disabled', currentSpread <= 0);
+    navForward.classList.toggle('disabled', currentSpread >= spreads.length - 1);
+    navBack.classList.toggle('disabled', currentSpread <= 0);
   }
 
   navThumbs.querySelectorAll('.nav-thumb').forEach((t, i) => {
@@ -1054,133 +1007,81 @@ const pageShadowLeft = document.getElementById('pageShadowLeft');
 const pageShadowRight = document.getElementById('pageShadowRight');
 const FLIP_DURATION = 500;
 
-function goNext() {
-  if (isSpreadAnimating || currentSpread >= spreads.length - 1) return;
+// 影のフェード（めくり中に濃くして戻す）。PC見開きとスマホ見開きで共通。
+function animateFlipShadow(shadow) {
+  shadow.style.transition = 'none';
+  shadow.style.opacity = '0';
+  setTimeout(() => {
+    shadow.style.transition = `opacity ${FLIP_DURATION * 0.3}ms ease`;
+    shadow.style.opacity = '0.6';
+  }, FLIP_DURATION * 0.15);
+  setTimeout(() => {
+    shadow.style.opacity = '0';
+  }, FLIP_DURATION * 0.65);
+}
+
+function resetFlipShadow(shadow) {
+  shadow.classList.remove('active');
+  shadow.style.transition = 'none';
+  shadow.style.opacity = '';
+}
+
+// 見開きを1つ進める（step=1）／戻す（step=-1）。
+// 右綴じなので、読み進めるときは左へめくる（flip-prev・右側の影・+180deg）。
+function flipSpread(step) {
+  const forward = step > 0;
+  if (isSpreadAnimating || (forward ? currentSpread >= spreads.length - 1 : currentSpread <= 0)) return;
   isSpreadAnimating = true;
 
-  const nextIndex = currentSpread + 1;
-  const nextSpr = spreads[nextIndex];
+  const targetIndex = currentSpread + step;
+  const targetSpr = spreads[targetIndex];
   const currentSpr = spreads[currentSpread];
+  const flipClass = forward ? 'flip-prev' : 'flip-next';
+  const shadow = forward ? pageShadowRight : pageShadowLeft;
 
   flipOverlay.classList.remove('flip-next', 'flip-prev');
-  flipOverlay.classList.add('flip-prev');
+  flipOverlay.classList.add(flipClass);
 
-  flipFrontImg.src = currentSpr[1]
-    ? getPageSrc(currentMangaPath, currentSpr[1])
-    : getPageSrc(currentMangaPath, currentSpr[0]);
-  flipBackImg.src = getPageSrc(currentMangaPath, nextSpr[0]);
+  // めくる紙の表＝今見ている側、裏＝次に見える側
+  flipFrontImg.src = getPageSrc(currentMangaPath, forward ? currentSpr[1] : currentSpr[0]);
+  flipBackImg.src = getPageSrc(currentMangaPath, forward ? targetSpr[0] : targetSpr[1]);
 
   flipOverlay.style.transition = 'none';
   flipOverlay.style.transform = 'rotateY(0deg)';
   flipOverlay.classList.add('active');
 
-  pageShadowRight.classList.add('active');
+  shadow.classList.add('active');
 
   const halfDuration = FLIP_DURATION * 0.45;
   setTimeout(() => {
-    imgRight.src = getPageSrc(currentMangaPath, nextSpr[0]);
-    if (nextSpr[1]) {
-      pageLeft.style.display = 'flex';
-      imgLeft.src = getPageSrc(currentMangaPath, nextSpr[1]);
-    } else {
-      pageLeft.style.display = 'none';
-    }
+    imgRight.src = getPageSrc(currentMangaPath, targetSpr[0]);
+    pageLeft.style.display = 'flex';
+    imgLeft.src = getPageSrc(currentMangaPath, targetSpr[1]);
   }, halfDuration);
 
-  pageShadowRight.style.transition = 'none';
-  pageShadowRight.style.opacity = '0';
-  setTimeout(() => {
-    pageShadowRight.style.transition = `opacity ${FLIP_DURATION * 0.3}ms ease`;
-    pageShadowRight.style.opacity = '0.6';
-  }, FLIP_DURATION * 0.15);
-  setTimeout(() => {
-    pageShadowRight.style.opacity = '0';
-  }, FLIP_DURATION * 0.65);
+  animateFlipShadow(shadow);
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       flipOverlay.style.transition = `transform ${FLIP_DURATION}ms cubic-bezier(0.3, 0.0, 0.2, 1)`;
-      flipOverlay.style.transform = 'rotateY(180deg)';
+      flipOverlay.style.transform = forward ? 'rotateY(180deg)' : 'rotateY(-180deg)';
     });
   });
 
   setTimeout(() => {
-    flipOverlay.classList.remove('active', 'flip-prev');
+    flipOverlay.classList.remove('active', flipClass);
     flipOverlay.style.transition = 'none';
     flipOverlay.style.transform = '';
-    pageShadowRight.classList.remove('active');
-    pageShadowRight.style.transition = 'none';
-    pageShadowRight.style.opacity = '';
+    resetFlipShadow(shadow);
 
-    showSpread(nextIndex, function() {
+    showSpread(targetIndex, function() {
       isSpreadAnimating = false;
     });
   }, FLIP_DURATION + 30);
 }
 
-function goPrev() {
-  if (isSpreadAnimating || currentSpread <= 0) return;
-  isSpreadAnimating = true;
-
-  const prevIndex = currentSpread - 1;
-  const prevSpr = spreads[prevIndex];
-  const currentSpr = spreads[currentSpread];
-
-  flipOverlay.classList.remove('flip-next', 'flip-prev');
-  flipOverlay.classList.add('flip-next');
-
-  flipFrontImg.src = getPageSrc(currentMangaPath, currentSpr[0]);
-  flipBackImg.src = prevSpr[1]
-    ? getPageSrc(currentMangaPath, prevSpr[1])
-    : getPageSrc(currentMangaPath, prevSpr[0]);
-
-  flipOverlay.style.transition = 'none';
-  flipOverlay.style.transform = 'rotateY(0deg)';
-  flipOverlay.classList.add('active');
-
-  pageShadowLeft.classList.add('active');
-
-  const halfDuration = FLIP_DURATION * 0.45;
-  setTimeout(() => {
-    imgRight.src = getPageSrc(currentMangaPath, prevSpr[0]);
-    if (prevSpr[1]) {
-      pageLeft.style.display = 'flex';
-      imgLeft.src = getPageSrc(currentMangaPath, prevSpr[1]);
-    } else {
-      pageLeft.style.display = 'none';
-    }
-  }, halfDuration);
-
-  pageShadowLeft.style.transition = 'none';
-  pageShadowLeft.style.opacity = '0';
-  setTimeout(() => {
-    pageShadowLeft.style.transition = `opacity ${FLIP_DURATION * 0.3}ms ease`;
-    pageShadowLeft.style.opacity = '0.6';
-  }, FLIP_DURATION * 0.15);
-  setTimeout(() => {
-    pageShadowLeft.style.opacity = '0';
-  }, FLIP_DURATION * 0.65);
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      flipOverlay.style.transition = `transform ${FLIP_DURATION}ms cubic-bezier(0.3, 0.0, 0.2, 1)`;
-      flipOverlay.style.transform = 'rotateY(-180deg)';
-    });
-  });
-
-  setTimeout(() => {
-    flipOverlay.classList.remove('active', 'flip-next');
-    flipOverlay.style.transition = 'none';
-    flipOverlay.style.transform = '';
-    pageShadowLeft.classList.remove('active');
-    pageShadowLeft.style.transition = 'none';
-    pageShadowLeft.style.opacity = '';
-
-    showSpread(prevIndex, function() {
-      isSpreadAnimating = false;
-    });
-  }, FLIP_DURATION + 30);
-}
+function goNext() { flipSpread(1); }
+function goPrev() { flipSpread(-1); }
 
 function isPC() { return window.innerWidth >= 769; }
 
@@ -1238,23 +1139,13 @@ function mobileFlipTo(index, direction) {
     });
   }
 
-  mobileFlipShadow.style.transition = 'none';
-  mobileFlipShadow.style.opacity = '0';
-  setTimeout(() => {
-    mobileFlipShadow.style.transition = `opacity ${FLIP_DURATION * 0.3}ms ease`;
-    mobileFlipShadow.style.opacity = '0.6';
-  }, FLIP_DURATION * 0.15);
-  setTimeout(() => {
-    mobileFlipShadow.style.opacity = '0';
-  }, FLIP_DURATION * 0.65);
+  animateFlipShadow(mobileFlipShadow);
 
   setTimeout(() => {
     mobileFlipOverlay.classList.remove('active');
     mobileFlipOverlay.style.transition = 'none';
     mobileFlipOverlay.style.transform = '';
-    mobileFlipShadow.classList.remove('active');
-    mobileFlipShadow.style.transition = 'none';
-    mobileFlipShadow.style.opacity = '';
+    resetFlipShadow(mobileFlipShadow);
 
     currentMobilePage = index;
     mobilePage.src = spreadPageSrc(currentMangaPath, currentMobilePage + 1);
@@ -1329,8 +1220,8 @@ mobileView.addEventListener('touchend', (e) => {
 });
 
 // Bottom nav buttons (Japanese manga reads right-to-left: ◀ = next page, ▶ = prev page)
-navPrev.addEventListener('click', nextPage);
-navNext.addEventListener('click', prevPage);
+navForward.addEventListener('click', nextPage);
+navBack.addEventListener('click', prevPage);
 
 // Scrubber fill color update
 function updateScrubberFill() {
@@ -1373,44 +1264,24 @@ window.addEventListener('resize', () => {
   }
 });
 
-// Keyboard: route to spread viewer when in spread mode
-function handleSpreadKeyboard(e) {
-  if (!mangaModal.classList.contains('mode-spread')) return;
-  if (e.key === 'ArrowLeft') nextPage();
-  if (e.key === 'ArrowRight') prevPage();
-}
-
-function closeManga() {
-  // ダイレクトモード: 前のページに戻るか、ホームへ遷移
-  if (isDirectMode) {
-    if (document.referrer && document.referrer.indexOf(location.hostname) !== -1) {
-      history.back();
-    } else {
-      location.href = './';
-    }
-    return;
-  }
-
-  // Clean up modal DOM
+// モーダルのDOM・監視・参照を片付けて閉じた状態にする
+function resetViewerDom() {
   while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
-
-  // Disconnect vertical observer
   if (verticalObserver) {
     verticalObserver.disconnect();
     verticalObserver = null;
   }
-
-  // Clear references
   modalPageEls = [];
   modalThumbItems = [];
   modalDots = [];
-
   mangaModal.classList.remove('open');
   document.body.style.overflow = '';
-  hideMangaCta();
+}
 
-  // Resume pre-production carousels from same position
-  if (typeof resumeAllCarousels === 'function') resumeAllCarousels();
+// 書庫モードで閉じる（popstate から。ダイレクトモードは requestClose がページ遷移で閉じる）
+function closeManga() {
+  resetViewerDom();
+  hideMangaCta();
 }
 
 // ===== 最終ページCTA（クライアント公式サイトへ送客） =====
@@ -1542,8 +1413,8 @@ if (viewToggleBtn) {
   });
 }
 
-document.getElementById('modalClose').addEventListener('click', () => {
-  // QR経由はそもそもボタンがCSSで非表示なのでここは通らない想定
+// ×ボタン・ESC共通。QR経由は閉じない（×はCSSで非表示）。
+function requestClose() {
   if (isQrMode) return;
   // ホーム等からの内部遷移: パラメータ無しのビズ書庫へ
   if (isDirectMode) {
@@ -1551,16 +1422,13 @@ document.getElementById('modalClose').addEventListener('click', () => {
     return;
   }
   history.back(); // triggers popstate → closeManga
-});
+}
+document.getElementById('modalClose').addEventListener('click', requestClose);
 document.addEventListener('keydown', (e) => {
   if (!mangaModal.classList.contains('open')) return;
   if (e.key === 'Escape') {
-    if (isQrMode) return;
-    if (isDirectMode) {
-      location.href = 'biz-library';
-      return;
-    }
-    history.back();
+    requestClose();
+    return;
   }
   // Spread mode keyboard handling
   if (mangaModal.classList.contains('mode-spread')) {
@@ -1592,41 +1460,33 @@ const isInternalReferrer = (function() {
 const isQrMode = isDirectMode && !isInternalReferrer;
 if (isQrMode) document.documentElement.classList.add('qr-mode');
 
-// 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
-// FALLBACK_PRE_DATA を直接 mangaData に登録
-(function() {
-  var fb = {
-    red: [
-      { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
-        { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
-    ],
-    name: [
-      { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
-      { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
-    ]
+// 制作過程（赤入れ・ネーム）のフォールバックを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
+function preProductionEntry(title, pages, path, gallery) {
+  return {
+    title: title, pages: pages, path: path,
+    gallery: gallery, tags: [], category: '制作過程',
+    viewType: 'vertical', _isPreProduction: true
   };
-  [].concat(fb.red, fb.name).forEach(function(item) {
-    if (!mangaData[item.key]) {
-      mangaData[item.key] = {
-        title: item.title, pages: item.pages, path: item.path,
-        gallery: [], tags: [], category: '制作過程',
-        viewType: 'vertical', _isPreProduction: true
-      };
-    }
-  });
-})();
+}
+[
+  { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
+  { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 },
+  { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
+  { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
+].forEach(function(item) {
+  if (!mangaData[item.key]) {
+    mangaData[item.key] = preProductionEntry(item.title, item.pages, item.path, []);
+  }
+});
 
 if (isDirectMode) {
   // Hide library entirely
-  // biz-library.html uses .bm-header; works.html uses .header — handle both
-  const headerEl = document.querySelector('.bm-header') || document.querySelector('.header');
+  const headerEl = document.querySelector('.bm-header');
   if (headerEl) headerEl.style.display = 'none';
   const pageHeroEl = document.querySelector('.page-hero');
   if (pageHeroEl) pageHeroEl.style.display = 'none';
   const worksSectionEl = document.querySelector('.works-section');
   if (worksSectionEl) worksSectionEl.style.display = 'none';
-  const preSection = document.querySelector('.pre-section');
-  if (preSection) preSection.style.display = 'none';
   const footerEl = document.querySelector('.footer');
   if (footerEl) footerEl.style.display = 'none';
 
@@ -1658,7 +1518,7 @@ if (isDirectMode) {
           gallery: data.gallery || [],
           thumbnail: data.thumbnail || '',
           viewType: viewType,
-          verticalOnly: apiViewType === 'vertical_only',
+          verticalOnly: !!(window.bmViewType && window.bmViewType.isVerticalOnly(data)),
           tallCover: !!data.tall_cover,
           point: data.point || '',
           comment: data.comment || '',
@@ -1675,327 +1535,41 @@ if (isDirectMode) {
   }
 }
 
-// ===== Pre-production Carousels (赤ペン・ネーム) =====
-// pauseAllCarousels / resumeAllCarousels はファイル先頭で宣言済み
-
-// フォールバック用の赤ペン・ネームデータ
-const FALLBACK_PRE_DATA = {
-  red: [
-    { key: 'pre-red-bms', title: 'BMS 運送 赤入れ', path: 'https://contentsx.jp/material/pre/red/bms-unso-red/', pages: 8 },
-    { key: 'pre-red-ichinohe', title: '一戸ホーム 赤入れ', path: 'https://contentsx.jp/material/pre/red/ichinohe-red/', pages: 20 }
-  ],
-  name: [
-    { key: 'pre-name-fax', title: 'BMS FAX ネーム', path: 'https://contentsx.jp/material/pre/name/bmsfax/', pages: 9 },
-    { key: 'pre-name-ichinohe', title: '一戸ホーム ネーム', path: 'https://contentsx.jp/material/pre/name/ichinohe-name/', pages: 20 }
-  ]
-};
-
-// 現在有効な preData（API取得後に上書きされる可能性あり）
-let preData = FALLBACK_PRE_DATA;
-
-// WP APIデータから赤ペン・ネームデータを構築
-function buildPreDataFromAPI() {
-  const apiRed = [];
-  const apiName = [];
+// ===== 制作過程（赤入れ・ネーム）の QR 直リンク用データ =====
+// スライド表示はホーム（js/bm-pre-production.js）が担当する。ここでは ?manga=pre-* で
+// ビューアを開けるように mangaData へ登録するだけ（/library 取得後に呼ぶ）。
+function registerPreProductionData() {
+  // 作品データ（/library）に含まれる赤入れ・ネーム
   Object.entries(mangaData).forEach(function([key, data]) {
     if (data._isPreProduction) return;
     if (data.akapen_gallery && data.akapen_gallery.length > 0) {
-      const akapenKey = 'pre-red-' + key;
-      apiRed.push({
-        key: akapenKey,
-        title: data.title + ' 赤入れ',
-        path: '',
-        pages: data.akapen_gallery.length,
-        gallery: data.akapen_gallery
-      });
-      // mangaDataに登録してopenManga()で開けるようにする
-      mangaData[akapenKey] = {
-        title: data.title + ' 赤入れ',
-        pages: data.akapen_gallery.length,
-        path: '',
-        gallery: data.akapen_gallery,
-        tags: [],
-        category: '制作過程',
-        viewType: 'vertical',
-        _isPreProduction: true
-      };
+      mangaData['pre-red-' + key] = preProductionEntry(
+        data.title + ' 赤入れ', data.akapen_gallery.length, '', data.akapen_gallery);
     }
     if (data.name_gallery && data.name_gallery.length > 0) {
-      const nameKey = 'pre-name-' + key;
-      apiName.push({
-        key: nameKey,
-        title: data.title + ' ネーム',
-        path: '',
-        pages: data.name_gallery.length,
-        gallery: data.name_gallery
-      });
-      mangaData[nameKey] = {
-        title: data.title + ' ネーム',
-        pages: data.name_gallery.length,
-        path: '',
-        gallery: data.name_gallery,
-        tags: [],
-        category: '制作過程',
-        viewType: 'vertical',
-        _isPreProduction: true
-      };
+      mangaData['pre-name-' + key] = preProductionEntry(
+        data.title + ' ネーム', data.name_gallery.length, '', data.name_gallery);
     }
   });
-  if (apiRed.length > 0 || apiName.length > 0) {
-    preData = {
-      red: apiRed.length > 0 ? apiRed : FALLBACK_PRE_DATA.red,
-      name: apiName.length > 0 ? apiName : FALLBACK_PRE_DATA.name
-    };
-  }
-}
 
-function registerFallbackPreData() {
-  Object.values(preData).flat().forEach(item => {
-    if (!mangaData[item.key]) {
-      mangaData[item.key] = {
-        title: item.title,
-        pages: item.pages,
-        path: item.path,
-        gallery: item.gallery || [],
-        tags: [],
-        category: '制作過程',
-        viewType: 'vertical',
-        _isPreProduction: true
-      };
-    }
-  });
-}
-
-(function() {
-  // フォールバックデータを登録
-  registerFallbackPreData();
-
-  function initCarousel(type) {
-    const track = document.getElementById(type + 'Track');
-    const dotsContainer = document.getElementById(type + 'Dots');
-    if (!track || !dotsContainer) return null;
-
-    const items = preData[type];
-    if (!items || items.length === 0) return null;
-    const slidesPerView = window.innerWidth <= 768 ? 1 : 3;
-    let current = 0;
-    let autoTimer = null;
-    let carouselRAFId = null;
-
-    // Build slides — ALL pages from ALL works, each page is a slide
-    const allSlides = [];
-    items.forEach((item) => {
-      for (let p = 1; p <= item.pages; p++) {
-        if (item.gallery && item.gallery.length >= p) {
-          // galleryに実画像があればそれを使う
-        } else if (!item.path) {
-          // pathが無い(=API由来。BUGS #049と同種)のに実画像も無いページは
-          // 壊れたURL(例: "09.webp")を生成しないようスキップする
-          continue;
-        }
-        const src = (item.gallery && item.gallery.length >= p)
-          ? item.gallery[p - 1]
-          : item.path + String(p).padStart(2, '0') + '.webp';
-        allSlides.push({
-          key: item.key,
-          title: item.title,
-          page: p,
-          totalPages: item.pages,
-          src: src
-        });
-      }
-    });
-
-    const slidesFrag = document.createDocumentFragment();
-    allSlides.forEach((s) => {
-      const slide = document.createElement('div');
-      slide.className = 'pre-carousel-slide';
-
-      const imgWrap = document.createElement('div');
-      imgWrap.className = 'pre-slide-img-wrap';
-      const img = document.createElement('img');
-      img.src = s.src;
-      img.alt = s.title + ' ' + s.page + 'P';
-      img.loading = 'lazy';
-      imgWrap.appendChild(img);
-
-      const title = document.createElement('div');
-      title.className = 'pre-slide-title';
-      title.textContent = s.title + '（' + s.page + '/' + s.totalPages + '）';
-
-      slide.appendChild(imgWrap);
-      slide.appendChild(title);
-      slide.addEventListener('click', () => openManga(s.key));
-      slidesFrag.appendChild(slide);
-    });
-    track.appendChild(slidesFrag);
-
-    const totalSlides = allSlides.length;
-    const maxIndex = Math.max(0, totalSlides - slidesPerView);
-
-    // Calculate slide width in pixels (recalculated each move for resize safety)
-    function getSlideWidth() {
-      return track.parentElement.offsetWidth / slidesPerView;
-    }
-
-    function goTo(index) {
-      current = Math.max(0, Math.min(index, maxIndex));
-      var px = current * getSlideWidth();
-      track.scrollTo({ left: px, behavior: 'smooth' });
-    }
-
-    var autoStep = 1;  // 自動スライドで1ページ分
-    var btnStep = 3;   // 矢印ボタンで3ページスキップ
-    function autoNext() {
-      var next = current + autoStep;
-      goTo(next > maxIndex ? 0 : next);
-    }
-    function btnNext() {
-      var next = current + btnStep;
-      goTo(next > maxIndex ? 0 : next);
-    }
-    function btnPrev() {
-      var prev = current - btnStep;
-      goTo(prev < 0 ? maxIndex : prev);
-    }
-
-    // Sync current index when user scrolls manually (touch/mouse drag)
-    var scrollSyncTimer = null;
-    track.addEventListener('scroll', function() {
-      clearTimeout(scrollSyncTimer);
-      scrollSyncTimer = setTimeout(function() {
-        var sw = getSlideWidth();
-        if (sw > 0) {
-          current = Math.round(track.scrollLeft / sw);
-          current = Math.max(0, Math.min(current, maxIndex));
-        }
-      }, 150);
-    }, { passive: true });
-
-    // Buttons
-    const carousel = track.parentElement;
-    carousel.querySelector('.prev').addEventListener('click', (e) => { e.stopPropagation(); btnPrev(); resetAuto(); });
-    carousel.querySelector('.next').addEventListener('click', (e) => { e.stopPropagation(); btnNext(); resetAuto(); });
-
-    // Auto-slide: use requestAnimationFrame instead of setInterval
-    var paused = false;
-    var lastAutoTime = 0;
-    const AUTO_INTERVAL = 2500;
-
-    function scheduleAutoSlide() {
-      if (paused || !autoTimer) return;
-      const now = Date.now();
-      const timeSinceLastSlide = now - lastAutoTime;
-
-      if (timeSinceLastSlide >= AUTO_INTERVAL) {
-        lastAutoTime = now;
-        autoNext();
-      }
-      carouselRAFId = requestAnimationFrame(scheduleAutoSlide);
-    }
-
-    function startAuto() {
-      if (!paused) {
-        lastAutoTime = Date.now();
-        autoTimer = true;
-        carouselRAFId = requestAnimationFrame(scheduleAutoSlide);
-      }
-    }
-    function stopAuto() {
-      if (carouselRAFId) cancelAnimationFrame(carouselRAFId);
-      autoTimer = null;
-    }
-    function resetAuto() { stopAuto(); startAuto(); }
-    startAuto();
-
-    // Mouse wheel: passive で縦スクロールを絶対にブロックしない
-    // トラックパッドの横スワイプはブラウザの overflow-x: auto が自動処理
-    track.addEventListener('wheel', function() {
-      resetAuto();
-    }, { passive: true });
-
-    // Pause on hover
-    carousel.addEventListener('mouseenter', () => stopAuto());
-    carousel.addEventListener('mouseleave', () => startAuto());
-
-    // Register for global pause/resume (modal open/close)
-    preCarouselTimers.push({
-      pause: function() { paused = true; stopAuto(); },
-      resume: function() { paused = false; startAuto(); }
-    });
-
-    return { goTo, btnNext, btnPrev };
-  }
-
-  try { initCarousel('red'); } catch(e) { console.error('Red carousel error:', e); }
-  try { initCarousel('name'); } catch(e) { console.error('Name carousel error:', e); }
-
-  // カルーセル再描画の共通処理
-  function doRebuild() {
-    preCarouselTimers.forEach(function(t) { t.pause(); });
-    preCarouselTimers = [];
-    ['red', 'name'].forEach(function(type) {
-      var track = document.getElementById(type + 'Track');
-      if (track) track.innerHTML = '';
-    });
-    try { initCarousel('red'); } catch(e) { console.error('Red carousel rebuild error:', e); }
-    try { initCarousel('name'); } catch(e) { console.error('Name carousel rebuild error:', e); }
-  }
-
-  // API取得後にカルーセルを再構築するためのグローバル関数
-  window.rebuildPreCarousels = function() {
-    // まず既存のmanga_workデータから赤ペン・ネームを構築
-    buildPreDataFromAPI();
-    registerFallbackPreData();
-
-    // 次に専用APIからも取得して統合
-    var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
-    fetch(apiBase + '/preproduction')
-      .then(function(r) {
-        if (!r.ok) throw new Error('API error');
-        return r.json();
-      })
-      .then(function(data) {
-        if (!data || data.length === 0) { doRebuild(); return; }
-        var apiRed = [];
-        var apiName = [];
-        data.forEach(function(item) {
-          var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
-          // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
-          // 手入力ミスでズレるとカルーセルに壊れた画像URLや欠落が出るため）
-          var galleryLen = (item.gallery && item.gallery.length) || 0;
-          var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
-          var entry = {
-            key: key,
-            title: item.title,
-            path: '',
-            pages: pages,
-            gallery: item.gallery
-          };
-          if (item.type === 'akapen') {
-            apiRed.push(entry);
-          } else {
-            apiName.push(entry);
-          }
-          // mangaDataに登録してビューアで開けるようにする
-          mangaData[key] = {
-            title: item.title,
-            pages: pages,
-            path: '',
-            gallery: item.gallery,
-            tags: [],
-            category: '制作過程',
-            viewType: 'vertical',
-            _isPreProduction: true
-          };
-        });
-        // 専用APIのデータがあればフォールバック＋manga_workデータを上書き
-        if (apiRed.length > 0) preData.red = apiRed;
-        if (apiName.length > 0) preData.name = apiName;
-        doRebuild();
-      })
-      .catch(function() {
-        doRebuild();
+  // 専用API（/preproduction）の赤入れ・ネーム
+  var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+  fetch(apiBase + '/preproduction')
+    .then(function(r) {
+      if (!r.ok) throw new Error('API error');
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data || data.length === 0) return;
+      data.forEach(function(item) {
+        var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
+        // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
+        // 手入力ミスでズレると壊れた画像URLや欠落が出るため）
+        var galleryLen = (item.gallery && item.gallery.length) || 0;
+        var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
+        mangaData[key] = preProductionEntry(item.title, pages, '', item.gallery);
       });
-  };
+    })
+    .catch(function() {});
+}
 })();

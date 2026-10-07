@@ -7,12 +7,14 @@ Usage:
   python3 tools/build-feed.py
 """
 
-from bm_build import API_BASE, SITE_URL
-from bm_build import fetch_json as _fetch_json, output_batch, write_text
 import datetime
 import sys
 from pathlib import Path
-from xml.sax.saxutils import escape as xml_escape, quoteattr
+from xml.sax.saxutils import escape as xml_escape
+from xml.sax.saxutils import quoteattr
+
+from bm_build import API_BASE, SITE_URL, output_batch, write_text
+from bm_build import fetch_json as _fetch_json
 from bm_content import make_slug
 from bm_pricing import normalize_price_text
 

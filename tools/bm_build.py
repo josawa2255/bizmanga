@@ -1,16 +1,16 @@
 """Shared, standard-library-only helpers for the static site builders."""
 
-from contextlib import contextmanager
-from contextvars import ContextVar
 import html
 import json
 import os
-from pathlib import Path
 import re
 import stat
 import tempfile
 import urllib.request
 import xml.etree.ElementTree as ET
+from contextlib import contextmanager
+from contextvars import ContextVar
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 API_BASE = "https://cms.contentsx.jp/wp-json/contentsx/v1"
@@ -72,14 +72,27 @@ def replace_block(source, start, end, block, *, required=False):
     return pattern.sub(lambda _match: block, source, count=1), True
 
 
-def render_template(template, replacements):
-    """Render existing HTML substitutions, escaping JSON strings separately.
+def render_template(template, *, text=None, html=None):
+    """Render {{name}} placeholders.
 
-    HTML replacements have already been escaped by the caller. Within a JSON-LD
-    string placeholder, undo that HTML escaping and use JSON's string rules.
+    text: plain values. Escaped here for HTML, and with JSON's string rules inside
+          JSON / JSON-LD script elements.
+    html: trusted, already escaped HTML fragments, or a whole JSON document when the
+          placeholder is the entire content of a JSON script element.
+    Every placeholder must be supplied and every supplied value must be used.
     Substitutions are simultaneous, so user content containing {{...}} stays data.
     """
     token = re.compile(r"\{\{[a-zA-Z0-9_]+\}\}")
+    text = {"{{" + key + "}}": value for key, value in (text or {}).items()}
+    html = {"{{" + key + "}}": value for key, value in (html or {}).items()}
+    if text.keys() & html.keys():
+        raise ValueError(
+            f"Placeholder given as both text and html: {sorted(text.keys() & html.keys())}"
+        )
+    unused = (text.keys() | html.keys()) - set(token.findall(template))
+    if unused:
+        raise ValueError(f"Unused template values: {sorted(unused)}")
+    markup = {key: escape_html(value) for key, value in text.items()} | html
 
     def substitute(source, values):
         def value(match):
@@ -89,17 +102,21 @@ def render_template(template, replacements):
 
         return token.sub(value, source)
 
+    def json_string(match):
+        if match[0] in html:
+            raise ValueError(f"HTML value used inside a JSON string: {match[0]}")
+        if match[0] not in text:
+            raise ValueError(f"Unknown template placeholder: {match[0]}")
+        value = text[match[0]]
+        return script_json(str(value if value is not None else ""))[1:-1]
+
     def json_block(match):
         raw = match[2]
         # Whole JSON documents, e.g. {{faq_jsonld}}, are already serialized.
-        if raw.strip() in replacements:
-            rendered = replacements[raw.strip()]
+        if raw.strip() in html:
+            rendered = html[raw.strip()]
         else:
-            values = {
-                key: script_json(html.unescape(str(value)))[1:-1]
-                for key, value in replacements.items()
-            }
-            rendered = substitute(raw, values)
+            rendered = token.sub(json_string, raw)
         json.loads(rendered)
         return match[1] + rendered + match[3]
 
@@ -111,11 +128,33 @@ def render_template(template, replacements):
     # parsed again as a template (or as a script element).
     parts, offset = [], 0
     for match in pattern.finditer(template):
-        parts.append(substitute(template[offset : match.start()], replacements))
+        parts.append(substitute(template[offset : match.start()], markup))
         parts.append(json_block(match))
         offset = match.end()
-    parts.append(substitute(template[offset:], replacements))
+    parts.append(substitute(template[offset:], markup))
     return "".join(parts)
+
+
+def replace_grid(source, name, cards):
+    """Fill the required <!-- BUILD:{name} --> ... <!-- /BUILD:{name} --> block."""
+    start, end = f"<!-- BUILD:{name} -->", f"<!-- /BUILD:{name} -->"
+    return replace_block(source, start, end, f"{start}\n{cards}      {end}", required=True)[0]
+
+
+def replace_json_script(source, open_tag, value):
+    """Replace a required JSON / JSON-LD script element, identified by its full open tag."""
+    block = f"{open_tag}\n{script_json(value, indent=2)}\n</script>"
+    return replace_block(source, open_tag, "</script>", block, required=True)[0]
+
+
+def prune_stale(directory, keep):
+    """Remove *.html in directory whose stem is not in keep (inside output_batch)."""
+    removed = 0
+    for existing in Path(directory).glob("*.html"):
+        if existing.stem not in keep:
+            remove_file(existing)
+            removed += 1
+    return removed
 
 
 def _atomic_bytes(path, data):

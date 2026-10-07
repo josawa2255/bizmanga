@@ -63,25 +63,6 @@ body {
   max-width: 650px;
   margin: 0 auto;
 }
-/* 実績カウント */
-.works-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding: 8px 20px;
-  background: #fff;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #000;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-.works-count-num {
-  font-size: 22px;
-  font-weight: 900;
-  color: #EB5200;
-}
 
 /* ===== Works Section ===== */
 .works-section {
@@ -353,19 +334,6 @@ body {
   line-height: 1.5;
   color: #000;
   margin-bottom: 8px;
-}
-.work-card-tags {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.work-tag {
-  display: inline-block;
-  font-size: 11px; font-weight: 600;
-  color: #000;
-}
-.work-tag::before {
-  content: '#';
-  color: #000;
 }
 .work-card-footer {
   display: flex;
@@ -883,17 +851,6 @@ body {
 }
 .book-page:hover { filter: brightness(1.02); }
 
-/* Single page (cover or last odd page) */
-.book.single-page {
-  justify-content: center;
-}
-.book.single-page .book-page {
-  border-radius: 2px;
-}
-.book.single-page .book-spine {
-  display: none;
-}
-
 /* Empty page style */
 .book-page.empty {
   background: #e8e8e8;
@@ -1071,7 +1028,6 @@ body {
   gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
-  -ms-overflow-style: none;
   padding: 2px 0;
 }
 .nav-thumbnails::-webkit-scrollbar { display: none; }
@@ -1113,7 +1069,6 @@ body {
   top: 50%;
   transform: translateY(-50%);
   writing-mode: vertical-rl;
-  -webkit-writing-mode: vertical-rl;
   color: rgba(237,224,208,0.85);
   font-size: 25px;
   font-weight: 700;
@@ -1415,18 +1370,6 @@ body {
   flex-wrap: wrap;
   gap: 16px;
 }
-.footer-logo {
-  display: inline-block;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.footer-logo-img {
-  height: 48px;
-  min-width: 170px;
-  width: auto;
-  display: block;
-  filter: brightness(10);
-}
 .footer-links {
   display: flex; gap: 24px;
   list-style: none;
@@ -1464,34 +1407,7 @@ body {
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .nav-links.open {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 56px; left: 0; right: 0;
-    background: #fff;
-    padding: 16px 24px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    gap: 0;
-  }
-  .nav-links.open li { padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-  .nav-links.open li:last-child { border-bottom: none; padding-top: 16px; }
-  .nav-links.open .nav-dropdown .dropdown-menu {
-    display: block;
-    position: static;
-    transform: none;
-    box-shadow: none;
-    opacity: 1;
-    padding: 4px 0 0 16px;
-    min-width: auto;
-    border-radius: 0;
-  }
-  .nav-links.open .dropdown-menu::before,
-  .nav-links.open .dropdown-menu::after { display: none; }
-  .nav-links.open .dropdown-menu li a { padding: 8px 0; font-size: 12px; }
   .hamburger { display: flex; }
-  .header-inner { height: 56px; }
   .page-hero { padding: 100px 16px 40px; min-height: 320px; background-position: right 0% top -40%; }
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
@@ -1535,161 +1451,10 @@ body {
   .work-card-title { font-size: 15px; }
 }
 
-/* ===== Pre-production Carousel (赤ペン・ネーム) ===== */
-.pre-section {
-  padding: 48px 24px 60px;
-  background: #f4f4f4;
-  color: #000;
-}
-.pre-section-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 6px;
-}
-.pre-section-title em {
-  color: #EB5200;
-  font-style: normal;
-}
-.pre-section-subtitle {
-  text-align: center;
-  font-size: 11px;
-  color: #000;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  margin-bottom: 32px;
-}
-.pre-carousel-wrap {
-  margin: 0 auto 40px;
-  max-width: 1200px;
-}
-.pre-carousel-label {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  padding-left: 8px;
-  border-left: 3px solid #EB5200;
-  color: #000;
-}
-.pre-carousel {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-}
-.pre-carousel-track {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-  overscroll-behavior-y: auto;
-}
-.pre-carousel-track::-webkit-scrollbar {
-  display: none;
-}
-.pre-carousel-slide {
-  width: 33.333% !important;
-  min-width: 33.333% !important;
-  max-width: 33.333% !important;
-  flex: 0 0 33.333% !important;
-  padding: 4px;
-  cursor: pointer;
-  transition: transform 0.3s;
-  box-sizing: border-box;
-  scroll-snap-align: start;
-}
-.pre-carousel-slide:hover {
-  transform: scale(1.03);
-}
-.pre-slide-img-wrap {
-  overflow: hidden;
-  border-radius: 6px;
-  background: #e8e8e8;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  height: 500px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-.pre-slide-img-wrap img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.pre-carousel-slide .pre-slide-title {
-  font-size: 12px;
-  color: #000;
-  margin-top: 6px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.pre-carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(238,107,29,0.85);
-  color: #fff;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-.pre-carousel-btn:hover {
-  background: rgba(238,107,29,1);
-}
-.pre-carousel-btn.prev { left: 4px; }
-.pre-carousel-btn.next { right: 4px; }
-.pre-carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin-top: 8px;
-}
-.pre-carousel-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ccc;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.pre-carousel-dot.active {
-  background: #EB5200;
-}
-
-@media (max-width: 768px) {
-  .pre-carousel-slide {
-    width: 80% !important;
-    min-width: 80% !important;
-    max-width: 80% !important;
-    flex: 0 0 80% !important;
-  }
-  .pre-section { padding: 32px 16px 40px; }
-  .pre-section-title { font-size: 20px; }
-  .pre-carousel-wrap { max-width: 95%; }
-  .pre-slide-img-wrap { height: 500px; }
-}
-
 /* ===== Direct Mode (QR code flicker prevention) ===== */
 html.direct-mode .header,
 html.direct-mode .page-hero,
 html.direct-mode .works-section,
-html.direct-mode .pre-section,
 html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
 /* QR経由(外部リファラー)のときだけ閉じるボタンを非表示にして書庫へ戻らせない */

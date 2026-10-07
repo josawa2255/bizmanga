@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
@@ -48,8 +46,6 @@
   <link rel="icon" type="image/png" href="https://contentsx.jp/material/images/logo/bizmanga-icon.png">
   <link rel="preconnect" href="https://contentsx.jp" crossorigin>
   <link rel="dns-prefetch" href="https://cms.contentsx.jp">
-  <!-- ヒーロー表紙preload（LCP対象1枚のみ。複数preloadはネットワーク競合を起こしLCPを悪化させる） -->
-  <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp" fetchpriority="high" crossorigin="anonymous">
   <style>
 /* Critical CSS - above-the-fold render optimization */
 :root{--bm-accent:#e85500;--bm-accent-hover:#cc4600;--bm-bg:#fff;--bm-text:#1a1a1a;--bm-text-sub:#4a4640;--bm-border:#eee;}
@@ -75,10 +71,10 @@ svg{max-width:100%;height:auto;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
-  <link rel="preload" href="css/bm-s3d-screens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bm-s3d-screens.css"></noscript>
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
+  <link rel="preload" href="/css/bm-s3d-screens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bm-s3d-screens.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -91,7 +87,7 @@ svg{max-width:100%;height:auto;}
   <!-- ===== ヘッダー ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img width="140" height="40" src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img">
       </a>
       <nav class="bm-nav" id="bmNav"><!-- bm-nav.js が生成 --></nav>
@@ -133,12 +129,8 @@ svg{max-width:100%;height:auto;}
 
     <!-- WP接続待ちプレースホルダ (bm-hero.js が成功/タイムアウトで非表示にする) -->
     <div class="bm-hero-loading" id="bmHeroLoading" role="status" aria-live="polite">
-      <p class="bm-hero-loading-text"
-
-        >接続中です。</p>
-      <p class="bm-hero-loading-sub"
-
-        >しばらくお待ちください</p>
+      <p class="bm-hero-loading-text">接続中です。</p>
+      <p class="bm-hero-loading-sub">しばらくお待ちください</p>
     </div>
 
     <!-- オーバーレイ（多層シネマティック） -->
@@ -212,15 +204,9 @@ svg{max-width:100%;height:auto;}
   <!-- ===== ビズマンガとは？ ===== -->
   <section class="bm-whatis" id="whatis">
     <div class="bm-container">
-      <h2 class="bm-whatis-heading"
+      <h2 class="bm-whatis-heading"><span class="bm-whatis-logo-text">ビズ<span class="bm-accent-text">マンガ</span></span> とは？</h2>
 
-
-         ><span class="bm-whatis-logo-text">ビズ<span class="bm-accent-text">マンガ</span></span> とは？</h2>
-
-      <p class="bm-whatis-lead"
-
-
-        >
+      <p class="bm-whatis-lead">
         採用・営業資料・研修・商品紹介・会社紹介・創業ストーリー・<br class="sp-br">広告/LP・インバウンド・IR/周年史——<br>企業の「伝えたい」をマンガに翻訳する、<br class="sp-br">課題特化型の<a href="/column/business-manga-production-guide" class="bm-whatis-link">ビジネスマンガ制作</a>サービスです。
       </p>
 
@@ -313,47 +299,35 @@ svg{max-width:100%;height:auto;}
   <section class="bm-reasons" id="reasons">
     <div class="bm-container">
       <header class="bm-reasons-header">
-        <h2 class="bm-reasons-heading"
-
-
-           >ビズマンガが<span class="bm-accent-text">選ばれる理由</span></h2>
+        <h2 class="bm-reasons-heading">ビズマンガが<span class="bm-accent-text">選ばれる理由</span></h2>
       </header>
 
       <ol class="bm-reasons-list">
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-01-price.webp" alt="大手の約1/5の価格の料金体系" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-01-price.webp" alt="大手の約1/5の価格の料金体系" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">1</span>
-            <h3 class="bm-reason-title"
-
-
-               >大手の<span class="bm-hl">約1/5の価格</span>の料金体系</h3>
-            <p class="bm-reason-desc"
-
-
-              >1ページ <strong>25,740円〜</strong>。独自の制作メソッドにより、品質を保ったまま大手制作会社の約1/5の価格を実現しています。プロ漫画家がフルで手がける「フル漫画家プラン」もご用意。</p>
+            <h3 class="bm-reason-title">大手の<span class="bm-hl">約1/5の価格</span>の料金体系</h3>
+            <p class="bm-reason-desc">1ページ <strong>25,740円〜</strong>。独自の制作メソッドにより、品質を保ったまま大手制作会社の約1/5の価格を実現しています。プロ漫画家がフルで手がける「フル漫画家プラン」もご用意。</p>
           </div>
         </li>
 
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-02-speed.webp" alt="最短2週間で納品" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-02-speed.webp" alt="最短2週間で納品" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">2</span>
-            <h3 class="bm-reason-title"
-
-
-               >最短<span class="bm-hl">2週間</span>で納品</h3>
+            <h3 class="bm-reason-title">最短<span class="bm-hl">2週間</span>で納品</h3>
             <p class="bm-reason-desc">通常2〜4週間、最短2週間でお届け。展示会・キャンペーン・期初配布など納期が決まっている案件もご相談ください。シナリオ承認後はスピード重視のチーム編成に切り替えて対応します。</p>
           </div>
         </li>
 
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-04-multimedia.webp" alt="横読み・縦読み・ボイスコミックの多媒体対応" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-04-multimedia.webp" alt="横読み・縦読み・ボイスコミックの多媒体対応" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">3</span>
@@ -364,42 +338,33 @@ svg{max-width:100%;height:auto;}
 
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-06-copyright.webp" alt="著作権リスクゼロ" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-06-copyright.webp" alt="著作権リスクゼロ" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">4</span>
-            <h3 class="bm-reason-title"
-
-
-               ><span class="bm-hl">著作権リスクゼロ</span>で安心の納品</h3>
+            <h3 class="bm-reason-title"><span class="bm-hl">著作権リスクゼロ</span>で安心の納品</h3>
             <p class="bm-reason-desc">全作画を完全オリジナルで制作するため、著作権侵害のリスクがありません。さらに納品時には全データの著作権・利用権をクライアントへ譲渡。制作物は完全に貴社のものになります。</p>
           </div>
         </li>
 
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-09-reuse.webp" alt="採用・営業・研修など用途を問わず展開できる二次利用フリー" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-09-reuse.webp" alt="採用・営業・研修など用途を問わず展開できる二次利用フリー" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">5</span>
-            <h3 class="bm-reason-title"
-
-
-               ><span class="bm-hl">二次利用フリー</span>で何度でも活用</h3>
+            <h3 class="bm-reason-title"><span class="bm-hl">二次利用フリー</span>で何度でも活用</h3>
             <p class="bm-reason-desc">権利を譲渡済みだから、商用利用も媒体横断の再利用もすべて自由。採用・営業・研修からWeb・印刷物・動画・SNSまで、1作品を追加費用なしであらゆる用途へ展開できます。</p>
           </div>
         </li>
 
         <li class="bm-reason-card">
           <div class="bm-reason-media">
-            <img src="material/images/reasons/reason-08-artists.webp" alt="審査を通過した作家陣とディレクター体制" loading="lazy" width="600" height="450">
+            <img src="/material/images/reasons/reason-08-artists.webp" alt="審査を通過した作家陣とディレクター体制" loading="lazy" width="600" height="450">
           </div>
           <div class="bm-reason-body">
             <span class="bm-reason-num">6</span>
-            <h3 class="bm-reason-title bm-reason-title--stacked"
-
-
-               >審査を通過した作家陣<span class="bm-reason-plus" aria-hidden="true">+</span>専属ディレクター</h3>
+            <h3 class="bm-reason-title bm-reason-title--stacked">審査を通過した作家陣<span class="bm-reason-plus" aria-hidden="true">+</span>専属ディレクター</h3>
             <p class="bm-reason-desc">独自の審査をクリアした実力派の作家のみが登録。確かな技術と表現力で高品質を実現します。業界特化の専門知識を持った経験豊富な作家も多数在籍し、専属ディレクターが企画意図を作家へ翻訳。原稿の品質を担保します。<br><a href="/artists">作家の作例を見る →</a></p>
           </div>
         </li>
@@ -412,7 +377,7 @@ svg{max-width:100%;height:auto;}
     <div class="bm-container bm-gallery-inner">
       <div class="bm-gallery-header">
         <h2 class="bm-gallery-heading">ギャラリー</h2>
-        <a href="biz-library" class="bm-gallery-more">ビズ書庫 →</a>
+        <a href="/biz-library" class="bm-gallery-more">ビズ書庫 →</a>
       </div>
 
       <!-- 横読み -->
@@ -444,7 +409,7 @@ svg{max-width:100%;height:auto;}
           <h2 class="bm-section-title">お客様の声</h2>
           <p class="bm-section-sub">ビズマンガをご利用いただいたお客様からのコメント</p>
         </div>
-        <a href="testimonials" class="bm-testimonials-all">全てを見る →</a>
+        <a href="/testimonials" class="bm-testimonials-all">全てを見る →</a>
       </div>
       <div class="bm-testimonials-scroll">
         <div class="bm-testimonials-grid" id="bmTestimonialsGrid">
@@ -487,7 +452,7 @@ svg{max-width:100%;height:auto;}
     <div class="bm-container">
       <div class="bm-news-header">
         <h2 class="bm-news-heading">News</h2>
-        <a href="news" class="bm-news-more" id="bmNewsMore" style="display:none;">一覧を見る →</a>
+        <a href="/news" class="bm-news-more" id="bmNewsMore" style="display:none;">一覧を見る →</a>
       </div>
       <ul class="bm-news-list" id="bmNewsList">
         <!-- WP APIから動的に生成 / フォールバック -->
@@ -549,11 +514,11 @@ svg{max-width:100%;height:auto;}
           <h2 class="bm-section-title">コラム</h2>
           <p class="bm-section-sub">ビジネス漫画の活用ノウハウ・業界動向をお届け</p>
         </div>
-        <a href="column" class="bm-column-all-btn">コラム一覧を見る →</a>
+        <a href="/column" class="bm-column-all-btn">コラム一覧を見る →</a>
       </div>
       <div class="bm-column-scroll">
         <div class="bm-column-grid" id="bmColumnGrid">
-          <a class="bm-column-card" href="column">
+          <a class="bm-column-card" href="/column">
             <div class="bm-column-card-img"><img src="https://contentsx.jp/material/images/og/og-index.webp" alt="コラム" loading="lazy" width="400" height="225"></div>
             <div class="bm-column-card-body">
               <span class="bm-column-card-cat">ノウハウ</span>
@@ -570,16 +535,10 @@ svg{max-width:100%;height:auto;}
   <!-- ===== About ===== -->
   <section class="bm-about" id="about">
     <div class="bm-container">
-      <h2 class="bm-about-heading"
-
-
-         >
+      <h2 class="bm-about-heading">
         文章では届かない<br>マンガなら届く<br>伝えたいことを伝わる形に
       </h2>
-      <p class="bm-about-text"
-
-
-        >
+      <p class="bm-about-text">
         企業の想いも、商品の良さも、働く人の魅力も。<br>伝えたいことはたくさんある。<br><br>でもどれだけ想いを込めた文章でも、<br>読まれなければ届かない。<br>人は説明ではなく、共感で動く。<br><br>難しい話も、物語にすればスッと届く。<br>マンガなら、読まれる。伝わる。<br>そして記憶に残る。
       </p>
     </div>
@@ -587,7 +546,7 @@ svg{max-width:100%;height:auto;}
 
   <!-- ===== CTA（共通JS生成） ===== -->
   <section id="bmCtaMount"></section>
-  <script src="js/bm-cta.js" defer></script>
+  <script src="/js/bm-cta.js" defer></script>
 
   <!-- ===== フッター ===== -->
   </main>
@@ -601,12 +560,12 @@ svg{max-width:100%;height:auto;}
           <p class="bm-footer-address">東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
         </div>
         <div class="bm-footer-links">
-          <a href="./">ホーム</a>
-          <a href="works">制作事例</a>
-          <a href="biz-library">ビズ書庫</a>
-          <a href="pricing">料金</a>
-          <a href="faq">FAQ</a>
-          <a href="contact">お問い合わせ</a>
+          <a href="/">ホーム</a>
+          <a href="/works">制作事例</a>
+          <a href="/biz-library">ビズ書庫</a>
+          <a href="/pricing">料金</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">お問い合わせ</a>
           <a href="/privacy-policy">プライバシーポリシー</a>
         </div>
       </div>
@@ -617,20 +576,12 @@ svg{max-width:100%;height:auto;}
     </div>
   </footer>
 
-  <!-- ===== 漫画ビューアモーダル ===== -->
-  <div class="bm-viewer-overlay" id="bmViewerOverlay">
-    <div class="bm-viewer" id="bmViewer">
-      <button class="bm-viewer-close" id="bmViewerClose">&times;</button>
-      <div class="bm-viewer-scroll" id="bmViewerScroll"></div>
-    </div>
-  </div>
-
   <!-- ===== 制作事例モーダル (ContentsX同様 2カラム) ===== -->
   <div class="work-detail-overlay" id="workDetailOverlay">
     <button class="work-detail-close" id="workDetailClose">&times;</button>
     <div class="work-detail-content">
       <div class="work-detail-left">
-        <div class="work-detail-carousel-wrap" style="position:relative;">
+        <div class="work-detail-carousel-wrap">
           <div class="bm-manga-loader-wrap" id="workDetailLoader">
             <span class="bm-manga-loader"></span>
           </div>
@@ -672,36 +623,28 @@ svg{max-width:100%;height:auto;}
   <!-- 外部CDN(GSAP)はSRIで完全性検証。cdnjs侵害時の任意JS実行を防止 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-  <script src="js/bm-s3d-screens.js" defer></script>
-  <script src="js/bm-sanitize.js" defer></script>
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-tracking.js" defer></script>
-  <script src="js/bm-wp-config.js" defer></script>
+  <script src="/js/bm-s3d-screens.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
+  <script src="/js/bm-kinsoku.js" defer></script>
+  <script src="/js/bm-tracking.js" defer></script>
+  <script src="/js/bm-wp-config.js" defer></script>
   <script src="/js/bm-pricing.js" defer></script>
-  <script src="js/bm-wp-api.js" defer></script>
-  <script src="js/bm-view-type.js" defer></script>
-  <script src="js/bm-wd-split.js" defer></script>
-  <script src="js/bm-hero.js" defer></script>
-  <script src="js/bm-hero-fx.js" defer></script>
-  <script src="js/bm-viewer.js" defer></script>
-  <script src="js/bm-works.js" defer></script>
-  <!-- TEMP-TESTIMONIALS:SCRIPT <script src="js/bm-testimonials.js" defer></script> -->
-  <script src="js/data/bm-client-logos.js" defer></script>
-  <script src="js/client-logos.js" defer></script>
-  <script src="js/bm-home.js" defer></script>
-  <script src="js/bm-videos.js" defer></script>
-  <script src="js/bm-pre-production.js" defer></script>
-  <script src="js/bm-scroll-anim.js" defer></script>
+  <script src="/js/bm-wp-api.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-wd-split.js" defer></script>
+  <script src="/js/bm-hero.js" defer></script>
+  <script src="/js/bm-hero-fx.js" defer></script>
+  <!-- TEMP-TESTIMONIALS:SCRIPT <script src="/js/bm-testimonials.js" defer></script> -->
+  <script src="/js/data/bm-client-logos.js" defer></script>
+  <script src="/js/client-logos.js" defer></script>
+  <script src="/js/bm-home.js" defer></script>
+  <script src="/js/bm-videos.js" defer></script>
+  <script src="/js/bm-pre-production.js" defer></script>
+  <script src="/js/bm-scroll-anim.js" defer></script>
 <!-- Service Worker 登録 -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function() {});
-  });
-}
-</script>
+<script src="/js/bm-sw-register.js" defer></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {

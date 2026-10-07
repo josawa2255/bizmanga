@@ -16,7 +16,6 @@
     ".bm-column-card-excerpt",
     ".bm-column-featured-excerpt",
     ".bm-column-hero-eyebrow",
-    ".bm-section-desc",
     /* manga-types の7章カード。幅170px前後に11px級の本文が入るため、
        末尾の「。」が1文字だけ次行に落ちやすい（2026-09-10 追加） */
     ".mt-chapter-card__desc",

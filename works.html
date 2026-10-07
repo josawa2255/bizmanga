@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
@@ -63,8 +61,8 @@ p{margin:0 0 16px;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -280,7 +278,7 @@ p{margin:0 0 16px;}
   <!-- ===== ヘッダー ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img" width="140" height="40">
       </a>
       <nav class="bm-nav" id="bmNav"></nav>
@@ -313,25 +311,17 @@ p{margin:0 0 16px;}
       <!-- SEO: 静的イントロ（Googlebot/AIクローラー向けフォールバックコンテンツ） -->
       <header class="bm-works-intro">
         <h1 class="bm-page-hero-title">制作事例</h1>
-        <p class="bm-works-intro-lead"
-
-          >
+        <p class="bm-works-intro-lead">
           ビズマンガが手がけたビジネス漫画の制作事例をご紹介します。採用・営業・研修・会社紹介・創業ストーリー・IR・広告など、様々な用途でクライアント企業の課題解決をサポートしてきた実績をカテゴリ別にご覧いただけます。
         </p>
         <ul class="bm-works-intro-categories">
-          <li
-             >採用漫画 — 新卒・中途採用向けの会社紹介、社員インタビュー、仕事内容の漫画化</li>
-          <li
-             >営業・商品紹介漫画 — サービス説明、導入事例、課題解決ストーリー</li>
-          <li
-             >研修・教育漫画 — コンプライアンス、OJT教材、ビジネスマナー</li>
-          <li
-             >会社紹介・創業ストーリー漫画 — 企業理念、沿革、ブランドストーリー</li>
-          <li
-             >広告・SNS漫画 — バナー広告、SNS投稿、LP用の訴求漫画</li>
+          <li>採用漫画 — 新卒・中途採用向けの会社紹介、社員インタビュー、仕事内容の漫画化</li>
+          <li>営業・商品紹介漫画 — サービス説明、導入事例、課題解決ストーリー</li>
+          <li>研修・教育漫画 — コンプライアンス、OJT教材、ビジネスマナー</li>
+          <li>会社紹介・創業ストーリー漫画 — 企業理念、沿革、ブランドストーリー</li>
+          <li>広告・SNS漫画 — バナー広告、SNS投稿、LP用の訴求漫画</li>
         </ul>
-        <p class="bm-works-intro-note"
-          >
+        <p class="bm-works-intro-note">
           下記のギャラリーはJavaScriptで動的に読み込まれます。表示されない場合は一覧を<a href="https://bizmanga.contentsx.jp/contact">お問い合わせ</a>からお取り寄せください。
         </p>
       </header>
@@ -695,7 +685,7 @@ p{margin:0 0 16px;}
 
   <!-- ===== CTA（共通JS生成） ===== -->
   <section id="bmCtaMount"></section>
-  <script src="js/bm-cta.js" defer></script>
+  <script src="/js/bm-cta.js" defer></script>
 
   <!-- ===== フッター ===== -->
   <footer class="bm-footer">
@@ -707,12 +697,12 @@ p{margin:0 0 16px;}
           <p class="bm-footer-address">東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
         </div>
         <div class="bm-footer-links">
-          <a href="./">ホーム</a>
-          <a href="works">制作事例</a>
-          <a href="biz-library">ビズ書庫</a>
-          <a href="pricing">料金</a>
-          <a href="faq">FAQ</a>
-          <a href="contact">お問い合わせ</a>
+          <a href="/">ホーム</a>
+          <a href="/works">制作事例</a>
+          <a href="/biz-library">ビズ書庫</a>
+          <a href="/pricing">料金</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">お問い合わせ</a>
           <a href="/privacy-policy">プライバシーポリシー</a>
         </div>
       </div>
@@ -728,7 +718,7 @@ p{margin:0 0 16px;}
     <button class="work-detail-close" id="workDetailClose">&times;</button>
     <div class="work-detail-content">
       <div class="work-detail-left">
-        <div class="work-detail-carousel-wrap" style="position:relative;">
+        <div class="work-detail-carousel-wrap">
           <div class="bm-manga-loader-wrap" id="workDetailLoader">
             <span class="bm-manga-loader"></span>
           </div>
@@ -766,16 +756,15 @@ p{margin:0 0 16px;}
     </div>
   </div>
 
-  <script src="js/bm-sanitize.js" defer></script>
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-tracking.js" defer></script>
-  <script src="js/bm-wp-config.js" defer></script>
-  <script src="js/bm-wp-api.js" defer></script>
-  <script src="js/bm-view-type.js" defer></script>
-  <script src="js/bm-wd-split.js" defer></script>
-  <script src="js/bm-works-page.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
+  <script src="/js/bm-tracking.js" defer></script>
+  <script src="/js/bm-wp-config.js" defer></script>
+  <script src="/js/bm-wp-api.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/bm-wd-split.js" defer></script>
+  <script src="/js/bm-works-page.js" defer></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
@@ -797,6 +786,6 @@ p{margin:0 0 16px;}
 <!-- Start of HubSpot Embed Code -->
 <script src="/js/bm-hubspot.js" defer></script>
 <!-- End of HubSpot Embed Code -->
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-fuwa.js" defer></script>
 </body>
 </html>

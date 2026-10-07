@@ -31,10 +31,7 @@
     }
 
     // ============ 手動操作UI: 矢印ボタン + 操作ガイド ============
-    var CHEVRON = {
-      left:  'M15 18l-6-6 6-6', right: 'M9 18l6-6-6-6',
-      up:    'M6 15l6-6 6 6',   down:  'M6 9l6 6 6-6'
-    };
+    var CHEVRON = { left: 'M15 18l-6-6 6-6', right: 'M9 18l6-6-6-6' };
     var SVGNS = 'http://www.w3.org/2000/svg';
     function makeChevron(dir) {
       var svg = document.createElementNS(SVGNS, 'svg');
@@ -48,14 +45,6 @@
       path.setAttribute('d', CHEVRON[dir]);
       svg.appendChild(path);
       return svg;
-    }
-    function makeNav(modifier, dir, label) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'ev-nav ev-nav--' + modifier;
-      b.setAttribute('aria-label', label);
-      b.appendChild(makeChevron(dir));
-      return b;
     }
     // 横読み用 左右タップゾーン（side=配置, chevronDir=向きヒント）
     function makeTapZone(side, chevronDir, label) {
@@ -91,7 +80,7 @@
         renderSlides(data);
         return;
       }
-      var isVertical = data.view_type === 'vertical_only' || data.view_type === 'vertical';
+      var isVertical = !!(window.bmViewType && window.bmViewType.isForcedVertical(data));
       if (isVertical) renderVertical(data);
       else renderHorizontal(data);
     }
@@ -185,9 +174,9 @@
       waitImages(vStack, function() { gateStart(startVerticalScroll); });
     }
 
-    // 漫画の上に「漫画を読む」開始ボタンを表示。タップでオーバーレイ除去＋onStart実行。
+    // 漫画の上に「漫画を読む」開始ボタンを表示。タップでオーバーレイを除去する。
     // 縦読み・横読み共通（タップという明確なジェスチャーを起点に操作可能化する）
-    function addReadOverlay(onStart) {
+    function addReadOverlay() {
       var overlay = document.createElement('button');
       overlay.type = 'button';
       overlay.className = 'ev-read-overlay';
@@ -212,7 +201,6 @@
       overlay.addEventListener('click', function() {
         overlay.remove();
         try { viewer.focus({ preventScroll: true }); } catch (e) { try { viewer.focus(); } catch (e2) {} }
-        if (typeof onStart === 'function') onStart();
       });
       document.body.appendChild(overlay);
     }

@@ -22,30 +22,37 @@ Why:
     本スクリプトは事前に静的HTMLを生成して SEO/AI 可読性を担保する。
 """
 
-import json
 import pathlib
 import re
-from datetime import date
 import sys
-from bm_work_content import (
-    CATEGORY_USECASE,
-    CATEGORY_TITLE_KW,
-    CATEGORY_LP_LINK,
-    CATEGORY_PAGES,
-)
-from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
-from bm_build import API_BASE, SITE_URL
+from datetime import date
+
 from bm_build import (
-    escape_html as esc,
-    fetch_json as _fetch_json,
+    API_BASE,
+    SITE_URL,
     output_batch,
+    prune_stale,
     remove_file,
     render_template,
-    replace_block,
+    replace_grid,
+    replace_json_script,
     require_records,
     safe_slug,
     script_json,
     write_text,
+)
+from bm_build import (
+    escape_html as esc,
+)
+from bm_build import (
+    fetch_json as _fetch_json,
+)
+from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
+from bm_work_content import (
+    CATEGORY_LP_LINK,
+    CATEGORY_PAGES,
+    CATEGORY_TITLE_KW,
+    CATEGORY_USECASE,
 )
 
 API = API_BASE + '/works'
@@ -73,9 +80,23 @@ def filter_for_bm(works):
     return [w for w in works if w.get("show_site") == "both"]
 
 
-def build_card(w):
+def card_thumb(w):
+    """一覧カード用の表紙: WP thumbnail、無ければ1ページ目。"""
+    return w.get("thumbnail") or (w.get("gallery") or [""])[0]
+
+
+def works_in_category(works, cfg):
+    return [w for w in works if w.get("category") in cfg["data_categories"]]
+
+
+def latest_modified(works):
+    """WP側の実更新日の最大値（無ければ空文字）。"""
+    return max((w.get("modified_ymd") or "" for w in works), default="")
+
+
+def _works_card(w, pad, extra_attr):
     slug = w["id"]
-    thumb = w.get("thumbnail") or (w.get("gallery") or [""])[0]
+    thumb = card_thumb(w)
     title_ja = w.get("title_ja", "")
     category = w.get("category", "")
     media = " / ".join(w.get("media") or [])
@@ -89,31 +110,32 @@ def build_card(w):
     )
     cat_html = f'<span class="bm-works-card-category">{esc(category)}</span>' if category else ""
     return (
-        f'      <article class="bm-works-card" data-work-id="{esc(slug)}" data-build-static="1">\n'
-        f'        <a href="{esc(detail_url)}" class="bm-works-card-link">\n'
-        f'          <div class="bm-works-card-thumb">\n'
-        f'            <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="560">\n'
-        f'          </div>\n'
-        f'          <div class="bm-works-card-body">\n'
-        f'            {cat_html}\n'
-        f'            <h3 class="bm-works-card-title">{esc(title_ja)}</h3>\n'
-        f'            {desc_html}\n'
-        f'            {meta_html}\n'
-        f'          </div>\n'
-        f'        </a>\n'
-        f'      </article>\n'
+        f'{pad}<article class="bm-works-card" data-work-id="{esc(slug)}"{extra_attr}>\n'
+        f'{pad}  <a href="{esc(detail_url)}" class="bm-works-card-link">\n'
+        f'{pad}    <div class="bm-works-card-thumb">\n'
+        f'{pad}      <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="560">\n'
+        f'{pad}    </div>\n'
+        f'{pad}    <div class="bm-works-card-body">\n'
+        f'{pad}      {cat_html}\n'
+        f'{pad}      <h3 class="bm-works-card-title">{esc(title_ja)}</h3>\n'
+        f'{pad}      {desc_html}\n'
+        f'{pad}      {meta_html}\n'
+        f'{pad}    </div>\n'
+        f'{pad}  </a>\n'
+        f'{pad}</article>\n'
     )
+
+
+def build_card(w):
+    """works.html のカード（JSが置き換える前の静的カード）"""
+    return _works_card(w, " " * 6, ' data-build-static="1"')
 
 
 def update_works_html(works):
     p = ROOT / "works.html"
     s = p.read_text(encoding="utf-8")
 
-    cards = "".join(build_card(w) for w in works)
-    start = "<!-- BUILD:WORKS_GRID -->"
-    end = "<!-- /BUILD:WORKS_GRID -->"
-    block = f"{start}\n{cards}      {end}"
-    s, _ = replace_block(s, start, end, block, required=True)
+    s = replace_grid(s, "WORKS_GRID", "".join(build_card(w) for w in works))
 
     # ItemList JSON-LD
     ld = {
@@ -131,18 +153,7 @@ def update_works_html(works):
             for i, w in enumerate(works, start=1)
         ],
     }
-    ld_tag = (
-        '<script type="application/ld+json" id="works-itemlist-ld">\n'
-        + script_json(ld, indent=2)
-        + "\n</script>"
-    )
-    s, _ = replace_block(
-        s,
-        '<script type="application/ld+json" id="works-itemlist-ld">',
-        "</script>",
-        ld_tag,
-        required=True,
-    )
+    s = replace_json_script(s, '<script type="application/ld+json" id="works-itemlist-ld">', ld)
 
     write_text(p, s)
     print(f"Updated {p}")
@@ -156,7 +167,6 @@ def build_detail_page(w, template, all_works=()):
     # fallback として従来の thumbnail → gallery[0] 順で参照。
     gallery_list = w.get("gallery") or []
     hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
-    thumb = hero_src  # 後方互換で thumb 変数名も維持
     category = w.get("category") or "制作事例"
     # title に入れる検索KW（未定義カテゴリは「ビジネス漫画」にフォールバック）
     category_kw = CATEGORY_TITLE_KW.get(category, "ビジネス漫画")
@@ -209,7 +219,7 @@ def build_detail_page(w, template, all_works=()):
     if og_image_path.exists():
         og_image = f"{SITE}/material/images/og/works/{slug}.webp"
     else:
-        og_image = thumb or f"{SITE}/material/images/og/og-index.webp"
+        og_image = hero_src or f"{SITE}/material/images/og/og-index.webp"
 
     # === 「この事例について」セクション: クライアント・媒体・期間を文章化 ===
     media_list = w.get("media") or []
@@ -247,7 +257,7 @@ def build_detail_page(w, template, all_works=()):
         usecase_section = ''
 
     # === 関連事例セクション ===
-    # 同カテゴリの他作品から最大3件選定（self除く）
+    # 同カテゴリの他作品から最大3件選定（self除く。静的ページがある show_site == "both" だけ）
     related_works = [
         rw
         for rw in all_works
@@ -256,7 +266,7 @@ def build_detail_page(w, template, all_works=()):
     if related_works:
         related_cards = []
         for rw in related_works:
-            r_thumb = rw.get("thumbnail") or (rw.get("gallery") or [""])[0]
+            r_thumb = card_thumb(rw)
             related_cards.append(
                 f'          <a class="bm-work-related-card" href="/works/{esc(rw["id"])}">\n'
                 f'            <img src="{esc(r_thumb)}" alt="{esc(rw.get("title_ja", ""))}" loading="lazy" width="200" height="280">\n'
@@ -278,65 +288,38 @@ def build_detail_page(w, template, all_works=()):
     lp_path, lp_label = CATEGORY_LP_LINK.get(category, ("/works", "制作事例一覧"))
     cta_lp_link = f'<a href="{lp_path}">{esc(lp_label)}</a>'
 
-    replacements = {
-        "{{slug}}": esc(slug),
-        "{{title_ja}}": esc(title_ja),
-        "{{category_kw}}": esc(category_kw),
-        "{{description}}": esc(description),
-        "{{thumbnail}}": esc(thumb),
-        "{{og_image}}": esc(og_image),
-        "{{category}}": esc(category),
-        "{{pages_count}}": esc(pages_count),
-        "{{period}}": esc(period),
-        "{{point}}": esc(point),
-        "{{comment_section}}": comment_section,
-        "{{about_section}}": about_section,
-        "{{usecase_section}}": usecase_section,
-        "{{related_section}}": related_section,
-        "{{cta_lead}}": cta_lead,
-        "{{cta_lp_link}}": cta_lp_link,
-        "{{client}}": esc(client),
-        "{{client_line}}": esc(client_line),
-        "{{media}}": esc(media),
-        "{{url}}": f"{SITE}/works/{slug}",
-        # gallery_html は既にエスケープ済みなのでそのまま
-        "{{gallery_html}}": gallery_html,
-    }
-
-    return render_template(template, replacements)
+    return render_template(
+        template,
+        text={
+            "title_ja": title_ja,
+            "category_kw": category_kw,
+            "description": description,
+            "thumbnail": hero_src,
+            "og_image": og_image,
+            "category": category,
+            "pages_count": pages_count,
+            "period": period,
+            "point": point,
+            "client_line": client_line,
+            "media": media,
+            "url": f"{SITE}/works/{slug}",
+        },
+        # 以下は組み立て時にエスケープ済みのHTML断片
+        html={
+            "comment_section": comment_section,
+            "about_section": about_section,
+            "usecase_section": usecase_section,
+            "related_section": related_section,
+            "cta_lead": cta_lead,
+            "cta_lp_link": cta_lp_link,
+            "gallery_html": gallery_html,
+        },
+    )
 
 
 def build_category_card(w):
     """カテゴリページ用のカードHTML（works.html のカードと同形式）"""
-    slug = w["id"]
-    thumb = w.get("thumbnail") or (w.get("gallery") or [""])[0]
-    title_ja = w.get("title_ja", "")
-    category = w.get("category", "")
-    media = " / ".join(w.get("media") or [])
-    point = w.get("point", "")
-    detail_url = f"/works/{slug}"
-    desc_html = f'<p class="bm-works-card-desc">{esc(point)}</p>' if point else ""
-    meta_html = (
-        f'<div class="bm-works-card-meta"><span class="bm-works-card-media">{esc(media)}</span></div>'
-        if media
-        else ""
-    )
-    cat_html = f'<span class="bm-works-card-category">{esc(category)}</span>' if category else ""
-    return (
-        f'          <article class="bm-works-card" data-work-id="{esc(slug)}">\n'
-        f'            <a href="{esc(detail_url)}" class="bm-works-card-link">\n'
-        f'              <div class="bm-works-card-thumb">\n'
-        f'                <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="560">\n'
-        f'              </div>\n'
-        f'              <div class="bm-works-card-body">\n'
-        f'                {cat_html}\n'
-        f'                <h3 class="bm-works-card-title">{esc(title_ja)}</h3>\n'
-        f'                {desc_html}\n'
-        f'                {meta_html}\n'
-        f'              </div>\n'
-        f'            </a>\n'
-        f'          </article>\n'
-    )
+    return _works_card(w, " " * 10, "")
 
 
 def build_category_works_json(works):
@@ -367,9 +350,8 @@ def build_category_works_json(works):
                 "gallery": (w.get("gallery") or [])[:5],
             }
         )
-    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    # <script> 内に埋め込むため "<" を全てエスケープ（"</script>" 混入防止）
-    return raw.replace("<", "\\u003c")
+    # <script> 内に埋め込むため "<" をエスケープする（"</script>" 混入防止）
+    return script_json(payload, separators=(",", ":"))
 
 
 def build_cat_nav(active_slug, works):
@@ -382,7 +364,7 @@ def build_cat_nav(active_slug, works):
         f'すべて<span class="bm-cat-nav-link-count">（{total}）</span></a>'
     )
     for slug, cfg in CATEGORY_PAGES.items():
-        count = len([w for w in works if w.get("category") in cfg["data_categories"]])
+        count = len(works_in_category(works, cfg))
         if count == 0:
             continue
         is_active = slug == active_slug
@@ -478,20 +460,14 @@ def generate_category_pages(works):
     if not CATEGORY_TEMPLATE_PATH.exists():
         raise FileNotFoundError(CATEGORY_TEMPLATE_PATH)
     template = CATEGORY_TEMPLATE_PATH.read_text(encoding="utf-8")
-    CATEGORY_DIR.mkdir(parents=True, exist_ok=True)
 
     # 既存カテゴリHTMLをクリーンアップ
-    valid_slugs = set(CATEGORY_PAGES.keys())
-    removed = 0
-    for existing in CATEGORY_DIR.glob("*.html"):
-        if existing.stem not in valid_slugs:
-            remove_file(existing)
-            removed += 1
+    removed = prune_stale(CATEGORY_DIR, set(CATEGORY_PAGES.keys()))
 
     generated = 0
     skipped = 0
     for slug, cfg in CATEGORY_PAGES.items():
-        matched = [w for w in works if w.get("category") in cfg["data_categories"]]
+        matched = works_in_category(works, cfg)
         if not matched:
             # 該当作品が0件のカテゴリは生成しない（thin content 回避）
             # ただし既存ファイルがあれば削除する
@@ -517,36 +493,37 @@ def generate_category_pages(works):
         # OG画像: works トップの og-works.webp を再利用（1200x630 既存）
         og_image = f"{SITE}/material/images/og/og-works.webp"
 
-        replacements = {
-            "{{slug}}": esc(slug),
-            "{{kw}}": esc(cfg["kw"]),
-            "{{kw_short}}": esc(cfg["kw_short"]),
-            "{{title_seo}}": esc(cfg["title_seo"]),
-            "{{description}}": esc(cfg["description"]),
-            "{{keywords}}": esc(cfg["keywords"]),
-            "{{intro_lead}}": esc(cfg["intro_lead"]),
-            "{{usecase_text}}": esc(usecase_text or cfg["intro_lead"]),
-            "{{count}}": str(len(matched)),
-            "{{lp_path}}": esc(cfg["lp_path"]),
-            "{{lp_label}}": esc(cfg["lp_label"]),
-            "{{cards_html}}": cards_html,
-            "{{works_json}}": build_category_works_json(matched),
-            "{{cat_nav_html}}": cat_nav_html,
-            "{{faq_html}}": faq_html,
-            "{{faq_jsonld}}": faq_jsonld,
-            "{{breadcrumb_jsonld}}": breadcrumb_jsonld,
-            "{{itemlist_jsonld}}": itemlist_jsonld,
-            "{{og_image}}": og_image,
-            "{{url}}": f"{SITE}/works/category/{slug}",
-            # ビルド日ではなく所属作品の実更新日の最大値を使う（毎日変わる嘘の更新日を防ぐ。
-            # APIにmodified_ymdが無い間は従来通りビルド日にフォールバック） 2026-06-12
-            "{{last_modified}}": (
-                max((w.get("modified_ymd") or "" for w in matched), default="")
-                or date.today().isoformat()
-            )
-            + "T03:00:00+09:00",
-        }
-        out = render_template(template, replacements)
+        out = render_template(
+            template,
+            text={
+                "kw": cfg["kw"],
+                "kw_short": cfg["kw_short"],
+                "title_seo": cfg["title_seo"],
+                "description": cfg["description"],
+                "keywords": cfg["keywords"],
+                "intro_lead": cfg["intro_lead"],
+                "usecase_text": usecase_text or cfg["intro_lead"],
+                "count": str(len(matched)),
+                "lp_path": cfg["lp_path"],
+                "lp_label": cfg["lp_label"],
+                "og_image": og_image,
+                "url": f"{SITE}/works/category/{slug}",
+                # ビルド日ではなく所属作品の実更新日の最大値を使う（毎日変わる嘘の更新日を防ぐ。
+                # APIにmodified_ymdが無い間は従来通りビルド日にフォールバック） 2026-06-12
+                "last_modified": (latest_modified(matched) or date.today().isoformat())
+                + "T03:00:00+09:00",
+            },
+            # 組み立て済みのHTML断片と、JSONドキュメント全体
+            html={
+                "cards_html": cards_html,
+                "works_json": build_category_works_json(matched),
+                "cat_nav_html": cat_nav_html,
+                "faq_html": faq_html,
+                "faq_jsonld": faq_jsonld,
+                "breadcrumb_jsonld": breadcrumb_jsonld,
+                "itemlist_jsonld": itemlist_jsonld,
+            },
+        )
         write_text(CATEGORY_DIR / f"{slug}.html", out)
         generated += 1
 
@@ -561,15 +538,9 @@ def generate_details(works):
         print(f"ERROR: template not found: {TEMPLATE_PATH}", file=sys.stderr)
         sys.exit(1)
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
-    WORKS_DIR.mkdir(exist_ok=True)
 
     # 既存ファイルをクリーンアップ（今回取得しなかった作品のファイルを削除）
-    current_slugs = {w["id"] for w in works}
-    removed = 0
-    for existing in WORKS_DIR.glob("*.html"):
-        if existing.stem not in current_slugs:
-            remove_file(existing)
-            removed += 1
+    removed = prune_stale(WORKS_DIR, {w["id"] for w in works})
 
     for w in works:
         out = build_detail_page(w, template, works)
@@ -607,15 +578,14 @@ def update_sitemap(works):
     cat_entries = []
     for slug, cfg in CATEGORY_PAGES.items():
         # 該当作品が0件のカテゴリは sitemap に含めない（薄いコンテンツ回避）
-        matched = [w for w in works if w.get("category") in cfg["data_categories"]]
+        matched = works_in_category(works, cfg)
         if not matched:
             continue
         # カテゴリページの lastmod = 所属作品の実更新日の最大値（無ければ省略）
-        cat_modified = max((w.get("modified_ymd") or "" for w in matched), default="")
         cat_entries.append(
             url_entry(
                 f"{SITE}/works/category/{slug}",
-                cat_modified,
+                latest_modified(matched),
                 frequency="weekly",
                 priority="0.8",
             )

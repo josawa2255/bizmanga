@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="robots" content="noindex, follow">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
@@ -96,8 +94,8 @@ p{margin:0 0 16px;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -111,7 +109,7 @@ p{margin:0 0 16px;}
 
   <header class="bm-header" id="bmHeader">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img" width="140" height="40">
       </a>
       <nav class="bm-nav" id="bmNav"></nav>
@@ -141,7 +139,7 @@ p{margin:0 0 16px;}
   <main>
     <section class="tm-detail-section">
       <div class="bm-container">
-        <a href="testimonials" class="tm-detail-back">&larr; お客様の声一覧へ戻る</a>
+        <a href="/testimonials" class="tm-detail-back">&larr; お客様の声一覧へ戻る</a>
 
         <div class="tm-detail-loading" id="tmDetailLoading">
           <p>読み込み中...</p>
@@ -149,7 +147,7 @@ p{margin:0 0 16px;}
 
         <div class="tm-detail-error" id="tmDetailError" style="display:none;">
           <p>記事が見つかりませんでした。</p>
-          <p><a href="testimonials" style="color:var(--bm-accent);">一覧に戻る</a></p>
+          <p><a href="/testimonials">一覧に戻る</a></p>
         </div>
 
         <article class="tm-detail-article" id="tmDetailArticle">
@@ -161,8 +159,8 @@ p{margin:0 0 16px;}
           <div class="tm-detail-content" id="tmDetailContent"></div>
 
           <div class="tm-detail-cta">
-            <a href="contact">無料相談する</a>
-            <a href="works" class="ghost">他の事例を見る</a>
+            <a href="/contact">無料相談する</a>
+            <a href="/works" class="ghost">他の事例を見る</a>
           </div>
 
           <div class="tm-detail-share">
@@ -194,8 +192,7 @@ p{margin:0 0 16px;}
 
   <script src="/js/bm-sanitize.js"></script>
   <script src="/js/bm-testimonial-detail.js"></script>
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
 </body>
 </html>

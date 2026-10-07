@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
@@ -63,9 +61,9 @@ p{margin:0 0 16px;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
-  <link rel="stylesheet" href="css/bm-lp-v2.css">
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
+  <link rel="stylesheet" href="/css/bm-lp-v2.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&family=Public+Sans:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -99,7 +97,7 @@ p{margin:0 0 16px;}
   <!-- ===== ヘッダー ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img" width="140" height="40">
       </a>
       <nav class="bm-nav" id="bmNav"></nav>
@@ -346,14 +344,14 @@ p{margin:0 0 16px;}
 
   <!-- ===== CTA（共通JS生成） ===== -->
   <section id="bmCtaMount"></section>
-  <script src="js/bm-cta.js" defer></script>
+  <script src="/js/bm-cta.js" defer></script>
 
 
   <!-- 監修者・著者表記 -->
-  <section class="bm-author-byline" style="max-width: 820px; margin: 0 auto; padding: 24px; text-align: center; font-size: 13px; color: #888; border-top: 1px solid #eee;">
-    <p style="margin-bottom: 8px;"><strong style="color: #555;">監修:</strong> ビズマンガ編集部（Contents X 株式会社）</p>
-    <p style="margin-bottom: 8px;">本記事に記載の成果数値・比較データは、特記なき限りビズマンガが制作を担当したプロジェクトおよび公開調査結果（ビズマンガ調べ 2026年4月時点）に基づきます。具体的なご提案は案件ごとに異なりますので、<a href="/contact" style="color: #e85500;">無料相談</a>にてお問い合わせください。</p>
-    <p style="font-size: 12px; color: #aaa;">Last updated: 2026-07-02 / Contents X 株式会社 〒153-0061 東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
+  <section class="bm-author-byline">
+    <p class="bm-author-byline__line"><strong>監修:</strong> ビズマンガ編集部（Contents X 株式会社）</p>
+    <p class="bm-author-byline__line">本記事に記載の成果数値・比較データは、特記なき限りビズマンガが制作を担当したプロジェクトおよび公開調査結果（ビズマンガ調べ 2026年4月時点）に基づきます。具体的なご提案は案件ごとに異なりますので、<a href="/contact">無料相談</a>にてお問い合わせください。</p>
+    <p class="bm-author-byline__updated">Last updated: 2026-07-02 / Contents X 株式会社 〒153-0061 東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
   </section>
 
   <!-- ===== フッター ===== -->
@@ -366,12 +364,12 @@ p{margin:0 0 16px;}
           <p class="bm-footer-address">東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
         </div>
         <div class="bm-footer-links">
-          <a href="./">ホーム</a>
-          <a href="works">制作事例</a>
-          <a href="biz-library">ビズ書庫</a>
-          <a href="pricing">料金</a>
-          <a href="faq">FAQ</a>
-          <a href="contact">お問い合わせ</a>
+          <a href="/">ホーム</a>
+          <a href="/works">制作事例</a>
+          <a href="/biz-library">ビズ書庫</a>
+          <a href="/pricing">料金</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">お問い合わせ</a>
           <a href="/privacy-policy">プライバシーポリシー</a>
         </div>
       </div>
@@ -382,10 +380,9 @@ p{margin:0 0 16px;}
     </div>
   </footer>
 
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-tracking.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
+  <script src="/js/bm-tracking.js" defer></script>
 <!-- JSON-LD: WebPage -->
 <script type="application/ld+json">
 {
@@ -461,6 +458,6 @@ p{margin:0 0 16px;}
 <!-- Start of HubSpot Embed Code -->
 <script src="/js/bm-hubspot.js" defer></script>
 <!-- End of HubSpot Embed Code -->
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-fuwa.js" defer></script>
 </body>
 </html>

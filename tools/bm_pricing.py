@@ -9,10 +9,11 @@ import json
 import re
 from html.parser import HTMLParser
 from pathlib import Path
+
 from bm_build import write_text
+from bm_pricing_rules import REPLACEMENTS
 
 ROOT = Path(__file__).resolve().parents[1]
-from bm_pricing_rules import REPLACEMENTS
 
 
 def _price_pattern(old):
@@ -24,7 +25,7 @@ def normalize_price_text(value):
     if not isinstance(value, str):
         return value
     for old, new in REPLACEMENTS:
-        value = re.sub(_price_pattern(old), lambda match: new, value)
+        value = re.sub(_price_pattern(old), lambda _match, replacement=new: replacement, value)
     return value
 
 
@@ -94,7 +95,7 @@ class _PriceHTML(HTMLParser):
     def result(self):
         texts = _replace_parts([part[2] for part in self.parts])
         output = self.source
-        for (start, end, old), new in reversed(list(zip(self.parts, texts))):
+        for (start, end, old), new in reversed(list(zip(self.parts, texts, strict=True))):
             if old != new:
                 output = output[:start] + html.escape(new, quote=False) + output[end:]
         return output

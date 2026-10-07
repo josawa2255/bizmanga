@@ -149,37 +149,6 @@
       if (anyActive) a.className += ' active';
       wrapper.appendChild(mega);
       nav.appendChild(wrapper);
-    } else if (item.children && item.children.length > 0) {
-      // ドロップダウン
-      var wrapper = document.createElement('div');
-      wrapper.className = 'bm-nav-dropdown';
-
-      var a = document.createElement('a');
-      a.href = item.href;
-      a.className = 'bm-nav-link bm-nav-dropdown-toggle';
-      if (isCurrent(item.href)) a.className += ' active';
-      a.textContent = item.label;
-
-      var arrow = document.createElement('span');
-      arrow.className = 'bm-nav-dropdown-arrow';
-      arrow.textContent = '▾';
-      a.appendChild(arrow);
-      wrapper.appendChild(a);
-
-      var sub = document.createElement('div');
-      sub.className = 'bm-nav-dropdown-menu';
-      var childActive = false;
-      item.children.forEach(function(child) {
-        var ca = document.createElement('a');
-        ca.href = child.href;
-        ca.className = 'bm-nav-dropdown-item';
-        if (isCurrent(child.href)) { ca.className += ' active'; childActive = true; }
-        ca.textContent = child.label;
-        sub.appendChild(ca);
-      });
-      if (childActive) a.className += ' active';
-      wrapper.appendChild(sub);
-      nav.appendChild(wrapper);
     } else {
       var a = document.createElement('a');
       a.href = item.href;
@@ -206,10 +175,13 @@
   var PATH_LINE = 'M12 2C6.48 2 2 5.93 2 10.66c0 2.73 1.44 5.17 3.7 6.76-.13.47-.84 3.05-.87 3.26 0 0-.02.16.08.22s.21.02.21.02c.28-.04 3.24-2.12 3.75-2.48.96.14 1.95.22 2.96.22h.17c5.52 0 10-3.93 10-8.66S17.52 2 12 2z';
   var PATH_TEL = 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z';
   var PATH_DL = 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z';
+  // 相談導線（メニュー末尾と追従CTAで共通）
+  var LINE_URL = 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831';
+  var TEL_URL = 'tel:03-6261-0764';
   var mobileCtas = [
     { href: '/download', label: '資料ダウンロード', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--dl', pathD: PATH_DL },
-    { href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831', label: 'LINEで相談', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
-    { href: 'tel:03-6261-0764', label: '03-6261-0764 に電話', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
+    { href: LINE_URL, label: 'LINEで相談', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--line', target: '_blank', pathD: PATH_LINE },
+    { href: TEL_URL, label: '03-6261-0764 に電話', cls: 'bm-nav-mobile-cta bm-nav-mobile-cta--tel', pathD: PATH_TEL }
   ];
   mobileCtas.forEach(function(c) {
     var a = document.createElement('a');
@@ -740,7 +712,7 @@
     fab.className = 'bm-fab';
     fab.appendChild(buildFabBtn({
       cls: 'bm-fab__btn--line',
-      href: 'https://line.me/R/ti/p/@626kzaze?oat_content=url&ts=01071831',
+      href: LINE_URL,
       external: true,
       label: 'LINEで相談',
       iconFill: true,
@@ -758,10 +730,10 @@
     }));
     fab.appendChild(buildFabBtn({
       cls: 'bm-fab__btn--tel',
-      href: 'tel:03-6261-0764',
+      href: TEL_URL,
       label: '電話で相談',
       iconFill: true,
-      paths: [{ tag: 'path', attrs: { d: 'M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z' } }]
+      paths: [{ tag: 'path', attrs: { d: PATH_TEL } }]
     }));
     document.body.appendChild(fab);
   }

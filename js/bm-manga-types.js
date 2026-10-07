@@ -18,6 +18,12 @@
 (function () {
   'use strict';
 
+  // ↑→ で次、↓← で前（章セレクタと表現カスタマイズで共通の操作）。それ以外のキーは 0
+  function arrowStep(e) {
+    return e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 :
+      e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+  }
+
   function init() {
     var root = document.querySelector('[data-mt-chapters]');
     if (!root) return;
@@ -95,9 +101,7 @@
       });
       // ↑↓←→ で章を移動（フォーカスも一緒に動かす）
       btn.addEventListener('keydown', function (e) {
-        var step =
-          e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 :
-          e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        var step = arrowStep(e);
         if (!step) return;
         e.preventDefault();
         var next = buttons[(index + step + buttons.length) % buttons.length];
@@ -166,9 +170,7 @@
         // 2026-09-16: 章セレクタには矢印キーがあるのにここだけ無く、
         // 同じ見た目・同じ aria-pressed のUIで操作方法が食い違っていたため追加
         btn.addEventListener('keydown', function (e) {
-          var step =
-            e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 :
-            e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+          var step = arrowStep(e);
           if (!step) return;
           e.preventDefault();
           select(buttons[(index + step + buttons.length) % buttons.length], true);

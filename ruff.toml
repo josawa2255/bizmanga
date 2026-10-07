@@ -4,7 +4,9 @@ include = ["tools/*.py", "serve.py"]
 extend-exclude = ["*.tmp"]
 
 [lint]
-select = ["F"]
+# F: pyflakes, E4/E7/E9: import placement and statement errors, I: import order,
+# B: bugbear, UP: pyupgrade, RUF100: unused noqa. DTZ is left out until the build timezone is decided.
+select = ["F", "E4", "E7", "E9", "I", "B", "UP", "RUF100"]
 
 [format]
 quote-style = "preserve"
