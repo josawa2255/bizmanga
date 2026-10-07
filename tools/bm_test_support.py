@@ -2,12 +2,12 @@
 
 import importlib.util
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -52,7 +52,7 @@ def make_handler(directory):
     if os.path.isfile(os.path.join(directory, "serve.py")):
         try:
             sys.path.insert(0, directory)
-            import serve  # noqa: E402  (BizManga/serve.py)
+            import serve  # BizManga/serve.py
 
             base_cls = serve.CleanURLHandler
         except Exception:

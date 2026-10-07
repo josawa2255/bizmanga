@@ -1,17 +1,18 @@
 """Offline regression tests for builder boundaries and existing output contracts."""
 
-from contextlib import redirect_stdout
-from html.parser import HTMLParser
 import io
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from html.parser import HTMLParser
+from pathlib import Path
 from unittest.mock import patch
 
+import bm_pricing
 from bm_build import (
     output_batch,
     remove_file,
@@ -21,12 +22,36 @@ from bm_build import (
     script_json,
     write_text,
 )
-from bm_test_support import git_runner, git_test_env, load_tool as module
 from bm_content import make_slug
-from bm_html import _Sanitizer
-import bm_pricing
+from bm_html import sanitize_html
+from bm_test_support import git_runner, git_test_env
+from bm_test_support import load_tool as module
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def run_commit_generated(cwd, env, message, *paths):
+    """Run tools/commit-generated.py as GitHub Actions would, against a local test remote."""
+    return subprocess.run(
+        [
+            sys.executable,
+            '-B',
+            str(ROOT / 'tools/commit-generated.py'),
+            '--message',
+            message,
+            *paths,
+        ],
+        cwd=cwd,
+        env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+
+def init_remote_and_clone(git, folder, remote, clone):
+    git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
+    git(folder, 'clone', str(remote), str(clone))
 
 
 def workflow_checkout_ref(workflow):
@@ -56,13 +81,29 @@ class BuildTests(unittest.TestCase):
         from html import escape
 
         template = (
-            '<h1>{{title}}</h1><script type="application/ld+json">{"name":"{{title}}"}</script>'
+            '<h1>{{title}}</h1><p>{{other}}</p>'
+            '<script type="application/ld+json">{"name":"{{title}}"}</script>'
         )
-        result = render_template(template, {'{{title}}': escape(value), '{{other}}': 'wrong'})
-        self.assertIn('<h1>' + escape(value) + '</h1>', result)
+        result = render_template(template, text={'title': value, 'other': 'wrong'})
+        # Substitution is simultaneous: {{other}} inside the value stays data.
+        self.assertIn('<h1>' + escape(value) + '</h1><p>wrong</p>', result)
         payload = re.search(r'application/ld\+json">(.*?)</script>', result, re.S)[1]
         self.assertEqual(json.loads(payload)['name'], value)
         self.assertNotIn('</script>', script_json({'name': value}))
+
+    def test_template_values_must_match_placeholders(self):
+        template = '<p>{{a}}</p><script type="application/ld+json">{{doc}}</script>'
+        self.assertIn(
+            '<p>&lt;b&gt;</p>', render_template(template, text={'a': '<b>'}, html={'doc': '{}'})
+        )
+        with self.assertRaises(ValueError):
+            render_template(template, text={'a': 'x', 'unused': 'y'}, html={'doc': '{}'})
+        with self.assertRaises(ValueError):
+            render_template(template, text={'a': 'x'})
+        with self.assertRaises(ValueError):
+            render_template(
+                '<script type="application/ld+json">{"x":"{{a}}"}</script>', html={'a': '<b>'}
+            )
 
     def test_detail_templates_accept_real_json_strings(self):
         columns = module('build-columns.py')
@@ -90,13 +131,12 @@ class BuildTests(unittest.TestCase):
 
     def test_void_tags_do_not_swallow_following_content(self):
         for tag in ('meta charset="utf-8"', 'link href="x"', 'base href="x"', 'embed src="x"'):
-            parser = _Sanitizer()
-            parser.feed('<p>before</p><' + tag + '><p>after</p>')
-            parser.close()
-            self.assertEqual(''.join(parser.out), '<p>before</p><p>after</p>')
-        parser = _Sanitizer()
-        parser.feed('<script>bad()</script><p onclick="bad()">safe</p>')
-        self.assertEqual(''.join(parser.out), '<p>safe</p>')
+            self.assertEqual(
+                sanitize_html('<p>before</p><' + tag + '><p>after</p>'), '<p>before</p><p>after</p>'
+            )
+        self.assertEqual(
+            sanitize_html('<script>bad()</script><p onclick="bad()">safe</p>'), '<p>safe</p>'
+        )
 
     def test_rich_html_url_policy(self):
         class Attributes(HTMLParser):
@@ -109,11 +149,8 @@ class BuildTests(unittest.TestCase):
         )
         for case in cases:
             with self.subTest(html=case['html']):
-                sanitizer = _Sanitizer()
-                sanitizer.feed(case['html'])
-                sanitizer.close()
                 output = Attributes()
-                output.feed(''.join(sanitizer.out))
+                output.feed(sanitize_html(case['html']))
                 self.assertEqual(output.value, case['expected'])
 
     def test_rich_html_rejects_literal_c0_and_del_in_urls(self):
@@ -123,9 +160,7 @@ class BuildTests(unittest.TestCase):
                 'java' + chr(codepoint) + 'script:window.injected=true',
             ):
                 with self.subTest(url=repr(url)):
-                    sanitizer = _Sanitizer()
-                    sanitizer.feed('<a href="' + url + '">probe</a>')
-                    self.assertNotIn('href=', ''.join(sanitizer.out))
+                    self.assertNotIn('href=', sanitize_html('<a href="' + url + '">probe</a>'))
 
     def test_build_exception_keeps_original_files(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -237,7 +272,7 @@ class BuildTests(unittest.TestCase):
             for name in lp.LP_CATEGORIES:
                 path = root / (name + '.html')
                 path.write_bytes((ROOT / path.name).read_bytes())
-                section = lp.render_section(name, lp.LP_NAMES[name], [], v2=True)
+                section = lp.render_section(lp.LP_NAMES[name], [])
                 with patch.object(lp, 'ROOT', root):
                     lp.patch_lp(name, section)
                     first = path.read_bytes()
@@ -382,26 +417,11 @@ class PublishTests(unittest.TestCase):
 
                 git = git_runner(env)
 
-                def publish(cwd):
-                    result = subprocess.run(
-                        [
-                            sys.executable,
-                            '-B',
-                            str(ROOT / 'tools/commit-generated.py'),
-                            '--message',
-                            'generated sitemap',
-                            'sitemap.xml',
-                        ],
-                        cwd=cwd,
-                        env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        text=True,
-                    )
+                def publish(cwd, env=env):
+                    result = run_commit_generated(cwd, env, 'generated sitemap', 'sitemap.xml')
                     self.assertEqual(result.returncode, 0, result.stdout)
 
-                git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
-                git(folder, 'clone', str(remote), str(writer))
+                init_remote_and_clone(git, folder, remote, writer)
                 (writer / 'sitemap.xml').write_text(
                     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>',
                     encoding='utf-8',
@@ -453,8 +473,7 @@ class PublishTests(unittest.TestCase):
 
             git = git_runner(env)
 
-            git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
-            git(folder, 'clone', str(remote), str(writer))
+            init_remote_and_clone(git, folder, remote, writer)
             (writer / 'generated.txt').write_text('base\n', encoding='utf-8')
             git(writer, 'add', 'generated.txt')
             git(writer, 'commit', '-m', 'initial')
@@ -466,21 +485,7 @@ class PublishTests(unittest.TestCase):
             git(human, 'commit', '-m', 'human edit')
             git(human, 'push')
             (writer / 'generated.txt').write_text('generated\n', encoding='utf-8')
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    '-B',
-                    str(ROOT / 'tools/commit-generated.py'),
-                    '--message',
-                    'generated output',
-                    'generated.txt',
-                ],
-                cwd=writer,
-                env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-            )
+            result = run_commit_generated(writer, env, 'generated output', 'generated.txt')
             self.assertEqual(result.returncode == 0, not conflict, result.stdout)
             self.assertEqual(
                 git(remote, 'show', 'main:generated.txt').strip(),
@@ -490,14 +495,8 @@ class PublishTests(unittest.TestCase):
                 self.assertEqual(git(remote, 'show', 'main:human.txt').strip(), 'human')
                 # Re-running without generated changes makes no extra commit.
                 before = git(remote, 'rev-parse', 'main')
-                again = subprocess.run(
-                    result.args,
-                    cwd=writer,
-                    env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main'),
-                    capture_output=True,
-                    text=True,
-                )
-                self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
+                again = run_commit_generated(writer, env, 'generated output', 'generated.txt')
+                self.assertEqual(again.returncode, 0, again.stdout)
                 self.assertEqual(git(remote, 'rev-parse', 'main'), before)
 
 

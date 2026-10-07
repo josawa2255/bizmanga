@@ -18,7 +18,6 @@
 .uc-v2 {
   --uc-paper: var(--lpv2-paper);            /* #ffffff  メイン背景          */
   --uc-cream: var(--lpv2-cream);            /* #fff8ed  サブ背景（生成り）  */
-  --uc-cream-deep: var(--lpv2-cream-deep);  /* #f5ecd9  濃い生成り          */
   --uc-accent: var(--lpv2-accent);          /* #e85500  ビズマンガのオレンジ */
   /* 白抜き文字を敷く面（最終CTA）にだけ使う濃いめのオレンジ。
      #e85500 に白文字だと 3.9:1 で WCAG AA (4.5:1) を満たさないため、

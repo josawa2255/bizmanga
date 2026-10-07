@@ -22,23 +22,29 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
-from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
-from bm_build import API_BASE, SITE_URL
+
+from bm_brand import normalize_brand_text
 from bm_build import (
-    escape_html as esc,
-    fetch_json as _fetch_json,
+    API_BASE,
+    SITE_URL,
     output_batch,
-    remove_file,
+    prune_stale,
     render_template,
-    replace_block,
+    replace_grid,
+    replace_json_script,
     require_records,
-    script_json,
     write_text,
 )
-from bm_brand import normalize_brand_text
+from bm_build import (
+    escape_html as esc,
+)
+from bm_build import (
+    fetch_json as _fetch_json,
+)
 from bm_content import make_slug
-from bm_html import _Sanitizer
+from bm_html import sanitize_html
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
+from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
 DESC_OVERRIDES = {
@@ -60,23 +66,16 @@ def sanitize_content_html(raw):
     """WP本文HTMLをallowlistでサニタイズし、ブランド方針で正規化して返す。"""
     if not raw:
         return ""
-    p = _Sanitizer()
-    p.feed(raw)
-    p.close()
     # 料金文言がstrong等で分かれていても揃える。タグ・URLは変更しない。
-    return normalize_brand_text(normalize_price_html("".join(p.out)), prices=False)
-
-
-def fetch_json(url):
-    return _fetch_json(url)
+    return normalize_brand_text(normalize_price_html(sanitize_html(raw)), prices=False)
 
 
 def fetch_columns():
-    return require_records(fetch_json(API_LIST), label="columns")
+    return require_records(_fetch_json(API_LIST), label="columns")
 
 
 def fetch_column_detail(col_id):
-    return fetch_json(API_SINGLE.format(id=col_id))
+    return _fetch_json(API_SINGLE.format(id=col_id))
 
 
 def estimate_readtime(text):
@@ -153,14 +152,13 @@ def build_toc_and_inject_ids(content_html):
     return toc_html, content_with_ids
 
 
-def build_card(c):
+def build_card(c, readtime):
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = normalize_price_text(c.get("title_ja", ""))
     category = c.get("category") or "その他"
     excerpt = normalize_brand_text(c.get("excerpt_ja", ""))
     date = c.get("date", "")
-    readtime = c.get("_readtime", 5)
     detail_url = f"/column/{slug}"
 
     cat_html = (
@@ -184,19 +182,18 @@ def build_card(c):
     )
 
 
-def update_column_html(columns):
+def update_column_html(columns, readtimes):
+    """readtimes: generate_details() が本文から計算した {slug: 分}。"""
     p = ROOT / "column.html"
     s = p.read_text(encoding="utf-8")
 
-    # Featured = 最新1件 (日付降順の先頭)
-    featured = columns[0] if columns else None
-    rest = columns[1:] if featured else columns
+    # Featured = 最新1件 (日付降順の先頭)。fetch_columns() が空の一覧を拒否する。
+    featured = columns[0]
+    rest = columns[1:]
 
-    cards = "".join(build_card(c) for c in rest)
-    start = "<!-- BUILD:COLUMN_GRID -->"
-    end = "<!-- /BUILD:COLUMN_GRID -->"
-    block = f"{start}\n{cards}      {end}"
-    s, _ = replace_block(s, start, end, block, required=True)
+    s = replace_grid(
+        s, "COLUMN_GRID", "".join(build_card(c, readtimes[make_slug(c)]) for c in rest)
+    )
 
     # Featured + カテゴリ一覧をJSONで埋め込む (bm-column-filter.jsが読む)
     cat_counts = {}
@@ -218,23 +215,10 @@ def update_column_html(columns):
             "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
             "category": featured.get("category") or "",
             "date": featured.get("date", ""),
-            "readtime": featured.get("_readtime", 5),
-        }
-        if featured
-        else None,
+            "readtime": readtimes[make_slug(featured)],
+        },
     }
-    data_tag = (
-        '<script type="application/json" id="bm-column-data">\n'
-        + script_json(data_payload, indent=2)
-        + "\n</script>"
-    )
-    s, _ = replace_block(
-        s,
-        '<script type="application/json" id="bm-column-data">',
-        "</script>",
-        data_tag,
-        required=True,
-    )
+    s = replace_json_script(s, '<script type="application/json" id="bm-column-data">', data_payload)
 
     # ItemList JSON-LD
     ld = {
@@ -252,18 +236,7 @@ def update_column_html(columns):
             for i, c in enumerate(columns, start=1)
         ],
     }
-    ld_tag = (
-        '<script type="application/ld+json" id="column-itemlist-ld">\n'
-        + script_json(ld, indent=2)
-        + "\n</script>"
-    )
-    s, _ = replace_block(
-        s,
-        '<script type="application/ld+json" id="column-itemlist-ld">',
-        "</script>",
-        ld_tag,
-        required=True,
-    )
+    s = replace_json_script(s, '<script type="application/ld+json" id="column-itemlist-ld">', ld)
 
     write_text(p, s)
     print(f"Updated {p}")
@@ -305,23 +278,26 @@ def build_detail_page(col, detail_data, template):
 
     toc_html, content_with_ids = build_toc_and_inject_ids(content)
 
-    replacements = {
-        "{{slug}}": esc(slug),
-        "{{title_ja}}": esc(title_ja),
-        "{{description}}": esc(description),
-        "{{thumbnail}}": esc(thumb),
-        "{{category}}": esc(category),
-        "{{category_html}}": cat_html,
-        "{{date}}": esc(date),
-        "{{date_ymd}}": esc(date_ymd),
-        "{{modified_ymd}}": esc(modified_ymd),
-        "{{url}}": f"{SITE}/column/{slug}",
-        "{{hero_html}}": hero_html,
-        "{{toc_html}}": toc_html,
-        "{{content_html}}": content_with_ids,
-    }
-
-    return render_template(template, replacements)
+    return render_template(
+        template,
+        text={
+            "title_ja": title_ja,
+            "description": description,
+            "thumbnail": thumb,
+            "category": category,
+            "date": date,
+            "date_ymd": date_ymd,
+            "modified_ymd": modified_ymd,
+            "url": f"{SITE}/column/{slug}",
+        },
+        # 組み立て済みのHTML断片（本文はサニタイズ済み）
+        html={
+            "category_html": cat_html,
+            "hero_html": hero_html,
+            "toc_html": toc_html,
+            "content_html": content_with_ids,
+        },
+    )
 
 
 def _fetch_detail_safe(column):
@@ -332,11 +308,11 @@ def _fetch_detail_safe(column):
 
 
 def generate_details(columns):
+    """詳細ページを生成し、本文から計算した読了時間 {slug: 分} を返す。"""
     if not TEMPLATE_PATH.exists():
         print(f"ERROR: template not found: {TEMPLATE_PATH}", file=sys.stderr)
         sys.exit(1)
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
-    COLUMN_DIR.mkdir(exist_ok=True)
 
     with ThreadPoolExecutor(max_workers=DETAIL_FETCH_WORKERS) as executor:
         results = list(executor.map(_fetch_detail_safe, columns))
@@ -350,25 +326,22 @@ def generate_details(columns):
         raise RuntimeError("Column detail fetch failed: " + ", ".join(failures))
     require_records([{"id": make_slug(c)} for c in columns], label="column slugs")
     current_slugs = set()
+    readtimes = {}
     written = 0
-    for c, detail, err in results:
+    for c, detail, _err in results:
         slug = make_slug(c)
         current_slugs.add(slug)
-        c["_readtime"] = estimate_readtime(detail.get("content", ""))
+        readtimes[slug] = estimate_readtime(detail.get("content", ""))
         out = build_detail_page(c, detail, template)
         write_text(COLUMN_DIR / f"{slug}.html", out)
         print(f"  Generated column/{slug}.html")
         written += 1
 
-    removed = 0
-    for existing in COLUMN_DIR.glob("*.html"):
-        if existing.stem == "index":
-            continue
-        if existing.stem not in current_slugs:
-            remove_file(existing)
-            removed += 1
+    # column/index.html（/column/ へのリダイレクト）は残す
+    removed = prune_stale(COLUMN_DIR, current_slugs | {"index"})
 
     print(f"Generated {written}/{len(columns)} column pages, removed {removed} stale files")
+    return readtimes
 
 
 def update_sitemap(columns):
@@ -406,13 +379,10 @@ def _build():
         sys.exit(1)
 
     print(f"Total columns from WP: {len(columns)}")
-    if not columns:
-        print("No columns found. Skipping build.")
-        return
 
-    # 順序: detail生成 (readtimeを記録) → column.html 更新 → sitemap
-    generate_details(columns)
-    update_column_html(columns)
+    # 順序: detail生成 (readtimeを計算) → column.html 更新 → sitemap
+    readtimes = generate_details(columns)
+    update_column_html(columns, readtimes)
     update_sitemap(columns)
     print("Done.")
 

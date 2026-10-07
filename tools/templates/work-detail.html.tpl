@@ -5,8 +5,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ</title>
   <meta name="description" content="{{description}}">
   <meta name="keywords" content="{{title_ja}},{{category_kw}},{{category_kw}} 事例,{{category_kw}} 制作,ビジネス漫画 制作事例,漫画制作 実績,ビズマンガ">
@@ -164,7 +162,7 @@
 
 {{related_section}}
 
-      <div style="text-align: center;">
+      <div class="bm-work-detail-back-wrap">
         <a href="/works" class="bm-work-detail-back">&larr; 制作事例一覧に戻る</a>
       </div>
 

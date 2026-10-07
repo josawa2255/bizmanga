@@ -34,8 +34,9 @@ import re
 import sys
 import urllib.error
 import urllib.request
-from bm_test_support import start_server
 from urllib.parse import urlparse
+
+from bm_test_support import start_server
 
 DEFAULT_API = "https://cms.contentsx.jp/wp-json/contentsx/v1"
 DEFAULT_PORT = 5500
@@ -49,6 +50,18 @@ RESULTS = []  # (name, ok, detail)
 def rec(name, ok, detail=""):
     RESULTS.append((name, bool(ok), detail))
     print(("PASS  " if ok else "FAIL  ") + name + ("  — " + detail if detail else ""), flush=True)
+
+
+def expect_within(name, wait, ok_detail="", fail_detail=""):
+    """wait() が例外なく終われば PASS、例外（タイムアウト等）なら FAIL として記録する。
+    detail に関数を渡すと、待ち終わった時点の値（URL 等）を記録する。"""
+    try:
+        wait()
+    except Exception:
+        rec(name, False, fail_detail() if callable(fail_detail) else fail_detail)
+        return False
+    rec(name, True, ok_detail() if callable(ok_detail) else ok_detail)
+    return True
 
 
 def get_json(url, timeout=25):
@@ -208,6 +221,13 @@ IMG_LOADED = """sel => {
   return imgs.some(i => i.complete && i.naturalWidth > 0);
 }"""
 
+
+def wait_viewer_image(pg):
+    """ビューア（#mangaModal）が表示され、その中の画像が読み込まれるまで待つ。"""
+    pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
+    pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
+
+
 # 読み込みを試みた（complete）のに幅ゼロ＝壊れている画像。未着手の lazy 画像は数えない
 BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
   .filter(i => i.complete && i.getAttribute('src') && i.naturalWidth === 0)
@@ -261,6 +281,7 @@ class PageProbe:
 
 def check_browser(base, data):
     import logging
+
     from playwright.sync_api import sync_playwright
 
     # コンテキストを閉じた後に届いた中継の残りを asyncio が ERROR ログ（Traceback）として吐くが判定には無関係
@@ -355,19 +376,12 @@ def check_browser(base, data):
             if cards:
                 pg.locator(".bm-gallery-card").first.scroll_into_view_if_needed()
                 pg.locator(".bm-gallery-card").first.click()
-                try:
-                    pg.wait_for_url("**/biz-library?manga=*", timeout=10000)
-                    rec(
-                        "ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移",
-                        True,
-                        pg.url.split("/")[-1],
-                    )
-                except Exception:
-                    rec(
-                        "ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移",
-                        False,
-                        pg.url,
-                    )
+                expect_within(
+                    "ホーム: ギャラリーカードのクリックで biz-library?manga= へ遷移",
+                    lambda: pg.wait_for_url("**/biz-library?manga=*", timeout=10000),
+                    ok_detail=lambda: pg.url.split("/")[-1],
+                    fail_detail=lambda: pg.url,
+                )
             pr.finish("ホーム")
 
         def works():
@@ -390,17 +404,13 @@ def check_browser(base, data):
                     opened = False
                 rec("制作事例: カードクリックでモーダルが開く", opened)
                 if opened:
-                    try:
-                        pg.wait_for_function(
+                    expect_within(
+                        "制作事例: モーダル内の漫画画像が読み込まれる",
+                        lambda: pg.wait_for_function(
                             IMG_LOADED, arg="#workDetailCarousel img", timeout=20000
-                        )
-                        rec("制作事例: モーダル内の漫画画像が読み込まれる", True)
-                    except Exception:
-                        rec(
-                            "制作事例: モーダル内の漫画画像が読み込まれる",
-                            False,
-                            "20秒以内に naturalWidth>0 の画像が無い",
-                        )
+                        ),
+                        fail_detail="20秒以内に naturalWidth>0 の画像が無い",
+                    )
                     pg.wait_for_timeout(1500)
                     broken = pg.evaluate(BROKEN_IMGS, "#workDetailCarousel img")
                     rec(
@@ -444,15 +454,13 @@ def check_browser(base, data):
                     opened = False
                 rec("ビズ書庫: クリックでビューアが開く", opened)
                 if opened:
-                    try:
-                        pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                        rec("ビズ書庫: ビューアの漫画画像が読み込まれる", True)
-                    except Exception:
-                        rec(
-                            "ビズ書庫: ビューアの漫画画像が読み込まれる",
-                            False,
-                            "20秒以内に画像が読み込まれない",
-                        )
+                    expect_within(
+                        "ビズ書庫: ビューアの漫画画像が読み込まれる",
+                        lambda: pg.wait_for_function(
+                            IMG_LOADED, arg="#mangaModal img", timeout=20000
+                        ),
+                        fail_detail="20秒以内に画像が読み込まれない",
+                    )
                     pg.wait_for_timeout(1500)
                     broken = pg.evaluate(BROKEN_IMGS, "#mangaModal img")
                     rec(
@@ -474,18 +482,10 @@ def check_browser(base, data):
             pr = probe(qr_ctx)
             pg = pr.page
             pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load")
-            try:
-                pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
-                pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec(
-                    f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）",
-                    True,
-                )
-            except Exception:
-                rec(
-                    f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）",
-                    False,
-                )
+            expect_within(
+                f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）",
+                lambda: wait_viewer_image(pg),
+            )
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）", qr)
             pr.finish("QR直リンク")
@@ -508,11 +508,10 @@ def check_browser(base, data):
             pr = probe(desktop)
             pg = pr.page
             pg.goto(f"{base}/embed-viewer.html?manga={wp_id}&manual=1", wait_until="load")
-            try:
-                pg.wait_for_function(IMG_LOADED, arg="#viewer img", timeout=20000)
-                rec("埋込ビューア embed-viewer?manga=&manual=1: 画像が出る", True)
-            except Exception:
-                rec("埋込ビューア embed-viewer?manga=&manual=1: 画像が出る", False)
+            expect_within(
+                "埋込ビューア embed-viewer?manga=&manual=1: 画像が出る",
+                lambda: pg.wait_for_function(IMG_LOADED, arg="#viewer img", timeout=20000),
+            )
             pr.finish("埋込ビューア")
 
         def mobile():
@@ -526,12 +525,9 @@ def check_browser(base, data):
             pr = probe(ctx)
             pg = pr.page
             pg.goto(f"{base}/biz-library.html?manga={wp_id}", wait_until="load")
-            try:
-                pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
-                pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec("スマホ(390px) ?manga=: ビューアが開き画像が出る", True)
-            except Exception:
-                rec("スマホ(390px) ?manga=: ビューアが開き画像が出る", False)
+            expect_within(
+                "スマホ(390px) ?manga=: ビューアが開き画像が出る", lambda: wait_viewer_image(pg)
+            )
             # works.js: PC以外で見開き(spread)作品を開くと縦スクロール(mode-vertical)に切り替わる（SPデフォルト）。
             # #mobileView は見開き専用の要素なので、縦スクロール時は非表示が正しい。
             mode = pg.evaluate(
@@ -542,11 +538,10 @@ def check_browser(base, data):
                 mode == "vertical",
                 f"mode={mode}",
             )
-            try:
-                pg.wait_for_function(IMG_LOADED, arg="#modalManga img", timeout=15000)
-                rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", True)
-            except Exception:
-                rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", False)
+            expect_within(
+                "スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る",
+                lambda: pg.wait_for_function(IMG_LOADED, arg="#modalManga img", timeout=15000),
+            )
             hs = pg.evaluate("() => document.body.scrollWidth > window.innerWidth")
             rec("スマホ(390px): 横スクロール無し", not hs)
             pr.finish("スマホ")
@@ -629,7 +624,7 @@ def main():
         httpd.shutdown()
 
     n_fail = sum(1 for _, ok, _ in RESULTS if not ok)
-    print("\n== 結果: {} PASS / {} FAIL".format(len(RESULTS) - n_fail, n_fail))
+    print(f"\n== 結果: {len(RESULTS) - n_fail} PASS / {n_fail} FAIL")
     for name, ok, detail in RESULTS:
         if not ok:
             print(f"   FAIL {name}" + (f"  — {detail}" if detail else ""))

@@ -200,6 +200,7 @@ python -B tools/smoke-manga-wp.py --serve .
 ```
 
 `check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性を検証します。
+生成物を変えないはずの変更は、`--record wp-responses.tmp --out before.tmp`（変更前）→ `--replay wp-responses.tmp --out after.tmp`（変更後）→ `--compare before.tmp after.tmp` で、同じAPI応答からの生成物を比べられます（`*.tmp` は Git の対象外。`--out` は自分が作ったフォルダしか置き換えません）。
 作業ツリーを更新する場合は `tools/build-*.py` を個別に実行してください。
 漫画表示・WP接続の変更時は [確認手順](docs/REVIEW-MANGA-WP.md) も参照してください。
 

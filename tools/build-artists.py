@@ -24,15 +24,15 @@ Why:
        ビルド失敗でページが空になる事故を防ぐため。
 """
 
-from bm_build import API_BASE, SITE_URL
-from bm_build import fetch_json as _fetch_json, output_batch, write_text, script_json
-from bm_build import replace_block
-from bm_build import escape_html as esc
 import json
 import pathlib
 import sys
 import urllib.error
 import urllib.request
+
+from bm_build import API_BASE, SITE_URL, output_batch, replace_block, script_json, write_text
+from bm_build import escape_html as esc
+from bm_build import fetch_json as _fetch_json
 
 API = API_BASE + '/artists'
 SITE = SITE_URL
@@ -91,7 +91,7 @@ def build_data_js(creators):
     )
 
 
-def build_card(c, index):
+def build_card(c):
     """artists.js の renderCards() と同じ構造の静的カードを吐く。
     JS が動く環境では再描画されるが、クローラーはこの静的HTMLを読む。"""
     label = esc(c["id"])
@@ -154,27 +154,21 @@ def _build():
     # 2) 静的カード + JSON-LD
     s = HTML_PATH.read_text(encoding="utf-8")
 
-    cards = "".join(build_card(c, i) for i, c in enumerate(creators))
+    cards = "".join(build_card(c) for c in creators)
     start, end = "<!-- BUILD:ARTISTS_GRID -->", "<!-- /BUILD:ARTISTS_GRID -->"
     s, ok = replace_block(s, start, end, f"{start}\n{cards}      {end}")
     if not ok:
-        if '<div class="art-grid" id="artGrid">' not in s:
+        # 目印が消えていたら、グリッドの先頭に入れ直す
+        grid = '<div class="art-grid" id="artGrid">'
+        if grid not in s:
             raise ValueError("Missing artists grid")
-        s = s.replace(
-            '<div class="art-grid" id="artGrid">',
-            f'<div class="art-grid" id="artGrid">\n      {start}\n{cards}      {end}',
-            1,
-        )
+        s = s.replace(grid, f"{grid}\n      {start}\n{cards}      {end}", 1)
 
-    ld = script_json(build_jsonld(creators), indent=2)
-    ld_block = f'<script type="application/ld+json" id="artistsItemList">\n{ld}\n</script>'
-    s, ok = replace_block(
-        s,
-        '<script type="application/ld+json" id="artistsItemList">',
-        "</script>",
-        ld_block,
-    )
+    ld_open = '<script type="application/ld+json" id="artistsItemList">'
+    ld_block = f"{ld_open}\n{script_json(build_jsonld(creators), indent=2)}\n</script>"
+    s, ok = replace_block(s, ld_open, "</script>", ld_block)
     if not ok:
+        # JSON-LD が無ければ head の末尾に入れる
         if "</head>" not in s:
             raise ValueError("Missing artists head")
         s = s.replace("</head>", f"  {ld_block}\n</head>", 1)

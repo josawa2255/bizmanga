@@ -18,9 +18,9 @@ import os
 import pathlib
 import urllib.parse
 import urllib.request
+
+from bm_build import API_BASE, fetch_json, output_batch, require_records, safe_slug, write_bytes
 from PIL import Image, ImageDraw, ImageFont
-from bm_build import API_BASE
-from bm_build import fetch_json, output_batch, require_records, safe_slug, write_bytes
 
 API = API_BASE + '/works'
 ROOT = pathlib.Path(__file__).resolve().parent.parent

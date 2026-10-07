@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
@@ -64,13 +62,13 @@ p{margin:0 0 16px;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
-  <link rel="stylesheet" href="css/works.css">
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
+  <link rel="stylesheet" href="/css/works.css">
   <!-- Resource hints: preload critical assets, prefetch viewer backgrounds -->
   <link rel="preload" href="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" as="image" type="image/webp">
   <link rel="preload" href="https://contentsx.jp/material/images/bizmanga/output_05.webp" as="image" type="image/webp">
-  <link rel="preload" href="js/works.js" as="script">
+  <link rel="preload" href="/js/works.js" as="script">
   <!-- 最初に見える表紙preload -->
   <link rel="preload" href="https://contentsx.jp/material/manga/diamond/01.webp" as="image" type="image/webp">
   <link rel="preload" href="https://contentsx.jp/material/manga/ichinohe-home/01.webp" as="image" type="image/webp">
@@ -139,7 +137,7 @@ p{margin:0 0 16px;}
   <!-- ===== ヘッダー（全ページ共通） ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img" width="140" height="40">
       </a>
       <nav class="bm-nav" id="bmNav"><!-- bm-nav.js が生成 --></nav>
@@ -198,11 +196,11 @@ p{margin:0 0 16px;}
   <footer class="footer">
     <div class="footer-inner">
       <ul class="footer-links">
-        <li><a href="./">ホーム</a></li>
-        <li><a href="./#about">サービス紹介</a></li>
-        <li><a href="biz-library">ビズ書庫</a></li>
-        <li><a href="contact">お問い合わせ</a></li>
-        <li><a href="privacy-policy">プライバシーポリシー</a></li>
+        <li><a href="/">ホーム</a></li>
+        <li><a href="/#about">サービス紹介</a></li>
+        <li><a href="/biz-library">ビズ書庫</a></li>
+        <li><a href="/contact">お問い合わせ</a></li>
+        <li><a href="/privacy-policy">プライバシーポリシー</a></li>
       </ul>
       <div class="footer-company">Contents X 株式会社 ／ 東京都目黒区中目黒1-8-8 目黒F2ビル1F</div>
       <div class="footer-copy">&copy; 2025 ビズマンガ / Contents X 株式会社. All Rights Reserved.</div>
@@ -289,7 +287,7 @@ p{margin:0 0 16px;}
     <div class="modal-side-indicator" id="modalSideIndicator"></div>
 
     <!-- Bottom Navigation Bar (Spread Viewer) — 漫画は右→左に読むので左=次のページ/右=前のページ -->
-    <!-- IDはJS側の既存命名(navPrev.click=nextPage)を尊重、ラベルのみユーザー視点に合わせる -->
+    <!-- IDは従来のまま（左の ◀ が navPrev）。js/works.js では navForward / navBack として扱い、ラベルはユーザー視点 -->
     <div class="bottom-nav" id="bottomNav">
       <button class="nav-btn" id="navPrev" title="次のページ" aria-label="次のページ">&#9664;</button>
       <div class="nav-scrubber-wrap">
@@ -322,21 +320,14 @@ p{margin:0 0 16px;}
     </div>
   </div>
 
-  <script src="js/bm-sanitize.js" defer></script>
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-tracking.js" defer></script>
-  <script src="js/bm-view-type.js" defer></script>
-  <script src="js/works.js" defer></script>
+  <script src="/js/bm-sanitize.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
+  <script src="/js/bm-tracking.js" defer></script>
+  <script src="/js/bm-view-type.js" defer></script>
+  <script src="/js/works.js" defer></script>
 <!-- Service Worker 登録 -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function() {});
-  });
-}
-</script>
+<script src="/js/bm-sw-register.js" defer></script>
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
@@ -355,6 +346,6 @@ if ('serviceWorker' in navigator) {
   }
 }
 </script>
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-fuwa.js" defer></script>
 </body>
 </html>

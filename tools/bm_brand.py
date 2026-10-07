@@ -4,7 +4,6 @@ import re
 
 from bm_pricing import normalize_price_text
 
-
 BRAND_TEXT_RULES = (
     (r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド'),
     (r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド'),

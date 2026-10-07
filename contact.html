@@ -6,8 +6,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net https://contentsx-crm.vercel.app/embed/inbound-v1.js; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
-  <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <!-- Google tag (gtag.js) - GA4 -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-Q1T3033Q3W"></script>
   <script>
@@ -63,8 +61,8 @@ p{margin:0 0 16px;}
 @media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
 @media (max-width:768px){.bm-nav-cta{display:none;}}
 </style>
-  <link rel="preload" href="css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="css/bizmanga.css"></noscript>
+  <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -114,7 +112,7 @@ p{margin:0 0 16px;}
   <!-- ===== ヘッダー ===== -->
   <header class="bm-header" id="header">
     <div class="bm-header-inner">
-      <a href="./" class="bm-logo">
+      <a href="/" class="bm-logo">
         <img src="https://contentsx.jp/material/images/logo/bizmanga-logo.webp" alt="BizManga" class="bm-logo-img" width="140" height="40">
       </a>
       <nav class="bm-nav" id="bmNav"></nav>
@@ -208,12 +206,12 @@ p{margin:0 0 16px;}
           <p class="bm-footer-address">東京都目黒区中目黒1-8-8 目黒F2ビル1F</p>
         </div>
         <div class="bm-footer-links">
-          <a href="./">ホーム</a>
-          <a href="works">制作事例</a>
-          <a href="biz-library">ビズ書庫</a>
-          <a href="pricing">料金</a>
-          <a href="faq">FAQ</a>
-          <a href="contact">お問い合わせ</a>
+          <a href="/">ホーム</a>
+          <a href="/works">制作事例</a>
+          <a href="/biz-library">ビズ書庫</a>
+          <a href="/pricing">料金</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">お問い合わせ</a>
           <a href="/privacy-policy">プライバシーポリシー</a>
         </div>
       </div>
@@ -224,10 +222,9 @@ p{margin:0 0 16px;}
     </div>
   </footer>
 
-<script src="js/bm-nav.js" defer></script>
-<script src="js/bm-conversions.js" defer></script>
-  <script src="js/bm-kinsoku.js" defer></script>
-  <script src="js/bm-tracking.js" defer></script>
+<script src="/js/bm-nav.js" defer></script>
+<script src="/js/bm-conversions.js" defer></script>
+  <script src="/js/bm-tracking.js" defer></script>
   <script src="/js/bm-lead.js"></script>
   <script src="/js/bm-contact.js"></script>
 <!-- JSON-LD -->
@@ -265,7 +262,7 @@ p{margin:0 0 16px;}
 <!-- Start of HubSpot Embed Code -->
 <script src="/js/bm-hubspot.js" defer></script>
 <!-- End of HubSpot Embed Code -->
-  <script src="js/bm-fuwa.js" defer></script>
+  <script src="/js/bm-fuwa.js" defer></script>
 <!-- Contents X CRM 受信箱連携（送信は上の送信処理から手動で呼ぶため data-auto="false"） -->
 <script src="https://contentsx-crm.vercel.app/embed/inbound-v1.js" data-source-key="60235146e3d11473ea106ca2b89780df" data-auto="false" data-honeypot="#bmWebsite" async></script>
 </body>

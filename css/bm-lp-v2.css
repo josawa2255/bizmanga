@@ -43,7 +43,6 @@
 
   --lpv2-shadow-panel: 8px 8px 0 var(--lpv2-rule);
   --lpv2-shadow-panel-sm: 5px 5px 0 var(--lpv2-rule);
-  --lpv2-shadow-card: 0 28px 60px -28px rgba(20, 12, 0, 0.45);
   --lpv2-border-w: 3px;
 }
 
@@ -54,22 +53,16 @@
 .lpv2-page *, .lpv2-page *::before, .lpv2-page *::after { box-sizing: border-box; }
 
 .lpv2-container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
-.lpv2-container--narrow { max-width: 880px; }
 .lpv2-container--wide { max-width: 1320px; }
 @media (max-width: 720px) { .lpv2-container { padding: 0 20px; } }
 
-.lpv2-section { padding: 120px 0; position: relative; }
-.lpv2-section--cream { background: var(--lpv2-cream); }
-.lpv2-section--ink { background: var(--lpv2-ink); color: #fff; }
-.lpv2-section--cream-deep { background: var(--lpv2-cream-deep); }
-@media (max-width: 720px) { .lpv2-section { padding: 72px 0; } }
-
-/* Reusable halftone texture (inline svg via background-image) */
-.lpv2-halftone {
-  background-image: radial-gradient(currentColor 1px, transparent 1.4px);
-  background-size: 7px 7px;
-  background-position: 0 0;
+/* FAQ回答内の段落（旧 bizmanga.css から移動。このファイルのFAQ定義より前に置く） */
+.lpv2-faq-answer p {
+  margin: 0;
 }
+
+.lpv2-section { padding: 120px 0; position: relative; }
+@media (max-width: 720px) { .lpv2-section { padding: 72px 0; } }
 
 /* SP-only line break — <br class="sp-br"> renders only on mobile */
 .sp-br { display: none; }
@@ -80,19 +73,6 @@
 /* ------------------------------------------------------------------
  * 2. Common typography
  * ------------------------------------------------------------------ */
-.lpv2-eyebrow {
-  display: inline-flex; align-items: center; gap: 12px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 12px; font-weight: 900;
-  letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  margin: 0 0 24px;
-}
-.lpv2-eyebrow::before { content: ""; width: 40px; height: 2px; background: var(--lpv2-accent); display: inline-block; }
-.lpv2-eyebrow--ink { color: var(--lpv2-ink); }
-.lpv2-eyebrow--ink::before { background: var(--lpv2-ink); }
-.lpv2-eyebrow--light { color: var(--lpv2-yellow); }
-.lpv2-eyebrow--light::before { background: var(--lpv2-yellow); }
 
 .lpv2-h2 {
   font-family: var(--lpv2-font-display);
@@ -109,17 +89,6 @@
   background-image: linear-gradient(to top, var(--lpv2-yellow) 0%, var(--lpv2-yellow) 28%, transparent 28%);
   padding: 0 4px;
 }
-
-.lpv2-h3 {
-  font-family: var(--lpv2-font-display);
-  font-size: clamp(20px, 2.4vw, 26px);
-  font-weight: 900;
-  line-height: 1.45;
-  letter-spacing: 0.02em;
-  color: inherit;
-  margin: 0 0 12px;
-}
-.lpv2-h3 em { font-style: normal; color: var(--lpv2-accent); }
 
 .lpv2-lead {
   font-size: clamp(15px, 1.4vw, 18px);
@@ -152,8 +121,6 @@
     filter: blur(10px);
   }
 }
-.lpv2-section-head .lpv2-eyebrow { justify-content: center; }
-.lpv2-section-head .lpv2-eyebrow::before { display: none; }
 /* 章番号 (大数字 03) と章マーク (CHAPTER 03 · FORMATS) は非表示 (2026-05-15)
    各章は h2 (採用シーンのあらゆる接点に。等) だけで構成 */
 .lpv2-section-head .lpv2-chapter-mark,
@@ -375,88 +342,6 @@
   .lpv2-hero-cta-row .lpv2-btn--lg { padding: 14px 26px; font-size: 14px; }
 }
 
-/* Bottom dark KPI strip — full-bleed dark band under the hero stage */
-.lpv2-hero-stats-bar {
-  position: relative;
-  z-index: 2;
-  background: var(--lpv2-ink);
-  color: #fff;
-  padding: 28px 0;
-}
-.lpv2-hero-stats-bar::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(232,85,0,0.16) 1px, transparent 1.4px);
-  background-size: 9px 9px;
-  opacity: 0.7;
-  pointer-events: none;
-}
-.lpv2-hero-stats-bar-inner {
-  position: relative;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 0 56px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  align-items: center;
-}
-@media (max-width: 1024px) {
-  .lpv2-hero-stats-bar-inner { padding: 0 32px; gap: 16px; }
-}
-@media (max-width: 720px) {
-  .lpv2-hero-stats-bar { padding: 20px 0; }
-  .lpv2-hero-stats-bar-inner { padding: 0 20px; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
-}
-
-.lpv2-hero-stat-bar-item {
-  display: flex; align-items: center; gap: 14px;
-  position: relative;
-}
-.lpv2-hero-stat-bar-item + .lpv2-hero-stat-bar-item::before {
-  content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px;
-  width: 1px;
-  background: rgba(255,255,255,0.16);
-}
-@media (max-width: 720px) {
-  .lpv2-hero-stat-bar-item + .lpv2-hero-stat-bar-item::before { display: none; }
-}
-.lpv2-hero-stat-bar-icon {
-  flex-shrink: 0;
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--lpv2-accent);
-  border: 2px solid var(--lpv2-accent);
-  border-radius: 50%;
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: 16px;
-}
-.lpv2-hero-stat-bar-icon svg { width: 18px; height: 18px; }
-.lpv2-hero-stat-bar-content { min-width: 0; }
-.lpv2-hero-stat-bar-label {
-  font-family: var(--lpv2-font-mono);
-  font-size: 10px; font-weight: 800;
-  letter-spacing: 0.24em; text-transform: uppercase;
-  color: rgba(255,255,255,0.62);
-  margin: 0 0 2px;
-}
-.lpv2-hero-stat-bar-value {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(18px, 2vw, 24px);
-  line-height: 1.2;
-  color: #fff;
-  margin: 0;
-  letter-spacing: 0;
-}
-.lpv2-hero-stat-bar-value small {
-  font-size: 0.6em; color: rgba(255,255,255,0.55); margin-left: 4px; font-weight: 700;
-}
-.lpv2-hero-stat-bar-value em {
-  font-style: normal; color: var(--lpv2-accent);
-}
-
 /* ------------------------------------------------------------------
  * 4. CTA buttons
  * ------------------------------------------------------------------ */
@@ -509,145 +394,12 @@
 }
 .lpv2-btn--pill.lpv2-btn--ghost:hover { background: var(--lpv2-ink); color: #fff; }
 
-.lpv2-btn--ink-on-light {
-  background: var(--lpv2-ink); color: #fff;
-  border-color: var(--lpv2-rule);
-}
 .lpv2-btn--accent-on-dark {
   background: var(--lpv2-accent); color: #fff;
   border-color: #fff;
   box-shadow: 5px 5px 0 var(--lpv2-yellow);
 }
 .lpv2-btn--accent-on-dark:hover { box-shadow: 7px 7px 0 var(--lpv2-yellow); }
-
-/* ------------------------------------------------------------------
- * 5. Sticky chapter nav (TOC)
- * ------------------------------------------------------------------ */
-.lpv2-toc {
-  position: sticky;
-  top: 68px;
-  z-index: 40;
-  background: var(--lpv2-ink);
-  color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  overflow: hidden;
-}
-.lpv2-toc-inner {
-  display: flex; align-items: center; gap: 0;
-  max-width: 1320px; margin: 0 auto;
-  padding: 0 24px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.lpv2-toc-inner::-webkit-scrollbar { display: none; }
-
-.lpv2-toc-label {
-  flex-shrink: 0;
-  font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900;
-  letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  padding: 16px 20px 16px 0;
-  border-right: 1px solid rgba(255,255,255,0.12);
-  margin-right: 16px;
-}
-
-.lpv2-toc-list {
-  display: flex; align-items: center; gap: 4px;
-  list-style: none; margin: 0; padding: 0;
-}
-.lpv2-toc-link {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 16px 16px;
-  font-family: var(--lpv2-font-sans);
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.04em;
-  color: rgba(255,255,255,0.7);
-  text-decoration: none;
-  white-space: nowrap;
-  position: relative;
-  transition: color 0.2s ease;
-}
-.lpv2-toc-link::after {
-  content: ""; position: absolute; left: 16px; right: 16px; bottom: 10px;
-  height: 2px; background: var(--lpv2-accent);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.22s ease;
-}
-.lpv2-toc-link:hover { color: #fff; }
-.lpv2-toc-link.is-active { color: #fff; }
-.lpv2-toc-link.is-active::after { transform: scaleX(1); }
-.lpv2-toc-link__num {
-  font-family: var(--lpv2-font-mono);
-  font-size: 10px; font-weight: 900;
-  letter-spacing: 0.2em;
-  color: var(--lpv2-accent);
-}
-@media (max-width: 720px) {
-  .lpv2-toc-label { padding: 12px 14px 12px 0; font-size: 10px; letter-spacing: 0.22em; margin-right: 10px; }
-  .lpv2-toc-link { padding: 12px 12px; font-size: 12px; }
-  .lpv2-toc-link::after { bottom: 6px; left: 12px; right: 12px; }
-}
-
-/* ------------------------------------------------------------------
- * 6. Manifest (intro statement + KPI strip)
- * ------------------------------------------------------------------ */
-.lpv2-manifest { padding: 96px 0 80px; background: var(--lpv2-cream); border-bottom: var(--lpv2-border-w) solid var(--lpv2-ink); }
-.lpv2-manifest-inner { max-width: 1080px; margin: 0 auto; padding: 0 32px; text-align: center; }
-.lpv2-manifest-statement {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(24px, 3.4vw, 38px);
-  line-height: 1.7;
-  color: var(--lpv2-ink);
-  letter-spacing: 0.04em;
-  margin: 0 0 56px;
-}
-.lpv2-manifest-statement em {
-  font-style: normal; color: var(--lpv2-accent);
-  background-image: linear-gradient(to top, var(--lpv2-yellow) 0%, var(--lpv2-yellow) 28%, transparent 28%);
-  padding: 0 6px;
-}
-
-.lpv2-kpi-strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  max-width: 880px;
-  margin: 0 auto;
-}
-@media (max-width: 720px) {
-  .lpv2-kpi-strip { grid-template-columns: 1fr; gap: 12px; max-width: 360px; }
-}
-.lpv2-kpi {
-  background: #fff;
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  padding: 28px 20px;
-  text-align: center;
-  position: relative;
-  box-shadow: var(--lpv2-shadow-panel-sm);
-}
-.lpv2-kpi__label {
-  font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900;
-  letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  margin: 0 0 10px;
-}
-.lpv2-kpi__num {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(28px, 3.4vw, 38px);
-  line-height: 1.1;
-  color: var(--lpv2-ink);
-  margin: 0 0 6px;
-  letter-spacing: -0.02em;
-}
-.lpv2-kpi__num small { font-size: 0.55em; font-weight: 700; margin-left: 2px; color: var(--lpv2-ink-mute); }
-.lpv2-kpi__note {
-  font-size: 12px; color: var(--lpv2-ink-mute);
-  margin: 0; letter-spacing: 0.04em;
-}
 
 /* ------------------------------------------------------------------
  * 7. Problem panels (comic-page grid)
@@ -1473,143 +1225,4 @@
   .lpv2-btn, .lpv2-pain, .lpv2-merit-card, .lpv2-case, .lpv2-format, .lpv2-flow-step, .lpv2-flow-step__inner, .lpv2-faq-item, .lpv2-related-card {
     transition: none;
   }
-}
-
-/* ------------------------------------------------------------------
- * 19. LP CASE STUDY (pm-case-*) — recruit-manga 専用
- *   build-lp-cases.py が出力する .pm-case-* クラスを v2 デザインで整える。
- *   recruit-manga.html のみ bm-lp-v2.css をロードするため、ここでの定義は
- *   他7本の用途別LP（bm-lp-template.css系）に影響しない。
- * ------------------------------------------------------------------ */
-.pm-cases-static {
-  background: var(--lpv2-cream);
-  padding: 72px 20px;
-}
-.pm-cases-static .pm-container,
-.pm-cases-static .pm-container--narrow {
-  max-width: 1160px;
-  margin: 0 auto;
-}
-.pm-cases-static .pm-eyebrow {
-  display: inline-block;
-  font-family: var(--lpv2-font-mono);
-  font-size: 12px; font-weight: 900;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  margin-bottom: 8px;
-}
-.pm-cases-static .pm-h2 {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: clamp(24px, 3vw, 36px);
-  line-height: 1.3;
-  color: var(--lpv2-ink);
-  margin: 0 0 16px;
-}
-.pm-cases-static .pm-lead {
-  font-size: 15px; line-height: 1.7;
-  color: var(--lpv2-ink-soft);
-}
-
-.pm-cases-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, 260px);
-  justify-content: center;
-  gap: 20px;
-}
-
-.pm-case-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: #fff;
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  box-shadow: var(--lpv2-shadow-panel);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  overflow: hidden;
-}
-.pm-case-card:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 var(--lpv2-rule); }
-
-.pm-case-thumb {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: var(--lpv2-cream-deep);
-  border-bottom: 2px solid var(--lpv2-ink);
-  overflow: hidden;
-}
-.pm-case-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-  transition: transform 0.4s ease;
-}
-.pm-case-card:hover .pm-case-thumb img { transform: scale(1.04); }
-
-.pm-case-body {
-  padding: 12px 14px 14px;
-  display: flex; flex-direction: column; gap: 4px;
-  min-width: 0;
-}
-
-.pm-case-meta {
-  font-family: var(--lpv2-font-mono);
-  font-size: 11px; font-weight: 900;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--lpv2-accent);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.pm-case-title {
-  font-family: var(--lpv2-font-display);
-  font-weight: 900;
-  font-size: 18px;
-  line-height: 1.3;
-  margin: 0;
-  color: var(--lpv2-ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.pm-case-title a {
-  color: inherit; text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease;
-}
-.pm-case-title a:hover { border-color: var(--lpv2-accent); }
-
-/* 縦長を抑えるため、詳細テキストは非表示（タイトル＋メタのみ表示） */
-.pm-case-client,
-.pm-case-point,
-.pm-case-comment,
-.pm-case-more { display: none; }
-
-.pm-cases-foot { text-align: center; margin-top: 48px; }
-.pm-cases-foot .pm-btn--ghost {
-  display: inline-block;
-  padding: 12px 28px;
-  font-family: var(--lpv2-font-mono);
-  font-size: 13px; font-weight: 900;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--lpv2-ink);
-  background: transparent;
-  border: var(--lpv2-border-w) solid var(--lpv2-ink);
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-.pm-cases-foot .pm-btn--ghost:hover { background: var(--lpv2-ink); color: #fff; transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--lpv2-rule); }
-
-@media (max-width: 580px) {
-  .pm-cases-static { padding: 48px 12px; }
-  .pm-cases-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-content: stretch;
-    gap: 12px;
-  }
-  .pm-case-body { padding: 9px 10px 11px; gap: 3px; }
-  .pm-case-meta { font-size: 9px; letter-spacing: 0.13em; }
-  .pm-case-title { font-size: 14px; }
 }

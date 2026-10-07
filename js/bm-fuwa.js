@@ -36,15 +36,7 @@
         'main p',
         'main blockquote',
         'main article',
-        'main section > .pm-container > *',
         'main section > .mpc-container > *',
-        'main .pm-format-item',
-        'main .pm-faq-item',
-        'main .pm-related-card',
-        'main .pm-case-card',
-        'main .pm-flow-step-row',
-        'main .pm-merit-item',
-        'main .pm-pain-item',
         'main .bm-works-card',
         'main .bm-work-related-card',
       ];
@@ -52,12 +44,7 @@
         document.querySelectorAll(autoSelectors.join(',')).forEach(function (el) {
           // 既存の独自アニメ要素 (class 名が動的アニメを持っているもの) はスキップ
           if (el.hasAttribute('data-fuwa')) return;
-          if (el.classList.contains('mpc-pain-card')) return;
-          if (el.classList.contains('mpc-criteria-card')) return;
           if (el.classList.contains('mpc-map-pin')) return;
-          if (el.classList.contains('mpc-stat')) return;
-          if (el.classList.contains('mpc-h1')) return;
-          if (el.classList.contains('flow-step')) return;
           el.setAttribute('data-fuwa', '');
         });
       } catch (e) { /* noop */ }

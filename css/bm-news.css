@@ -1,0 +1,20 @@
+/* ニュース一覧（news.html） */
+/* ページ固有: heading とローディング以外は global bizmanga.css を継承（.bm-news-thumb 含む） */
+.bm-news-page {
+  padding-top: 140px;
+  padding-bottom: 80px;
+  min-height: 60vh;
+}
+.bm-news-page-heading {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-bottom: 40px;
+}
+.bm-news-page-loading {
+  text-align: center;
+  padding: 60px 0;
+  color: #888;
+  font-size: 14px;
+}
+.bm-news-page .bm-news-link--plain { cursor: default; }

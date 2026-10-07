@@ -11,6 +11,8 @@ __pycache__/
 *.bak
 *~
 *.tmp
+# ブラウザ（Chromium）がカレントディレクトリに書き出すログ
+debug.log
 
 # WordPress連携の生成物 (build-columns.py / build-works.py で再生成可)
 # 必要に応じて追加
