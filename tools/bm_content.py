@@ -1,4 +1,6 @@
 """Canonical column URLs shared by page and feed builders."""
+import sys
+
 from bm_build import safe_slug
 
 SLUG_MAP = {
@@ -16,7 +18,9 @@ def make_slug(column):
         try:
             return safe_slug(slug)
         except ValueError:
-            pass
+            # 公開URLが変わるので黙って切り替えない（Actions の画面に警告を出す）
+            print(f"::warning::column {column.get('id')}: slug {slug!r} is not a safe URL; "
+                  "falling back to another URL. Fix the slug in WordPress.", file=sys.stderr)
     title = column.get("title_ja") or ""
     for key, val in SLUG_MAP.items():
         if key in title:

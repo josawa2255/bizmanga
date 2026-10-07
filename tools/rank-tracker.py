@@ -10,6 +10,7 @@ GSC Search Analytics 日次ランク追跡スクリプト
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -98,7 +99,7 @@ def get_access_token():
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(req) as r:
             resp = json.loads(r.read())
         return resp["access_token"]
     except urllib.error.HTTPError as e:
@@ -130,7 +131,7 @@ def query_sa(site, start, end, access_token, dimensions=("query",), row_limit=50
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as r:
+    with urllib.request.urlopen(req) as r:
         return json.loads(r.read())
 
 

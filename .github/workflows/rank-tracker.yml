@@ -8,21 +8,12 @@ on:
 permissions:
   contents: write
 
-# All jobs writing generated content serialize checkout/build/push.
-concurrency:
-  group: bizmanga-generated-content
-  cancel-in-progress: false
-  queue: max
-
 jobs:
   track:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # Resolve the branch tip after waiting for the other generators.
-          ref: ${{ github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,8 +27,15 @@ jobs:
           GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
         run: python tools/rank-tracker.py
 
-      - name: Commit generated files
-        run: >-
-          python tools/commit-generated.py
-          --message "chore(seo): daily rank snapshot"
-          tools/rank-history.jsonl
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet tools/rank-history.jsonl 2>/dev/null; then
+            echo "No new rank data"
+          else
+            git add tools/rank-history.jsonl
+            TS=$(date -u +%Y-%m-%d)
+            git commit -m "chore(seo): daily rank snapshot ${TS}"
+            git push
+          fi

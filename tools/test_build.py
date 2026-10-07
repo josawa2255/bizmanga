@@ -56,7 +56,53 @@ class BuildTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 safe_slug(slug)
         self.assertEqual(safe_slug('manga-123'), 'manga-123')
-        self.assertEqual(make_slug({'id': 7, 'slug': '../outside'}), 'column-7')
+        with redirect_stdout(io.StringIO()), patch('sys.stderr', io.StringIO()) as warning:
+            self.assertEqual(make_slug({'id': 7, 'slug': '../outside'}), 'column-7')
+        self.assertIn('::warning::', warning.getvalue(), 'a changed public URL must not be silent')
+
+    def test_fetch_json_retries_only_transient_failures(self):
+        import urllib.error
+        import bm_build
+
+        class Response(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+        def http_error(code):
+            return urllib.error.HTTPError('https://example.test', code, 'error', {}, None)
+
+        with patch.object(bm_build.time, 'sleep') as sleep:
+            with patch.object(bm_build.urllib.request, 'urlopen',
+                              side_effect=[http_error(502), TimeoutError(), Response(b'[1]')]) as opened:
+                self.assertEqual(bm_build.fetch_json('https://example.test'), [1])
+            self.assertEqual(opened.call_count, 3)
+            self.assertEqual(sleep.call_count, 2)
+            with patch.object(bm_build.urllib.request, 'urlopen', side_effect=http_error(404)) as opened:
+                with self.assertRaises(urllib.error.HTTPError):
+                    bm_build.fetch_json('https://example.test')
+            self.assertEqual(opened.call_count, 1, 'a 404 is final')
+            with patch.object(bm_build.urllib.request, 'urlopen', side_effect=http_error(503)) as opened:
+                with self.assertRaises(urllib.error.HTTPError):
+                    bm_build.fetch_json('https://example.test')
+            self.assertEqual(opened.call_count, bm_build.FETCH_ATTEMPTS)
+
+    def test_only_bizmanga_works_are_validated(self):
+        from bm_build import bizmanga_works
+        works = [
+            {'id': 'shown', 'show_site': 'both'},
+            {'id': 'ContentX.Only', 'show_site': 'contentsx'},
+            {'id': 'ContentX.Only', 'show_site': 'contentsx'},
+        ]
+        self.assertEqual([w['id'] for w in bizmanga_works(works)], ['shown'])
+        for bad in ([{'id': '../x', 'show_site': 'both'}],
+                    [{'id': 'dup', 'show_site': 'both'}, {'id': 'dup', 'show_site': 'both'}],
+                    [{'id': 'other', 'show_site': 'contentsx'}],
+                    {'id': 'not-a-list'}):
+            with self.assertRaises(ValueError):
+                bizmanga_works(bad)
 
     def test_json_and_html_are_separate_contexts(self):
         value = 'quote " & newline\n</script>{{other}}'
@@ -121,7 +167,7 @@ class BuildTests(unittest.TestCase):
 
     def test_build_exception_keeps_original_files(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             original = root / 'old.html'
             original.write_text('original', encoding='utf-8')
             with self.assertRaises(RuntimeError):
@@ -136,7 +182,7 @@ class BuildTests(unittest.TestCase):
     def test_commit_rollback_and_unchanged_mtime(self):
         import bm_build
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             a, b = root / 'a.html', root / 'b.html'
             a.write_text('before', encoding='utf-8')
             before = a.stat().st_mtime_ns
@@ -167,7 +213,7 @@ class BuildTests(unittest.TestCase):
     def test_rollback_attempts_every_file_and_preserves_all_errors(self):
         import bm_build
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             a, b, c, d, new = (root / name for name in ('a', 'b', 'c', 'd', 'new'))
             for path in (a, b, c, d):
                 path.write_bytes(b'before')
@@ -203,7 +249,7 @@ class BuildTests(unittest.TestCase):
     def test_partial_column_fetch_does_not_publish(self):
         columns = module('build-columns.py')
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             with patch.object(columns, 'COLUMN_DIR', root), patch.object(
                 columns, 'fetch_column_detail', side_effect=OSError('offline')
             ):
@@ -221,11 +267,11 @@ class BuildTests(unittest.TestCase):
     def test_lp_rebuild_is_idempotent(self):
         lp = module('build-lp-cases.py')
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             for name in lp.LP_CATEGORIES:
                 path = root / (name + '.html')
                 path.write_bytes((ROOT / path.name).read_bytes())
-                section = lp.render_section(name, lp.LP_NAMES[name], [], v2=True)
+                section = lp.render_section(name, lp.LP_NAMES[name], [])
                 with patch.object(lp, 'ROOT', root):
                     lp.patch_lp(name, section)
                     first = path.read_bytes()
@@ -234,7 +280,7 @@ class BuildTests(unittest.TestCase):
 
     def test_generated_pricing_matches_source(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             (root / 'tools/templates').mkdir(parents=True)
             (root / 'js').mkdir()
             template = ROOT / 'tools/templates/bm-pricing.js.tpl'
@@ -277,7 +323,7 @@ class BuildTests(unittest.TestCase):
     def test_missing_artists_page_does_not_publish_data(self):
         artists = module('build-artists.py')
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             data = root / 'artists-data.js'
             data.write_text('original', encoding='utf-8')
             with patch.object(artists, 'ROOT', root), patch.object(artists, 'DATA_PATH', data), \
@@ -300,7 +346,7 @@ class PublishTests(unittest.TestCase):
     """Exercise rebases against a local bare remote, never the project remote."""
 
     def test_generators_keep_pending_runs_and_checkout_latest_branch(self):
-        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml', 'rank-tracker.yml'):
+        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml'):  # rank-tracker.yml は不可侵領域のため対象外
             with self.subTest(workflow=workflow):
                 source = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8')
                 concurrency = re.search(r'^concurrency:\n((?: {2}[^\n]+\n)+)', source, re.M)[1]

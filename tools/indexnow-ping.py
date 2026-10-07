@@ -26,12 +26,12 @@ def get_changed_urls():
     else:
         command = ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--"]
     try:
-        out = subprocess.check_output(
-            command,
-            text=True
-        )
+        out = subprocess.check_output(command, text=True)
     except subprocess.CalledProcessError:
-        return []
+        # before が手元に無い（強制push後など）。黙って0件にせず直前コミットとの差分で通知する
+        print("::warning::IndexNow: push range unavailable; falling back to the last commit",
+              file=sys.stderr)
+        out = subprocess.check_output(["git", "diff", "--name-only", "HEAD~1", "HEAD", "--"], text=True)
     urls = []
     for f in out.splitlines():
         f = f.strip()

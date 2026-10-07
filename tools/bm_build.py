@@ -8,6 +8,8 @@ from pathlib import Path
 import re
 import stat
 import tempfile
+import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -17,10 +19,28 @@ SITE_URL = "https://bizmanga.contentsx.jp"
 _pending = ContextVar("build_outputs", default=None)
 
 
+FETCH_ATTEMPTS = 3
+FETCH_RETRY_DELAY = 2  # seconds; doubles on each retry
+
+
+def _is_transient(error):
+    """Timeouts, connection failures, 429 and 5xx; other HTTP errors are final."""
+    if isinstance(error, urllib.error.HTTPError):
+        return error.code == 429 or error.code >= 500
+    return isinstance(error, (urllib.error.URLError, TimeoutError, ConnectionError))
+
+
 def fetch_json(url, timeout=30, user_agent="BizManga-Builder/1.0"):
+    """Fetch JSON, retrying transient failures so one blip does not fail a build."""
     request = urllib.request.Request(url, headers={"User-Agent": user_agent})
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
+    for attempt in range(1, FETCH_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except Exception as error:
+            if attempt == FETCH_ATTEMPTS or not _is_transient(error):
+                raise
+            time.sleep(FETCH_RETRY_DELAY * 2 ** (attempt - 1))
 
 
 def require_records(value, *, label="API response", key="id", allow_empty=False):
@@ -36,6 +56,21 @@ def require_records(value, *, label="API response", key="id", allow_empty=False)
             raise ValueError(f"{label}: duplicate {key}: {identity}")
         seen.add(identity)
     return value
+
+
+def bizmanga_works(value, *, label="works"):
+    """Validate only works shown on BizManga (show_site "both").
+
+    ContentX-only works never become BizManga files, so their IDs must not be
+    able to stop the BizManga builds.
+    """
+    if not isinstance(value, list):
+        raise ValueError(f"{label}: expected a list")
+    works = [w for w in value if isinstance(w, dict) and w.get("show_site") == "both"]
+    require_records(works, label=f"BizManga {label}")
+    for work in works:
+        safe_slug(work["id"])
+    return works
 
 
 def safe_slug(value):

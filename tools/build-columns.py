@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
-    fetch_json as _fetch_json, output_batch, remove_file, render_template,
+    fetch_json, output_batch, remove_file, render_template,
     replace_block, require_records, script_json, write_text,
 )
 from bm_content import make_slug
@@ -85,10 +85,6 @@ def sanitize_content_html(raw):
     p.close()
     # 料金文言がstrong等で分かれていても揃える。タグ・URLは変更しない。
     return normalize_brand_text(normalize_price_html("".join(p.out)), prices=False)
-
-
-def fetch_json(url):
-    return _fetch_json(url)
 
 
 def fetch_columns():
@@ -418,10 +414,8 @@ def _build():
         print(f"ERROR fetching columns: {e}", file=sys.stderr)
         sys.exit(1)
 
+    # 0件は fetch_columns() が拒否する（既存ページを消さないため）
     print(f"Total columns from WP: {len(columns)}")
-    if not columns:
-        print("No columns found. Skipping build.")
-        return
 
     # 順序: detail生成 (readtimeを記録) → column.html 更新 → sitemap
     generate_details(columns)

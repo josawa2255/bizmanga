@@ -20,7 +20,7 @@ import urllib.parse
 import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 from bm_build import API_BASE
-from bm_build import fetch_json, output_batch, require_records, safe_slug, write_bytes
+from bm_build import bizmanga_works, fetch_json, output_batch, safe_slug, write_bytes
 
 API = API_BASE + '/works'
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -58,8 +58,7 @@ def fonts():
 
 
 def fetch_works():
-    data = require_records(fetch_json(API, timeout=20, user_agent="BizManga-OG-Builder/1.0"))
-    return [w for w in data if w.get("show_site") == "both"]
+    return bizmanga_works(fetch_json(API, timeout=20, user_agent="BizManga-OG-Builder/1.0"))
 
 
 def load_thumb(url):

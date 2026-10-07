@@ -30,8 +30,8 @@ from datetime import date
 import sys
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
-    fetch_json as _fetch_json, output_batch, remove_file, render_template,
-    replace_block, require_records, safe_slug, script_json, write_text,
+    bizmanga_works, fetch_json as _fetch_json, output_batch, remove_file,
+    render_template, replace_block, script_json, write_text,
 )
 
 API = API_BASE + '/works'
@@ -52,15 +52,15 @@ def esc(s):
 
 
 def fetch_works():
-    works = require_records(_fetch_json(API, timeout=20), label="works")
-    for work in works:
-        safe_slug(work["id"])
+    works = _fetch_json(API, timeout=20)
+    if not isinstance(works, list):
+        raise ValueError("works: expected a list")
     return works
 
 
 def filter_for_bm(works):
-    # show_site: "both" のみ（BizManga で表示される作品）
-    return [w for w in works if w.get("show_site") == "both"]
+    # show_site: "both" のみ（BizManga で表示される作品）。ID の検証もこの作品だけにかける
+    return bizmanga_works(works)
 
 
 # カテゴリ別の活用シーン解説（SEO 用本文増強、約 200-300 字 / カテゴリ）
@@ -818,7 +818,7 @@ def _build():
         print(f"ERROR fetching works: {e}", file=sys.stderr)
         sys.exit(1)
 
-    bm_works = require_records(filter_for_bm(all_works), label="BizManga works")
+    bm_works = filter_for_bm(all_works)
     print(f"Total works from WP: {len(all_works)}")
     print(f"BizManga works (show_site='both'): {len(bm_works)}")
 

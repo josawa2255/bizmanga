@@ -9,7 +9,7 @@ LP事例自動注入スクリプト
 GitHub Actions で週1 + 手動実行。実行後は git commit & push。
 """
 from bm_build import API_BASE, SITE_URL
-from bm_build import fetch_json as _fetch_json, output_batch, write_text, safe_slug, require_records
+from bm_build import bizmanga_works, fetch_json as _fetch_json, output_batch, write_text
 import re
 import sys
 from pathlib import Path
@@ -48,10 +48,8 @@ MAX_CASES_PER_LP = 3
 def fetch_works():
     """Fetch and validate all work identities before updating any LP."""
     cb = int(date.today().strftime("%Y%m%d"))
-    works = require_records(_fetch_json(f"{WP_API}?per_page=100&_cb={cb}"), label="LP works")
-    for work in works:
-        safe_slug(work["id"])
-    return works
+    # /works/{slug}.html は show_site=both の作品にしか無いので、検証もその作品だけにかける
+    return bizmanga_works(_fetch_json(f"{WP_API}?per_page=100&_cb={cb}"), label="LP works")
 
 
 def get_work_categories(w):
@@ -108,8 +106,8 @@ def html_escape(s):
     )
 
 
-def render_card(work, v2=False):
-    """1事例分の静的 HTML カード。v2 で .lpv2-* クラス、それ以外で従来の .pm-* クラス。"""
+def render_card(work):
+    """1事例分の静的 HTML カード（.lpv2-* クラス）。"""
     wid = work.get("id", "")
     title = html_escape(work.get("title_ja", ""))
     subtitle = html_escape(work.get("subtitle_ja", "") or "")
@@ -127,75 +125,36 @@ def render_card(work, v2=False):
     # サムネ ALT 文言: 作品名 + クライアント
     alt = f"{work.get('title_ja', '')}（{work.get('client', '')}）" if client else work.get("title_ja", "")
 
-    if v2:
-        # lpv2 markup
-        parts = ['          <article class="lpv2-case">']
-        if thumb:
-            parts.append(
-                f'            <a class="lpv2-case__thumb" href="/works/{wid}" aria-label="{title} の詳細を見る">'
-            )
-            parts.append(
-                f'              <img src="{html_escape(thumb)}" alt="{html_escape(alt)}" loading="lazy" width="240" height="300">'
-            )
-            parts.append("            </a>")
-        parts.append('            <div class="lpv2-case__body">')
-        parts.append(
-            f'              <p class="lpv2-case__meta">{cats_display}'
-            + (f" / {pages}P" if pages else "")
-            + (f" / {period}" if period else "")
-            + "</p>"
-        )
-        parts.append(f'              <h3 class="lpv2-case__title"><a href="/works/{wid}">{title}</a></h3>')
-        if client:
-            parts.append(
-                f'              <p class="lpv2-case__client">クライアント: {client}'
-                + (f"／媒体: {media}" if media else "")
-                + "</p>"
-            )
-        if point:
-            parts.append(f'              <p class="lpv2-case__point">{point}</p>')
-        if comment:
-            parts.append(
-                f'              <blockquote class="lpv2-case__quote">「{comment}」</blockquote>'
-            )
-        parts.append(f'              <a class="lpv2-case__more" href="/works/{wid}">この事例を詳しく見る →</a>')
-        parts.append("            </div>")
-        parts.append("          </article>")
-        return "\n".join(parts)
-
-    # legacy pm-* markup
-    parts = [
-        '          <article class="pm-case-card">',
-    ]
+    parts = ['          <article class="lpv2-case">']
     if thumb:
         parts.append(
-            f'            <a class="pm-case-thumb" href="/works/{wid}" aria-label="{title} の詳細を見る">'
+            f'            <a class="lpv2-case__thumb" href="/works/{wid}" aria-label="{title} の詳細を見る">'
         )
         parts.append(
             f'              <img src="{html_escape(thumb)}" alt="{html_escape(alt)}" loading="lazy" width="240" height="300">'
         )
         parts.append("            </a>")
-    parts.append('            <div class="pm-case-body">')
+    parts.append('            <div class="lpv2-case__body">')
     parts.append(
-        f'              <span class="pm-case-meta">{cats_display}'
+        f'              <p class="lpv2-case__meta">{cats_display}'
         + (f" / {pages}P" if pages else "")
         + (f" / {period}" if period else "")
-        + "</span>"
+        + "</p>"
     )
-    parts.append(f'              <h3 class="pm-case-title">')
-    parts.append(f'                <a href="/works/{wid}">{title}</a>')
-    parts.append(f"              </h3>")
+    parts.append(f'              <h3 class="lpv2-case__title"><a href="/works/{wid}">{title}</a></h3>')
     if client:
-        parts.append(f'              <p class="pm-case-client">クライアント: {client}'
-                     + (f"／媒体: {media}" if media else "")
-                     + "</p>")
+        parts.append(
+            f'              <p class="lpv2-case__client">クライアント: {client}'
+            + (f"／媒体: {media}" if media else "")
+            + "</p>"
+        )
     if point:
-        parts.append(f'              <p class="pm-case-point">{point}</p>')
+        parts.append(f'              <p class="lpv2-case__point">{point}</p>')
     if comment:
         parts.append(
-            f'              <blockquote class="pm-case-comment">「{comment}」</blockquote>'
+            f'              <blockquote class="lpv2-case__quote">「{comment}」</blockquote>'
         )
-    parts.append(f'              <a class="pm-case-more" href="/works/{wid}">この事例を詳しく見る →</a>')
+    parts.append(f'              <a class="lpv2-case__more" href="/works/{wid}">この事例を詳しく見る →</a>')
     parts.append("            </div>")
     parts.append("          </article>")
     return "\n".join(parts)
@@ -207,26 +166,10 @@ LP_V2_CHAPTER_NUM = {
 }
 
 
-def render_section(slug, lp_name, works, v2=False):
-    """LP 用の事例セクション全体。v2 LPは .lpv2-* マークアップ、それ以外は従来 .pm-*。"""
-    if v2:
-        chapter_num = LP_V2_CHAPTER_NUM.get(slug, "04")
-        if not works:
-            return (
-                "\n    <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->\n"
-                f'    <section class="lpv2-section lpv2-cases" id="chapter-04-cases" aria-label="{lp_name}の制作事例">\n'
-                '      <div class="lpv2-container">\n'
-                '        <header class="lpv2-section-head">\n'
-                f'          <span class="lpv2-chapter-num">{chapter_num}</span>\n'
-                f'          <span class="lpv2-chapter-mark">CHAPTER {chapter_num} &middot; CASE STUDY</span>\n'
-                '          <h2 class="lpv2-h2">制作事例</h2>\n'
-                '          <p class="lpv2-lead lpv2-lead--center">該当ジャンルの事例は現在準備中です。<a href="/works">全作品一覧</a>または<a href="/biz-library">ビズ書庫</a>から関連作品をご覧ください。</p>\n'
-                '        </header>\n'
-                "      </div>\n"
-                "    </section>\n"
-                "    <!-- BUILD:LP-CASES:END -->\n"
-            )
-        cards = "\n".join(render_card(w, v2=True) for w in works)
+def render_section(slug, lp_name, works):
+    """LP 用の事例セクション全体（.lpv2-* マークアップ）。"""
+    chapter_num = LP_V2_CHAPTER_NUM.get(slug, "04")
+    if not works:
         return (
             "\n    <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->\n"
             f'    <section class="lpv2-section lpv2-cases" id="chapter-04-cases" aria-label="{lp_name}の制作事例">\n'
@@ -235,28 +178,8 @@ def render_section(slug, lp_name, works, v2=False):
             f'          <span class="lpv2-chapter-num">{chapter_num}</span>\n'
             f'          <span class="lpv2-chapter-mark">CHAPTER {chapter_num} &middot; CASE STUDY</span>\n'
             '          <h2 class="lpv2-h2">制作事例</h2>\n'
-            f'          <p class="lpv2-lead lpv2-lead--center">{lp_name}として実際に納品した事例から、抜粋してご紹介します。</p>\n'
+            '          <p class="lpv2-lead lpv2-lead--center">該当ジャンルの事例は現在準備中です。<a href="/works">全作品一覧</a>または<a href="/biz-library">ビズ書庫</a>から関連作品をご覧ください。</p>\n'
             '        </header>\n'
-            '        <div class="lpv2-cases-grid">\n'
-            f"{cards}\n"
-            '        </div>\n'
-            '        <p class="lpv2-cases-foot"><a href="/works" class="lpv2-btn lpv2-btn--ghost">制作事例の一覧を見る →</a></p>\n'
-            "      </div>\n"
-            "    </section>\n"
-            "    <!-- BUILD:LP-CASES:END -->\n"
-        )
-
-    # legacy
-    if not works:
-        return (
-            "\n    <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->\n"
-            f'    <section class="pm-section pm-cases-static" aria-label="{lp_name}の制作事例">\n'
-            '      <div class="pm-container pm-container--narrow">\n'
-            '        <div style="text-align:center; margin-bottom:48px;">\n'
-            '          <span class="pm-eyebrow">CASE STUDY</span>\n'
-            '          <h2 class="pm-h2">制作事例</h2>\n'
-            f'          <p class="pm-lead" style="text-align:center; max-width:560px; margin:0 auto;">該当ジャンルの事例は現在準備中です。<a href="/works">全作品一覧</a>または<a href="/biz-library">ビズ書庫</a>から関連作品をご覧ください。</p>\n'
-            '        </div>\n'
             "      </div>\n"
             "    </section>\n"
             "    <!-- BUILD:LP-CASES:END -->\n"
@@ -264,17 +187,18 @@ def render_section(slug, lp_name, works, v2=False):
     cards = "\n".join(render_card(w) for w in works)
     return (
         "\n    <!-- BUILD:LP-CASES:BEGIN (auto-generated by tools/build-lp-cases.py) -->\n"
-        f'    <section class="pm-section pm-cases-static" aria-label="{lp_name}の制作事例">\n'
-        '      <div class="pm-container pm-container--narrow">\n'
-        '        <div style="text-align:center; margin-bottom:48px;">\n'
-        '          <span class="pm-eyebrow">CASE STUDY</span>\n'
-        '          <h2 class="pm-h2">制作事例</h2>\n'
-        f'          <p class="pm-lead" style="text-align:center; max-width:560px; margin:0 auto;">{lp_name}として実際に納品した事例から、抜粋してご紹介します。</p>\n'
-        '        </div>\n'
-        '        <div class="pm-cases-grid">\n'
+        f'    <section class="lpv2-section lpv2-cases" id="chapter-04-cases" aria-label="{lp_name}の制作事例">\n'
+        '      <div class="lpv2-container">\n'
+        '        <header class="lpv2-section-head">\n'
+        f'          <span class="lpv2-chapter-num">{chapter_num}</span>\n'
+        f'          <span class="lpv2-chapter-mark">CHAPTER {chapter_num} &middot; CASE STUDY</span>\n'
+        '          <h2 class="lpv2-h2">制作事例</h2>\n'
+        f'          <p class="lpv2-lead lpv2-lead--center">{lp_name}として実際に納品した事例から、抜粋してご紹介します。</p>\n'
+        '        </header>\n'
+        '        <div class="lpv2-cases-grid">\n'
         f"{cards}\n"
         '        </div>\n'
-        '        <p class="pm-cases-foot" style="text-align:center; margin-top:48px;"><a href="/works" class="pm-btn pm-btn--ghost">制作事例の一覧を見る</a></p>\n'
+        '        <p class="lpv2-cases-foot"><a href="/works" class="lpv2-btn lpv2-btn--ghost">制作事例の一覧を見る →</a></p>\n'
         "      </div>\n"
         "    </section>\n"
         "    <!-- BUILD:LP-CASES:END -->\n"
@@ -360,21 +284,21 @@ def _build():
     for slug in LP_CATEGORIES:
         matched = filter_for_lp(works, slug)
         top = select_top(matched, MAX_CASES_PER_LP)
-        v2 = is_v2_lp(slug)
-        section = render_section(slug, LP_NAMES[slug], top, v2=v2)
+        if not is_v2_lp(slug):
+            # 旧 pm-* 用CSSは削除済み。印が無いLPに事例を差し込むと崩れるので止める
+            raise ValueError(f"{slug}.html: missing <!-- LP-DESIGN:v2 --> marker")
+        section = render_section(slug, LP_NAMES[slug], top)
         ok = patch_lp(slug, section)
         summary[slug] = {
             "matched": len(matched),
             "shown": len(top),
             "patched": ok,
-            "v2": v2,
             "titles": [w.get("title_ja") for w in top],
         }
 
     print("\n=== 各LPへの注入結果 ===")
     for slug, info in summary.items():
-        v2flag = " [v2]" if info.get("v2") else ""
-        print(f"  {slug}{v2flag}: matched={info['matched']}, shown={info['shown']}, patched={info['patched']}")
+        print(f"  {slug}: matched={info['matched']}, shown={info['shown']}, patched={info['patched']}")
         for t in info["titles"]:
             print(f"      - {t}")
 
