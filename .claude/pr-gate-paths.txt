@@ -8,7 +8,7 @@
 # checklist: docs/REVIEW-MANGA-WP.md
 #
 # --- 漫画の表示（ビューア / ホームギャラリー / Hero マーキー / 制作事例モーダル / 静的 works / 埋込ビューア） ---
-^js/(works|bm-viewer|bm-view-type|bm-work-modal|bm-works-page|bm-works|bm-home|bm-hero|bm-wd-split|bm-lp-library-embed|bm-pre-production)\.js$
+^js/(works|bm-view-type|bm-work-modal|bm-works-page|bm-home|bm-hero|bm-wd-split|bm-lp-library-embed|bm-pre-production)\.js$
 ^(biz-library|embed-viewer|works|index)\.html$
 ^css/works\.css$
 ^sw\.js$
@@ -28,5 +28,7 @@
 # Shared build helpers and extracted protected page code
 ^tools/bm_[a-z0-9_]+\.py$
 ^tools/commit-generated\.py$
-^js/bm-(embed-viewer|column-detail|news-detail|testimonial-detail)\.js$
-^css/bm-(embed-viewer|column-body|column-detail|column-static|news-detail|testimonial-detail)\.css$
+^js/bm-(embed-viewer|column-detail|news|news-detail|testimonial-detail|sw-register)\.js$
+# 404 の転送（静的ページの無い /works/{slug} をビズ書庫ビューアへ、/column/{slug} を WP API で探して動的詳細へ）
+^(404\.html|js/bm-404\.js)$
+^css/bm-(embed-viewer|column-body|column-detail|column-static|news|news-detail|testimonial-detail)\.css$
