@@ -70,7 +70,7 @@
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日本語固定・OGP動的更新。Editorial Magazineデザイン |
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
-| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**【旧】共通テンプレ `css/bm-lp-template.css`（`pm-*` クラス）— 7LPで現役**。**【新】v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）— 2026-05-13 `recruit-manga.html` でパイロット導入**。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
+| **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）で8本すべて稼働**（2026-05-13 `recruit-manga.html` でパイロット導入→全LPへ展開。旧 `css/bm-lp-template.css`（`pm-*`）は削除済み）。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 | **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加。**2026-05-12 SEO内部リンクハブ化**: 公開後ナビ登録のみで本文中リンクゼロ→Google重要度低判定→順位獲得未達という分析を踏まえ、pricing/faq/works/8用途LP の計11 HTML から `.bm-related-guide` aside で本文中アンカーテキスト付き内部リンクを集中投下。各LP固有のKW（採用マンガ対応の〜/IR漫画対応の〜 等）でアンカー多様化、ペナルティ回避と複合KW強化を両立。共通CSSは `css/bizmanga.css` 末尾。**ホーム(index.html)のバナー(`.bm-home-comparison-banner`)はCV重視で `/strength`（強み5選ページ）に流す方針** — 比較ガイド本体のコンテンツ完成度を訪問者向けに磨き上げるまで、検索流入経由でしか比較ガイドに到達しない設計にして他社情報経由のCV離脱を防ぐ。**2026-05-26 デザイン全面刷新 進行中(editorial路線へピボット)**: オレンジ全面のポップ路線から、アイボリー地＋黒セリフ見出し＋オレンジ差し色の上品なエディトリアル路線へ転換する方針。キービジュアルは手描きスケッチ調の天秤(¥コインvs時計)＋薄いマンガ絵コンテ背景(=ユーザーが用意した別デザイン、ビズちゃんは不使用)。**ヒーロー(TOP)から着手済み**。**一度作ったビズちゃん版①「漫画制作会社は何で選べばいいのか」セクション(mpc-choose)とそのCSSは削除済み**。**比較表(主要5社)は削除方針は維持**。**2026-05-26 ヒーローv3に全面刷新済み(`.mpc-hero-v3`、旧 `.mpc-hero-v2`+ビズちゃんbg/B案は廃止)**: editorial構成 = 比較ガイドpill→H1「漫画制作会社 比較ガイド」(SEO優先で漢字)→リード→**インタラクティブ天秤**→4比較ポイント(業界最安値/最短2週間/8用途/料金透明性)カードリスト→オレンジCTA「無料で比較してみる」→サブリンク。**天秤はユーザー生成の手描きスケッチ画像をパーツ分離して使用**(支柱固定/横棒回転/左右皿が上下、¥コイン・時計は皿画像に内包され連動)。素材は `material/images/mpc/scale-{stand,beam,pan-yen,pan-clock}-crop.webp`(4レイヤーをCSS%で絶対配置、配置座標はPython合成で確定→%化、横棒の `transform-origin:50% 27.8%`=支点)。※元画像 `images/scale_*_transparent_verified.png` 等はアルファ無し(透過プレビューを市松ごとRGB焼込み)だったため、こちらで「明るい・低彩度画素を透明化」(白ヒーロー上でコイン面/時計盤は白く見える)処理して webp 化。挙動JS=`js/mpc-scale.js`(`.comparison-scale`にホバー/タップで `is-tilt-left/right`、離脱で中央、初回0.6sアイドルスイング `is-idle-swing`、`prefers-reduced-motion`配慮、`(hover:hover)`でPC/スマホ分岐)。傾き角±7deg・transition `cubic-bezier(.2,.8,.2,1)`。色 #FF6A00/#111/#E8E1D8。CSSは `css/mpc.css` 末尾。**全サイズ崩れない設計**: 枠 `.comparison-scale` を `aspect-ratio:840/760` 固定＋内部は全%/deg なので、画面比率に関係なく相対配置(鎖↔皿連結)を維持し拡縮するだけ(320px〜超ワイドで検証済)。ヒーロー背景に薄いマンガ絵コンテ素材(白地に馴染む)を**PC/スマホで出し分け**: PCは縦長素材の中央スケッチ帯を切り出した横長版 `hero-bg-sketch-pc.webp` を `100% auto/center top`(左右のスケッチが天秤を挟む。**2026-06-01 `center`→`center top` に変更: 4ポイントQ&Aアコーディオン展開でヒーローが縦に伸びても背景が再センタリングされてズレないよう上端基準に固定**)、スマホ(≤640px)は縦長素材 `hero-bg-sketch.webp` を `100% auto/center top`(上部にスケッチを表示。元から上端基準で不動)。**※旧 `.mpc-hero-v2-*` CSS(~330行)と未使用画像 `material/images/mpc/hero-bg-{pc,sp}.webp` はデッドコード化(要掃除)**。**2026-05-27 ②セクション実装＝旧PAIN(失敗の3パターン)と旧8選定基準セクションをHTMLごと削除し、editorialの「依頼先を判断する基準」セクション(`#sec-choose`/`.mpc-choose`)に統合**: client-logos直下に配置。eyebrow `HOW TO CHOOSE`→H2「依頼先は、<em>何で見極めるか</em>」→リード→(keyfacts数値バンドは2026-05-27に削除)→`.mpc-choose-list`(付箋チェックリストの`<ol>`6項目=①料金が公開されているか ②用途への専門性 ③「伝わる構成」設計力 ④契約条件の明文化 ⑤サンプル&レスポンス速度 ⑥実績&アフターサポート)→末尾に比較表(`#comparison`)への導線。各項目末尾に `.mpc-choose-check`(「見極めポイント」callout)。CSSは `css/mpc.css` の旧criteria直後に `.mpc-choose-*` を追加(各項目は付箋カード(`#fffdf6`+影+折れ角dog-ear)で、チェックボックス `.mpc-choose-tick` を持つ。≤600pxは48px→38px列に縮小。**ワイド画面(≥881px)はコンテナ幅を `clamp(880px,76vw,1440px)` で画面幅連動拡大＋見出し/本文/余白も clamp+vw でスケールし、モニターでの左右余白を圧縮（単一列維持・チェック演出はそのまま）**)。**※クラス名 `mpc-choose` は旧ビズちゃん版から再利用だが完全に別物(editorialの判断基準セクション)**。アニメは見出し/keyfacts/本文=共通 `data-fuwa-auto`(bm-fuwa.js→`.is-fuwa-in`)、`.mpc-choose-item`=`data-fadeup`(mpc.js→`.is-visible`)で既存criteriaと同じ二重リビールパターン。**チェックは別系統**: `js/mpc.js` の `initChecklist()` が IntersectionObserver(`rootMargin:-45% 0 -40%`=画面中央の薄い帯)でカードが中央付近に来た時に `.is-checked` を付与→チェックボックスがオレンジに塗られチェックが弾けて出る。スクロールで上から1枚ずつ点く演出(フェードアップとは分離。IO非対応は全チェックfallback)。**旧 `.mpc-pain-*`/`.mpc-criteria-*` CSSはデッドコード化(要掃除)**。**現フロー: Hero→Logoマーキー→依頼先を判断する基準(NEW)→ビズマンガはどうなのか(NEW)→比較表→用途別マップ→FAQ→最終CTA**。**2026-05-27「では、ビズマンガはどうなのか」セクション追加**(`#sec-bizanswer`、判断基準と比較表の間): 判断基準6項目に1つずつ"答える"構成。**ビズちゃん(マスコット)＋参考イラストで分かりやすく**＝トップの `bm-reasons` コンポーネント(`.bm-reason-card` Z字交互カード)を流用し、`material/images/reasons/reason-0X-*.webp`(既存8枚から6枚)を各基準に割当(①料金=01-price/②用途=07-use-cases/③構成=08-artists/④契約=06-copyright/⑤速度=02-speed/⑥実績=04-multimedia)。各カードに `.bm-reason-kicker`「見極め基準｜◯◯」を追加し判断基準と1対1対応。**editorial路線の中でこの1セクションのみビズちゃん復活**(ユーザー指示)。背景は `.mpc-bizanswer` で白固定に上書き。CSSは `css/mpc.css` の choose 直後**。**2026-05-27 比較表(`#comparison`)を刷新**: 旧「主要5社(A〜E社)＋ビズマンガ」の6列横長表(`.mpc-table`)を廃止し、`/strength`の「まとめると!」と同じ **`bm-pricing-table`(他社 vs ビズマンガ の2列)** に置換。行は上の判断基準6項目(料金の透明性/用途への専門性/「伝わる構成」設計力/契約条件/サンプル・レスポンス速度/実績・アフター)に統一し、チェックリスト→比較表の流れを接続。「一般的な制作会社」列はグレー地、「ビズマンガ」列は薄オレンジ地＋オレンジ太字。`bm-pricing-table`はbizmanga.css共通クラス(pricing/strengthと共用)。**※2026-05-27に各社プロフィール(`#sec-profiles`、競合5社個別紹介セクション)を削除。整合のためJSON-LD ItemList(6社)も併せて除去**。旧 `.mpc-table*` CSSと `mpc.js initStickyTable`(if(!table)return でno-op)はデッドコード化(要掃除)。**2026-06-01 ヒーロー4ポイント(`.mpc-hero-v3-points`、業界最安値クラス/最短2週間納品/8用途の専門編集/料金の透明性)を「クリックでその場にQ&A展開」するアコーディオンに変更**: 旧 `<a href="#comparison">`(4枚とも比較表ジャンプ・末尾→)を廃止し、各行を `<button class="mpc-hero-v3-point" aria-expanded>` ＋直下の回答パネル `.mpc-hero-v3-panel`(`.mpc-hero-v3-item` で包む)に。末尾の→は開閉シェブロン `.mpc-hero-v3-point-toggle`(aria-expanded=trueで180°回転)。パネル内は質問 `.mpc-hero-v3-panel-q`(オレンジ)＋回答 `.mpc-hero-v3-panel-a`＋深掘りリンク `.mpc-hero-v3-panel-link`(価格→#comparison/速度→#sec-bizanswer/用途→#sec-usecase/透明性→/pricing)で、即答とナビ導線を両立。開閉JSは `js/mpc.js` の `initHeroPoints()`(max-height transition＋hidden属性トグル、prefers-reduced-motion配慮)。複数同時開き可。日本語固定表示は日本語の表示内容。**2026-06-01「8用途の専門編集」Q&Aは8用途を省略せず列挙(採用・IR・研修・商品紹介・営業・インバウンド・会社紹介・広告)し、文中の各用途語を専用LPへの文中インラインリンク `.mpc-hero-v3-inlink`(オレンジ下線)に**(採用=/recruit-manga, IR=/ir-manga, 研修=/training-manga, 商品紹介=/product-manga, 営業=/sales-manga, インバウンド=/inbound-manga, 会社紹介=/company-manga, 広告=/manga-ad-lp)。※当初チップ(`.mpc-hero-v3-panel-uses`)で実装→ユーザー要望で文字リンクに変更。パネル max-height はPC460/SP560 |
 
 ## 1b. ビズアニメ（BIZ ANIME / AI動画制作）⭐進行中
@@ -457,13 +457,12 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 | LP | 移行状況 |
 |---|---|
 | `recruit-manga.html` | ✅ v2 移行済（2026-05-13、パイロット） |
-| `product-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | ⏳ 旧 `pm-*` テンプレで稼働中、recruit 検証後に順次適用 |
+| `product-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | ✅ v2 移行済（PR #58 で8本とも v2 構造に統一） |
 
-### 旧テンプレとの並存
-- 新旧2つの CSS / クラス体系は完全に独立しており、`pm-*` と `lpv2-*` は名前空間衝突なし
+### 旧テンプレ（`pm-*`）の扱い（2026-10-07 更新）
+- 旧 `css/bm-lp-template.css`（`pm-*`）は全LPの v2 移行に伴い削除済み。以下の箇条は移行期の記録
 - 共通の`bm-nav.js` / `bm-nav.js` / `bm-lp-library-embed.js` / `bm-sanitize.js` / `bm-kinsoku.js` はそのまま利用
-- `tools/build-lp-cases.py` は HTML 内の `LP-DESIGN:v2` マーカーを検出して `pm-*` / `lpv2-*` のどちらでも出力できる
-- 旧 `bm-lp-template.css` は v2 が全LPに展開完了するまで削除しない
+- `tools/build-lp-cases.py` は `lpv2-*` だけを出力する。LP に `<!-- LP-DESIGN:v2 -->` マーカーが無い場合は、崩れた事例欄を出さないようエラーで停止する
 - **2026-05-19 追記**: `tools/build-lp-cases.py` は実装上まだ `pm-cases-grid` / `pm-case-card` を出力するため、recruit-manga.html では `pm-case-*` が未スタイル状態になっていた。`bm-lp-v2.css` 末尾（セクション19）に `pm-case-*` を v2 トークン整合で再定義し、**CASE STUDYカードを横並び**（`grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))`、SPは160px）に修正。`bm-lp-v2.css` は recruit-manga.html のみが読込むため他7LPには影響しない
 - **2026-05-24 追記（PRODUCTION FLOW フリップカード化）**: 制作フロー8パネル(`.lpv2-flow-step`)を以下のインタラクションに刷新。
   - **連結グリッド**: `.lpv2-flow-grid` を `gap: 3px` + `background: ink` にし、隙間に黒を覗かせて全カードがくっついた「罫線共有」表現（二重線にならない）。通常時は影なしフラット
@@ -837,7 +836,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - 役割: 取引/支援企業ロゴを横スクロールで自動再生し、信用補強。ContentsXトップと同じ構成・同じ社数（現在12社、`js/data/bm-client-logos.js` の `BM_CLIENT_LOGOS` 件数が正）
 - データ: [js/data/bm-client-logos.js](js/data/bm-client-logos.js) の `BM_CLIENT_LOGOS` を編集すれば追加可
 - 画像参照: ContentX側の `https://contentsx.jp/material/images/{clients,partners}/...` を絶対URLで参照（[[reference_bugs_md]] #020 同様、ContentX/material/ の画像を消すときは両サイトgrep必須）
-- レンダリング: [js/bm-client-logos.js](js/bm-client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
+- レンダリング: [js/client-logos.js](js/client-logos.js) が `BM_CLIENT_LOGOS` を6セット複製→`translateX(-16.6667%)` ループ
 - CSS: [css/bizmanga.css](css/bizmanga.css) の `.bm-client-logos` セクション
 - キャンペーン見出し（`.bm-campaign-link`）⭐2026-09-29 更新: 月桂冠SVG付きで「**[Chatworkロゴ]広告限定シナリオ制作無料キャンペーン実施中**」を表示し `/contact` へリンク（旧「9月限定」→ Chatwork広告限定へ切替、#52）
   - 「Chatwork」は文字ではなく公式ロゴ画像 `material/images/campaign/chatwork-logo.webp`（背景透過・実寸350×70。ユーザー支給PNGの白背景を、各画素を白＋ブランド2色〈紺#16202E／赤#DD494E〉の混色として解いて透過化＝輪郭の白フチなし）。`<img>` は `width="350" height="70"`（実比5:1、[BUGS.md #023](../BUGS.md)）、表示は `height:1.25em`、`alt="Chatwork"`
@@ -1228,7 +1227,7 @@ WordPress で works を追加・更新したら以下いずれか:
 13. **⭐ CSS Grid 親要素の子に新タグを追加する時は必ず `grid-area` を指定** → `manga-production-company.html` の `.mpc-pain-entry` は `grid-template-areas: "num quote" / "num body"` の2カラム3行Grid。子に `<ul>` を追加した際、`grid-area` 未指定で auto-placement により細い `num` 列(96px)に配置されてレンダリング崩壊した。Grid親に追加する子要素は (1) `grid-template-areas` を拡張 (2) 子に `grid-area: <name>` を必ず付与の2点セット。2026-04-29 修正
 14. **⭐ `<ul>` の直接の子に `<p>` を置かない** → 同じく 2026-04-29 mpc改善時、`<ul>` 直下に `<p class="mpc-pain-examples-title">` を置いて HTML仕様違反 + ブラウザの暗黙閉じタグでレイアウト崩れ。リスト見出しは `<ul>` の外側 `<div>` でラップして `<span>` か `<p>` で配置すること
 15. **⭐ `transform: scale` はレイアウトボックスに反映されない** → `index.html` のトップ3D showcase (`#s3dSection`) で、JS が `gsap.set(wrap, {scale: 2.8})` で中央スマホを拡大していたが、`min-height: 100vh` の stage 内で `align-items: center` が **元のboxサイズ(208px)** を中央配置するため、スマホ実機で **News末尾→巨大白空白(約400px)→拡大スマホの一部→白空白→ギャラリー** という崩れた表示になっていた。修正: スマホ用に `.s3d-stage { min-height: auto; padding: 80px 0 60px; }` で stage を最終状態(scale 1)コンテンツに合わせる。初期 scale 2.8 のはみ出し分は `overflow: hidden` で見切れて自然な演出になる。2026-04-29 修正
-15. **⭐ LP の SP アコーディオンで開く要素は `grid-column: 1 / -1` 必須** → `bm-lp-template.css` の `.pm-pain-item` / `.pm-merit-item` は `grid-template-columns: auto 1fr` の2列Grid（番号列 + 本文列）。`.is-open` で出てくる `.pm-*-detail` に `grid-column` 指定がないと auto-placement で「番号」列(auto=狭い)に押し込まれ、本文が1文字ずつ縦書き状に折り返される。`.pm-format-detail` と同じく `grid-column: 1 / -1` を必ず付ける。Gotcha #13 と同じパターン（Grid親 + 子の暗黙配置）。2026-04-29 修正、BUGS.md #019
+15. **⭐ LP の SP アコーディオンで開く要素は `grid-column: 1 / -1` 必須**（`bm-lp-template.css` は削除済みだが、2列Grid＋暗黙配置の教訓として残す） → 当時の `bm-lp-template.css` の `.pm-pain-item` / `.pm-merit-item` は `grid-template-columns: auto 1fr` の2列Grid（番号列 + 本文列）。`.is-open` で出てくる `.pm-*-detail` に `grid-column` 指定がないと auto-placement で「番号」列(auto=狭い)に押し込まれ、本文が1文字ずつ縦書き状に折り返される。`.pm-format-detail` と同じく `grid-column: 1 / -1` を必ず付ける。Gotcha #13 と同じパターン（Grid親 + 子の暗黙配置）。2026-04-29 修正、BUGS.md #019
 
 ## 15.1 セキュリティ・既知のリスク
 
@@ -1270,3 +1269,50 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 - 新ページ追加時（`TARGET_PAGES` に追加してから）
 
 過去に「ハンバーガー押せない」問題が複数回再発したため必須チェック化。
+
+
+### 16.2 共通チェックと自動生成（2026-10-05）
+
+- `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
+- `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
+- 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
+- `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
+- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+
+生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
+`tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
+本文URLはブラウザの `js/bm-sanitize.js` と同じ方針で検証する。C0制御文字・DELはトリム前に拒否し、
+相対URLとhttp(s)を許可する。リンクのhrefに限りmailto/tel、imgのsrcに限りPNG/GIF/JPEG/WebP/AVIF/BMP/ICOのbase64 data URLも許可する。
+srcsetは各候補を検証し、カンマ区切りと曖昧になるdata URLを許可しない。本文の外部リンクは許可し、自社ドメイン限定の `bmSanitize.url` とは分ける。
+描画がすべて成功してから出力を反映し、通常の書き込み例外では適用済みの変更も巻き戻す。
+復元中に失敗しても残りの復元を続け、元の書き込みエラーと全復元エラー（対象パス付き）をまとめて報告する。
+WP APIの取得は、タイムアウト・接続失敗・429・5xxに限り間隔を空けて最大3回まで試す（`bm_build.fetch_json`）。
+再試行しても失敗したコラム詳細、不正なslug・JSON/XML・必須マーカー欠落はビルド失敗として扱う（既存ページは残る）。
+作品IDの検証・重複チェックは BizManga に出す作品（`show_site == "both"`）だけにかける（`bm_build.bizmanga_works`）。ContentX専用作品のIDでBizMangaの生成を止めないため。
+コラムのWP slugが安全なURLの条件（小文字英数字・`_`・`-`）に合わない場合は別URLへ切り替え、Actionsの画面に警告を出す（公開URLが変わるのでWP側のslugを直す）。
+プロセスの強制終了やOS停止まで含む複数ファイルの原子的な更新ではない。
+
+料金ルールは `tools/bm_pricing_rules.py`、ブラウザ向けの生成テンプレートは
+`tools/templates/bm-pricing.js.tpl`。`js/bm-pricing.js` は生成物として扱う。
+自動生成3ワークフロー（columns / works / lp-cases）は共通のconcurrency groupと `queue: max` で待機ジョブを保持して直列化し、
+待機後のcheckoutでは `github.ref_name` を指定してブランチの最新状態から生成する。
+`tools/commit-generated.py` で指定された生成物だけをコミットする。push前にrebaseし、競合はジョブ失敗として残す。
+GSC日次ランクトラッカー（`rank-tracker.yml` / `tools/rank-tracker.py`）は不可侵領域のため対象外で、従来どおり単独でコミットする（日付入りメッセージ）。
+IndexNowはpushのbefore〜after全体を対象とする。beforeが取得できない場合（強制push後など）は直前コミットとの差分で通知し、警告を出す。
+
+### 16.3 ページ固有ファイルの配置（2026-10-05）
+
+- お問い合わせ: `js/bm-contact.js`。資料DLと共通のHubSpot項目・送信先は `js/bm-lead.js`。お問い合わせの成功待ちと資料DLの非同期送信の違いは維持。
+- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う。
+- 送信機能の準備中はHTML内の `#bmContactStatus` に再読み込み・電話連絡の案内を表示し、初期化成功後に隠す。フォームJSの読込失敗時とJavaScript無効時にも案内を残す。
+- お客様の声の詳細では、共通サニタイザーが利用できない場合に読込表示を終了してエラーを表示し、未処理の本文は挿入しない。
+- 動的詳細: `js/bm-column-detail.js`、`js/bm-news-detail.js`、`js/bm-testimonial-detail.js`。本文のブラウザサニタイズは `bm-sanitize.js` を使用。
+- 埋込ビューア: `js/bm-embed-viewer.js` と `css/bm-embed-viewer.css`。URL・DOM・実行順は維持。
+- ページCSS: `css/bm-{column-detail,news-detail,testimonial-detail,privacy-policy}.css`。静的コラムの共通CSSは `css/bm-column-static.css`（テンプレートも同期）。Critical CSSは初期描画のためインラインで維持。
+- ロゴ表示: `js/client-logos.js` が2種類のデータ・クラス名を扱う。`js/data/` のデータは従来どおり分離。
+- 8本のLPはHTML全体のv2マーカーを判定して事例セクションを生成。繰り返し実行しても空行を増やさない。
+- LP事例は最大3件、カード幅は最大340pxで中央配置し、件数に応じて空の列を残さない。0件時は準備中の案内と制作事例・ビズ書庫へのリンクを表示する。
+- 参照がなくなっていた `js/bm-flow.js`、`js/bm-product-manga.js`、`css/production-flow.css`、`css/bm-lp-template.css` は削除。画像の元データは保持。
+- Service Workerは `bm-covers-` 系の旧キャッシュだけを削除し、背景の再取得・キャッシュ保存を `waitUntil` で完了させる。

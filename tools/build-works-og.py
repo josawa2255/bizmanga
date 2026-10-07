@@ -10,20 +10,21 @@ BizManga works 専用 OG画像を 1200×630 で個別生成する。
 
 実行タイミング:
 - WPで作品が追加された時
-- 週次の GitHub Actions `build-works.yml` の前段で実行
+- 手動で実行後、build-works.py を実行（定期ワークフローには未登録）
 """
 
 import io
-import json
+import os
 import pathlib
 import urllib.parse
 import urllib.request
 from PIL import Image, ImageDraw, ImageFont
+from bm_build import API_BASE
+from bm_build import bizmanga_works, fetch_json, output_batch, safe_slug, write_bytes
 
-API = "https://cms.contentsx.jp/wp-json/contentsx/v1/works"
+API = API_BASE + '/works'
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "material" / "images" / "og" / "works"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # WP管理者が任意URLを thumbnail に入れる経路がある以上、SSRF防止のため取得元を allowlist 化
 THUMB_ALLOWED_HOSTS = {"cms.contentsx.jp", "contentsx.jp", "bizmanga.contentsx.jp"}
@@ -36,15 +37,28 @@ ACCENT = (233, 30, 99)                 # BizManga ピンク (bizmanga brand)
 TEXT_PRIMARY = (255, 255, 255)
 TEXT_SECONDARY = (200, 200, 200)
 
-FONT_JP = "/System/Library/Fonts/Hiragino Sans GB.ttc"
-FONT_EN = "/System/Library/Fonts/Helvetica.ttc"
+def find_font(variable, candidates):
+    override = os.environ.get(variable)
+    for filename in ([override] if override else candidates):
+        if pathlib.Path(filename).is_file():
+            return filename
+    raise FileNotFoundError(f"Set {variable} to an installed font file")
+
+
+def fonts():
+    jp = find_font("BM_FONT_JP", [
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        "C:/Windows/Fonts/YuGothM.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    ])
+    en = find_font("BM_FONT_EN", [
+        "/System/Library/Fonts/Helvetica.ttc", "C:/Windows/Fonts/arial.ttf", jp,
+    ])
+    return jp, en
 
 
 def fetch_works():
-    req = urllib.request.Request(API, headers={"User-Agent": "BizManga-OG-Builder/1.0"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        data = json.loads(r.read().decode("utf-8"))
-    return [w for w in data if w.get("show_site") == "both"]
+    return bizmanga_works(fetch_json(API, timeout=20, user_agent="BizManga-OG-Builder/1.0"))
 
 
 def load_thumb(url):
@@ -84,8 +98,9 @@ def wrap_text(text, font, max_width, draw):
     return lines
 
 
-def render(work):
-    slug = work["id"]
+def render(work, font_paths=None):
+    FONT_JP, FONT_EN = font_paths or fonts()
+    slug = safe_slug(work["id"])
     title = work.get("title_ja") or slug
     category = work.get("category") or "制作事例"
     media = " / ".join(work.get("media") or []) or ""
@@ -147,15 +162,19 @@ def render(work):
     draw.text((right_x, H - 72), "bizmanga.contentsx.jp", font=url_font, fill=ACCENT)
 
     out = OUT_DIR / f"{slug}.webp"
-    img.save(out, "WEBP", quality=88, method=6)
+    buffer = io.BytesIO()
+    img.save(buffer, "WEBP", quality=88, method=6)
+    write_bytes(out, buffer.getvalue())
     print(f"Generated: {out.name}")
 
 
 def main():
     works = fetch_works()
+    font_paths = fonts()
     print(f"Works to render: {len(works)}")
-    for w in works:
-        render(w)
+    with output_batch(ROOT):
+        for w in works:
+            render(w, font_paths)
     print("Done.")
 
 

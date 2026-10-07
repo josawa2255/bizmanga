@@ -45,20 +45,52 @@
     return s;
   }
 
-  /**
-   * WP APIから返るHTML本文を安全化
-   * script/iframe/style等の危険タグを除去し、on属性やjavascript:URIをstripする
-   */
+  // 記事本文は外部リンクも許可するため、ドメインを制限するsanitizeUrlとは分ける。
+  // tools/bm_html.pyと同じURLポリシー。制御文字はtrimより先に拒否する。
+  function safeRichUrl(value, link, image) {
+    if (/[\u0000-\u001f\u007f]/.test(value)) return null;
+    var v = value.trim();
+    var scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(v);
+    if (!scheme) return v;
+    var protocol = scheme[1].toLowerCase();
+    if (protocol === 'http' || protocol === 'https' ||
+        (link && (protocol === 'mailto' || protocol === 'tel'))) return v;
+    if (image && /^data:image\/(?:png|gif|jpeg|webp|avif|bmp|x-icon);base64,[a-zA-Z0-9+/=]+$/i.test(v)) return v;
+    return null;
+  }
+
+  function safeRichSrcset(value) {
+    if (/[\u0000-\u001f\u007f]/.test(value)) return null;
+    var parts = value.split(',').map(function(chunk) { return chunk.trim(); }).filter(Boolean);
+    // data URLはカンマ区切りと曖昧になるため、srcsetには許可しない。
+    if (!parts.length || parts.some(function(chunk) {
+      return safeRichUrl(chunk.split(/\s+/)[0], false, false) === null;
+    })) return null;
+    return parts.join(', ');
+  }
+
+  /** WP APIから返るHTML本文を安全化する。 */
   function sanitizeRichHTML(raw) {
     var tmp = document.createElement('div');
     tmp.innerHTML = raw || '';
     tmp.querySelectorAll('script,iframe,object,embed,base,form,meta,link,style,svg,math,noscript,template').forEach(function(el) { el.remove(); });
     tmp.querySelectorAll('*').forEach(function(el) {
       Array.from(el.attributes).forEach(function(attr) {
-        var v = attr.value.trim().toLowerCase().replace(/[\t\n\r]/g, '');
-        if (attr.name.startsWith('on') || v.startsWith('javascript:') || v.startsWith('data:text/html')) {
+        var name = attr.name.toLowerCase();
+        var value = attr.value;
+        if (name.startsWith('on') || name === 'srcdoc') {
           el.removeAttribute(attr.name);
+          return;
         }
+        if (name === 'srcset') {
+          value = safeRichSrcset(value);
+        } else if (['href', 'src', 'action', 'formaction', 'poster', 'background', 'cite', 'xlink:href'].indexOf(name) !== -1) {
+          value = safeRichUrl(value,
+            name === 'href' && (el.localName === 'a' || el.localName === 'area'),
+            name === 'src' && el.localName === 'img');
+        }
+        if (value === null) el.removeAttribute(attr.name);
+        else if (value !== attr.value) el.setAttribute(attr.name, value);
       });
     });
     return tmp.innerHTML;

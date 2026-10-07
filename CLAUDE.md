@@ -18,16 +18,16 @@
 
 | ページ | ファイル | ページ固有の主要JS |
 |--------|---------|--------|
-| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-flow.js |
+| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
 | 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
 | FAQ | faq.html | （なし） |
-| お問い合わせ | contact.html | bm-hubspot.js |
-| 資料ダウンロード | download.html | bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
-| お客様の声 | testimonials.html | bm-testimonials-page.js |
-| コラム一覧/詳細 | column.html / column-detail.html | bm-wp-api.js |
-| ニュース | news.html / news-detail.html | bm-wp-api.js |
+| お問い合わせ | contact.html | bm-lead.js, bm-contact.js（JS未読込時は送信を無効化し、再読み込み・電話連絡の案内を表示） |
+| 資料ダウンロード | download.html | bm-lead.js, bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
+| お客様の声 | testimonials.html / testimonial-detail.html | bm-testimonials-page.js / bm-testimonial-detail.js |
+| コラム一覧/詳細 | column.html / column-detail.html | bm-wp-api.js、詳細は bm-column-detail.js |
+| ニュース | news.html / news-detail.html | bm-wp-api.js、詳細は bm-news-detail.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
 | 強み | strength.html | （**2026-08-05 v2デザインへ統一**: bm-lp-v2.css/js + アドオン css/strength.css（`body.str-v2` スコープ）。ヒーローは product-manga / manga-ad-lp と同型。旧 bm-strength.js は廃止。画像プロンプトは docs/strength-image-prompts.md。**2026-08-19** 「5つの強み」をコマ割りパネル `.str-panels`、「お悩み」を数字中心の横並び行 `.str-pain` に刷新。**段組み依存の調整は `@media (min-width: 701px)/(1001px)` で囲う**（詳細は SPEC.md §1 の同行）） |
@@ -64,6 +64,10 @@
 ## 外部サービス
 - HubSpot: Portal 48367061（ContentsXと共通）
 - WordPress API: `https://cms.contentsx.jp/wp-json/contentsx/v1`（bm-wp-config.js）
+
+本文のURLサニタイズはブラウザの `js/bm-sanitize.js` と静的生成の `tools/bm_html.py` で共通の方針を使う。
+制御文字を拒否し、用途別にスキームを許可する。記事中の外部リンクは維持するため、
+自社ドメインに制限する `bmSanitize.url` とは区別する。仕様と回帰検証は [SPEC.md §16.2](SPEC.md) を参照。
 
 ## GSC日次ランク追跡（2026-04-20〜稼働）
 - 毎朝 JST 09:00 に `.github/workflows/rank-tracker.yml` が自動発火

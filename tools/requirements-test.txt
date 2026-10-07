@@ -1,0 +1,2 @@
+# Browser smoke tests
+playwright==1.58.0

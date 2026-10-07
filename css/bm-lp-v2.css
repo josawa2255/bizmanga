@@ -1044,12 +1044,13 @@
 .lpv2-cases { background: var(--lpv2-cream); }
 .lpv2-cases-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* 空の列を残さず、1〜3件のカードを読みやすい幅で中央に配置する。 */
+  grid-template-columns: repeat(auto-fit, minmax(0, min(100%, 340px)));
+  justify-content: center;
   gap: 20px;
   max-width: 1160px; margin: 0 auto;
 }
-@media (max-width: 960px) { .lpv2-cases-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 720px) { .lpv2-cases-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
+@media (max-width: 720px) { .lpv2-cases-grid { gap: 14px; } }
 
 .lpv2-case {
   position: relative;
@@ -1102,7 +1103,7 @@
   overflow: hidden;
 }
 .lpv2-case__quote {
-  display: none; /* 4列表示では引用を省略 */
+  display: none; /* 一覧では引用を省略 */
 }
 .lpv2-case__more {
   display: inline-flex; align-items: center; gap: 6px;
@@ -1136,7 +1137,7 @@
 }
 .lpv2-library .bm-lp-lib-loading { color: rgba(255,255,255,0.6); text-align: center; padding: 32px; }
 
-/* SP: 制作事例グリッドと同じく2列流動にして、画面幅に応じて縮小する */
+/* SP: 書庫は2列流動にして、画面幅に応じて縮小する */
 @media (max-width: 560px) {
   .lpv2-library-grid,
   .lpv2-library [data-bm-lp-library-grid] {

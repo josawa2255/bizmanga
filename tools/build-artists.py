@@ -13,7 +13,7 @@ WP API `/artists` から漫画家を取得し、以下を自動生成する:
 
 実行タイミング:
     - WordPress で漫画家を追加・更新・並べ替えした後
-    - 日次の定期実行（他のビルドと同じ）
+    - 手動実行（現在、定期ワークフローには未登録）
 
 Why:
     artists.html は JS で描画する構成のため、Googlebot の JS レンダリング前は
@@ -24,16 +24,18 @@ Why:
        ビルド失敗でページが空になる事故を防ぐため。
 """
 
+from bm_build import API_BASE, SITE_URL
+from bm_build import fetch_json as _fetch_json, output_batch, write_text, script_json
+from bm_build import replace_block
 import html
 import json
 import pathlib
-import re
 import sys
 import urllib.error
 import urllib.request
 
-API = "https://cms.contentsx.jp/wp-json/contentsx/v1/artists"
-SITE = "https://bizmanga.contentsx.jp"
+API = API_BASE + '/artists'
+SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HTML_PATH = ROOT / "artists.html"
 DATA_PATH = ROOT / "js" / "artists-data.js"
@@ -55,9 +57,7 @@ def esc(s):
 
 
 def fetch_artists():
-    req = urllib.request.Request(API, headers={"User-Agent": "bizmanga-build/1.0"})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return json.loads(r.read().decode("utf-8"))
+    return _fetch_json(API, timeout=TIMEOUT, user_agent="bizmanga-build/1.0")
 
 
 def to_creator(a, index):
@@ -98,7 +98,6 @@ def build_data_js(creators):
 def build_card(c, index):
     """artists.js の renderCards() と同じ構造の静的カードを吐く。
     JS が動く環境では再描画されるが、クローラーはこの静的HTMLを読む。"""
-    tag_html = ""
     label = esc(c["id"])
     return (
         f'        <button type="button" class="art-card" data-creator-id="{label}" aria-haspopup="dialog">\n'
@@ -134,52 +133,44 @@ def build_jsonld(creators):
     }
 
 
-def replace_block(s, start, end, block):
-    pattern = re.compile(re.escape(start) + r"[\s\S]*?" + re.escape(end))
-    if pattern.search(s):
-        return pattern.sub(block, s), True
-    return s, False
-
-
-def main():
+def _build():
     try:
         raw = fetch_artists()
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
         print(f"[build-artists] WP API に接続できません: {e}", file=sys.stderr)
         print("[build-artists] 既存の出力を保持して終了します（ページは空になりません）")
-        return 0
+        return 1
     except json.JSONDecodeError as e:
         print(f"[build-artists] レスポンスがJSONではありません: {e}", file=sys.stderr)
-        return 0
+        return 1
 
     if not isinstance(raw, list) or not raw:
         # 0件で上書きすると公開ページが空になるため、ここで止める
         print("[build-artists] WP から0件。既存の出力を保持して終了します", file=sys.stderr)
-        return 0
+        return 1
 
     creators = [to_creator(a, i) for i, a in enumerate(raw)]
 
     # 1) データJS
-    DATA_PATH.write_text(build_data_js(creators), encoding="utf-8")
+    write_text(DATA_PATH, build_data_js(creators))
     print(f"[build-artists] {DATA_PATH.relative_to(ROOT)} を更新（{len(creators)}名）")
 
     # 2) 静的カード + JSON-LD
-    if not HTML_PATH.exists():
-        print(f"[build-artists] {HTML_PATH} が見つかりません", file=sys.stderr)
-        return 1
     s = HTML_PATH.read_text(encoding="utf-8")
 
     cards = "".join(build_card(c, i) for i, c in enumerate(creators))
     start, end = "<!-- BUILD:ARTISTS_GRID -->", "<!-- /BUILD:ARTISTS_GRID -->"
     s, ok = replace_block(s, start, end, f"{start}\n{cards}      {end}")
     if not ok:
+        if '<div class="art-grid" id="artGrid">' not in s:
+            raise ValueError("Missing artists grid")
         s = s.replace(
             '<div class="art-grid" id="artGrid">',
             f'<div class="art-grid" id="artGrid">\n      {start}\n{cards}      {end}',
             1,
         )
 
-    ld = json.dumps(build_jsonld(creators), ensure_ascii=False, indent=2)
+    ld = script_json(build_jsonld(creators), indent=2)
     ld_block = f'<script type="application/ld+json" id="artistsItemList">\n{ld}\n</script>'
     s, ok = replace_block(
         s,
@@ -188,11 +179,18 @@ def main():
         ld_block,
     )
     if not ok:
+        if "</head>" not in s:
+            raise ValueError("Missing artists head")
         s = s.replace("</head>", f"  {ld_block}\n</head>", 1)
 
-    HTML_PATH.write_text(s, encoding="utf-8")
+    write_text(HTML_PATH, s)
     print(f"[build-artists] artists.html を更新（カード{len(creators)}枚 + JSON-LD）")
     return 0
+
+
+def main():
+    with output_batch(ROOT):
+        return _build()
 
 
 if __name__ == "__main__":

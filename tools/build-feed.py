@@ -6,26 +6,22 @@ Googlebot / Bingbot / Feedly 等のクローラ発見に活用。
 Usage:
   python3 tools/build-feed.py
 """
+from bm_build import API_BASE, SITE_URL
+from bm_build import fetch_json as _fetch_json, output_batch, write_text
 import datetime
-import html
-import json
 import sys
-import urllib.request
 from pathlib import Path
-from xml.sax.saxutils import escape as xml_escape
+from xml.sax.saxutils import escape as xml_escape, quoteattr
+from bm_content import make_slug
 from bm_pricing import normalize_price_text
 
-API_BASE = "https://cms.contentsx.jp/wp-json/contentsx/v1"
-SITE_URL = "https://bizmanga.contentsx.jp"
 SITE_NAME = "ビズマンガ"
 ROOT = Path(__file__).resolve().parents[1]
 OUT_PATH = ROOT / "feed.xml"
 
 
 def fetch_json(url, timeout=30):
-    req = urllib.request.Request(url, headers={"User-Agent": "BizManga-FeedBot/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    return _fetch_json(url, timeout=timeout, user_agent="BizManga-FeedBot/1.0")
 
 
 def rfc822(ymd: str) -> str:
@@ -33,13 +29,13 @@ def rfc822(ymd: str) -> str:
     try:
         dt = datetime.datetime.strptime(ymd, "%Y-%m-%d")
     except ValueError:
-        dt = datetime.datetime.now()
+        dt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     return dt.strftime("%a, %d %b %Y 09:00:00 +0900")
 
 
 def build_item(post, kind):
     """1 item XML を構築"""
-    slug = post.get("slug", "")
+    slug = make_slug(post) if kind == "column" else ""
     title = post.get("title_ja", "").strip()
     excerpt = post.get("excerpt_ja", "").strip()
     if kind == "column":
@@ -60,16 +56,16 @@ def build_item(post, kind):
 
     return f"""    <item>
       <title>{xml_escape(title)}</title>
-      <link>{url}</link>
-      <guid isPermaLink="true">{url}</guid>
+      <link>{xml_escape(url)}</link>
+      <guid isPermaLink="true">{xml_escape(url)}</guid>
       <pubDate>{rfc822(date_ymd)}</pubDate>
       <category>{xml_escape(category)}</category>
       <description>{xml_escape(excerpt)}</description>
-      {'<enclosure url="' + thumbnail + '" type="image/webp" />' if thumbnail else ''}
+      {'<enclosure url=' + quoteattr(thumbnail) + ' type="image/webp" />' if thumbnail else ''}
     </item>"""
 
 
-def main():
+def _build():
     # コラム取得
     columns = fetch_json(f"{API_BASE}/columns?site=bizmanga&per_page=50")
     print(f"コラム: {len(columns)}件取得")
@@ -94,7 +90,7 @@ def main():
     all_items = all_items[:30]
 
     # ビルド
-    build_time = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0900")
+    build_time = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%a, %d %b %Y %H:%M:%S +0900")
     items_xml = "\n".join(build_item(post, kind) for kind, post, _ in all_items)
 
     rss_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -117,8 +113,13 @@ def main():
 </rss>
 """
 
-    OUT_PATH.write_text(rss_xml, encoding="utf-8")
+    write_text(OUT_PATH, rss_xml)
     print(f"✓ {OUT_PATH.relative_to(ROOT)} 生成完了（{len(all_items)}件）")
+
+
+def main():
+    with output_batch(ROOT):
+        return _build()
 
 
 if __name__ == "__main__":
