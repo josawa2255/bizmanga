@@ -164,7 +164,7 @@ svg{max-width:100%;height:auto;}
   <section class="bm-client-logos" id="bmClientLogos">
     <div class="bm-container">
       <div class="bm-client-logos-heading">
-        <a href="/contact" class="bm-client-logos-subtitle bm-campaign-link" aria-label="Chatwork広告限定シナリオ制作無料キャンペーン実施中｜お問い合わせへ">
+        <a href="/contact" class="bm-client-logos-subtitle bm-campaign-link" data-bm-campaign aria-label="10月限定シナリオ制作無料キャンペーン｜お問い合わせへ">
           <svg class="bm-client-laurel bm-client-laurel--left" viewBox="0 0 28 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <g fill="#c9a227">
               <path d="M19 3 Q11 28 15 57" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-linecap="round"/>
@@ -181,7 +181,7 @@ svg{max-width:100%;height:auto;}
               <ellipse cx="22" cy="50" rx="3.8" ry="1.9" transform="rotate(6  22 50)"/>
             </g>
           </svg>
-          <span><span class="bm-campaign-cw"><img src="/material/images/campaign/chatwork-logo.webp" width="350" height="70" alt="Chatwork" class="bm-campaign-cw-logo" decoding="async">広告限定</span><br class="bm-campaign-br">シナリオ制作無料<br class="bm-campaign-br">キャンペーン実施中</span>
+          <span><span data-bm-campaign-month>10月限定</span> <br class="bm-campaign-br">シナリオ制作無料<br class="bm-campaign-br">キャンペーン</span>
           <svg class="bm-client-laurel bm-client-laurel--right" viewBox="0 0 28 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <g fill="#c9a227">
               <path d="M19 3 Q11 28 15 57" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-linecap="round"/>
@@ -690,6 +690,7 @@ svg{max-width:100%;height:auto;}
   <script src="js/data/bm-client-logos.js" defer></script>
   <script src="js/client-logos.js" defer></script>
   <script src="js/bm-home.js" defer></script>
+  <script src="/js/bm-campaign-month.js" defer></script>
   <script src="js/bm-videos.js" defer></script>
   <script src="js/bm-pre-production.js" defer></script>
   <script src="js/bm-scroll-anim.js" defer></script>
