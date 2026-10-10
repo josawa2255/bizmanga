@@ -18,7 +18,7 @@
 
 | ページ | ファイル | ページ固有の主要JS |
 |--------|---------|--------|
-| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js |
+| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-campaign-month.js（キャンペーン見出しの「○月限定」を日本時間の当月に更新） |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
 | 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
