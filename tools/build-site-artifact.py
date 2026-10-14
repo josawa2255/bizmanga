@@ -31,7 +31,7 @@ ALLOWED_EXT = {
 # 拡張子では許可しないが、名前を指定して公開するもの
 ALLOWED_FILES = {
     "CNAME", "robots.txt", "llms.txt", "manifest.json",
-    "d3aa5088bd3c49f988a9c1ead3f8206a.txt",   # 検索エンジンの所有確認
+    "d3aa5088bd3c49f988a9c1ead3f8206a.txt",   # IndexNow のキー（tools/indexnow-ping.py の KEY と同じ名前）
 }
 # 中身に関係なく公開しないフォルダ（先頭一致）
 DENY_DIRS = (
@@ -41,8 +41,8 @@ DENY_DIRS = (
 
 def tracked_files():
     """公開の候補: git 管理下のファイル＋.gitignore されていない新しいファイルのうち、いまディスクにあるもの。
-    デプロイでは tools/build-services.py が先にページを作り直す（追加・削除がありうる）ので、
-    コミット済みの一覧ではなく「作り直した後の作業ツリー」を正とする。.gitignore 対象（秘密・作業ファイル）は拾わない"""
+    デプロイ（pages.yml）はチェックアウトした作業ツリーをそのまま集める。手元で --list したときは、
+    まだコミットしていない新しいページも一覧に入る。.gitignore 対象（秘密・作業ファイル）は拾わない"""
     out = subprocess.run(["git", "-c", "core.quotepath=false", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
                          cwd=ROOT, capture_output=True, check=True).stdout.decode("utf-8")
     return sorted({p for p in out.split("\0") if p and (ROOT / p).is_file()})

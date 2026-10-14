@@ -55,6 +55,12 @@ class SiteArtifact(unittest.TestCase):
                           "js/works.js", "js/bm-wp-api.js", "js/bm-nav.js"):
             self.assertIn(must_show, PUBLIC)
 
+    def test_indexnow_key_file_is_public(self):
+        # IndexNow は KEY_LOCATION（/{KEY}.txt）を取りに来る。キーを替えたら許可リストも替える
+        source = (ROOT / "tools" / "indexnow-ping.py").read_text(encoding="utf-8")
+        key = re.search(r'^KEY = "([0-9a-f]+)"$', source, re.M).group(1)
+        self.assertIn(f"{key}.txt", PUBLIC)
+
     def test_site_path_resolution(self):
         self.assertEqual(site_path("index.html", "../css/x.css"), "/css/x.css")
         self.assertEqual(site_path("works/a.html", "img/h.webp"), "/works/img/h.webp")
