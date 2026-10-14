@@ -44,6 +44,16 @@
 - `.bm-about` — `padding: var(--section-py)`、SP は layout (grid→block) のみ media query で切替
 - `.bm-whatis-fold-*` — 見出し/バッジ/本文/リストすべて clamp、SP の media query は 2列→1列のみ
 
+### 0.6 横溢れ防止は `clip`。sticky を殺さない（2026-10-14 / Issue #73）
+- `html` と `body` の横溢れ防止は **`overflow-x: hidden; overflow-x: clip;` の2行**（`css/bizmanga.css`。ビズ書庫だけが読む `css/works.css` も同じ値にそろえる＝後から読まれて勝つため）。clip に対応したブラウザでは後の clip が勝ち、未対応の古いブラウザ（Safari 15 以前など）は hidden が残る（横スクロールは止まり、sticky だけ効かない＝修正前と同じ）。
+- **理由**: `hidden`（`auto`/`scroll` も）はスクロールコンテナを作る。body が「一度もスクロールしない箱」になり、その中の `position: sticky` が追従しなくなる。2026-10-14 まで body が hidden だったため、コラム一覧・制作事例・ビズ書庫のフィルターと資料DLのフォームは sticky と書いてあっても追従していなかった。clip は横にはみ出した分を切り取る効果は同じで、スクロールコンテナを作らない。
+- ⛔ **ページごとに html/body を clip で打ち消す書き方はしない**（以前の bizanime.css / use-cases.css / bizanime.js の打ち消しは共通側を直したので削除済み）。sticky を使う要素の祖先に `overflow: hidden` を足さない。切り取りたいときは `overflow: clip` か `clip-path: inset(0)`。
+- ヘッダー直下に貼り付ける帯は `top: var(--bm-header-height, 72px)`（`.bm-header` は全幅で高さ 72px。旧ヘッダー用の 56/60/68/80px を書かない）。カード型（資料DLフォーム）は `top: 96px` でヘッダーとの間を 24px 空ける。
+- 制作事例（`.bm-category-filter`）とビズ書庫（`.works-filter`）のフィルターは **768px 以下では追従させない**（`position: static`）。10カテゴリで3〜4行（124〜356px）になり、ヘッダーと合わせて画面の約2〜7割（320px幅の制作事例で67%）を覆って一覧が読めないため。コラムのチップは1行の横スクロール（54px）なので全幅で追従させる。
+- 副作用（見た目は変わらない）: body は独立した配置の区切り（BFC）ではなくなったので、body の最初の子の `margin-top` が body の外に出る（LP・FAQ・料金などで `document.body.getBoundingClientRect().top` が 68〜72px になる）。html に背景が無く body の背景はキャンバスに描かれるため、表示は同じ（変更前後でスクロール位置0のスクリーンショットを比較し、差は同じ版どうしでも出る揺らぎのみと確認）。
+- コラム詳細のプレビューバナー（`?preview=1`、`js/bm-column-detail.js` がインラインで sticky を付ける）も `top: var(--bm-header-height, 72px)`。`top:0` のままだと追従が効くようになった時点でヘッダーの上に常に重なり、スマホでハンバーガーの中心が押せなくなっていた（実測）。
+- 横スクロールの確認は `document.documentElement.scrollWidth <= innerWidth`（＝実際に横に動くか）。`document.body.scrollWidth` は clip/hidden で切り取られる前の中身の幅を返すので、トップ・コラム一覧のスマホ幅では innerWidth を超える（変更前から同じ値で、横には動かない）。
+
 ---
 
 ## 1. ページ構成
@@ -164,7 +174,7 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 - **区間内フェーズ配分（1本あたり t=0〜1）**: `0.00-0.58`移動・拡大 → `0.58-0.70`フレーム消滅 → **`0.70-0.88`フルスクリーン静止滞在** → `0.88-1.00`縮小（最後の動画は縮小なし）。vhは1本目180vh／2本目以降170vh（2026-08-30、150vh→170vhに拡張）。**静止滞在区間はフレーム消滅直後に新設**：以前はフレーム消滅(16%)の直後に縮小(18%)へ入り、「普通の枠になった瞬間すぐ次へ流れてほぼ見れない」状態だった（ユーザー指摘で発覚）。滞在中は `grow=1,fade=1,shrink=0` を完全固定し、スクロールしても動画位置・サイズが一切動かない「止め」を作る。詳細コメントは `js/bizanime.js` の `render()` 内
 - **CASE STUDIES**: PC3列/SP2列。一覧はサムネのみ、クリックでモーダル生成・閉じると破棄（ESC/背面クリック/focus trap対応）
 - ⚠️ ハマりどころ（再発防止）:
-  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → このページのみ `clip` に変更
+  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → 2026-10-14（Issue #73）に共通CSS側を `clip` に直したので、このページ専用の打ち消し（bizanime.css の `html:has(body.ba-page)`/`body.ba-page` と bizanime.js のインライン指定）は削除済み。§0.6
   - 登場アニメの `animation` はインライン transform より強い → 演出中は `animation:none`
   - スマホの `.ba-device` に `transform:none` を書くと演出が全滅（CSS変数合成を打ち消すため）→ 変数の初期値で調整する
   - CSSコメントの閉じ忘れは**ブレース数が合っていても**メディアクエリを飲み込む → 検査はコメント除去後に行う
@@ -679,7 +689,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | HubSpot | お問い合わせと同じフォーム（Portal `48367061` / Form `b6da14d0-…`）に、**お問い合わせと同じ項目の組み合わせ**（company / busyo / lastname / firstname / email / message）で送る。HubSpot 側に「資料DL」を表す欄が無いため、`message` の先頭に `【資料ダウンロード】<資料名>` と電話番号・流入元を入れて区別する（`pageName` は `BizManga - 資料ダウンロード`）。HubSpot 廃止（2026年11月予定）時は `js/bm-download.js` の `SEND_TO_HUBSPOT` を `false` にする |
 | 計測 | GA4・Google広告のコンバージョンは**付けていない**（付けるかは平澤さんの判断待ち。付けるなら②の直後で、お問い合わせの `generate_lead` と区別できる名前にする） |
 | 導線 | ヘッダー（`js/bm-nav.js` が「お問い合わせ」の左に `.bm-nav-dl` を差し込む。1280px 以上は文字入り、1025〜1279px は丸アイコン＋吹き出し、769〜1024px は文字入り、768px 以下は非表示）／ハンバーガーメニュー末尾（`mobileCtas` の先頭）／フッターのリンク列（`bm-nav.js` が「お問い合わせ」の直後に差し込む）／共通CTA `bm-cta.js` の3つ目のボタン `.bm-cta-btn--dl`。ヘッダー・フッターは各HTMLとテンプレートに直書きのため、**JS から1か所で足している**（テンプレート＝レビュー必須領域を触らずに生成ページにも効く）。追従CTA（`.bm-fab`）はこのページでは出さない（§7.1） |
-| レイアウト | PC（861px〜）: 左に表紙・形式と「この資料でわかること」、右にフォーム（sticky）。スマホ（〜860px）: 表紙 → フォーム → わかること の順（`grid-template-areas`。HTML も同じ順） |
+| レイアウト | PC（861px〜）: 左に表紙・形式と「この資料でわかること」、右にフォーム（sticky・`top: 96px`。2026-10-14 まで共通CSSの overflow-x:hidden で効いていなかった → §0.6）。スマホ（〜860px）: 表紙 → フォーム → わかること の順（`grid-template-areas`。HTML も同じ順） |
 
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
@@ -1077,7 +1087,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 **構造変更**
 1. Hero を h=1019px の全面イラスト → h=360px のシネマスコープ帯（`.bm-column-hero-strip`）に圧縮。LCPを H1 テキストへシフト。新画像 `hero-column.webp` (2400×1018) に差替（旧版は `hero-column.old.webp` にバックアップ）
 2. Editorial Masthead セクション追加: `EYEBROW · ISSUE N` → Noto Serif JP 900 の H1 超大サイズ（clamp 40-88px）→ 赤アクセント線 → リード段落
-3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。WP API の `data.category` から動的生成
+3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。追従位置はヘッダー下端 `top: var(--bm-header-height, 72px)`（全幅共通。2026-10-14 に修正・§0.6）。WP API の `data.category` から動的生成
 4. Featured 記事セクション追加（最新1件を 21:9 大判＋右本文のグリッドで表示）。JS で `<script id="bm-column-data">` の JSON から注入。**スマホ（`@media max-width:768px`）では `.bm-column-featured` を `display:none !important` で非表示**（2026-06-04）。JS([bm-column-filter.js](js/bm-column-filter.js))のカテゴリ絞り込みは `style.display=""/"none"` を切替えるため、CSS側に `!important` を付けて優先させPCのみ表示
 5. カードを `data-category` 属性 + 読了時間メタ表示対応に拡張
 

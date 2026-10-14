@@ -73,12 +73,22 @@ h1, h2, h3, h4, h5, h6,
 .bm-hero-sub, .bm-cta-title, .bm-pricing-title {
   text-wrap: pretty;
 }
-/* overflow-x: hidden でスクロールバー幅起因の横溢れを防止
-   clip は sticky を壊さないが古いWindows Edge で未サポートのため hidden を使用 */
+/* 横溢れ（スクロールバー幅・はみ出す装飾）で横スクロールが出るのを防ぐ。
+   html と body の両方に「hidden → clip」の順で書く（Issue #73）。
+   - hidden はスクロールコンテナを作る。body が「一度もスクロールしない箱」になり、
+     その中の position:sticky が追従しなくなる（コラム・制作事例・ビズ書庫のフィルター、
+     資料DLのフォームが効いていなかった）。
+   - clip は横にはみ出した分を切り取る効果は hidden と同じで、スクロールコンテナを作らない
+     ので sticky が効く。対応ブラウザでは後に書いた clip が勝つ。
+   - clip 未対応の古いブラウザ（Safari 15 以前・旧Edge 等）は前の hidden が残る
+     ＝横スクロールは従来どおり止まり、sticky だけが効かない（修正前と同じ）。
+   ⚠️ ページごとに clip で打ち消す書き方は不要（以前の bizanime/use-cases の上書きは削除済み）。
+   ⚠️ works.css（ビズ書庫）にも同じ指定がある。後から読まれて勝つので両方そろえる。 */
 html {
   scroll-behavior: smooth;
   font-size: 16px;
   overflow-x: hidden;
+  overflow-x: clip;
   /* iOS Safari: 縦横回転時のテキスト自動拡大を抑止 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -100,6 +110,7 @@ body {
   background: var(--bm-bg);
   line-height: 1.8;
   overflow-x: hidden;
+  overflow-x: clip; /* 理由は上の html のコメント（sticky を効かせるため hidden の後に clip） */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -2256,9 +2267,12 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 }
 
 /* フィルターチップ */
+/* 追従位置は固定ヘッダー（.bm-header 高さ72px・全幅共通）の下端ぴったり。
+   以前の 68px / スマホ 60px は旧ヘッダー高さの名残で、追従が効くようになったら
+   チップの上端がヘッダーに潜った（Issue #73 で実測）。 */
 .bm-column-filter {
   position: sticky;
-  top: 68px;
+  top: var(--bm-header-height, 72px);
   z-index: 30;
   background: #fff;
   border-top: 1px solid #eee;
@@ -2528,7 +2542,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     line-height: 1.8;
   }
   .bm-column-filter {
-    top: 60px;
     padding: 10px 0;
     margin-bottom: 28px;
   }
@@ -3710,7 +3723,8 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   display: flex; gap: 10px; flex-wrap: wrap;
   justify-content: center;
   margin: 0 0 36px;
-  position: sticky; top: 80px;
+  /* 固定ヘッダー（72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた */
+  position: sticky; top: var(--bm-header-height, 72px);
   z-index: 100;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(8px);
@@ -5221,6 +5235,9 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 @media (max-width: 768px) {
   .bm-header-right .bm-nav-cta { display: none; }
   .bm-category-filter {
+    /* スマホは3列×複数行（10カテゴリで 266〜356px）になり、追従させると
+       ヘッダーと合わせて画面の約3〜7割を覆って一覧が読めない。追従させない */
+    position: static;
     gap: 8px;
     padding: 12px 16px;
     display: grid;

@@ -511,16 +511,12 @@ body.ba-page .bm-header-inner { position: relative; }
    Hero を画面に貼り付け、直後の .ba-stage でスクロール距離を稼ぐ。
    高さは動画の本数から JS が決める。スクロール自体は奪わない。
    ========================================================================== */
-/* ⚠️ sticky が効かない2つの落とし穴を回避している。
-   ① 祖先の overflow: 共通CSSの html{overflow-x:hidden} がスクロールコンテナを
-      作ってしまい sticky が無効化される。このページだけ clip に変える
-      （clip は overflow-x:hidden と同じく横スクロールを止めるが、
-       スクロールコンテナを作らないので sticky が生きる）。
+/* ⚠️ sticky が効かない2つの落とし穴に注意。
+   ① 祖先の overflow: hidden/auto の祖先はスクロールコンテナになり sticky が効かなくなる。
+      html/body の横溢れ防止は共通CSS（bizmanga.css）で clip にしてあるので、
+      このページで打ち消す必要はない（Issue #73 で共通側を修正）。
+      Hero の祖先に overflow:hidden を足さないこと（切り取りたいときは clip）。
    ② スクロール余白: Hero と .ba-stage を1つのラッパーに入れ、その中で貼り付ける。 */
-html:has(body.ba-page) { overflow-x: clip; }
-/* ⚠️ body 側にも overflow-x:hidden が効いており、これもスクロールコンテナを作る。
-      html だけ直しても sticky は効かない（実測で確認）。 */
-body.ba-page { overflow-x: clip; }
 .ba-scroll-wrap { position: relative; }
 /* ⚠️ 登場アニメーション(.ba-anim .ba-device)は transform を animation で設定するため、
    インラインの transform（スクロール演出）より優先されてしまう。

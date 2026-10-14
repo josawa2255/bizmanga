@@ -1,6 +1,10 @@
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; overflow-x: hidden; }
+/* 横溢れ防止。hidden の後に clip を書く（clip 対応ブラウザでは clip が勝つ）。
+   hidden だけだとスクロールコンテナができ、ビズ書庫のフィルター（.works-filter）の
+   position:sticky が追従しない。理由の詳細は bizmanga.css の html のコメント（Issue #73）。
+   biz-library.html ではこのファイルが bizmanga.css より後に読まれて勝つので、必ず同じ値にそろえる。 */
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
     -apple-system, BlinkMacSystemFont, sans-serif;
@@ -9,6 +13,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overflow-x: clip; /* 上の html と同じ理由 */
 }
 
 /* ===== Header / Nav ===== */
@@ -97,8 +102,9 @@ body {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+  /* 固定ヘッダー（.bm-header 72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた */
   position: sticky;
-  top: 80px;
+  top: var(--bm-header-height, 72px);
   z-index: 100;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(8px);
@@ -1496,7 +1502,9 @@ body {
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
   .works-filter {
-    top: 56px;
+    /* スマホは複数行（10カテゴリで 124〜234px）になり、追従させるとヘッダーと合わせて
+       画面の約2〜5割を覆う。追従させない（旧ヘッダー56px用の top:56px もここで廃止） */
+    position: static;
     gap: 6px;
     padding: 10px 4px;
   }
