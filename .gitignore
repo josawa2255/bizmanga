@@ -14,3 +14,6 @@ __pycache__/
 
 # WordPress連携の生成物 (build-columns.py / build-works.py で再生成可)
 # 必要に応じて追加
+
+# GitHub Pages 用に公開ファイルだけを集めたフォルダ（tools/build-site-artifact.py が生成）
+_site/
