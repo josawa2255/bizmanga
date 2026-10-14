@@ -21,6 +21,7 @@ jobs:
           node-version: '22'
       - run: python tools/check-site.py
       - run: python -B -m unittest discover -s tools -p 'test_build.py'
+      - run: python -B -m unittest discover -s tools -p 'test_site_artifact.py'
       - run: node --test tools/test-bm-tracking.cjs tools/test-runtime.cjs
 
   browser:

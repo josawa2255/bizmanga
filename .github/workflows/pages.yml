@@ -1,0 +1,74 @@
+# GitHub Pages へ「公開してよいファイルだけ」をデプロイする（2026-10-14 セキュリティ強化）。
+# 公開対象は tools/build-site-artifact.py の許可リスト。内部資料（*.md・docs/・tools/ 等）は公開しない。
+# ⚠️ リポジトリの Settings → Pages → Source が「GitHub Actions」のときだけデプロイする。
+#    「ブランチから公開（legacy）」のままだと従来型の公開処理がリポジトリ全体を同時に公開して競合するため
+#    （ContentsX で 2026-10-14 に発生。ContentX_HP/BUGS.md #067）。切り替えまではデプロイの手前で止まる。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # 自動ビルド（GITHUB_TOKEN での push）は上の push を起動しない（GitHub の仕様）ので、完了でもデプロイする。
+  # 本番のファイルを書き換える自動ビルドを新しく足したら、ここにも足す
+  workflow_run:
+    workflows: ["Build column static pages", "Build LP cases (static injection)", "Build works static pages"]
+    types: [completed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # 自動ビルドが失敗したときはデプロイしない
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that Pages is set to deploy from GitHub Actions
+        id: mode
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          mode=$(gh api "repos/$REPO/pages" --jq .build_type)
+          echo "Pages build_type: $mode"
+          if [ "$mode" = "workflow" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Pages is '$mode'. Switch Settings > Pages > Source to GitHub Actions before this workflow deploys."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.mode.outputs.deploy == 'true'
+        uses: actions/checkout@v4
+
+      - name: Collect public files only (no internal docs / tools)
+        if: steps.mode.outputs.deploy == 'true'
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_site_artifact.py'
+          python3 tools/build-site-artifact.py
+
+      - name: Setup Pages
+        if: steps.mode.outputs.deploy == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        if: steps.mode.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        if: steps.mode.outputs.deploy == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
