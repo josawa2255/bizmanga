@@ -63,7 +63,7 @@
 
 ## 公開範囲（2026-10-14 セキュリティ強化）⭐
 - ⛔ **このリポジトリは PUBLIC。顧客情報・インフラ構成・未対応の弱点リスト・認証の手順をコミットしない**（ContentsX で内部資料が本番から取得できた件 = ContentX_HP/BUGS.md #067）。
-- 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json` と検索エンジンの所有確認ファイル）だけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
+- 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json` と IndexNow のキーファイル〈`tools/indexnow-ping.py` の `KEY` と同じ名前。漏れはテストで検出〉）だけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
 - デプロイは `.github/workflows/pages.yml`。**Settings → Pages → Source が「GitHub Actions」のときだけ**デプロイする（legacy＝ブランチから公開のままだと、従来型の公開処理がリポジトリ全体を同時に公開して競合する）。
 - ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足す**。
 - 公開範囲を変えたら `python3 tools/build-site-artifact.py && python3 tools/smoke-manga-wp.py --serve _site` で漫画表示を確認する（2026-10-14: 48 PASS）。
