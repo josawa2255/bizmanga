@@ -194,7 +194,7 @@ python -B tools/check-builds.py
 python -B tools/smoke-manga-wp.py --serve .
 ```
 
-`check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性を検証します。
+`check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性（feed.xml も完全一致）と、フィードのコラムリンクが生成ページと一致することを検証します。
 作業ツリーを更新する場合は `tools/build-*.py` を個別に実行してください。
 漫画表示・WP接続の変更時は [確認手順](docs/REVIEW-MANGA-WP.md) も参照してください。
 

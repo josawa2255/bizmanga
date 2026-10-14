@@ -65,9 +65,9 @@ def main():
                     with redirect_stdout(log):
                         module.main()
                     second = snapshot(target)
-                    # RSS lastBuildDate is intentionally the current time.
+                    # Every output, feed.xml included, depends only on WP data, not the clock.
                     changed_twice = [p for p in first.keys() | second.keys()
-                                     if p != 'feed.xml' and first.get(p) != second.get(p)]
+                                     if first.get(p) != second.get(p)]
                     if changed_twice:
                         raise AssertionError(f'Non-idempotent build: {changed_twice}')
                 except BaseException:
@@ -76,9 +76,16 @@ def main():
                 deleted = before.keys() - first.keys()
                 changed = sum(before.get(p) != data for p, data in first.items())
                 print(f'PASS {name}: generated/updated={changed}, removed={len(deleted)}, repeat is stable')
-            # Parse JSON-LD and application/json in all freshly rendered documents.
+            # The feed must link to the column pages build-columns generated (same articles, same slugs).
             import re
             import json
+            feed_columns = re.findall(r'<link>https://bizmanga\.contentsx\.jp/column/([^<]+)</link>',
+                                      (target / 'feed.xml').read_text(encoding='utf-8'))
+            missing = [slug for slug in feed_columns if not (target / 'column' / (slug + '.html')).is_file()]
+            if not feed_columns or missing:
+                raise AssertionError(f'Feed column links without a generated page: {missing or "no column items"}')
+            print(f'PASS feed: {len(feed_columns)} column links match generated column pages')
+            # Parse JSON-LD and application/json in all freshly rendered documents.
             for path in target.rglob('*.html'):
                 for match in re.finditer(r'<script[^>]*type="application/(?:ld\+)?json"[^>]*>(.*?)</script>', path.read_text(encoding='utf-8'), re.S):
                     json.loads(match[1])

@@ -69,7 +69,7 @@
 | ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
 | コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日本語固定・OGP動的更新。Editorial Magazineデザイン |
-| コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
+| コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。毎日03:00 JST（`build-columns.yml`）+ 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
 | **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）で8本すべて稼働**（2026-05-13 `recruit-manga.html` でパイロット導入→全LPへ展開。旧 `css/bm-lp-template.css`（`pm-*`）は削除済み）。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 | **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加。**2026-05-12 SEO内部リンクハブ化**: 公開後ナビ登録のみで本文中リンクゼロ→Google重要度低判定→順位獲得未達という分析を踏まえ、pricing/faq/works/8用途LP の計11 HTML から `.bm-related-guide` aside で本文中アンカーテキスト付き内部リンクを集中投下。各LP固有のKW（採用マンガ対応の〜/IR漫画対応の〜 等）でアンカー多様化、ペナルティ回避と複合KW強化を両立。共通CSSは `css/bizmanga.css` 末尾。**ホーム(index.html)のバナー(`.bm-home-comparison-banner`)はCV重視で `/strength`（強み5選ページ）に流す方針** — 比較ガイド本体のコンテンツ完成度を訪問者向けに磨き上げるまで、検索流入経由でしか比較ガイドに到達しない設計にして他社情報経由のCV離脱を防ぐ。**2026-05-26 デザイン全面刷新 進行中(editorial路線へピボット)**: オレンジ全面のポップ路線から、アイボリー地＋黒セリフ見出し＋オレンジ差し色の上品なエディトリアル路線へ転換する方針。キービジュアルは手描きスケッチ調の天秤(¥コインvs時計)＋薄いマンガ絵コンテ背景(=ユーザーが用意した別デザイン、ビズちゃんは不使用)。**ヒーロー(TOP)から着手済み**。**一度作ったビズちゃん版①「漫画制作会社は何で選べばいいのか」セクション(mpc-choose)とそのCSSは削除済み**。**比較表(主要5社)は削除方針は維持**。**2026-05-26 ヒーローv3に全面刷新済み(`.mpc-hero-v3`、旧 `.mpc-hero-v2`+ビズちゃんbg/B案は廃止)**: editorial構成 = 比較ガイドpill→H1「漫画制作会社 比較ガイド」(SEO優先で漢字)→リード→**インタラクティブ天秤**→4比較ポイント(業界最安値/最短2週間/8用途/料金透明性)カードリスト→オレンジCTA「無料で比較してみる」→サブリンク。**天秤はユーザー生成の手描きスケッチ画像をパーツ分離して使用**(支柱固定/横棒回転/左右皿が上下、¥コイン・時計は皿画像に内包され連動)。素材は `material/images/mpc/scale-{stand,beam,pan-yen,pan-clock}-crop.webp`(4レイヤーをCSS%で絶対配置、配置座標はPython合成で確定→%化、横棒の `transform-origin:50% 27.8%`=支点)。※元画像 `images/scale_*_transparent_verified.png` 等はアルファ無し(透過プレビューを市松ごとRGB焼込み)だったため、こちらで「明るい・低彩度画素を透明化」(白ヒーロー上でコイン面/時計盤は白く見える)処理して webp 化。挙動JS=`js/mpc-scale.js`(`.comparison-scale`にホバー/タップで `is-tilt-left/right`、離脱で中央、初回0.6sアイドルスイング `is-idle-swing`、`prefers-reduced-motion`配慮、`(hover:hover)`でPC/スマホ分岐)。傾き角±7deg・transition `cubic-bezier(.2,.8,.2,1)`。色 #FF6A00/#111/#E8E1D8。CSSは `css/mpc.css` 末尾。**全サイズ崩れない設計**: 枠 `.comparison-scale` を `aspect-ratio:840/760` 固定＋内部は全%/deg なので、画面比率に関係なく相対配置(鎖↔皿連結)を維持し拡縮するだけ(320px〜超ワイドで検証済)。ヒーロー背景に薄いマンガ絵コンテ素材(白地に馴染む)を**PC/スマホで出し分け**: PCは縦長素材の中央スケッチ帯を切り出した横長版 `hero-bg-sketch-pc.webp` を `100% auto/center top`(左右のスケッチが天秤を挟む。**2026-06-01 `center`→`center top` に変更: 4ポイントQ&Aアコーディオン展開でヒーローが縦に伸びても背景が再センタリングされてズレないよう上端基準に固定**)、スマホ(≤640px)は縦長素材 `hero-bg-sketch.webp` を `100% auto/center top`(上部にスケッチを表示。元から上端基準で不動)。**※旧 `.mpc-hero-v2-*` CSS(~330行)と未使用画像 `material/images/mpc/hero-bg-{pc,sp}.webp` はデッドコード化(要掃除)**。**2026-05-27 ②セクション実装＝旧PAIN(失敗の3パターン)と旧8選定基準セクションをHTMLごと削除し、editorialの「依頼先を判断する基準」セクション(`#sec-choose`/`.mpc-choose`)に統合**: client-logos直下に配置。eyebrow `HOW TO CHOOSE`→H2「依頼先は、<em>何で見極めるか</em>」→リード→(keyfacts数値バンドは2026-05-27に削除)→`.mpc-choose-list`(付箋チェックリストの`<ol>`6項目=①料金が公開されているか ②用途への専門性 ③「伝わる構成」設計力 ④契約条件の明文化 ⑤サンプル&レスポンス速度 ⑥実績&アフターサポート)→末尾に比較表(`#comparison`)への導線。各項目末尾に `.mpc-choose-check`(「見極めポイント」callout)。CSSは `css/mpc.css` の旧criteria直後に `.mpc-choose-*` を追加(各項目は付箋カード(`#fffdf6`+影+折れ角dog-ear)で、チェックボックス `.mpc-choose-tick` を持つ。≤600pxは48px→38px列に縮小。**ワイド画面(≥881px)はコンテナ幅を `clamp(880px,76vw,1440px)` で画面幅連動拡大＋見出し/本文/余白も clamp+vw でスケールし、モニターでの左右余白を圧縮（単一列維持・チェック演出はそのまま）**)。**※クラス名 `mpc-choose` は旧ビズちゃん版から再利用だが完全に別物(editorialの判断基準セクション)**。アニメは見出し/keyfacts/本文=共通 `data-fuwa-auto`(bm-fuwa.js→`.is-fuwa-in`)、`.mpc-choose-item`=`data-fadeup`(mpc.js→`.is-visible`)で既存criteriaと同じ二重リビールパターン。**チェックは別系統**: `js/mpc.js` の `initChecklist()` が IntersectionObserver(`rootMargin:-45% 0 -40%`=画面中央の薄い帯)でカードが中央付近に来た時に `.is-checked` を付与→チェックボックスがオレンジに塗られチェックが弾けて出る。スクロールで上から1枚ずつ点く演出(フェードアップとは分離。IO非対応は全チェックfallback)。**旧 `.mpc-pain-*`/`.mpc-criteria-*` CSSはデッドコード化(要掃除)**。**現フロー: Hero→Logoマーキー→依頼先を判断する基準(NEW)→ビズマンガはどうなのか(NEW)→比較表→用途別マップ→FAQ→最終CTA**。**2026-05-27「では、ビズマンガはどうなのか」セクション追加**(`#sec-bizanswer`、判断基準と比較表の間): 判断基準6項目に1つずつ"答える"構成。**ビズちゃん(マスコット)＋参考イラストで分かりやすく**＝トップの `bm-reasons` コンポーネント(`.bm-reason-card` Z字交互カード)を流用し、`material/images/reasons/reason-0X-*.webp`(既存8枚から6枚)を各基準に割当(①料金=01-price/②用途=07-use-cases/③構成=08-artists/④契約=06-copyright/⑤速度=02-speed/⑥実績=04-multimedia)。各カードに `.bm-reason-kicker`「見極め基準｜◯◯」を追加し判断基準と1対1対応。**editorial路線の中でこの1セクションのみビズちゃん復活**(ユーザー指示)。背景は `.mpc-bizanswer` で白固定に上書き。CSSは `css/mpc.css` の choose 直後**。**2026-05-27 比較表(`#comparison`)を刷新**: 旧「主要5社(A〜E社)＋ビズマンガ」の6列横長表(`.mpc-table`)を廃止し、`/strength`の「まとめると!」と同じ **`bm-pricing-table`(他社 vs ビズマンガ の2列)** に置換。行は上の判断基準6項目(料金の透明性/用途への専門性/「伝わる構成」設計力/契約条件/サンプル・レスポンス速度/実績・アフター)に統一し、チェックリスト→比較表の流れを接続。「一般的な制作会社」列はグレー地、「ビズマンガ」列は薄オレンジ地＋オレンジ太字。`bm-pricing-table`はbizmanga.css共通クラス(pricing/strengthと共用)。**※2026-05-27に各社プロフィール(`#sec-profiles`、競合5社個別紹介セクション)を削除。整合のためJSON-LD ItemList(6社)も併せて除去**。旧 `.mpc-table*` CSSと `mpc.js initStickyTable`(if(!table)return でno-op)はデッドコード化(要掃除)。**2026-06-01 ヒーロー4ポイント(`.mpc-hero-v3-points`、業界最安値クラス/最短2週間納品/8用途の専門編集/料金の透明性)を「クリックでその場にQ&A展開」するアコーディオンに変更**: 旧 `<a href="#comparison">`(4枚とも比較表ジャンプ・末尾→)を廃止し、各行を `<button class="mpc-hero-v3-point" aria-expanded>` ＋直下の回答パネル `.mpc-hero-v3-panel`(`.mpc-hero-v3-item` で包む)に。末尾の→は開閉シェブロン `.mpc-hero-v3-point-toggle`(aria-expanded=trueで180°回転)。パネル内は質問 `.mpc-hero-v3-panel-q`(オレンジ)＋回答 `.mpc-hero-v3-panel-a`＋深掘りリンク `.mpc-hero-v3-panel-link`(価格→#comparison/速度→#sec-bizanswer/用途→#sec-usecase/透明性→/pricing)で、即答とナビ導線を両立。開閉JSは `js/mpc.js` の `initHeroPoints()`(max-height transition＋hidden属性トグル、prefers-reduced-motion配慮)。複数同時開き可。日本語固定表示は日本語の表示内容。**2026-06-01「8用途の専門編集」Q&Aは8用途を省略せず列挙(採用・IR・研修・商品紹介・営業・インバウンド・会社紹介・広告)し、文中の各用途語を専用LPへの文中インラインリンク `.mpc-hero-v3-inlink`(オレンジ下線)に**(採用=/recruit-manga, IR=/ir-manga, 研修=/training-manga, 商品紹介=/product-manga, 営業=/sales-manga, インバウンド=/inbound-manga, 会社紹介=/company-manga, 広告=/manga-ad-lp)。※当初チップ(`.mpc-hero-v3-panel-uses`)で実装→ユーザー要望で文字リンクに変更。パネル max-height はPC460/SP560 |
 
@@ -482,10 +482,16 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 | URL系統 | 例 | 用途 | 即時性 | ターゲット |
 |---|---|---|---|---|
 | **`?id=xxx`** | `column-detail?id=483` | 動的取得（JS）。WP公開直後から動作 | ✅ 即時 | フォールバック・プレビュー |
-| **`/column/{slug}`** | `/column/why-business-manga` | SEO向け静的ページ（JSON-LD付き） | ❌ 週1ビルド後（or 手動実行） | Google / AI検索 / SNSシェア |
+| **`/column/{slug}`** | `/column/why-business-manga` | SEO向け静的ページ（JSON-LD付き） | ❌ 日次ビルド後（毎日03:00 JST、or 手動実行） | Google / AI検索 / SNSシェア |
 
 - ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
 - ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
+- RSS（`/feed.xml`）も同じワークフローで `tools/build-feed.py` が生成する（2026-10-14〜、Issue #72。それまでどのワークフローにも無く、4月から更新されていなかった）。
+  - コラムは `build-columns.py` と同じ一覧（`bm_content.COLUMNS_API`、per_page=100）・同じslug（`make_slug`）で `/column/{slug}` を指す。ニュースは `news-detail?id=`。
+  - 並びは記事が最後に変わった日（公開日と更新日の新しい方。ニュースの `YYYY.MM.DD` も読む）の新しい順で最大30件。`lastBuildDate` はその先頭（＝載せる記事の最新の日付）の 09:00 JST。
+  - 出力はWPのデータだけで決まり、実行時刻に依存しない（記事が変わらなければ feed.xml はバイト単位で同じ＝日次ビルドで空のコミットを作らない）。日付が読めない記事は `pubDate` を省く（実行時刻で埋めない）。
+  - コラム0件・ID欠落は書かずに失敗し、既存の feed.xml を残す。ニュースが取れないときはコラムだけで作り、Actionsに警告を出す。
+  - ワークフローではフィードの生成に失敗してもコラムの公開は止めない（`continue-on-error`。既存の feed.xml はそのまま）。
 
 ### 2.0b embed-viewer のパラメータ（埋込ビューア）
 
@@ -506,11 +512,11 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | URL系統 | 例 | 用途 | 即時性 | ターゲット |
 |---|---|---|---|---|
 | **`?manga=id`** | `biz-library?manga=diamond` | 漫画ビューアを全画面で直接開く（QR/直リンク共有） | ✅ WP公開直後から動作 | 人間（顧客・商談先・QR経由） |
-| **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
+| **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 日次ビルド後（毎日03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
-- `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
+- `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎日 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
 
@@ -520,9 +526,9 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - 両方のURLは恒久的に並列存在。どちらかに統合する予定はない
 
 **よくある誤解:**
-- ❌「新作品追加したら `/works/{slug}` も即使える」→ 日曜ビルドまで404
+- ❌「新作品追加したら `/works/{slug}` も即使える」→ 翌朝の日次ビルド（or 手動実行）まで404
 - ❌「`?manga=id` は旧仕様で廃止予定」→ 現役、QR運用の中核
-- ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日曜ビルド後）
+- ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日次ビルド後）
 
 ### 2.0b 制作事例の用途別カテゴリページ（2026-04-28追加）⭐SEO
 
@@ -557,7 +563,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 **ビルド統合:**
 - 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
 - sitemap.xml に `BUILD:WORKS_CATEGORIES` ブロックで自動追記
-- 週1ビルド（日曜03:00 JST、`.github/workflows/build-works.yml`）で更新
+- 日次ビルド（毎日03:00 JST、`.github/workflows/build-works.yml`）で更新
 
 ### 2.0c 制作事例のクリック挙動統一（2026-07-30）
 
@@ -1194,7 +1200,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 
 WordPress で works を追加・更新したら以下いずれか:
 
-- **自動**: 毎週日曜 03:00 JST に GitHub Actions が走る
+- **自動**: 毎日 03:00 JST に GitHub Actions が走る
 - **手動（即時）**: GitHub の Actions タブから "Build works static pages" → "Run workflow"
 - **ローカル**: `python3 tools/build-works.py && git add works.html works/ sitemap.xml && git commit -m "chore(works): update" && git push`
 
@@ -1274,12 +1280,12 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 ### 16.2 共通チェックと自動生成（2026-10-05）
 
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
-- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲、`commit-generated.py` が出す push 範囲（浅いクローン・rebase・変更なし）、自動ビルド3本のIndexNow送信の配線、フィードが実行時刻に依存しないことを検証。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
-- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性（feed.xml を含め完全一致）、フィードのコラムリンクが生成した `column/{slug}.html` と一致することを検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
 `tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
@@ -1301,6 +1307,12 @@ WP APIの取得は、タイムアウト・接続失敗・429・5xxに限り間�
 `tools/commit-generated.py` で指定された生成物だけをコミットする。push前にrebaseし、競合はジョブ失敗として残す。
 GSC日次ランクトラッカー（`rank-tracker.yml` / `tools/rank-tracker.py`）は不可侵領域のため対象外で、従来どおり単独でコミットする（日付入りメッセージ）。
 IndexNowはpushのbefore〜after全体を対象とする。beforeが取得できない場合（強制push後など）は直前コミットとの差分で通知し、警告を出す。
+人のpushは `indexnow.yml` が送る。自動生成3ワークフローの push（GITHUB_TOKEN・`[skip ci]` 付き）は他のワークフローを起動しないため
+`indexnow.yml` では送られない（Issue #72 で判明。それまで `/works/*`・`/column/*` 等の自動生成分は一度も通知されていなかった）。
+そこで `commit-generated.py` は push に成功したときだけ `$GITHUB_OUTPUT` に `pushed=true`・`before`（rebase先＝push直前のリモートの先端）・`after`（pushしたコミット）を書き、
+各ビルドは直後のステップ（`if: steps.commit.outputs.pushed == 'true'`）で `tools/indexnow-ping.py` に env で渡して送る。送るのは今回の生成物だけで、間に入った人のコミットは含まない。
+差分なし・rebaseで同じ内容と分かったとき・push失敗時は送らない。送信の失敗ではジョブを止めない（`continue-on-error`。生成物は push 済みで、ジョブが失敗扱いだと `pages.yml` がデプロイしないため）。
+自動ビルドの push を PAT 等に替えて `[skip ci]` も外すと `indexnow.yml` でも送られて二重になる。本番のファイルを書き換える自動ビルドを足したら、`pages.yml` の `workflow_run` と同じく送信のステップも足す。
 
 ### 16.3 ページ固有ファイルの配置（2026-10-05）
 

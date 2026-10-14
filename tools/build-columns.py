@@ -28,7 +28,7 @@ from bm_build import (
     fetch_json, output_batch, remove_file, render_template,
     replace_block, require_records, script_json, write_text,
 )
-from bm_content import make_slug
+from bm_content import COLUMNS_API, make_slug
 from bm_html import _Sanitizer
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
 
@@ -38,7 +38,7 @@ DESC_OVERRIDES = {
 }
 
 
-API_LIST = API_BASE + '/columns?site=bizmanga&per_page=100'
+API_LIST = COLUMNS_API
 API_SINGLE = API_BASE + '/columns/{id}'
 SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
