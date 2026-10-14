@@ -26,7 +26,7 @@
 | お問い合わせ | contact.html | bm-lead.js, bm-contact.js（JS未読込時は送信を無効化し、再読み込み・電話連絡の案内を表示） |
 | 資料ダウンロード | download.html | bm-lead.js, bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
 | お客様の声 | testimonials.html / testimonial-detail.html | bm-testimonials-page.js / bm-testimonial-detail.js |
-| コラム一覧/詳細 | column.html / column-detail.html | bm-wp-api.js、詳細は bm-column-detail.js |
+| コラム一覧/詳細 | column.html / column-detail.html | 一覧は `tools/build-columns.py` が毎日書き出す静的カードが正（bm-column-filter.js で絞り込み）。**column.html に bm-wp-api.js を読ませない**（作り直すと絞り込み・読了時間・禁則が消える、Issue #74）。詳細は bm-column-detail.js |
 | ニュース | news.html / news-detail.html | bm-wp-api.js、詳細は bm-news-detail.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
