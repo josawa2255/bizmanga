@@ -635,8 +635,9 @@
     });
   });
 
-  // ===== TOPに戻るボタン（フルスクリーンheroがあるページのみ） =====
-  var hasFullHero = document.querySelector('.str-hero, .uc-hero, .mt-hero');
+  // ===== TOPに戻るボタン（フルスクリーンheroがあるページのみ＝活用場面・マンガの種類） =====
+  // 強みページは用途別LPと同じく出さない（2026-10-14 決定。LP v2 統一で .str-hero が無くなっていた）
+  var hasFullHero = document.querySelector('.uc-hero, .mt-hero');
   if (hasFullHero) {
     var topBtn = document.createElement('button');
     topBtn.className = 'bm-back-to-top';
