@@ -292,28 +292,31 @@ probeCoverImages();  // 表紙の縦長自動検出
       // 赤ペン・ネームカルーセルも再構築
       if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
 
-      // ダイレクトモードで既にモーダルが開いている場合、APIの正しいviewTypeで再オープン
-      if (isDirectMode && autoOpen && mangaData[autoOpen] && mangaModal.classList.contains('open')) {
-        var newMode = mangaData[autoOpen].viewType || 'spread';
-        if (newMode !== currentViewMode) {
-          console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
-          // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
-          while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
-          if (verticalObserver) { verticalObserver.disconnect(); verticalObserver = null; }
-          modalPageEls = []; modalThumbItems = []; modalDots = [];
-          mangaModal.classList.remove('open');
-          document.body.style.overflow = '';
-          setTimeout(function() { openManga(autoOpen); }, 50);
+      // ダイレクトモード（?manga=）の作品は、下の「Direct access mode」で /manga/{id} のデータを使って
+      // 1回だけ開く。ここ（/library の到着）では開き直さない（到着順で古い手書きデータが残るため。Issue #71）。
+      // 制作過程（pre-red-* / pre-name-*）の直リンクだけは、手書きの制作過程データや直前の
+      // rebuildPreCarousels() での登録に依存するので、従来どおりここで開き直す・未オープンなら開く。
+      if (isDirectMode && autoOpen && isPreProductionKey(autoOpen) && mangaData[autoOpen]) {
+        if (mangaModal.classList.contains('open')) {
+          var newMode = mangaData[autoOpen].viewType || 'spread';
+          if (newMode !== currentViewMode) {
+            console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
+            // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
+            while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
+            if (verticalObserver) { verticalObserver.disconnect(); verticalObserver = null; }
+            modalPageEls = []; modalThumbItems = []; modalDots = [];
+            mangaModal.classList.remove('open');
+            document.body.style.overflow = '';
+            setTimeout(function() { openManga(autoOpen); }, 50);
+          } else {
+            // 表示モードは変わらない → 再オープン不要。CTA設定だけ最新データで再適用（BUGS #037）
+            setupMangaCta(mangaData[autoOpen]);
+          }
         } else {
-          // 表示モードは変わらない → 再オープン不要だが、CTA等の最新データを再適用する。
-          // ダイレクトモードでフォールバックデータ（CTA情報なし）で先に開いた作品は、
-          // ここで setupMangaCta を呼ばないと最終ページCTAが出ないままになる（BUGS #037）。
-          setupMangaCta(mangaData[autoOpen]);
+          // まだ開いていない（この /library 到着で初めて登録された）場合だけ開く。
+          // 開く処理を始めたが画像の読込待ちで open クラスがまだ無い場合は openDirectMangaOnce が二重に開かない
+          openDirectMangaOnce();
         }
-      }
-      // ダイレクトモードでまだモーダルが開いていない場合（mangaDataに無かった）
-      if (isDirectMode && autoOpen && mangaData[autoOpen] && !mangaModal.classList.contains('open')) {
-        openManga(autoOpen);
       }
     })
     .catch(function(err) {
@@ -1601,6 +1604,72 @@ const isInternalReferrer = (function() {
 const isQrMode = isDirectMode && !isInternalReferrer;
 if (isQrMode) document.documentElement.classList.add('qr-mode');
 
+// 直リンクのキーが制作過程（赤ペン pre-red-* / ネーム pre-name-*）か。
+// 制作過程は WP の /manga/{id} に無く、手書きの制作過程データと /library 取得後の登録で開く
+function isPreProductionKey(key) {
+  return typeof key === 'string' && key.indexOf('pre-') === 0;
+}
+
+// 直リンクの漫画を開くのは1回だけ。同じ作品を2回開くと、どちらのデータが最後に描かれるかが
+// 画像の読込と API 到着の順番で変わる（Issue #71）。この宣言は下の直リンク処理より前に置く
+var directOpenRequested = false;
+function openDirectMangaOnce() {
+  if (directOpenRequested || !Object.prototype.hasOwnProperty.call(mangaData, autoOpen)) return;
+  directOpenRequested = true;
+  openManga(autoOpen);
+}
+
+// /manga/{id}（表示フラグに関係なく1作品を返す）を取得して mangaData に登録する
+function fetchDirectManga() {
+  const apiBase = (window.BM_WP_CONFIG && window.BM_WP_CONFIG.apiBase) || 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+  return fetch(apiBase + '/manga/' + encodeURIComponent(autoOpen))
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (!data || !data.id) throw new Error('invalid data');
+      // viewType はライブラリAPIと同じくAPIの view_type を最優先
+      // (以前URL内に 'webtoon' を含むか？という代替判定が残っており、
+      //  新作のP1.webp系ファイル名では縦読み判定に失敗して spread になる不具合があった)
+      var apiViewType = data.view_type || 'spread';
+      var viewType = (window.bmViewType && window.bmViewType.isForcedVertical(data)) ? 'vertical' : apiViewType;
+      mangaData[data.id] = {
+        id: data.id,
+        title: data.title_ja || data.id,
+        pages: data.pages || (data.gallery && data.gallery.length) || 1,
+        category: data.category || '',
+        tags: [],
+        gallery: data.gallery || [],
+        thumbnail: data.thumbnail || '',
+        viewType: viewType,
+        verticalOnly: apiViewType === 'vertical_only',
+        tallCover: !!data.tall_cover,
+        point: data.point || '',
+        comment: data.comment || '',
+        client_url: data.client_url || '',
+        cta_label_ja: data.cta_label_ja || '',
+        cta_enabled: !!data.cta_enabled
+      };
+    });
+}
+
+// 「作品が見つかりませんでした」画面（ページ本体を置き換える）
+function showDirectNotFound() {
+  var box = document.createElement('div');
+  box.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;';
+  var link = document.createElement('a');
+  link.href = '/';
+  link.style.color = '#eb5200';
+  link.textContent = 'トップページへ戻る';
+  box.appendChild(document.createTextNode('作品が見つかりませんでした。'));
+  box.appendChild(document.createElement('br'));
+  box.appendChild(document.createElement('br'));
+  box.appendChild(link);
+  while (document.body.firstChild) document.body.removeChild(document.body.firstChild);
+  document.body.appendChild(box);
+}
+
 // 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
 // FALLBACK_PRE_DATA を直接 mangaData に登録
 (function() {
@@ -1639,48 +1708,39 @@ if (isDirectMode) {
   const footerEl = document.querySelector('.footer');
   if (footerEl) footerEl.style.display = 'none';
 
-  if (mangaData[autoOpen]) {
-    // FALLBACK or library API で既に取得済み
-    openManga(autoOpen);
+  if (isPreProductionKey(autoOpen)) {
+    // 制作過程（pre-red-* / pre-name-*）: 従来どおり。登録済み（手書きの制作過程データ）なら即開き、
+    // 無ければ /manga/{id} を試す。/library 到着後の登録で開く経路は fetchLibraryFromAPI 側
+    if (mangaData[autoOpen]) {
+      openDirectMangaOnce();
+    } else {
+      fetchDirectManga()
+        .then(function() { openDirectMangaOnce(); })
+        .catch(function(err) {
+          console.warn('[direct-mode] manga fetch failed:', err.message);
+          showDirectNotFound();
+        });
+    }
   } else {
-    // /manga/{id} エンドポイントで単一作品取得（表示フラグ無関係）
-    const apiBase = (window.BM_WP_CONFIG && window.BM_WP_CONFIG.apiBase) || 'https://cms.contentsx.jp/wp-json/contentsx/v1';
-    fetch(apiBase + '/manga/' + encodeURIComponent(autoOpen))
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function(data) {
-        if (!data || !data.id) throw new Error('invalid data');
-        // mangaDataに登録してopenManga
-        // viewType はライブラリAPIと同じくAPIの view_type を最優先
-        // (以前URL内に 'webtoon' を含むか？という代替判定が残っており、
-        //  新作のP1.webp系ファイル名では縦読み判定に失敗して spread になる不具合があった)
-        var apiViewType = data.view_type || 'spread';
-        var viewType = (window.bmViewType && window.bmViewType.isForcedVertical(data)) ? 'vertical' : apiViewType;
-        mangaData[data.id] = {
-          id: data.id,
-          title: data.title_ja || data.id,
-          pages: data.pages || (data.gallery && data.gallery.length) || 1,
-          category: data.category || '',
-          tags: [],
-          gallery: data.gallery || [],
-          thumbnail: data.thumbnail || '',
-          viewType: viewType,
-          verticalOnly: apiViewType === 'vertical_only',
-          tallCover: !!data.tall_cover,
-          point: data.point || '',
-          comment: data.comment || '',
-          client_url: data.client_url || '',
-          cta_label_ja: data.cta_label_ja || '',
-          cta_enabled: !!data.cta_enabled
-        };
-        openManga(autoOpen);
-      })
-      .catch(function(err) {
-        console.warn('[direct-mode] manga fetch failed:', err.message);
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;">作品が見つかりませんでした。<br><br><a href="/" style="color:#eb5200;">トップページへ戻る</a></div>';
-      });
+    // 作品: 手書きの FALLBACK_WORKS や先に届いた /library では先に開かず、常に /manga/{id} の
+    // データで1回だけ開く（ページ数・画像・CTA が WP と一致する。Issue #71 / BUGS #037）
+    fetchDirectManga().then(function() {
+      openDirectMangaOnce();
+    }, function(err) {
+      // 取得に失敗したときだけ、その時点のデータで開く（先に届いた /library → 無ければ手書きデータ）。
+      // /library が先に届くと手書きデータは mangaData から消えるので FALLBACK_WORKS から戻す
+      // （WP に無く手書きデータだけで公開している作品の QR を、到着順に関係なく開くため）
+      console.warn('[direct-mode] manga fetch failed:', err.message);
+      if (!Object.prototype.hasOwnProperty.call(mangaData, autoOpen) &&
+          Object.prototype.hasOwnProperty.call(FALLBACK_WORKS, autoOpen)) {
+        mangaData[autoOpen] = FALLBACK_WORKS[autoOpen];
+      }
+      if (Object.prototype.hasOwnProperty.call(mangaData, autoOpen)) {
+        openDirectMangaOnce();
+      } else {
+        showDirectNotFound();
+      }
+    });
   }
 }
 

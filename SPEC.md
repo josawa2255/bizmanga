@@ -509,7 +509,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
-- `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
+- `?manga=id`: `biz-library.html` の `js/works.js` が URLSearchParams を読んで `isDirectMode` 分岐。作品は WP API `/manga/{id}` でリアルタイム取得したデータで開く（手書きの `FALLBACK_WORKS` では先に開かない。§2.1）。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
@@ -598,15 +598,21 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
-- **最終ページCTAの再適用（2026-05-29 修正 / BUGS #037）**: フォールバックデータ `FALLBACK_WORKS` に載っている作品をダイレクトモードで開くと、CTA情報を持たない静的データで即オープンされる。その後 `/library` API がCTA付きデータに差し替えるため、`fetchLibraryFromAPI` のダイレクトモード分岐で **表示モード不変時も `setupMangaCta(mangaData[autoOpen])` を再実行**してCTA設定を反映する（これが無いと `?manga=seko` 等でCTAが出ない）
+- **開くデータは `/manga/{id}`・開くのは1回だけ（2026-10-14 / Issue #71）⭐**: 作品（`pre-` で始まらないID）は、手書きの `FALLBACK_WORKS` や先に届いた `/library` では先に開かず、**常に `/manga/{id}` の応答を登録して1回だけ開く**（`openDirectMangaOnce()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する。登録するデータの形・view_type の決め方（`window.bmViewType.isForcedVertical`、BUGS #012/#013）・CTA 項目は従来の `/manga/{id}` 分岐のまま
+  - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時は表示モードが変わったときだけ開き直し・それ以外は CTA だけ貼り直していた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
+  - `/manga/{id}` の取得に失敗したときだけ、その時点のデータで開く: 先に届いた `/library` のデータ → 無ければ手書きの `FALLBACK_WORKS`（`/library` が先に届くと手書きデータは mangaData から消えるので `FALLBACK_WORKS` から戻す）→ どちらも無ければ「作品が見つかりませんでした」
+  - WP に無く手書きデータだけで公開している作品（2026-10-14 時点で `life-school` / `sixtones`。`/manga/{id}` は 404）は、この失敗時の経路で手書きデータで開く（従来どおり読める）
+  - `/library` 到着後の処理（`fetchLibraryFromAPI`）は作品の直リンクを開き直さない・CTA も貼り直さない（不要になった）
+  - **制作過程（`pre-red-*` / `pre-name-*`）は従来どおり**: 手書きの制作過程データがあれば即開き、無ければ `/manga/{id}` を試し（制作過程は `/manga/{id}` に無く 404）、`/library` 到着後の登録（`rebuildPreCarousels()`）で開く経路と表示モードが変わったときの開き直しも残す。開く処理は作品と同じく `openDirectMangaOnce()` で1回だけ
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
-  - mangaData に無い場合、`fetch(api + '/manga/' + id)` で取得
-  - 404なら「作品が見つかりませんでした」画面 + トップへ戻るリンク
+  - 作品は常に `fetch(api + '/manga/' + id)` で取得（上記）
+  - 取得に失敗（404 等）し、先に届いた `/library` にも手書きの `FALLBACK_WORKS` にも無ければ「作品が見つかりませんでした」画面 + トップへ戻るリンク
   - これにより「ビズ書庫・ギャラリー・新作情報 全て非表示だがQR経由でだけ見せたい」運用が可能
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
   - WP管理画面以外からは一切閲覧できない
+  - ⚠️ 例外: `js/works.js` の手書き `FALLBACK_WORKS`（19件）に載っている作品は、`/manga/{id}` が 404 でも手書きデータ（`contentsx.jp/material/manga/{id}/` の画像）で開く（2026-10-14 以前も即オープンしていたので従来どおり）。完全に閉じるなら `FALLBACK_WORKS` からも外す
   - 運用: 制作中・お蔵入り・クライアント契約切れなどで完全に閉じたい時
 
 ### 2.2 プラン事前選択
