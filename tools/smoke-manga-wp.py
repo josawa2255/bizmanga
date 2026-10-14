@@ -28,7 +28,6 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
 """
 
 import argparse
-import json
 import os
 import re
 import sys
@@ -36,9 +35,9 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlparse
 
+from bm_build import API_BASE, fetch_json
 from bm_test_support import start_server
 
-DEFAULT_API = "https://cms.contentsx.jp/wp-json/contentsx/v1"
 DEFAULT_PORT = 5500
 # WP プラグイン（contentsx-cms.php cxcms_allowed_origins）が許可しているローカルオリジン
 CORS_ALLOWED_LOCAL_ORIGINS = {"http://127.0.0.1:5500", "http://localhost:3000"}
@@ -65,9 +64,7 @@ def expect_within(name, wait, ok_detail="", fail_detail=""):
 
 
 def get_json(url, timeout=25):
-    req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8"))
+    return fetch_json(url, timeout=timeout, user_agent="bm-smoke/1.0")
 
 
 def get_text(url, timeout=25):
@@ -102,7 +99,6 @@ def img_url(entry):
     return ""
 
 
-# ------------------------------------------------------- Built-in server
 # ---------------------------------------------------------------- API
 def check_api(api):
     data = {"works": [], "works_new": [], "library": [], "manga_one": None}
@@ -397,12 +393,10 @@ def check_browser(base, data):
                 card = pg.locator(sel).first
                 card.scroll_into_view_if_needed()
                 card.click()
-                try:
-                    pg.wait_for_selector("#workDetailOverlay.active", timeout=10000)
-                    opened = True
-                except Exception:
-                    opened = False
-                rec("制作事例: カードクリックでモーダルが開く", opened)
+                opened = expect_within(
+                    "制作事例: カードクリックでモーダルが開く",
+                    lambda: pg.wait_for_selector("#workDetailOverlay.active", timeout=10000),
+                )
                 if opened:
                     expect_within(
                         "制作事例: モーダル内の漫画画像が読み込まれる",
@@ -447,12 +441,10 @@ def check_browser(base, data):
             )
             if n_grid:
                 pg.locator("#worksGrid > *").first.click()
-                try:
-                    pg.wait_for_selector("#mangaModal", state="visible", timeout=10000)
-                    opened = True
-                except Exception:
-                    opened = False
-                rec("ビズ書庫: クリックでビューアが開く", opened)
+                opened = expect_within(
+                    "ビズ書庫: クリックでビューアが開く",
+                    lambda: pg.wait_for_selector("#mangaModal", state="visible", timeout=10000),
+                )
                 if opened:
                     expect_within(
                         "ビズ書庫: ビューアの漫画画像が読み込まれる",
@@ -570,7 +562,7 @@ def main():
         help="確認対象のサイトURL（末尾スラッシュ無し）",
     )
     ap.add_argument(
-        "--api", default=DEFAULT_API, help="WP API のベースURL（Python 側の確認にだけ効く）"
+        "--api", default=API_BASE, help="WP API のベースURL（Python 側の確認にだけ効く）"
     )
     ap.add_argument(
         "--api-only", action="store_true", help="WP API の確認だけ行う（ブラウザを使わない）"

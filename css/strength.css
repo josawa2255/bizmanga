@@ -655,6 +655,10 @@
 }
 .str-v2 .str-cmp tbody tr:last-child td { border-bottom: 0; }
 
+/* 補助テキストのコントラスト底上げ（2026-08-05）
+   --lpv2-ink-mute (#6a6258) はクリーム地の小さい文字だと薄い。
+   意味を持つ文字（列見出し・他社列・表の注記）だけ ink-soft 側に寄せた色を直接指定する
+   （装飾ラベルは mute のまま） */
 .str-v2 .str-cmp thead th {
   font-family: var(--lpv2-font-mono);
   font-size: 13px;
@@ -662,7 +666,7 @@
   letter-spacing: 0.1em;
   background: var(--lpv2-cream);
   border-bottom: var(--lpv2-border-w) solid var(--lpv2-ink);
-  color: var(--lpv2-ink-mute);
+  color: #3d382f;
 }
 .str-v2 .str-cmp thead th.str-cmp__bm {
   background: var(--lpv2-ink);
@@ -678,7 +682,7 @@
   border-right: 1px solid var(--lpv2-rule-soft);
   white-space: nowrap;
 }
-.str-v2 .str-cmp td.str-cmp__other { color: var(--lpv2-ink-mute); }
+.str-v2 .str-cmp td.str-cmp__other { color: #4a443c; }
 .str-v2 .str-cmp td.str-cmp__bm {
   background: rgba(232, 85, 0, 0.06);
   border-left: 1px solid var(--lpv2-rule-soft);
@@ -701,7 +705,7 @@
   margin: 20px auto 0;
   font-size: 12px;
   line-height: 1.8;
-  color: var(--lpv2-ink-mute);
+  color: #5c554c;
 }
 
 @media (max-width: 720px) {
@@ -761,13 +765,8 @@
 /* 5-5. FAQ の質問文を少し大きく・行間広く */
 .str-v2 .lpv2-faq-item summary { font-size: 17px; line-height: 1.7; }
 
-/* 5-6. 補助テキストのコントラスト底上げ
-   --lpv2-ink-mute (#6a6258) はクリーム地の小さい文字だと薄い。
-   意味を持つ文字だけ ink-soft 側に寄せる（装飾ラベルは mute のまま） */
-.str-v2 .str-cmp td.str-cmp__other { color: #4a443c; }
-.str-v2 .str-cmp thead th { color: #3d382f; }
-.str-v2 .str-cmp-note,
-.str-v2 .str-byline { color: #5c554c; }
+/* 5-6. 補助テキストのコントラスト底上げ → 比較表の各規則（thead th / td.str-cmp__other /
+   .str-cmp-note）に色を直接書いた */
 
 /* 5-7. 見出しと本文の間、章と章の間のリズム
    セクション内が詰まって見えるのを緩める */

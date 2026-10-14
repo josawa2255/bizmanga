@@ -106,10 +106,7 @@
     }
 
     // 手動スライド: 画面の左半分タップ=次 / 右半分タップ=前（右綴じ漫画式）
-    var slidesManualDone = false;
     function setupSlidesManual() {
-      if (slidesManualDone) return;
-      slidesManualDone = true;
       var imgs = sSlides.querySelectorAll('img');
       if (!imgs.length) return;
       var idx = 0;
@@ -138,10 +135,7 @@
       // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
-    var slidesStarted = false;
     function startSlides() {
-      if (slidesStarted) return;
-      slidesStarted = true;
       var imgs = sSlides.querySelectorAll('img');
       if (imgs.length <= 1) return;
       var idx = 0;
@@ -206,10 +200,7 @@
     }
 
     // 手動縦スクロール: 「漫画を読む」タップ後、指/ホイールで自由スクロール
-    var verticalManualDone = false;
     function setupVerticalManual() {
-      if (verticalManualDone) return;
-      verticalManualDone = true;
       // スクロールできるよう viewer をフォーカス可能に
       viewer.setAttribute('tabindex', '0');
       viewer.style.outline = 'none';
@@ -235,29 +226,35 @@
       // 操作ガイドは親ページ側で端末の直下に表示する（iframe内には出さない）
     }
 
-    var vStarted = false;
-    function startVerticalScroll() {
-      if (vStarted) return;
-      vStarted = true;
-      var halfHeight = viewer.scrollHeight / 2;
+    // ホバー中と、ホイール（touchResumeMs 指定時はタッチも）操作の直後は自動再生を止める
+    function pauseOnInteraction(touchResumeMs) {
       var paused = false;
       var hoverPause = false;
       var resumeTimer = null;
-
+      function pauseFor(ms) {
+        paused = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function() { paused = false; }, ms);
+      }
       viewer.addEventListener('mouseenter', function() { hoverPause = true; });
       viewer.addEventListener('mouseleave', function() { hoverPause = false; });
       document.addEventListener('mouseover', function() { hoverPause = true; });
       document.addEventListener('mouseout', function(e) {
         if (!e.relatedTarget) hoverPause = false;
       });
-      viewer.addEventListener('wheel', function() {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() { paused = false; }, 2000);
-      }, { passive: true });
+      viewer.addEventListener('wheel', function() { pauseFor(2000); }, { passive: true });
+      if (touchResumeMs) {
+        viewer.addEventListener('touchstart', function() { pauseFor(touchResumeMs); }, { passive: true });
+      }
+      return function isPaused() { return paused || hoverPause; };
+    }
+
+    function startVerticalScroll() {
+      var halfHeight = viewer.scrollHeight / 2;
+      var isPaused = pauseOnInteraction();
 
       function tick() {
-        if (!paused && !hoverPause) {
+        if (!isPaused()) {
           viewer.scrollTop += speed;
           if (viewer.scrollTop >= halfHeight) viewer.scrollTop -= halfHeight;
         }
@@ -294,45 +291,21 @@
       waitImages(hStrip, function() { gateStart(startHorizontalScroll); });
     }
 
-    var hStarted = false;
     function startHorizontalScroll() {
-      if (hStarted) return;
-      hStarted = true;
-
       var halfWidth = hStrip.scrollWidth / 2;
       var firstImg = hStrip.querySelector('img');
       var pageW = firstImg ? firstImg.offsetWidth : 0;
       var viewW = viewer.clientWidth;
-
-      var paused = false;
-      var hoverPause = false;
-      var resumeTimer = null;
 
       // 初期位置:
       //   通常(右→左): pos=0 → p1 が viewport 左端
       //   LTR(左→右): pos=halfWidth-viewW → 各セット右端の p1 が viewport 右端
       var pos = ltr ? Math.max(0, halfWidth - viewW) : 0;
       hStrip.style.transform = 'translateX(' + (-pos) + 'px)';
-
-      viewer.addEventListener('mouseenter', function() { hoverPause = true; });
-      viewer.addEventListener('mouseleave', function() { hoverPause = false; });
-      document.addEventListener('mouseover', function() { hoverPause = true; });
-      document.addEventListener('mouseout', function(e) {
-        if (!e.relatedTarget) hoverPause = false;
-      });
-      viewer.addEventListener('wheel', function() {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() { paused = false; }, 2000);
-      }, { passive: true });
-      viewer.addEventListener('touchstart', function() {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(function() { paused = false; }, 2500);
-      }, { passive: true });
+      var isPaused = pauseOnInteraction(2500);
 
       function tick() {
-        if (!paused && !hoverPause) {
+        if (!isPaused()) {
           if (ltr) {
             // LTR: strip 右シフト = pos 減算 = translateX 増加
             pos -= speed;
@@ -349,11 +322,14 @@
     }
 
     // ============ 画像ロード完了待ち ============
+    // 全画像の読込完了と保険タイマーの早い方で、callback を1回だけ呼ぶ
     function waitImages(container, callback) {
       var imgs = container.querySelectorAll('img');
       if (imgs.length === 0) { callback(); return; }
       var loaded = 0;
-      function check() { if (++loaded === imgs.length) callback(); }
+      var done = false;
+      function finish() { if (!done) { done = true; callback(); } }
+      function check() { if (++loaded === imgs.length) finish(); }
       imgs.forEach(function(img) {
         if (img.complete) check();
         else {
@@ -361,28 +337,25 @@
           img.addEventListener('error', check, { once: true });
         }
       });
-      setTimeout(callback, 1500); // 保険
+      setTimeout(finish, 1500); // 保険
     }
 
     // ============ データ取得 ============
+    // WPにギャラリーが無い・取得できないときは素材フォルダの連番（01.webp〜）で表示する
+    function fallbackData(count) {
+      var gallery = [];
+      for (var i = 1; i <= count; i++) {
+        gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + String(i).padStart(2, '0') + '.webp');
+      }
+      return { view_type: 'spread', gallery: gallery };
+    }
+
     fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
-        if (data && data.gallery && data.gallery.length > 0) {
-          render(data);
-        } else {
-          var fallback = { view_type: 'spread', gallery: [] };
-          for (var i = 1; i <= 30; i++) {
-            fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
-          }
-          render(fallback);
-        }
+        render(data && data.gallery && data.gallery.length > 0 ? data : fallbackData(30));
       })
       .catch(function() {
-        var fallback = { view_type: 'spread', gallery: [] };
-        for (var i = 1; i <= 10; i++) {
-          fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
-        }
-        render(fallback);
+        render(fallbackData(10));
       });
   })();

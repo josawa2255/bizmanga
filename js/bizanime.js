@@ -428,9 +428,7 @@
   if (storyBar) {
     storyBar.addEventListener('click', function (e) {
       if (!storyDur || !currentEl || currentEl.tagName !== 'IFRAME') return;
-      var r = storyBar.getBoundingClientRect();
-      var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-      ytCommand(currentEl, 'seekTo', [ratio * storyDur, true]);
+      seekByClick(storyBar, e, currentEl, storyDur);
     });
   }
   var audioOn   = false;
@@ -470,11 +468,29 @@
           JSON.stringify({ event: 'listening', id: String(++listenSeq), channel: 'widget' }), '*');
       } catch (e) {}
     }
-    iframe.addEventListener('load', function () { setTimeout(handshake, 500); }, { once: true });
-    setTimeout(handshake, 1500);   // 既にloaded時の保険
+    afterPlayerLoad(iframe, handshake, 500, 1500);
   }
   function unwatchPlayer(iframe) {
     ytWatchers = ytWatchers.filter(function (w) { return w.iframe !== iframe; });
+  }
+
+  /* iframe の load から少し遅らせて fn を呼ぶ。既に読込済みだった場合の保険としてタイマーでも呼ぶ
+     （プレイヤー初期化前の postMessage は無視されるため。2回呼ばれても害のない処理だけに使う） */
+  function afterPlayerLoad(iframe, fn, loadDelay, fallbackDelay) {
+    iframe.addEventListener('load', function () { setTimeout(fn, loadDelay); }, { once: true });
+    setTimeout(fn, fallbackDelay);
+  }
+  /* 進捗バーのクリック位置へシークする */
+  function seekByClick(bar, e, iframe, duration) {
+    var r = bar.getBoundingClientRect();
+    var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    ytCommand(iframe, 'seekTo', [ratio * duration, true]);
+  }
+  /* 再生位置に合わせて進捗バーを塗る */
+  function setProgressFill(fill, info, duration) {
+    if (fill && duration > 0 && typeof info.currentTime === 'number') {
+      fill.style.width = Math.min(100, 100 * info.currentTime / duration).toFixed(2) + '%';
+    }
   }
 
   /* YouTubeの字幕を消す。動画側が「デフォルトで字幕ON」だと埋め込みにも
@@ -486,10 +502,7 @@
     ytCommand(iframe, 'unloadModule', ['cc']);
   }
   function scheduleCaptionsOff(iframe) {
-    iframe.addEventListener('load', function () {
-      setTimeout(function () { disableCaptions(iframe); }, 600);
-    }, { once: true });
-    setTimeout(function () { disableCaptions(iframe); }, 1600);  // 既にloaded時の保険
+    afterPlayerLoad(iframe, function () { disableCaptions(iframe); }, 600, 1600);
   }
 
   function applyAudio() {
@@ -544,9 +557,7 @@
       storyDur = 0;
       watchPlayer(el, function (info) {
         if (typeof info.duration === 'number' && info.duration > 0) storyDur = info.duration;
-        if (storyFill && storyDur > 0 && typeof info.currentTime === 'number') {
-          storyFill.style.width = Math.min(100, 100 * info.currentTime / storyDur).toFixed(2) + '%';
-        }
+        setProgressFill(storyFill, info, storyDur);
       });
     }
     currentEl = el;
@@ -562,8 +573,7 @@
     // （iframeはプレイヤー初期化を待つ必要があるので load 後に少し遅らせる）
     if (audioOn) {
       if (el.tagName === 'IFRAME') {
-        el.addEventListener('load', function () { setTimeout(applyAudio, 600); }, { once: true });
-        setTimeout(applyAudio, 1200);   // 既にloadedの場合の保険
+        afterPlayerLoad(el, applyAudio, 600, 1200);
       } else {
         applyAudio();
       }
@@ -745,15 +755,11 @@
          開くため、ミュート再生を開始した直後に unMute すれば音が出せる。
          万一ブラウザに拒まれた場合は infoDelivery の muted で検知し、
          ボタン表示を実態に同期させる。 */
-      var unmute = function () { ytCommand(el, 'unMute'); ytCommand(el, 'setVolume', [100]); };
-      el.addEventListener('load', function () { setTimeout(unmute, 700); }, { once: true });
-      setTimeout(unmute, 1700);
+      afterPlayerLoad(el, function () { ytCommand(el, 'unMute'); ytCommand(el, 'setVolume', [100]); }, 700, 1700);
 
       watchPlayer(el, function (info) {
         if (typeof info.duration === 'number' && info.duration > 0) mDur = info.duration;
-        if (mFill && mDur > 0 && typeof info.currentTime === 'number') {
-          mFill.style.width = Math.min(100, 100 * info.currentTime / mDur).toFixed(2) + '%';
-        }
+        setProgressFill(mFill, info, mDur);
         if (mAudio && typeof info.muted === 'boolean') {
           mAudio.classList.toggle('is-on', !info.muted);
           mAudio.setAttribute('aria-pressed', info.muted ? 'false' : 'true');
@@ -764,9 +770,7 @@
       if (mBar) {
         mBar.onclick = function (e) {
           if (!mDur) return;
-          var r = mBar.getBoundingClientRect();
-          var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-          ytCommand(el, 'seekTo', [ratio * mDur, true]);
+          seekByClick(mBar, e, el, mDur);
         };
       }
     }
@@ -1303,6 +1307,10 @@
     var sec = document.getElementById('baFaq');
     if (!sec) return;
     var items = Array.prototype.slice.call(sec.querySelectorAll('.ba-faq-item'));
+    function collapse(panel) {
+      panel.style.height = panel.scrollHeight + 'px';
+      requestAnimationFrame(function () { panel.style.height = '0px'; });
+    }
 
     items.forEach(function (item) {
       var btn = item.querySelector('.ba-faq-q button');
@@ -1320,15 +1328,13 @@
           if (ob && ob.getAttribute('aria-expanded') === 'true') {
             ob.setAttribute('aria-expanded', 'false');
             other.classList.remove('is-open');
-            op.style.height = op.scrollHeight + 'px';
-            requestAnimationFrame(function () { op.style.height = '0px'; });
+            collapse(op);
           }
         });
         btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
         item.classList.toggle('is-open', !isOpen);
         if (isOpen) {
-          panel.style.height = panel.scrollHeight + 'px';
-          requestAnimationFrame(function () { panel.style.height = '0px'; });
+          collapse(panel);
         } else {
           panel.style.height = panel.scrollHeight + 'px';
           panel.addEventListener('transitionend', function fin() {

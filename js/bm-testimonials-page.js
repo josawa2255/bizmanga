@@ -9,6 +9,8 @@
   var grid = document.getElementById('bmTmListGrid');
   if (!grid) return;
 
+  var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+
   /* XSS対策ヘルパー */
   function esc(s) {
     if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
@@ -136,7 +138,6 @@
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
     fetch(apiBase + '/testimonials/' + id)
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -307,7 +308,6 @@
 
   /* ---------- API取得 ---------- */
   function fetchFromAPI() {
-    var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
     fetch(apiBase + '/testimonials?site=bizmanga')
       .then(function (r) {
         if (!r.ok) throw new Error('API error');

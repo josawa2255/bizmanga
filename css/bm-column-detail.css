@@ -9,45 +9,11 @@
 .bm-col-detail { padding-top: 140px; padding-bottom: 80px; min-height: 60vh; }
 .bm-col-detail .bm-container { max-width: 780px; }
 
-/* 戻るリンク */
-.bm-col-detail-back {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500);
-  text-decoration: none; margin-bottom: 40px;
-  letter-spacing: 0.04em; text-transform: uppercase;
-  transition: opacity 0.25s;
-}
-.bm-col-detail-back:hover { opacity: 0.6; }
-
-/* メタ情報 */
-.bm-col-detail-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+/* 記事の頭（戻るリンク・メタ行・カテゴリ・タイトル・ヒーロー画像）は静的コラムと共通なので
+   bm-column-body.css。ここには動的コラムだけの指定を置く */
 .bm-col-detail-date {
   font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500);
   font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
-}
-.bm-col-detail-cat {
-  font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #fff; background: var(--bm-accent, #e85500);
-  padding: 4px 12px; border-radius: 2px;
-}
-
-/* タイトル */
-.bm-col-detail-title {
-  font-size: clamp(26px, 4vw, 38px); font-weight: 900;
-  color: #1a1a1a; margin-bottom: 36px;
-  line-height: 1.45; letter-spacing: -0.01em;
-}
-
-/* ヒーロー画像 */
-.bm-col-detail-hero {
-  width: 100%; max-height: 480px; overflow: hidden;
-  margin-bottom: 40px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-}
-.bm-col-detail-hero img {
-  max-width: 100%; max-height: 480px;
-  width: auto; height: auto;
-  object-fit: contain; display: block;
 }
 @media (max-width: 768px) {
   .bm-col-detail-hero, .bm-col-detail-hero img { max-height: 280px; }

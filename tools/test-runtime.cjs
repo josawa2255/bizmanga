@@ -9,11 +9,13 @@ function worker({ cached, network, put = async () => {} } = {}) {
   const handlers = {}, deleted = [];
   vm.runInNewContext(fs.readFileSync(path.join(root, 'sw.js'), 'utf8'), {
     self: { addEventListener: (type, fn) => { handlers[type] = fn; },
+      location: { origin: 'https://bizmanga.contentsx.jp' },
       skipWaiting: async () => {}, clients: { claim: async () => {} } },
     caches: { keys: async () => ['unrelated-app', 'bm-covers-v0', 'bm-covers-v1'],
       delete: async name => deleted.push(name),
       open: async () => ({ match: async () => cached, put }) },
-    fetch: network || (async () => { throw new Error('offline'); })
+    fetch: network || (async () => { throw new Error('offline'); }),
+    URL
   });
   return { handlers, deleted };
 }
@@ -32,6 +34,19 @@ test('activation only deletes caches owned by this worker', async () => {
   handlers.activate({ waitUntil(p) { done = p; } });
   await done;
   assert.deepEqual(deleted, ['bm-covers-v0']);
+});
+
+test('cross-origin no-cors images are left to the browser; same-origin ones are cached', () => {
+  const { handlers } = worker({ cached: 'cached' });
+  const request = (url) => ({ method: 'GET', mode: 'no-cors', url });
+  const crossOrigin = { request: request('https://contentsx.jp/material/manga/a/01.webp'),
+    waitUntil() { assert.fail('must not keep the worker alive'); },
+    respondWith() { assert.fail('must not answer an unstorable opaque response'); } };
+  handlers.fetch(crossOrigin);
+  const sameOrigin = { request: request('https://bizmanga.contentsx.jp/material/images/a.webp'),
+    waitUntil(p) { this.background = p; }, respondWith(p) { this.response = p; } };
+  handlers.fetch(sameOrigin);
+  assert.ok(sameOrigin.response && sameOrigin.background);
 });
 
 test('cache hit responds immediately and keeps refresh/write alive', async () => {

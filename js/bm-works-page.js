@@ -12,6 +12,9 @@
   var filterContainer = document.getElementById('bmCategoryFilter');
   if (!grid) return;
 
+  /* WP由来の文字列は HTML 連結の前に必ず通す（XSS対策） */
+  var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
+
   // ===== フォールバック用データ =====
   var FALLBACK_WORKS = [
     { id: 'seko', title_ja: '施工会社紹介', pages: 8, category: '営業',
@@ -60,7 +63,6 @@
   // ===== ページネーション設定 =====
   var ITEMS_PER_PAGE = 20;
   var currentPage = 1;
-  var currentFiltered = [];
   var currentAllWorks = [];
   var currentFilterCategory = null;
 
@@ -109,7 +111,6 @@
         return w.category === filterCategory;
       });
     }
-    currentFiltered = filtered;
 
     var totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     if (currentPage > totalPages) currentPage = totalPages || 1;
@@ -128,7 +129,6 @@
       var mediaArr = (w.media || []);
       var mediaStrJa = mediaArr.join(' / ');
 
-      var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
       card.innerHTML =
         '<div class="bm-works-card-thumb">' +
           '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy" width="400" height="560">' +
@@ -205,7 +205,6 @@
         categories[w.category] = (categories[w.category] || 0) + 1;
       }
     });
-    var currentWorks = works;
     Object.keys(categories).forEach(function(cat) {
       var labelJa = cat + '（' + categories[cat] + '）';
 
@@ -216,7 +215,7 @@
         allBtn.className = 'bm-filter-btn' + (isActive ? ' active' : '');
         allBtn.textContent = labelJa;
         allBtn.addEventListener('click', function() {
-          renderWorks(currentWorks, null, 1);
+          renderWorks(works, null, 1);
         });
         filterContainer.appendChild(allBtn);
         return;
@@ -236,7 +235,7 @@
         fbtn.className = 'bm-filter-btn';
         fbtn.textContent = labelJa;
         fbtn.addEventListener('click', function() {
-          renderWorks(currentWorks, cat, 1);
+          renderWorks(works, cat, 1);
         });
         filterContainer.appendChild(fbtn);
       }
@@ -279,11 +278,10 @@
     if (wdCategory) {
       wdCategory.textContent = catJa;
     }
-    /* 全フィールド escM() 済み（XSS対策） */
-    var escM = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
+    /* 全フィールド esc() 済み（XSS対策） */
     if (wdMedia) {
       wdMedia.innerHTML = (work.media || []).map(function(m) {
-        return '<li>' + escM(m) + '</li>';
+        return '<li>' + esc(m) + '</li>';
       }).join('');
     }
     if (wdSpec) {
@@ -291,8 +289,8 @@
       // spec.pages(WP手入力の表示文字列)より実galleryの枚数を優先する
       // (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
       var galleryLenForSpec = (work.gallery && work.gallery.length) || 0;
-      var pagesV = escM(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
-      var periodV = escM(spec.period || '—');
+      var pagesV = esc(galleryLenForSpec > 0 ? (galleryLenForSpec + 'P') : (spec.pages || '—'));
+      var periodV = esc(spec.period || '—');
       wdSpec.innerHTML =
         '<li>ページ数：' + pagesV + '</li>' +
         '<li>納期：' + periodV + '</li>';
@@ -317,7 +315,7 @@
       wdCarousel.innerHTML = '';
       wdCarousel.style.transform = 'translateX(0)';
 
-      function buildPages(isVertical) {
+      function buildPages() {
         var frag = document.createDocumentFragment();
         var hasGallery = work.gallery && work.gallery.length > 0;
         for (var i = 1; i <= previewPages; i++) {
@@ -343,7 +341,7 @@
         wdCarousel.classList.add('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
         wdCarousel.style.transform = '';
-        buildPages(true);
+        buildPages();
         if (wdDots) wdDots.style.display = 'none';
         if (wdPrev) wdPrev.style.display = 'none';
         if (wdNext) wdNext.style.display = 'none';
@@ -352,7 +350,7 @@
       } else {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
-        buildPages(false);
+        buildPages();
         if (wdDots) {
           wdDots.style.display = 'flex';
           while (wdDots.firstChild) wdDots.removeChild(wdDots.firstChild);

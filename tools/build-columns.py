@@ -44,7 +44,7 @@ from bm_build import (
 from bm_content import make_slug
 from bm_html import sanitize_html
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
-from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
+from bm_sitemap import build_block, replace_or_append_block, url_entry
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
 DESC_OVERRIDES = {
@@ -268,13 +268,12 @@ def build_detail_page(col, detail_data, template):
         description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
 
     cat_html = f'<span class="bm-col-static-cat">{esc(category)}</span>' if category else ""
-    hero_html = ""
-    if thumb:
-        hero_html = (
-            f'<figure class="bm-col-static-hero">'
-            f'<img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="eager">'
-            f'</figure>'
-        )
+    # thumb は既定のOG画像で必ず埋まる
+    hero_html = (
+        f'<figure class="bm-col-static-hero">'
+        f'<img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="eager">'
+        f'</figure>'
+    )
 
     toc_html, content_with_ids = build_toc_and_inject_ids(content)
 
@@ -327,7 +326,6 @@ def generate_details(columns):
     require_records([{"id": make_slug(c)} for c in columns], label="column slugs")
     current_slugs = set()
     readtimes = {}
-    written = 0
     for c, detail, _err in results:
         slug = make_slug(c)
         current_slugs.add(slug)
@@ -335,20 +333,18 @@ def generate_details(columns):
         out = build_detail_page(c, detail, template)
         write_text(COLUMN_DIR / f"{slug}.html", out)
         print(f"  Generated column/{slug}.html")
-        written += 1
 
     # column/index.html（/column/ へのリダイレクト）は残す
     removed = prune_stale(COLUMN_DIR, current_slugs | {"index"})
 
-    print(f"Generated {written}/{len(columns)} column pages, removed {removed} stale files")
+    # 取得失敗は上で例外にしているので、ここに来たときは全件を書いている
+    print(f"Generated {len(columns)}/{len(columns)} column pages, removed {removed} stale files")
     return readtimes
 
 
 def update_sitemap(columns):
     p = ROOT / "sitemap.xml"
     s = p.read_text(encoding="utf-8")
-
-    s = remove_blocks(s, "COLUMNS")
 
     entries = []
     for c in columns:
@@ -365,7 +361,9 @@ def update_sitemap(columns):
             )
         )
     block = build_block("COLUMNS", entries, generator="tools/build-columns.py")
-    s = append_blocks(s, block)
+    # 既存のブロックはその場で置き換え、無ければ末尾に追加する（build-works.py の
+    # ブロックとの並びを毎回入れ替えない）
+    s = replace_or_append_block(s, "COLUMNS", block)
     write_text(p, s)
     print(f"Updated {p}")
 

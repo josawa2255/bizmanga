@@ -32,7 +32,6 @@ from bm_build import (
     SITE_URL,
     output_batch,
     prune_stale,
-    remove_file,
     render_template,
     replace_grid,
     replace_json_script,
@@ -47,7 +46,7 @@ from bm_build import (
 from bm_build import (
     fetch_json as _fetch_json,
 )
-from bm_sitemap import append_blocks, build_block, remove_blocks, url_entry
+from bm_sitemap import build_block, replace_or_append_block, url_entry
 from bm_work_content import (
     CATEGORY_LP_LINK,
     CATEGORY_PAGES,
@@ -165,8 +164,8 @@ def build_detail_page(w, template, all_works=()):
     # ヒーロー表示用は gallery[0] のフル解像度を優先 (WP thumbnail は 188x300 の小さなサムネで、
     # 1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため)。
     # fallback として従来の thumbnail → gallery[0] 順で参照。
-    gallery_list = w.get("gallery") or []
-    hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
+    gallery = w.get("gallery") or []
+    hero_src = gallery[0] if gallery else (w.get("thumbnail") or "")
     category = w.get("category") or "制作事例"
     # title に入れる検索KW（未定義カテゴリは「ビジネス漫画」にフォールバック）
     category_kw = CATEGORY_TITLE_KW.get(category, "ビジネス漫画")
@@ -176,14 +175,12 @@ def build_detail_page(w, template, all_works=()):
         category_kw = "ビジネス漫画"
     # gallery実枚数があればWP手入力(spec.pages/pages)より優先する
     # (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
-    gallery_len_for_spec = len(gallery_list)
-    if gallery_len_for_spec > 0:
-        pages_count = f"{gallery_len_for_spec}P"
+    spec = w.get("spec") or {}
+    if gallery:
+        pages_count = f"{len(gallery)}P"
     else:
-        pages_count = (w.get("spec") or {}).get("pages") or (
-            f"{w.get('pages')}P" if w.get("pages") else "—"
-        )
-    period = (w.get("spec") or {}).get("period") or "—"
+        pages_count = spec.get("pages") or (f"{w.get('pages')}P" if w.get("pages") else "—")
+    period = spec.get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
     # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示
     # (空セクションはSEO減点・UX劣化。WP側に記入されたらセクション復活)
@@ -199,8 +196,8 @@ def build_detail_page(w, template, all_works=()):
         comment_section = ''
     client = w.get("client") or ""
     client_line = f"クライアント: {client}" if client else "ビジネスマンガ制作事例"
-    media = " / ".join(w.get("media") or []) or "—"
-    gallery = w.get("gallery") or []
+    media_list = w.get("media") or []
+    media = " / ".join(media_list) or "—"
 
     gallery_html = (
         "\n".join(
@@ -222,7 +219,6 @@ def build_detail_page(w, template, all_works=()):
         og_image = hero_src or f"{SITE}/material/images/og/og-index.webp"
 
     # === 「この事例について」セクション: クライアント・媒体・期間を文章化 ===
-    media_list = w.get("media") or []
     media_phrase = "・".join(media_list[:5]) if media_list else "Web・印刷物"
     pages_num = w.get("pages") or "—"
     if client:
@@ -257,11 +253,10 @@ def build_detail_page(w, template, all_works=()):
         usecase_section = ''
 
     # === 関連事例セクション ===
-    # 同カテゴリの他作品から最大3件選定（self除く。静的ページがある show_site == "both" だけ）
+    # 同カテゴリの他作品から最大3件選定（self除く。all_works は filter_for_bm 済みで、
+    # 静的ページがある show_site == "both" の作品だけ）
     related_works = [
-        rw
-        for rw in all_works
-        if rw.get("category") == category and rw.get("id") != slug and rw.get("show_site") == "both"
+        rw for rw in all_works if rw.get("category") == category and rw.get("id") != slug
     ][:3]
     if related_works:
         related_cards = []
@@ -457,24 +452,20 @@ def build_itemlist_jsonld(slug, cfg, matched):
 
 def generate_category_pages(works):
     """カテゴリページを /works/category/{slug}.html に生成"""
-    if not CATEGORY_TEMPLATE_PATH.exists():
-        raise FileNotFoundError(CATEGORY_TEMPLATE_PATH)
     template = CATEGORY_TEMPLATE_PATH.read_text(encoding="utf-8")
 
-    # 既存カテゴリHTMLをクリーンアップ
-    removed = prune_stale(CATEGORY_DIR, set(CATEGORY_PAGES.keys()))
+    # 該当作品が0件のカテゴリは生成しない（thin content 回避）。
+    # 既存のHTMLは、未定義のカテゴリと0件のカテゴリの分を削除する
+    removed = prune_stale(
+        CATEGORY_DIR,
+        {slug for slug, cfg in CATEGORY_PAGES.items() if works_in_category(works, cfg)},
+    )
 
     generated = 0
     skipped = 0
     for slug, cfg in CATEGORY_PAGES.items():
         matched = works_in_category(works, cfg)
         if not matched:
-            # 該当作品が0件のカテゴリは生成しない（thin content 回避）
-            # ただし既存ファイルがあれば削除する
-            stale = CATEGORY_DIR / f"{slug}.html"
-            if stale.exists():
-                remove_file(stale)
-                removed += 1
             skipped += 1
             continue
 
@@ -552,13 +543,6 @@ def update_sitemap(works):
     p = ROOT / "sitemap.xml"
     s = p.read_text(encoding="utf-8")
 
-    # Remove existing BUILD:WORKS block(s). コメント内の「(auto-generated…)」等の
-    # 追加テキストや重複ブロックにも対応するため、開始タグは柔軟にマッチさせる。
-    s = remove_blocks(s, "WORKS")
-
-    # カテゴリページ用ブロックも同様に除去
-    s = remove_blocks(s, "WORKS_CATEGORIES")
-
     entries = []
     for w in works:
         # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
@@ -596,7 +580,10 @@ def update_sitemap(works):
         else ""
     )
 
-    s = append_blocks(s, block, cat_block)
+    # 既存のブロックはその場で置き換え、無ければ末尾に追加する（build-columns.py の
+    # ブロックとの並びを毎回入れ替えない）。カテゴリが0件なら既存のブロックを消す
+    s = replace_or_append_block(s, "WORKS", block)
+    s = replace_or_append_block(s, "WORKS_CATEGORIES", cat_block)
     write_text(p, s)
     print(f"Updated {p}")
 

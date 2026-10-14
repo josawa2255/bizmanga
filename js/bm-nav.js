@@ -502,8 +502,7 @@
 
     /* ① 項目・サブメニューの上にいるか（素直な矩形判定） */
     var overElements = function(x, y) {
-      var boxes = [wrap.getBoundingClientRect()];
-      if (subEl) boxes.push(subEl.getBoundingClientRect());
+      var boxes = [wrap.getBoundingClientRect(), subEl.getBoundingClientRect()];
       return boxes.some(function(b) {
         return x >= b.left - PAD && x <= b.right + PAD &&
                y >= b.top - PAD && y <= b.bottom + PAD;
@@ -517,7 +516,6 @@
        斜め移動が途中で別の項目の上を通っても閉じないのはこのため。
        参考: https://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown */
     var headingToSub = function(prevX, prevY, x, y) {
-      if (!subEl) return false;
       var s = subEl.getBoundingClientRect();
       if (s.width === 0) return false;
 
@@ -583,9 +581,7 @@
     };
     document.addEventListener('mousemove', onMove);
 
-    if (subEl) {
-      subEl.addEventListener('mouseenter', cancelClose);
-    }
+    subEl.addEventListener('mouseenter', cancelClose);
     /* キーボード操作でも開けるように */
     wrap.addEventListener('focusin', open);
     wrap.addEventListener('focusout', scheduleClose);
@@ -789,7 +785,7 @@
     var link = document.createElement('a');
     link.href = DL_HREF;
     link.textContent = '資料ダウンロード';
-    var contact = links.querySelector('a[href="/contact"], a[href="contact"], a[href="contact.html"], a[href$="/contact"]');
+    var contact = links.querySelector('a[href$="/contact"]');
     if (contact) contact.insertAdjacentElement('afterend', link);
     else links.appendChild(link);
   }
