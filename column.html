@@ -1104,14 +1104,13 @@ p{margin:0 0 16px;}
     </div>
   </footer>
 
-  <script src="js/bm-sanitize.js" defer></script>
+  <!-- コラム一覧は tools/build-columns.py が毎日書き出す静的カードが正（Issue #74）。
+       WP API（bm-wp-api.js とそのための bm-wp-config / bm-pricing / bm-sanitize）は読まない。
+       読むとカードが作り直され、カテゴリ絞り込み・読了時間・禁則処理が消える -->
 <script src="js/bm-nav.js" defer></script>
   <script src="js/bm-kinsoku.js" defer></script>
   <script src="js/bm-column-filter.js" defer></script>
   <script src="js/bm-tracking.js" defer></script>
-  <script src="js/bm-wp-config.js" defer></script>
-  <script src="/js/bm-pricing.js" defer></script>
-  <script src="js/bm-wp-api.js" defer></script>
   <script src="/js/bm-hubspot.js" defer></script>
   <script src="js/bm-fuwa.js" defer></script>
 </body>

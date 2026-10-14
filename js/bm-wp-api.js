@@ -3,7 +3,9 @@
  * ContentsX と同じ仕様:
  *   - /works     … 漫画事例（Hero + 制作事例ページ）
  *   - /works-new … 新作漫画（ホーム横スクロールトラック）
- *   - /news      … ニュース（ホームニュースセクション）
+ *   - /news      … ニュース（ホームのニュース枠・news.html の一覧）
+ *   - /columns   … コラム（ホームのコラム枠だけ。column.html の一覧は静的ビルドが正で、このファイルを読まない）
+ *   JS が作る自サイトのリンクはすべて / 始まり（BUGS #006）
  *
  * WP投稿側で publish_to フィールドを想定:
  *   "news"      → ニュースのみ
@@ -110,7 +112,8 @@
       li.className = 'bm-news-item';
 
       var hasLink = item.url || (item.has_detail && item.id);
-      var rawUrl = hasLink ? (item.url || ('news-detail?id=' + item.id)) : '';
+      /* 自サイトのリンクは / 始まり（BUGS #006） */
+      var rawUrl = hasLink ? (item.url || ('/news-detail?id=' + encodeURIComponent(item.id))) : '';
       var linkUrl = hasLink ? safeUrl(rawUrl) : '';
 
       /* サムネイル（左） */
@@ -196,10 +199,15 @@
     console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
-  /* ── コラムデータをロード・ホームカード描画 ── */
+  /* ── コラム: ホームの横スクロール枠（最新8件）だけを描画 ──
+     コラム一覧ページ（column.html = body[data-page-column]）は tools/build-columns.py が毎日
+     書き出す静的カード（data-category・読了時間つき）が正。JS で作り直すとカテゴリ絞り込み・
+     読了時間・禁則処理が消えるので触らない（Issue #74）。column.html はこのファイルを
+     読み込まないが、誤って読み込まれても取得前に止める。 */
   var COLUMN_HOME_LIMIT = 8;
 
   async function loadColumns() {
+    if (document.body.hasAttribute('data-page-column')) return;
     var data = await apiFetch('/columns?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
     if (window.bmPricing) data = window.bmPricing.post(data);
@@ -207,8 +215,7 @@
 
     var grid = document.getElementById('bmColumnGrid');
     if (!grid) return;
-    var isHome = !document.body.hasAttribute('data-page-column');
-    var displayData = isHome ? data.slice(0, COLUMN_HOME_LIMIT) : data;
+    var displayData = data.slice(0, COLUMN_HOME_LIMIT);
 
     grid.innerHTML = '';
     var colFrag = document.createDocumentFragment();
@@ -216,9 +223,10 @@
       var card = document.createElement('a');
       card.className = 'bm-column-card';
       var slug = item.slug || String(item.id);
-      if (!slug.match(/^[a-z0-9-]+$/)) slug = 'column-detail?id=' + encodeURIComponent(item.id);
-      else slug = 'column/' + slug;
-      card.href = slug;
+      /* リンクは / 始まり（BUGS #006）。slug が URL に使えない文字なら動的詳細ページへ */
+      card.href = /^[a-z0-9-]+$/.test(slug)
+        ? '/column/' + slug
+        : '/column-detail?id=' + encodeURIComponent(item.id);
 
       var thumb = safeUrl(item.thumbnail) || 'https://contentsx.jp/material/images/og/og-index.webp';
       var catHtml = item.category ? '<span class="bm-column-card-cat">' + esc(item.category) + '</span>' : '';
@@ -236,7 +244,7 @@
     });
     grid.appendChild(colFrag);
 
-    if (isHome && data.length > COLUMN_HOME_LIMIT) {
+    if (data.length > COLUMN_HOME_LIMIT) {
       var more = document.getElementById('bmColumnMore');
       if (more) more.style.display = '';
     }
