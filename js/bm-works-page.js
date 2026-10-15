@@ -71,19 +71,24 @@
   function hasStaticCards() {
     return !!grid.querySelector('[data-build-static]');
   }
+  // カードのクリック（静的カード・JSで描くカード共通。どちらも <a class="bm-works-card-link" href="/works/{id}"> を含む）:
+  // 普通のクリックはモーダル。Cmd/Ctrl/Shift+クリック・中クリックはリンク本来の動き（新しいタブ・ウィンドウで個別ページ）。
+  // 判定は bm-work-modal.js と同じ
+  function bindCardClick(card, workId) {
+    card.addEventListener('click', function(ev) {
+      if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button === 1) return;
+      // WP待機中・取得失敗時も、データ未取得の作品は静的詳細ページを開ける。
+      if (!worksMap[workId]) return;
+      ev.preventDefault();
+      openWorkDetail(workId);
+    });
+  }
   function hydrateStaticCards() {
     var cards = grid.querySelectorAll('[data-build-static]');
     cards.forEach(function(card) {
       var workId = card.getAttribute('data-work-id');
       if (!workId) return;
-      card.addEventListener('click', function(ev) {
-        // Cmd/Ctrl+Click, 中クリックは個別ページへ
-        if (ev.ctrlKey || ev.metaKey || ev.button === 1) return;
-        // WP待機中・取得失敗時も、データ未取得の作品は静的詳細ページを開ける。
-        if (!worksMap[workId]) return;
-        ev.preventDefault();
-        openWorkDetail(workId);
-      });
+      bindCardClick(card, workId);
     });
   }
   var staticHydrated = false;
@@ -129,24 +134,24 @@
       var mediaStrJa = mediaArr.join(' / ');
 
       var esc = window.bmSanitize ? window.bmSanitize.html : function(s){ return s || ''; };
+      // 静的カード（tools/build-works.py の build_card）と同じく個別ページへのリンクで包む。
+      // WP 取得後に作り直しても、新しいタブで開ける・リンクとして読める状態を保つ（Issue #85）
       card.innerHTML =
-        '<div class="bm-works-card-thumb">' +
-          '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy" width="400" height="560">' +
-        '</div>' +
-        '<div class="bm-works-card-body">' +
-          '<span class="bm-works-card-category">' + esc(w.category) + '</span>' +
-          '<h3 class="bm-works-card-title">' + esc(w.title_ja) + '</h3>' +
-          (w.point ? '<p class="bm-works-card-desc">' + esc(w.point) + '</p>' : '') +
-          '<div class="bm-works-card-meta">' +
-            (mediaStrJa ? '<span class="bm-works-card-media">' + esc(mediaStrJa) + '</span>' : '') +
+        '<a href="' + esc('/works/' + encodeURIComponent(w.id)) + '" class="bm-works-card-link">' +
+          '<div class="bm-works-card-thumb">' +
+            '<img src="' + esc(coverSrc) + '" alt="' + esc(w.title_ja) + '" loading="lazy" width="400" height="560">' +
           '</div>' +
-        '</div>';
+          '<div class="bm-works-card-body">' +
+            '<span class="bm-works-card-category">' + esc(w.category) + '</span>' +
+            '<h3 class="bm-works-card-title">' + esc(w.title_ja) + '</h3>' +
+            (w.point ? '<p class="bm-works-card-desc">' + esc(w.point) + '</p>' : '') +
+            '<div class="bm-works-card-meta">' +
+              (mediaStrJa ? '<span class="bm-works-card-media">' + esc(mediaStrJa) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+        '</a>';
 
-      (function(workId) {
-        card.addEventListener('click', function() {
-          openWorkDetail(workId);
-        });
-      })(w.id);
+      bindCardClick(card, w.id);
 
       frag.appendChild(card);
     });

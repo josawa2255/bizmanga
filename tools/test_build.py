@@ -258,6 +258,27 @@ class BuildTests(unittest.TestCase):
                         columns.generate_details([{'id': 1, 'slug': 'example'}])
             self.assertEqual(list(root.glob('*.html')), [])
 
+    def test_column_grid_keeps_featured_card_first_for_mobile(self):
+        # 一覧は静的カードが正（Issue #85）。特集記事も先頭カード（PCはCSSで隠す）として出し、他は1回ずつ
+        columns = module('build-columns.py')
+        items = [{'id': i, 'slug': f'col-{i}', 'title_ja': f'T{i}', 'category': 'BtoB戦略' if i % 2 else '',
+                  'date': '2026.10.01', '_readtime': 3} for i in range(1, 5)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / 'column.html').write_bytes((ROOT / 'column.html').read_bytes())
+            with patch.object(columns, 'ROOT', root), redirect_stdout(io.StringIO()):
+                columns.update_column_html(items)
+            html = (root / 'column.html').read_text(encoding='utf-8')
+        grid = html.split('<!-- BUILD:COLUMN_GRID -->', 1)[1].split('<!-- /BUILD:COLUMN_GRID -->', 1)[0]
+        cards = re.findall(r'<a class="([^"]+)" href="([^"]+)" data-category="([^"]*)">', grid)
+        self.assertEqual([href for _, href, _ in cards], [f'/column/col-{i}' for i in range(1, 5)])
+        self.assertEqual([cls for cls, _, _ in cards],
+                         ['bm-column-card bm-column-card--featured'] + ['bm-column-card'] * 3)
+        self.assertEqual([cat for _, _, cat in cards], ['BtoB戦略', 'その他', 'BtoB戦略', 'その他'])
+        self.assertEqual(grid.count('bm-column-card-readtime">3分<'), 4)
+        data = json.loads(re.search(r'<script type="application/json" id="bm-column-data">(.*?)</script>', html, re.S)[1])
+        self.assertEqual((data['total'], data['featured']['slug']), (4, 'col-1'))
+
     def test_all_eight_lps_are_v2(self):
         lp = module('build-lp-cases.py')
         self.assertEqual(len(lp.LP_CATEGORIES), 8)

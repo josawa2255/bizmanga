@@ -2460,6 +2460,12 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   display: none !important;
 }
 
+/* 特集記事と同じ記事の一覧カード（tools/build-columns.py が先頭に出す）。
+   PC は上の特集枠で見せるので隠し、特集枠を隠すスマホ（〜768px）でだけ表示する（下の 768px ブロック） */
+.bm-column-grid--page .bm-column-card--featured {
+  display: none;
+}
+
 /* Editorial 用のページ全体コンテナ調整 */
 .bm-column-page {
   padding-top: 0;
@@ -2549,6 +2555,10 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   /* スマホでは特集記事を非表示（JSの表示切替より優先） */
   .bm-column-featured {
     display: none !important;
+  }
+  /* 代わりに同じ記事を一覧の先頭カードとして見せる（絞り込み中は is-filtered-out が優先） */
+  .bm-column-grid--page .bm-column-card--featured {
+    display: flex;
   }
 }
 

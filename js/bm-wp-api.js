@@ -3,7 +3,16 @@
  * ContentsX と同じ仕様:
  *   - /works     … 漫画事例（Hero + 制作事例ページ）
  *   - /works-new … 新作漫画（ホーム横スクロールトラック）
- *   - /news      … ニュース（ホームニュースセクション）
+ *   - /news      … ニュース（ホームのニュース枠・news.html の一覧）
+ *   - /columns   … コラム（ホームのコラム枠。column.html は静的カードが無いときだけ）
+ *   取得するのは、そのデータを使う画面要素があるページだけ（下の USED_BY。Issue #85）。
+ *
+ * イベント（window に dispatch。各1回）:
+ *   bm-data-ready     … 漫画事例（/works・/works?site=bizmanga）の取得が終わった。
+ *                       漫画事例を使わないページでも出す（取得なしで即時）
+ *   bm-news-ready     … ニュースの取得が終わった。detail = { ok: 取得できたか, count: 件数 }
+ *                       （news.html はこれを待って「読み込み中」を消す）
+ *   bm-all-data-ready … このページで取得したものが全部終わった（失敗したものがあっても出す）
  *
  * WP投稿側で publish_to フィールドを想定:
  *   "news"      → ニュースのみ
@@ -30,6 +39,32 @@
   function safeUrl(s) {
     if (window.bmSanitize && window.bmSanitize.url) return window.bmSanitize.url(s);
     return /^javascript:|^data:|^vbscript:/i.test(String(s || '').trim()) ? '' : (s || '');
+  }
+  /* リンク先（外部サイトも可）: スキームだけを確かめる（http/https/相対。SPEC §16.2）。
+     自社ドメインに限る safeUrl とは別。bm-sanitize.js が無いときはリンクにしない */
+  function safeLinkUrl(s) {
+    if (window.bmSanitize && window.bmSanitize.linkUrl) return window.bmSanitize.linkUrl(s);
+    return '';
+  }
+
+  /* ── 各データを使う画面要素 ──
+     使う側の JS（右のコメント）も、この要素が無いページでは何もしない。
+     要素があるページでだけ取得する（Issue #85。以前は全ページで6本取得していた）。
+     /library は読む側が無いので取得しない（ビズ書庫は works.js、用途別LPは bm-lp-library-embed.js が自前で取得） */
+  var USED_BY = {
+    // BM_HERO_WORKS_DATA: bm-hero.js（Hero マーキー）
+    heroWorks: '#bmHeroWorksBg',
+    // BM_WORKS_DATA: bm-works-page.js / bm-works.js / bm-work-modal.js、Hero とホームギャラリーの予備
+    works: '#bmHeroWorksBg, #bmGalleryGridManga, #bmGalleryGridWebtoon, #bmWorksGrid, .bm-works-card[data-work-id]',
+    // BM_NEW_WORKS_DATA: bm-home.js（ホームギャラリー）
+    newWorks: '#bmGalleryGridManga, #bmGalleryGridWebtoon',
+    // BM_NEWS_DATA: loadNews()（ホームのニュース枠・news.html の一覧）
+    news: '#bmNewsList',
+    // BM_COLUMNS_DATA: loadColumns()（ホームのコラム枠・column.html の予備）
+    columns: '#bmColumnGrid'
+  };
+  function isUsed(key) {
+    return !!document.querySelector(USED_BY[key]);
   }
 
   async function apiFetch(endpoint) {
@@ -78,21 +113,26 @@
     console.log('[BM-WP-API] 新作漫画: ' + data.length + '件 loaded');
   }
 
-  /* ── ビズ書庫データをロード ── */
-  async function loadLibrary() {
-    var data = await apiFetch('/library');
-    if (!data || !Array.isArray(data)) return;
-    window.BM_LIBRARY_DATA = data;
-    console.log('[BM-WP-API] ビズ書庫: ' + data.length + '件 loaded');
-  }
-
   /* ── ニュースDOM を動的に生成 ── */
   var NEWS_HOME_LIMIT = 5;
 
   async function loadNews() {
     var data = await apiFetch('/news?site=bizmanga&per_page=50');
-    if (!data || !Array.isArray(data)) return;
+    var count = -1; /* -1 = 取得または描画に失敗 */
+    try {
+      if (data && Array.isArray(data)) {
+        renderNews(data);
+        count = data.length;
+      }
+    } finally {
+      /* 成功・0件・失敗のどれでも必ず知らせる（news.html が「読み込み中」を消す合図） */
+      window.dispatchEvent(new CustomEvent('bm-news-ready', {
+        detail: { ok: count >= 0, count: Math.max(count, 0) }
+      }));
+    }
+  }
 
+  function renderNews(data) {
     /* 全データをグローバルに保存（一覧ページ用） */
     window.BM_NEWS_DATA = data;
 
@@ -109,9 +149,12 @@
       var li = document.createElement('li');
       li.className = 'bm-news-item';
 
-      var hasLink = item.url || (item.has_detail && item.id);
-      var rawUrl = hasLink ? (item.url || ('news-detail?id=' + item.id)) : '';
-      var linkUrl = hasLink ? safeUrl(rawUrl) : '';
+      /* リンク先: WP の「リンクURL」（cx_news_url。外部サイト可）→ 本文があれば詳細ページ → どちらも無ければリンクなし。
+         リンクURLは自社ドメイン限定の safeUrl に通すと外部URLが href="" になり、
+         クリックでページが再読み込みされていた（Issue #85）。詳細ページは / 始まり（BUGS #006） */
+      var linkUrl = safeLinkUrl(item.url) ||
+        ((item.has_detail && item.id) ? '/news-detail?id=' + encodeURIComponent(item.id) : '');
+      var hasLink = !!linkUrl;
 
       /* サムネイル（左） */
       var thumbWrap;
@@ -200,6 +243,14 @@
   var COLUMN_HOME_LIMIT = 8;
 
   async function loadColumns() {
+    /* コラム一覧ページ（column.html）は tools/build-columns.py が書き出す静的カードが正
+       （特集記事の除外・data-category・読了時間つき・100件まで）。WP から作り直すと特集記事の重複・
+       カテゴリ色と読了時間の消失・51件目以降の欠落・絞り込みの解除が起きるので、静的カードが
+       1枚でもあれば取得もしない。静的カードが無いときだけ下で描く（Issue #85 / #74） */
+    var pageGrid = document.getElementById('bmColumnGrid');
+    if (pageGrid && document.body.hasAttribute('data-page-column') &&
+        pageGrid.querySelector('.bm-column-card')) return;
+
     var data = await apiFetch('/columns?site=bizmanga&per_page=50');
     if (!data || !Array.isArray(data)) return;
     if (window.bmPricing) data = window.bmPricing.post(data);
@@ -243,25 +294,33 @@
     console.log('[BM-WP-API] コラム: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
-  /* ── 初期化（Hero優先読み込み） ── */
-  document.addEventListener('DOMContentLoaded', async function() {
-    try {
-      // Hero用全作品データと制作事例用フィルタ済みデータを並列取得
-      await Promise.all([loadWorksForHero(), loadWorks()]);
-      window.dispatchEvent(new CustomEvent('bm-data-ready'));
+  /* 1つが例外で止まっても、ほかのデータ・イベントは止めない */
+  function settle(promise, label) {
+    return promise.catch(function(e) {
+      console.warn('[BM-WP-API] ' + label + ' エラー:', e);
+    });
+  }
 
-      // 残りは並列で取得（Heroをブロックしない）
-      await Promise.all([
-        loadNewWorks(),
-        loadNews(),
-        loadLibrary(),
-        loadColumns()
-      ]);
-      // 全データ揃った後の再描画
+  /* ── 初期化 ──
+     使うデータだけを同時に取りに行く。ニュース・コラムは漫画事例（Hero）の取得を待たない（Issue #85） */
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hero用全作品データと制作事例用フィルタ済みデータ → bm-data-ready（使わないページでは即時）
+    var worksStage = Promise.all([
+      isUsed('heroWorks') ? settle(loadWorksForHero(), 'hero works') : null,
+      isUsed('works') ? settle(loadWorks(), 'works') : null
+    ]).then(function() {
+      window.dispatchEvent(new CustomEvent('bm-data-ready'));
+    });
+
+    var all = [worksStage];
+    if (isUsed('newWorks')) all.push(settle(loadNewWorks(), 'new works'));
+    if (isUsed('news')) all.push(settle(loadNews(), 'news'));
+    if (isUsed('columns')) all.push(settle(loadColumns(), 'columns'));
+
+    // 全データ揃った後の再描画（ホームギャラリーはここで描く）
+    Promise.all(all).then(function() {
       window.dispatchEvent(new CustomEvent('bm-all-data-ready'));
-    } catch(e) {
-      console.warn('[BM-WP-API] 初期化エラー:', e);
-    }
+    });
   });
 
   // グローバルに公開（他のスクリプトから利用可能）

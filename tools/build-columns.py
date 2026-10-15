@@ -5,6 +5,7 @@ BizManga コラム静的HTMLビルダー
 WP API `/columns` からコラム記事を取得し、以下を自動生成する:
   1. column/{slug}.html 個別ページを生成（SEOフレンドリーURL）
   2. column.html 内の <!-- BUILD:COLUMN_GRID --> マーカー間に静的カードを展開
+     （一覧はこれが正。静的カードがあればブラウザ側で WP から作り直さないので、新しい記事は次のビルド後に一覧へ出る）
   3. sitemap.xml に個別コラムURLを追加
   4. column.html head に ItemList JSON-LD を挿入
 
@@ -170,7 +171,9 @@ def build_toc_and_inject_ids(content_html):
     return toc_html, content_with_ids
 
 
-def build_card(c):
+def build_card(c, *, featured=False):
+    """一覧カード1枚。featured=True は特集記事と同じ記事のカード（bm-column-card--featured）。
+    PC は特集枠があるので CSS で隠し、特集枠を隠すスマホ（〜768px）でだけ一覧の先頭に見せる。"""
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = normalize_price_text(c.get("title_ja", ""))
@@ -183,8 +186,9 @@ def build_card(c):
     cat_html = (
         f'<span class="bm-column-card-cat">{esc(category)}</span>' if c.get("category") else ""
     )
+    card_class = "bm-column-card bm-column-card--featured" if featured else "bm-column-card"
     return (
-        f'      <a class="bm-column-card" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
+        f'      <a class="{card_class}" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
         f'        <div class="bm-column-card-img">\n'
         f'          <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225">\n'
         f'        </div>\n'
@@ -209,7 +213,9 @@ def update_column_html(columns):
     featured = columns[0] if columns else None
     rest = columns[1:] if featured else columns
 
-    cards = "".join(build_card(c) for c in rest)
+    # 一覧はこの静的カードが正（静的カードがあればブラウザ側で WP から作り直さない。Issue #85 / #74）。
+    # スマホは特集枠を CSS で隠すので、特集の記事も先頭に置き、PC だけ CSS で隠す
+    cards = (build_card(featured, featured=True) if featured else "") + "".join(build_card(c) for c in rest)
     start = "<!-- BUILD:COLUMN_GRID -->"
     end = "<!-- /BUILD:COLUMN_GRID -->"
     block = f"{start}\n{cards}      {end}"
