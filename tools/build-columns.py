@@ -5,8 +5,11 @@ BizManga コラム静的HTMLビルダー
 WP API `/columns` からコラム記事を取得し、以下を自動生成する:
   1. column/{slug}.html 個別ページを生成（SEOフレンドリーURL）
   2. column.html 内の <!-- BUILD:COLUMN_GRID --> マーカー間に静的カードを展開
-  3. sitemap.xml に個別コラムURLを追加
-  4. column.html head に ItemList JSON-LD を挿入
+     （一覧はこれが正。ブラウザ側で WP から作り直さないので、新しい記事は次の毎時ビルド後に一覧へ出る）
+  3. index.html（ホーム）の <!-- BUILD:HOME_COLUMN_GRID --> マーカー間に最新8件のカードを展開
+     （ホームの枠もブラウザで WP から取得しない。Issue #79）
+  4. sitemap.xml に個別コラムURLを追加
+  5. column.html head に ItemList JSON-LD を挿入
 
 使い方:
     cd BizManga
@@ -14,7 +17,7 @@ WP API `/columns` からコラム記事を取得し、以下を自動生成す�
 
 実行タイミング:
     - WordPress でコラムを追加・更新した後
-    - 日次の定期実行（GitHub Actions）
+    - 毎時の定期実行（GitHub Actions。.github/workflows/build-columns.yml）
 """
 
 import html
@@ -23,6 +26,7 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date as _date
+from urllib.parse import urlsplit
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
     fetch_json, output_batch, remove_file, render_template,
@@ -46,6 +50,12 @@ TEMPLATE_PATH = ROOT / "tools" / "templates" / "column-detail.html.tpl"
 COLUMN_DIR = ROOT / "column"
 
 DETAIL_FETCH_WORKERS = 5
+
+# ホームのコラム枠（index.html #bmColumnGrid）。旧 js/bm-wp-api.js の loadColumns() と同じ件数・代替画像
+HOME_COLUMN_LIMIT = 8
+HOME_FALLBACK_THUMB = "https://contentsx.jp/material/images/og/og-index.webp"
+HOME_GRID_START = "<!-- BUILD:HOME_COLUMN_GRID -->"
+HOME_GRID_END = "<!-- /BUILD:HOME_COLUMN_GRID -->"
 
 def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
@@ -170,7 +180,9 @@ def build_toc_and_inject_ids(content_html):
     return toc_html, content_with_ids
 
 
-def build_card(c):
+def build_card(c, *, featured=False):
+    """一覧カード1枚。featured=True は特集記事と同じ記事のカード（bm-column-card--featured）。
+    PC は特集枠があるので CSS で隠し、特集枠を隠すスマホ（〜768px）でだけ一覧の先頭に見せる。"""
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = normalize_price_text(c.get("title_ja", ""))
@@ -183,8 +195,9 @@ def build_card(c):
     cat_html = (
         f'<span class="bm-column-card-cat">{esc(category)}</span>' if c.get("category") else ""
     )
+    card_class = "bm-column-card bm-column-card--featured" if featured else "bm-column-card"
     return (
-        f'      <a class="bm-column-card" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
+        f'      <a class="{card_class}" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
         f'        <div class="bm-column-card-img">\n'
         f'          <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225">\n'
         f'        </div>\n'
@@ -209,7 +222,9 @@ def update_column_html(columns):
     featured = columns[0] if columns else None
     rest = columns[1:] if featured else columns
 
-    cards = "".join(build_card(c) for c in rest)
+    # 一覧はこの静的カードが正（ブラウザ側で WP から作り直さない。Issue #74）。
+    # スマホは特集枠を CSS で隠すので、特集の記事も先頭に置き、PC だけ CSS で隠す
+    cards = (build_card(featured, featured=True) if featured else "") + "".join(build_card(c) for c in rest)
     start = "<!-- BUILD:COLUMN_GRID -->"
     end = "<!-- /BUILD:COLUMN_GRID -->"
     block = f"{start}\n{cards}      {end}"
@@ -268,6 +283,62 @@ def update_column_html(columns):
     )
     s, _ = replace_block(s, '<script type="application/ld+json" id="column-itemlist-ld">', "</script>", ld_tag, required=True)
 
+    write_text(p, s)
+    print(f"Updated {p}")
+
+
+def site_url(value):
+    """js/bm-sanitize.js の bmSanitize.url と同じ方針: 相対URLか、contentsx.jp（とそのサブドメイン）の
+    http(s) だけを通し、それ以外は ""。ブラウザが / と読むバックスラッシュは、ホスト判定がずれるので拒否する。"""
+    s = str(value or "").strip()
+    if not s or re.search(r"[\x00-\x20\x7f\\]", s) or s.startswith("//"):
+        return ""
+    if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", s):
+        try:
+            parts = urlsplit(s)
+            host = parts.hostname or ""
+        except ValueError:
+            return ""
+        if parts.scheme.lower() not in ("http", "https") or not (
+            host == "contentsx.jp" or host.endswith(".contentsx.jp")
+        ):
+            return ""
+    return s
+
+
+def build_home_card(c):
+    """ホームのコラム枠のカード1枚。旧 js/bm-wp-api.js の loadColumns() が描いていたものと同じ構造
+    （読了時間・data-category は無し）。文字の正規化は一覧のカード（build_card）と同じ。"""
+    title_ja = normalize_price_text(c.get("title_ja") or "")
+    excerpt = normalize_brand_text(c.get("excerpt_ja") or "")
+    thumb = site_url(c.get("thumbnail")) or HOME_FALLBACK_THUMB
+    # 詳細ページは make_slug の名前で生成するので、リンクは常に /column/{slug}（/ 始まり、BUGS #006）
+    detail_url = f"/column/{make_slug(c)}"
+    cat_line = (
+        f'              <span class="bm-column-card-cat">{esc(c["category"])}</span>\n'
+        if c.get("category") else ""
+    )
+    return (
+        f'          <a class="bm-column-card" href="{esc(detail_url)}">\n'
+        f'            <div class="bm-column-card-img"><img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225"></div>\n'
+        f'            <div class="bm-column-card-body">\n'
+        f'{cat_line}'
+        f'              <h3 class="bm-column-card-title">{esc(title_ja)}</h3>\n'
+        f'              <p class="bm-column-card-excerpt">{esc(excerpt)}</p>\n'
+        f'              <time class="bm-column-card-date">{esc(c.get("date") or "")}</time>\n'
+        f'            </div>\n'
+        f'          </a>\n'
+    )
+
+
+def update_home_html(columns):
+    """index.html のコラム枠（#bmColumnGrid）に、WP の一覧と同じ並びの先頭8件を書き込む。
+    マーカーが無ければ column.html と同じくビルド失敗にする（出力は1つも反映されない）。"""
+    p = ROOT / "index.html"
+    s = p.read_text(encoding="utf-8")
+    cards = "".join(build_home_card(c) for c in columns[:HOME_COLUMN_LIMIT])
+    block = f"{HOME_GRID_START}\n{cards}          {HOME_GRID_END}"
+    s, _ = replace_block(s, HOME_GRID_START, HOME_GRID_END, block, required=True)
     write_text(p, s)
     print(f"Updated {p}")
 
@@ -417,9 +488,10 @@ def _build():
     # 0件は fetch_columns() が拒否する（既存ページを消さないため）
     print(f"Total columns from WP: {len(columns)}")
 
-    # 順序: detail生成 (readtimeを記録) → column.html 更新 → sitemap
+    # 順序: detail生成 (readtimeを記録) → column.html 更新 → ホームの枠 → sitemap
     generate_details(columns)
     update_column_html(columns)
+    update_home_html(columns)
     update_sitemap(columns)
     print("Done.")
 

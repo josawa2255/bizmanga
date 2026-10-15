@@ -43,6 +43,26 @@ def workflow_checkout_ref(workflow):
     return ref[1].strip() if ref else None
 
 
+def workflow_step(workflow, step_id):
+    """(env, run) of one step, read without a YAML dependency (CI runs these tests without pip)."""
+    lines = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8').splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip() == f'id: {step_id}')
+    indent = len(lines[start]) - len(lines[start].lstrip())
+    env, run, key = {}, [], None
+    for line in lines[start:]:
+        depth = len(line) - len(line.lstrip())
+        if line.strip() and depth < indent:
+            break
+        if line.strip() and depth == indent:
+            key = line.strip().split(':', 1)[0]
+        elif key == 'env' and line.strip() and not line.strip().startswith('#'):
+            name, value = line.strip().split(':', 1)
+            env[name] = value.strip()
+        elif key == 'run':
+            run.append(line[indent + 2:])
+    return env, '\n'.join(run).rstrip('\n') + '\n'
+
+
 class BuildTests(unittest.TestCase):
     def test_literal_marker_substitution(self):
         block = 'START backslash \\q and \\1 END'
@@ -258,6 +278,100 @@ class BuildTests(unittest.TestCase):
                         columns.generate_details([{'id': 1, 'slug': 'example'}])
             self.assertEqual(list(root.glob('*.html')), [])
 
+    def test_home_column_grid_is_static_latest_eight(self):
+        columns = module('build-columns.py')
+        records = [{'id': i, 'slug': f'col-{i}', 'title_ja': f'記事{i}', 'excerpt_ja': f'抜粋{i}',
+                    'category': '社内', 'date': f'2026.10.{i:02d}',
+                    'thumbnail': f'https://cms.contentsx.jp/wp-content/uploads/{i}.webp'} for i in range(1, 11)]
+        records[0].update({'slug': '../outside', 'category': '',
+                           'title_ja': '"><script>alert(1)</script>16,600円〜（5本セット時）',
+                           'excerpt_ja': '人間7割×AI3割のハイブリッド制作 <b>&</b>',
+                           'thumbnail': 'javascript:alert(1)'})
+        records[1]['thumbnail'] = 'https://evil.example/x.webp'
+        records[2]['thumbnail'] = 'https://evil.example\\@contentsx.jp/x.webp'
+        records[3]['thumbnail'] = '/material/local.webp'
+        page = ('<div id="bmColumnGrid">\n          ' + columns.HOME_GRID_START
+                + '\n          <a class="bm-column-card" href="column">dummy</a>\n          '
+                + columns.HOME_GRID_END + '\n        </div>\n')
+
+        class Cards(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.cards, self.text = [], {}
+                self.current = None
+
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == 'a':
+                    self.cards.append({'href': attrs['href']})
+                elif tag == 'img':
+                    self.cards[-1].update(src=attrs['src'], alt=attrs['alt'])
+                elif attrs.get('class', '').startswith('bm-column-card-'):
+                    self.current = attrs['class']
+
+            def handle_data(self, data):
+                if self.current and data.strip():
+                    self.cards[-1][self.current] = data
+
+            def handle_endtag(self, tag):
+                self.current = None
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            index = root / 'index.html'
+            index.write_text(page, encoding='utf-8')
+            with patch.object(columns, 'ROOT', root), redirect_stdout(io.StringIO()), \
+                    patch('sys.stderr', io.StringIO()):
+                with output_batch(root):
+                    columns.update_home_html(records)
+                first = index.read_bytes()
+                with output_batch(root):
+                    columns.update_home_html(records)
+                self.assertEqual(first, index.read_bytes(), 'same input must not change index.html')
+            html_out = first.decode('utf-8')
+            self.assertNotIn('dummy', html_out)
+            self.assertNotIn('<script>', html_out)
+            self.assertNotIn('javascript:', html_out)
+            self.assertNotIn('evil.example', html_out)
+            parser = Cards()
+            parser.feed(html_out)
+            cards = parser.cards
+            self.assertEqual(len(cards), columns.HOME_COLUMN_LIMIT)
+            self.assertEqual([c['bm-column-card-date'] for c in cards],
+                             [r['date'] for r in records[:8]], 'WP order, first eight')
+            for card in cards:
+                self.assertTrue(card['href'].startswith('/column/'), card['href'])
+            self.assertEqual(cards[0]['href'], '/column/column-1', 'same URL as the generated page')
+            self.assertEqual(cards[4]['href'], '/column/col-5')
+            self.assertEqual(cards[0]['bm-column-card-title'], '"><script>alert(1)</script>25,740円〜（税抜・原稿料別途）')
+            self.assertEqual(cards[0]['alt'], cards[0]['bm-column-card-title'])
+            self.assertEqual(cards[0]['bm-column-card-excerpt'], '独自の制作メソッド <b>&</b>')
+            self.assertNotIn('bm-column-card-cat', cards[0], 'no badge without a category')
+            self.assertEqual(cards[1]['bm-column-card-cat'], '社内')
+            self.assertEqual([c['src'] for c in cards[:5]],
+                             [columns.HOME_FALLBACK_THUMB] * 3 + ['/material/local.webp',
+                                                                   records[4]['thumbnail']])
+            # Without the marker the build fails and index.html is left alone.
+            index.write_text('<div id="bmColumnGrid"></div>\n', encoding='utf-8')
+            with patch.object(columns, 'ROOT', root), redirect_stdout(io.StringIO()), \
+                    patch('sys.stderr', io.StringIO()):
+                with self.assertRaises(ValueError):
+                    with output_batch(root):
+                        columns.update_home_html(records)
+            self.assertEqual(index.read_text(encoding='utf-8'), '<div id="bmColumnGrid"></div>\n')
+
+    def test_real_home_page_has_one_column_marker_and_no_runtime_fetch(self):
+        columns = module('build-columns.py')
+        source = (ROOT / 'index.html').read_text(encoding='utf-8')
+        self.assertEqual(source.count(columns.HOME_GRID_START), 1)
+        self.assertEqual(source.count(columns.HOME_GRID_END), 1)
+        self.assertLess(source.index('id="bmColumnGrid"'), source.index(columns.HOME_GRID_START))
+        api = (ROOT / 'js/bm-wp-api.js').read_text(encoding='utf-8')
+        self.assertNotIn("apiFetch('/columns", api, 'the home column cards are static (Issue #79)')
+        workflow = (ROOT / '.github/workflows/build-columns.yml').read_text(encoding='utf-8')
+        commit = re.search(r'commit-generated\.py\n((?: {10}[^\n]*\n?)+)', workflow)[1]
+        self.assertIn('index.html', commit.split())
+
     def test_all_eight_lps_are_v2(self):
         lp = module('build-lp-cases.py')
         self.assertEqual(len(lp.LP_CATEGORIES), 8)
@@ -354,6 +468,103 @@ class PublishTests(unittest.TestCase):
                 self.assertIn('  cancel-in-progress: false\n', concurrency)
                 self.assertIn('  queue: max\n', concurrency)
                 self.assertEqual(workflow_checkout_ref(workflow), '${{ github.ref_name }}')
+
+    def test_pages_skips_deploy_only_when_main_is_already_deployed(self):
+        import shutil
+        bash, jq = shutil.which('bash'), shutil.which('jq')
+        if not bash or not jq:
+            self.skipTest('bash and jq are required to run the workflow step')
+        env, script = workflow_step('pages.yml', 'mode')
+        # Event values reach the shell only through env (no ${{ }} inside run).
+        self.assertEqual(set(env), {'GH_TOKEN', 'REPO', 'EVENT_NAME'})
+        self.assertEqual(env['EVENT_NAME'], '${{ github.event_name }}')
+        self.assertNotIn('${{', script)
+        self.assertNotIn('head_sha', script, 'one condition only: the last successful deployment')
+        source = (ROOT / '.github/workflows/pages.yml').read_text(encoding='utf-8')
+        permissions = re.search(r'^permissions:\n((?:  [^\n]*\n)+)', source, re.M)[1]
+        self.assertEqual(dict(re.findall(r'^  ([a-z-]+): ([a-z]+)$', permissions, re.M)),
+                         {'contents': 'read', 'pages': 'write', 'id-token': 'write', 'deployments': 'read'})
+        later_steps = source.split('id: mode', 1)[1].count('- name:')
+        self.assertEqual(source.count("if: steps.mode.outputs.deploy == 'true'"), later_steps)
+
+        tip, old = 'a' * 40, 'b' * 40
+        with tempfile.TemporaryDirectory(prefix='bm-pages-step-') as directory:
+            folder = Path(directory)
+            # A fake gh that serves scenario JSON through the step's real --jq filters (gh prints like jq -r).
+            (folder / 'gh').write_text(f'#!{sys.executable}\n' + r'''
+import json, os, subprocess, sys
+args = sys.argv[1:]
+path = args[1]
+data = json.load(open(os.environ['FAKE_GH'], encoding='utf-8'))
+with open(os.environ['GH_LOG'], 'a', encoding='utf-8') as log:
+    log.write(path + '\n')
+route, _, query = path.partition('?')
+deployments = data.get('deployments')
+body = None
+if route.endswith('/pages'):
+    body = {'build_type': data['mode']}
+elif route.endswith('/commits/main') and data.get('tip'):
+    body = {'sha': data['tip']}
+elif route.endswith('/deployments') and deployments is not None and 'environment=github-pages' in query.split('&'):
+    body = [{'id': d['id'], 'sha': d['sha'], 'environment': 'github-pages'} for d in deployments]
+elif route.endswith('/statuses') and deployments is not None:
+    match = [d for d in deployments if str(d['id']) == route.split('/')[-2]]
+    if match and not match[0].get('fail'):
+        body = [{'state': state} for state in match[0]['statuses']]
+if body is None:
+    sys.exit(1)
+query = args[args.index('--jq') + 1] if '--jq' in args else '.'
+sys.exit(subprocess.run(['jq', '-r', query], input=json.dumps(body), text=True).returncode)
+''', encoding='utf-8')
+            (folder / 'gh').chmod(0o755)
+            (folder / 'step.sh').write_text(script, encoding='utf-8')
+
+            def decide(event, scenario):
+                output, log, fake = folder / 'output', folder / 'gh.log', folder / 'fake.json'
+                output.write_text('', encoding='utf-8')
+                log.write_text('', encoding='utf-8')
+                fake.write_text(json.dumps(scenario), encoding='utf-8')
+                result = subprocess.run(
+                    [bash, '-e', str(folder / 'step.sh')], capture_output=True, text=True,
+                    env=dict(os.environ, PATH=f'{folder}{os.pathsep}{os.environ["PATH"]}',
+                             GITHUB_OUTPUT=str(output), GH_LOG=str(log), FAKE_GH=str(fake),
+                             REPO='owner/repo', EVENT_NAME=event))
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return output.read_text(encoding='utf-8').strip(), log.read_text(encoding='utf-8')
+
+            def dep(number, sha, *statuses, fail=False):  # statuses newest first, like the API
+                return {'id': number, 'sha': sha, 'statuses': list(statuses), 'fail': fail}
+
+            own = dep(9, tip, 'in_progress', 'queued')  # this job's own record, not finished yet
+            cases = {
+                'push always deploys': ('push', {'tip': tip, 'deployments': [dep(1, tip, 'success')]}, True),
+                'manual run always deploys': ('workflow_dispatch', {'tip': tip, 'deployments': [dep(1, tip, 'success')]}, True),
+                'last success is main': ('workflow_run', {'tip': tip, 'deployments': [dep(1, tip, 'success')]}, False),
+                'last success is older': ('workflow_run', {'tip': tip, 'deployments': [dep(1, old, 'success')]}, True),
+                'own record skipped, previous success is main': (
+                    'workflow_run', {'tip': tip, 'deployments': [
+                        own, dep(2, tip, 'success', 'in_progress'), dep(1, old, 'inactive', 'success')]}, False),
+                'own record skipped, failed deploy is redone': (
+                    'workflow_run', {'tip': tip, 'deployments': [
+                        own, dep(3, tip, 'failure', 'in_progress'), dep(2, old, 'success')]}, True),
+                'no success at all': ('workflow_run', {'tip': tip, 'deployments': [own, dep(2, tip, 'failure')]}, True),
+                'no deployments': ('workflow_run', {'tip': tip, 'deployments': []}, True),
+                'deployments API fails': ('workflow_run', {'tip': tip, 'deployments': None}, True),
+                'statuses API fails': ('workflow_run', {'tip': tip, 'deployments': [dep(1, tip, 'success', fail=True)]}, True),
+                'unreadable newer record is not skipped over': (
+                    'workflow_run', {'tip': tip, 'deployments': [dep(2, old, 'success', fail=True), dep(1, tip, 'success')]}, True),
+                'tip unreadable': ('workflow_run', {'tip': None, 'deployments': [dep(1, tip, 'success')]}, True),
+                'everything unreadable': ('workflow_run', {'tip': None, 'deployments': None}, True),
+            }
+            for name, (event, scenario, deploy) in cases.items():
+                with self.subTest(name):
+                    decision, calls = decide(event, dict(scenario, mode='workflow'))
+                    self.assertEqual(decision, f'deploy={str(deploy).lower()}')
+                    self.assertEqual('commits/main' in calls, event == 'workflow_run')
+            with self.subTest('Pages not switched to GitHub Actions'):
+                decision, calls = decide('workflow_run', {'mode': 'legacy', 'tip': tip, 'deployments': []})
+                self.assertEqual(decision, 'deploy=false')
+                self.assertNotIn('deployments', calls)
 
     def test_queued_sitemap_generators_preserve_both_updates(self):
         from xml.etree import ElementTree

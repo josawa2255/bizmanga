@@ -1,10 +1,15 @@
 name: Build column static pages
 
 on:
-  # 毎日 18:00 UTC = 翌03:00 JST に実行 (WP編集の翌朝には反映)。
-  # 旧: 週1 (土曜のみ) で WP 編集から最大1週間反映遅延 → BUGS #018 で日次化
+  # 毎時17分に実行（新しいコラムは公開から最大1時間で一覧・詳細・サイトマップ・ホームに出る）。
+  # コラム一覧（Issue #74）とホームの枠（Issue #79）はブラウザで WP から作り直さず、この静的ビルドが正。
+  # 公開は月5〜7本と少ないが、JS で補わない分、公開から表示までの遅れはこの頻度で決まるので毎時にした。
+  # 17分にしたのは、GitHub の予定実行が混んで遅れやすい毎時0分を避けるため。
+  # WP への負荷は1回につき一覧1件＋詳細の数（約45件）を5並列で取得。何も変わらなければ commit も push もしない
+  # （その場合 main は公開済みのままなので、pages.yml もデプロイを飛ばす）。
+  # 経緯: 週1（土曜）→ 毎日03:00 JST（BUGS #018）→ 毎時（Issue #79）
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -32,4 +37,4 @@ jobs:
         run: >-
           python tools/commit-generated.py
           --message "chore(column): auto-rebuild static pages [skip ci]"
-          column.html column/ sitemap.xml js/bm-pricing.js
+          column.html column/ index.html sitemap.xml js/bm-pricing.js

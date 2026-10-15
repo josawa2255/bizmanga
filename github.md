@@ -134,7 +134,7 @@ git checkout -b feat/42-testimonials-restore
 | ワークフロー | 何をするか |
 |------------|-----------|
 | `build-works.yml` | WPの作品データから静的ページを毎日生成 |
-| `build-columns.yml` | WPのコラムから静的ページを生成 |
+| `build-columns.yml` | WPのコラムから静的ページ（詳細・一覧・ホームのコラム枠・サイトマップ）を毎時生成。変化が無ければ push しない |
 | `build-lp-cases.yml` | LP用事例を生成 |
 | `rank-tracker.yml` | GSC順位を毎朝記録 |
 
