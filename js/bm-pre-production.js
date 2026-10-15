@@ -222,7 +222,10 @@
         var apiName = [];
         data.forEach(function (item) {
           var entry = {
-            key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-' + item.id,
+            // ⚠ キーはビズ書庫（js/works.js の rebuildPreCarousels）が登録する形 pre-red-wp{投稿ID} と同じにする。
+            // 以前の pre-red-{投稿ID} だとビズ書庫で「作品が見つかりませんでした」になった（Issue #84。
+            // 旧形式の URL は works.js 側でも開けるようにしてある）
+            key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id,
             title: item.title,
             path: '',
             pages: item.pages,

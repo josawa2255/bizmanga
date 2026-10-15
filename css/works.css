@@ -1400,9 +1400,11 @@ body {
 }
 
 /* ===== Footer ===== */
+/* 背景 #222 に対して文字は 4.5:1 以上（#aaa 6.9:1 / #999 5.6:1 / #8f8f8f 4.9:1）。
+   2026-05-14 の灰色→#000 一括置換（20e2667）で黒地に黒文字になっていたのを戻した（Issue #84） */
 .footer {
   background: #222;
-  color: #000;
+  color: #aaa;
   padding: 40px 24px;
   text-align: center;
 }
@@ -1432,7 +1434,7 @@ body {
   list-style: none;
 }
 .footer-links a {
-  color: #000; text-decoration: none;
+  color: #aaa; text-decoration: none;
   font-size: 13px; font-weight: 600;
   transition: color 0.2s;
 }
@@ -1441,7 +1443,7 @@ body {
   width: 100%;
   margin-top: 16px;
   font-size: 12px;
-  color: #000;
+  color: #999;
 }
 .footer-copy {
   width: 100%;
@@ -1449,7 +1451,7 @@ body {
   padding-top: 16px;
   border-top: 1px solid rgba(255,255,255,0.1);
   font-size: 11px;
-  color: #000;
+  color: #8f8f8f;
 }
 
 /* ===== No Results ===== */
@@ -1686,7 +1688,8 @@ body {
 }
 
 /* ===== Direct Mode (QR code flicker prevention) ===== */
-html.direct-mode .header,
+/* biz-library.html のヘッダーは <header class="bm-header">（.header はどこにも無い。Issue #84） */
+html.direct-mode .bm-header,
 html.direct-mode .page-hero,
 html.direct-mode .works-section,
 html.direct-mode .pre-section,

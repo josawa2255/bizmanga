@@ -384,9 +384,20 @@
     }
 
     // ============ データ取得 ============
+    // /manga/{id} が 404 ＝ WP に無い・完全非公開（cx_private）。素材フォルダの画像を推測して出すと
+    // 非公開にした作品が見えてしまうので、推測せず「NO PAGES」にする（Issue #84）。
+    // 通信障害（catch）は従来どおり素材フォルダから推測する
+    var NOT_FOUND = {};
     fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
-      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(r) {
+        if (r.status === 404) return NOT_FOUND;
+        return r.ok ? r.json() : null;
+      })
       .then(function(data) {
+        if (data === NOT_FOUND) {
+          render(null);
+          return;
+        }
         if (data && data.gallery && data.gallery.length > 0) {
           render(data);
         } else {

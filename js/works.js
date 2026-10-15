@@ -61,6 +61,13 @@ function getImageSrc(data, pageIndex) {
   return data.path + String(pageIndex + 1).padStart(2, '0') + '.webp';
 }
 
+// ===== ヘルパー: 実際のページ数（ギャラリーがあればその枚数、無ければ pages） =====
+// 先読みはこの数で止める（1ページの作品で存在しない2ページ目を読みに行って 404 にしない。Issue #84）
+function realPageCount(data) {
+  var galleryLen = (data.gallery && data.gallery.length) || 0;
+  return galleryLen > 0 ? galleryLen : (parseInt(data.pages, 10) || 0);
+}
+
 // ===== フォールバック用ローカルデータ =====
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
@@ -278,6 +285,22 @@ function waitForLibrary(ms) {
   ]);
 }
 
+// ===== /preproduction（赤ペン・ネーム専用）の到着も QR直リンクの処理が待てるようにする（Issue #84） =====
+// /preproduction は /library の到着後に rebuildPreCarousels() が取りに行き、pre-red-wp{投稿ID} 等を登録する。
+// 制作過程の直リンクはその登録より前に判定すると「見つかりませんでした」になるので、取りに行っていれば到着（または失敗）を待つ
+var preproductionRequested = false;
+var resolvePreproductionSettled = null;
+var preproductionSettledPromise = new Promise(function(resolve) { resolvePreproductionSettled = resolve; });
+function settlePreproduction() {
+  resolvePreproductionSettled();
+}
+function waitForPreproduction(ms) {
+  return Promise.race([
+    preproductionSettledPromise,
+    new Promise(function(resolve) { setTimeout(resolve, ms); })
+  ]);
+}
+
 // 現在の言語が英語なら即座に反映
 (function fetchLibraryFromAPI() {
   fetch('https://cms.contentsx.jp/wp-json/contentsx/v1/library')
@@ -353,7 +376,7 @@ worksGrid.addEventListener('mouseenter', (e) => {
     const data = mangaData[key];
     if (data) {
       const preloadSrcs = [];
-      for (let i = 0; i < Math.min(4, data.pages); i++) {
+      for (let i = 0; i < Math.min(4, realPageCount(data)); i++) {
         preloadSrcs.push(getImageSrc(data, i));
       }
       preloadSrcs.forEach(src => getCachedImage(src));
@@ -369,6 +392,7 @@ function updateGridPagination() {
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
 
   if (gridCurrentPage > totalPages) gridCurrentPage = 1;
+  if (!(gridCurrentPage >= 1)) gridCurrentPage = 1; // 0・負数・NaN（範囲外）は1ページ目へ（Issue #84）
 
   // Show/hide cards based on current page
   visibleCards.forEach((card, idx) => {
@@ -388,8 +412,10 @@ function updateGridPagination() {
   }
 
   // Previous
-  const prevBtn = mkPgBtn('‹ Previous', () => { gridCurrentPage--; updateGridPagination(); });
-  if (gridCurrentPage === 1) prevBtn.classList.add('disabled');
+  // 端のボタンは disabled 属性で止める（class だけだと pointer-events は止まってもキーボードの Enter で押せ、
+  // ページが 0 や総ページ数+1 になってグリッドが空になる。Issue #84）。押された場合も範囲内に収める
+  const prevBtn = mkPgBtn('‹ Previous', () => { gridCurrentPage = Math.max(1, gridCurrentPage - 1); updateGridPagination(); });
+  if (gridCurrentPage <= 1) { prevBtn.classList.add('disabled'); prevBtn.disabled = true; }
   frag.appendChild(prevBtn);
 
   // Page numbers
@@ -408,8 +434,8 @@ function updateGridPagination() {
   });
 
   // Next
-  const nextBtn = mkPgBtn('Next ›', () => { gridCurrentPage++; updateGridPagination(); });
-  if (gridCurrentPage >= totalPages) nextBtn.classList.add('disabled');
+  const nextBtn = mkPgBtn('Next ›', () => { gridCurrentPage = Math.min(totalPages, gridCurrentPage + 1); updateGridPagination(); });
+  if (gridCurrentPage >= totalPages) { nextBtn.classList.add('disabled'); nextBtn.disabled = true; }
   frag.appendChild(nextBtn);
 
   gridPagination.innerHTML = '';
@@ -753,9 +779,9 @@ function openManga(key) {
     if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
 
     // Preload first pages then open viewer immediately with loading state
-    var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
-    if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
-    if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
+    // 先読みは最大4ページ・実際のページ数まで（1ページの作品で2ページ目を読みに行かない。Issue #84）
+    var firstPages = [];
+    for (var fp = 0; fp < Math.min(4, realPageCount(data)); fp++) firstPages.push(getImageSrc(data, fp));
 
     // Show modal immediately with loading indicator
     showMangaLoader();
@@ -1642,6 +1668,23 @@ function isPreProductionKey(key) {
   return /^pre-(red|name)-/.test(key);
 }
 
+// 制作過程の直リンクのキーを登録済みのキーにそろえ、登録済みなら true を返す（Issue #84）。
+// /preproduction の項目はビズ書庫では pre-red-wp{投稿ID} / pre-name-wp{投稿ID} で登録する（下の rebuildPreCarousels）。
+// ホームの制作過程カルーセル（js/bm-pre-production.js）は 2026-10 まで wp の付かない pre-red-{投稿ID} で
+// ビズ書庫を開いていたので、その形の URL も同じ項目として開く（同じキーが登録済みならそちらが優先）
+function resolveDirectPreKey() {
+  if (Object.prototype.hasOwnProperty.call(mangaData, directKey)) return true;
+  var m = /^pre-(red|name)-(\d+)$/.exec(directKey);
+  if (m) {
+    var wpKey = 'pre-' + m[1] + '-wp' + m[2];
+    if (Object.prototype.hasOwnProperty.call(mangaData, wpKey)) {
+      directKey = wpKey;
+      return true;
+    }
+  }
+  return false;
+}
+
 // 直リンクの漫画を開くのは1回だけ。同じ作品を2回開くと、どちらのデータが最後に描かれるかが
 // 画像の読込と API 到着の順番で変わる（Issue #71）。この宣言は下の直リンク処理より前に置く
 var directOpenRequested = false;
@@ -1709,7 +1752,16 @@ function startDirectMode() {
       openDirectMangaOnce();
       return Promise.resolve();
     }
-    return waitForLibrary(DIRECT_FETCH_TIMEOUT_MS + DIRECT_LIBRARY_WAIT_MS).then(openDirectOrNotFound);
+    return waitForLibrary(DIRECT_FETCH_TIMEOUT_MS + DIRECT_LIBRARY_WAIT_MS).then(function() {
+      // 赤ペン・ネーム専用の /preproduction（pre-red-wp{投稿ID} 等）は、/library の到着後に rebuildPreCarousels() が
+      // 取りに行く。まだ登録されていなければ、その到着（または失敗）も待つ（Issue #84。待たないと
+      // ホームの制作過程スライドから開いたときに「見つかりませんでした」になる）
+      if (resolveDirectPreKey() || !preproductionRequested) return;
+      return waitForPreproduction(DIRECT_FETCH_TIMEOUT_MS);
+    }).then(function() {
+      resolveDirectPreKey();
+      openDirectOrNotFound();
+    });
   }
 
   // 作品: 手書きの FALLBACK_WORKS や先に届いた /library では先に開かず、/manga/{id} のデータで1回だけ開く
@@ -2091,16 +2143,19 @@ function registerFallbackPreData() {
 
     // 次に専用APIからも取得して統合
     var apiBase = window.BM_WP_CONFIG ? window.BM_WP_CONFIG.apiBase : 'https://cms.contentsx.jp/wp-json/contentsx/v1';
+    // QR直リンクの制作過程は、この取得の到着（または失敗）を waitForPreproduction() で待つ（Issue #84）
+    preproductionRequested = true;
     fetch(apiBase + '/preproduction')
       .then(function(r) {
         if (!r.ok) throw new Error('API error');
         return r.json();
       })
       .then(function(data) {
-        if (!data || data.length === 0) { doRebuild(); return; }
+        if (!data || data.length === 0) { settlePreproduction(); doRebuild(); return; }
         var apiRed = [];
         var apiName = [];
         data.forEach(function(item) {
+          // ⚠ キーの形は js/bm-pre-production.js（ホームの制作過程スライド → biz-library?manga=キー）と同じにする
           var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
           // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
           // 手入力ミスでズレるとカルーセルに壊れた画像URLや欠落が出るため）
@@ -2133,9 +2188,11 @@ function registerFallbackPreData() {
         // 専用APIのデータがあればフォールバック＋manga_workデータを上書き
         if (apiRed.length > 0) preData.red = apiRed;
         if (apiName.length > 0) preData.name = apiName;
+        settlePreproduction();
         doRebuild();
       })
       .catch(function() {
+        settlePreproduction();
         doRebuild();
       });
   };
