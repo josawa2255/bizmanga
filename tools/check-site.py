@@ -16,6 +16,8 @@ DEPENDENCIES = {
     "bm-testimonial-detail.js": ["bm-sanitize.js"],
     "bm-column-detail.js": ["bm-sanitize.js", "bm-pricing.js"],
     "bm-news-detail.js": ["bm-sanitize.js"],
+    # window.bmScrollBelowSticky（一覧の先頭を追従する帯の下へ戻す。SPEC §0.6）を使う
+    "works.js": ["bm-nav.js"], "bm-works-page.js": ["bm-nav.js"], "bm-column-filter.js": ["bm-nav.js"],
 }
 
 

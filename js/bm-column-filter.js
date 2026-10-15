@@ -137,19 +137,12 @@
   /* 追従しているチップを一覧の途中・下で押したとき、絞り込んだ結果の先頭を
      フィルター帯のすぐ下へ戻す（そのままだと結果が画面の上に外れて何も無いように見える。PR #78 レビュー）。
      先頭 = 表示中の特集記事（スマホと絞り込み外では非表示）、無ければカード一覧。
-     帯の下には本来の余白（帯の margin-bottom）を挟む。帯の高さは実際の値を読む。
-     一覧の先頭より上にいるとき（帯がまだ貼り付いていないとき）は動かさない。 */
+     送り先の計算は全ページ共通の window.bmScrollBelowSticky（js/bm-nav.js）。
+     一覧の先頭より上にいるとき（帯がまだ貼り付いていないとき）は動かさない（onlyIfBelow）。 */
   function scrollToListTop(featured, grid) {
-    var bar = document.querySelector(".bm-column-filter");
-    if (!bar || !grid) return;
-    var cs = getComputedStyle(bar);
-    if (cs.position !== "sticky") return;
+    if (!grid || !window.bmScrollBelowSticky) return;
     var first = featured && featured.offsetParent !== null ? featured : grid;
-    var y = first.getBoundingClientRect().top + window.pageYOffset -
-      (parseFloat(cs.top) || 0) - bar.offsetHeight - (parseFloat(cs.marginBottom) || 0);
-    if (window.pageYOffset > y + 1) {
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-    }
+    window.bmScrollBelowSticky(first, document.querySelector(".bm-column-filter"), { onlyIfBelow: true });
   }
 
   function init() {

@@ -122,20 +122,24 @@ function buildFilterButtons() {
     /* escHtml() 済み（XSS対策） */
     const labelJa = escHtml(cat);
     btn.innerHTML = `<span>${labelJa}</span> <span class="filter-count">${catCount[cat]}</span>`;
-    btn.addEventListener('click', () => filterWorks(cat, btn));
+    btn.addEventListener('click', (e) => {
+      filterWorks(cat, btn);
+      // 利用者が押したときだけ、一覧の途中・下なら結果の先頭へ戻す（そのままだと結果が画面の上に外れて
+      // 何も無いように見える）。一覧の先頭より上で押したときは動かさない（onlyIfBelow）。
+      // ⚠️ WP データ到着時の再構築も、選んでいたカテゴリを戻すために同じボタンを .click() する。
+      //    そのとき（isTrusted が false）に動かすと、読んでいる途中でページが一覧の先頭へ跳ねる（PR #78 再レビュー）
+      if (e.isTrusted) scrollLibraryToGridTop(true);
+    });
     worksFilter.appendChild(btn);
   });
 }
 
-// 追従するフィルター（.works-filter・sticky）の下に一覧の先頭（1行目）を見せるスクロール位置。
-// 帯が貼り付き始める位置（＝帯の下に本来の余白 margin-bottom を挟んで1行目が来る位置）を、
-// 帯の実際の高さ（行数で変わる）から計算する。帯が追従しない画面（768px 以下・高さ 620px 以下）は null。
-// （PR #78 レビュー: ヘッダー72px＋帯の高さより小さい固定値だと1行目の上が帯の裏に隠れた）
-function gridTopBelowStickyFilter() {
-  const cs = getComputedStyle(worksFilter);
-  if (cs.position !== 'sticky') return null;
-  const gridTop = worksGrid.getBoundingClientRect().top + window.scrollY;
-  return Math.max(0, gridTop - (parseFloat(cs.top) || 0) - worksFilter.offsetHeight - (parseFloat(cs.marginBottom) || 0));
+// 一覧の先頭（1行目）を追従するフィルター帯（.works-filter）のすぐ下へ戻す。
+// 送り先の計算（帯が貼り付いているときは帯の実際の高さを差し引く／追従しない画面はヘッダーの下 16px）は
+// 全ページ共通の window.bmScrollBelowSticky（js/bm-nav.js。SPEC §0.6）。
+// onlyIfBelow: true＝絞り込み（一覧より上にいるときは動かさない）／false＝ページ送り（常に送る）
+function scrollLibraryToGridTop(onlyIfBelow) {
+  if (window.bmScrollBelowSticky) window.bmScrollBelowSticky(worksGrid, worksFilter, { onlyIfBelow: onlyIfBelow });
 }
 
 function filterWorks(category, activeBtn) {
@@ -153,10 +157,6 @@ function filterWorks(category, activeBtn) {
   document.getElementById('noResults').classList.toggle('visible', visibleCount === 0);
   gridCurrentPage = 1;
   updateGridPagination();
-  // 追従しているチップを一覧の途中・下で押したとき、絞り込んだ結果の先頭へ戻す
-  // （そのままだと結果が画面の上に外れて何も無いように見える）。一覧の先頭より上にいるときは動かさない。
-  const y = gridTopBelowStickyFilter();
-  if (y !== null && window.scrollY > y + 1) window.scrollTo({ top: y, behavior: 'smooth' });
 }
 
 // ===== カード生成 =====
@@ -401,12 +401,8 @@ function updateGridPagination() {
       el.textContent = '...';
       frag.appendChild(el);
     } else {
-      const btn = mkPgBtn(p, () => {
-        gridCurrentPage = p; updateGridPagination();
-        // 帯が追従する画面はその下端の下へ。追従しない画面（768px 以下など）は従来どおり offsetTop - 120
-        const y = gridTopBelowStickyFilter();
-        window.scrollTo({ top: y !== null ? y : worksGrid.offsetTop - 120, behavior: 'smooth' });
-      });
+      // 一覧の先頭へ戻すスクロールは下の gridPagination のクリック（‹ Previous・Next › と共通）で行う
+      const btn = mkPgBtn(p, () => { gridCurrentPage = p; updateGridPagination(); });
       if (p === gridCurrentPage) btn.classList.add('active');
       frag.appendChild(btn);
     }
@@ -440,6 +436,17 @@ function generatePageNumbers(current, total) {
   pages.push(total);
   return pages;
 }
+
+// ページ送り（番号・‹ Previous・Next ›）で一覧の先頭を追従する帯のすぐ下へ戻す（PR #78 再レビュー:
+// 以前は番号だけが戻し、Previous/Next は下の位置のまま次のページが出た）。
+// 各ボタンの処理（ページの切り替え・ボタンの作り直し）が済んだ後に、バブリングでここに届く。
+// 押したボタンが「今のページ」（active）・端で押せない（disabled）なら、ページが変わらないので動かさない
+// （作り直す前のボタンの状態で判定する）。
+gridPagination.addEventListener('click', (e) => {
+  const btn = e.target.closest('.pg-btn');
+  if (!btn || btn.classList.contains('active') || btn.classList.contains('disabled')) return;
+  scrollLibraryToGridTop(false);
+});
 
 // Initial pagination render
 updateGridPagination();

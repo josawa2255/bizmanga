@@ -160,23 +160,16 @@
 
   }
 
-  // ===== ページ送り後に一覧の1行目を見せる位置 =====
-  // 追従するフィルター（.bm-category-filter・sticky）がヘッダーの下に貼り付いている間は、
-  // その下端より下に1行目が来るよう、帯の実際の高さ（行数で変わる）を読んで差し引く。
+  // ===== 一覧の1行目を、追従するフィルター帯（.bm-category-filter）のすぐ下へ戻す =====
+  // 送り先の計算（帯が貼り付いているときは帯の実際の高さを差し引く／追従しない画面はヘッダーの下 16px）は
+  // 全ページ共通の window.bmScrollBelowSticky（js/bm-nav.js。SPEC §0.6）。
   // grid.scrollIntoView だと1行目がヘッダー＋帯の裏に隠れていた（PR #78 レビュー）。
-  // 帯が追従しない画面（768px 以下・高さ 620px 以下）はヘッダーの下端を基準にする。
-  function scrollToGridTop() {
-    var gridTop = grid.getBoundingClientRect().top + window.pageYOffset;
-    var cs = filterContainer ? getComputedStyle(filterContainer) : null;
-    var y;
-    if (cs && cs.position === 'sticky') {
-      // 帯が貼り付き始める位置（＝帯の下に本来の余白 margin-bottom を挟んで1行目が来る位置）
-      y = gridTop - (parseFloat(cs.top) || 0) - filterContainer.offsetHeight - (parseFloat(cs.marginBottom) || 0);
-    } else {
-      var header = document.querySelector('.bm-header');
-      y = gridTop - (header ? header.getBoundingClientRect().bottom : 72) - 16;
-    }
-    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  //   onlyIfBelow=false: ページ送り（常に送る）
+  //   onlyIfBelow=true : 「すべて」・カテゴリページの無いカテゴリのボタン（その場で絞り込む）。
+  //                      一覧の途中・下で押したときだけ戻し、一覧より上で押したときは動かさない
+  function scrollToGridTop(onlyIfBelow) {
+    if (!window.bmScrollBelowSticky) return;
+    window.bmScrollBelowSticky(grid, filterContainer, { onlyIfBelow: !!onlyIfBelow });
   }
 
   function buildPagination(totalItems, activePage) {
@@ -236,6 +229,7 @@
         allBtn.textContent = labelJa;
         allBtn.addEventListener('click', function() {
           renderWorks(currentWorks, null, 1);
+          scrollToGridTop(true);
         });
         filterContainer.appendChild(allBtn);
         return;
@@ -256,6 +250,7 @@
         fbtn.textContent = labelJa;
         fbtn.addEventListener('click', function() {
           renderWorks(currentWorks, cat, 1);
+          scrollToGridTop(true);
         });
         filterContainer.appendChild(fbtn);
       }

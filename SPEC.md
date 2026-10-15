@@ -45,26 +45,34 @@
 - `.bm-whatis-fold-*` — 見出し/バッジ/本文/リストすべて clamp、SP の media query は 2列→1列のみ
 
 ### 0.6 横溢れ防止は `clip`。sticky を殺さない（2026-10-14 / Issue #73・PR #78）
-- `html` と `body` の横溢れ防止は **`overflow-x: hidden; overflow-x: clip;` の2行**で、**`css/bizmanga.css` の1か所だけ**に書く。clip に対応したブラウザでは後の clip が勝ち、未対応の古いブラウザ（Safari 15 以前など）は hidden が残る（横スクロールは止まり、sticky だけ効かない＝修正前と同じ）。
-  - ⛔ 他のCSSに html/body の `overflow-x` を書かない。以前はビズ書庫だけが読む `css/works.css` にも同じ指定があり、biz-library.html では bizmanga.css より後に書かれて勝つため、値がずれると bizmanga.css を直しても効かなかった。PR #78 で削除（bizmanga.css は非同期で後から届くが、届く前＝読み込みを止めた状態で works.css の指定も外しても、320〜1920px の12幅で横溢れ無しを実測）。
+- `html` と `body` の横溢れ防止は **`overflow-x: hidden; overflow-x: clip;` の2行**。clip に対応したブラウザでは後の clip が勝ち、未対応の古いブラウザ（Safari 15 以前など）は hidden が残る（横スクロールは止まり、sticky だけ効かない＝修正前と同じ）。
+  - 書く場所は **`css/bizmanga.css` と `css/works.css`（ビズ書庫）の2か所だけ**で、**値は必ず同じにする**。ビズ書庫（biz-library.html）は bizmanga.css を非同期（preload → onload）で読むので、届くのが遅い・読み込みに失敗した・切り替えが動かないときも横溢れを止めるため、同期で読む works.css にも置く（PR #78 再レビュー。bizmanga.css を止めて幅 2000px の要素を足すと、works.css に無い版は 320〜1920px の12幅すべてで横に動き、ある版は動かないことを実測）。
+  - ⚠️ works.css は biz-library.html で bizmanga.css より後に書かれて勝つ。値がずれると bizmanga.css を直しても効かない（Issue #73 で works.css だけ hidden のまま残り、ビズ書庫のフィルターが追従しなかった原因）。
+  - ⛔ それ以外のCSSには html/body の `overflow-x` を書かない。
 - **理由**: `hidden`（`auto`/`scroll` も）はスクロールコンテナを作る。body が「一度もスクロールしない箱」になり、その中の `position: sticky` が追従しなくなる。2026-10-14 まで body が hidden だったため、コラム一覧・制作事例・ビズ書庫のフィルターと資料DLのフォームは sticky と書いてあっても追従していなかった。clip は横にはみ出した分を切り取る効果は同じで、スクロールコンテナを作らない。
 - ⛔ **ページごとに html/body を clip で打ち消す書き方はしない**（以前の bizanime.css / use-cases.css / bizanime.js の打ち消しは共通側を直したので削除済み）。sticky を使う要素の祖先に `overflow: hidden` を足さない。切り取りたいときは `overflow: clip` か `clip-path: inset(0)`。
-- **ヘッダーの高さは変数 `--bm-header-height`**（`css/bizmanga.css` の `:root` で 72px、`.bm-header { height: var(--bm-header-height) }`）。ヘッダー直下に貼り付ける帯・位置の計算はこの変数から: 帯は `top: var(--bm-header-height, 72px)`（コラム・制作事例・ビズ書庫のフィルター、LP の目次 `.lpv2-toc`、コラム詳細のプレビューバナー）、カード型（資料DLフォーム）は `top: calc(var(--bm-header-height, 72px) + 24px)`（=96px）。旧ヘッダー用の 56/60/68/80px を書かない。予備値の 72px は bizmanga.css より先に読まれるCSS（works.css）やインライン指定のため。各HTMLの head のインラインCSS（`.bm-header{…height:72px}`）は bizmanga.css が届くまでの仮の値で、同じ 72px。
-  - **例外: bizanime のスマホ（1024px 以下）だけヘッダー 56px**（`css/bizanime.css` が `body.ba-page .bm-header` で `--bm-header-height: 56px` と `height: 56px` に上書き。変数はヘッダーの中だけで効くので、ヘッダー内のドロワーは 56px の下から開く。bizanime には追従する帯が無い）。
+- **ヘッダーの高さは変数 `--bm-header-height`**（`css/bizmanga.css` の `:root` で 72px、`.bm-header { height: var(--bm-header-height) }`）。ヘッダー直下に貼り付ける帯・位置の計算はこの変数から: 帯は `top: var(--bm-header-height, 72px)`（コラム・制作事例・ビズ書庫のフィルター、LP の目次 `.lpv2-toc`、コラム詳細のプレビューバナー）、カード型（資料DLフォーム）は `top: calc(var(--bm-header-height, 72px) + 24px)`（=96px）。旧ヘッダー用の 56/60/68/80px を書かない。予備値の 72px は、変数を定義する bizmanga.css が届く前（ビズ書庫などは非同期で読む）や、別ファイル・インライン指定から読むときのため。各HTMLの head のインラインCSS（`.bm-header{…height:72px}`）は bizmanga.css が届くまでの仮の値で、同じ 72px。
+  - **例外: bizanime のスマホ（1024px 以下）だけヘッダー 56px**。`css/bizanime.css` が **`body.ba-page` に `--bm-header-height: 56px`** を書き、ヘッダー本体（`.bm-header` の height と `.bm-header-inner`）、ヘッダー内のドロワー（`.bm-nav.open` の top）、Hero の余白（`.ba-hero` の margin-top・`.ba-scroll-wrap` の padding-top）がこの変数を読む。⚠️ 上書きを `.bm-header` の中に書かない（以前はそうなっていて、ヘッダーの外の帯や JS が読む値は 72px のままだった。PR #78 再レビュー）。bizanime には今のところ追従する帯は無い（変更前後でヘッダーの見た目は 320〜1920px の7幅でスクリーンショットが1画素も変わらないことを確認）。
+  - JS で値を読むときは `:root`（documentElement）ではなく、使う要素（帯など）の `getComputedStyle` から読む（bizanime のスマホでは :root は 72px のまま）。
 - **追従させない画面（帯が画面を覆いすぎる）**。目安: 貼り付いたとき、ヘッダー（72px）＋帯＋画面下の追従ボタン（`.bm-fab`、769px 以上 72px・768px 以下 56px。ビズ書庫・資料DLには無い）で画面の高さの約半分以上が埋まる画面では追従させない。値は実測で決めた（PR #78 レビュー）。
-  - 制作事例（`.bm-category-filter`）とビズ書庫（`.works-filter`）: `@media (max-width: 768px), (max-height: 620px)` で `position: static`。768px 以下は3〜4行（124〜356px）になり、ヘッダー込みだけで画面の約2〜7割（320px幅の制作事例で67%）。769px 以上でも10カテゴリで2行（制作事例 168px・ビズ書庫 160px）。制作事例は 72＋168＋72＝312px が 1024×600 で 52%・932×430 で 73%・844×390 で 80% を埋める。高さ 621px 以上（1366×768 のノートPCの表示域 約630〜660px で 47〜50%弱、1280×800 で 39%）は追従させる。ビズ書庫は追従ボタンが無いぶん少し余裕がある（ヘッダー込み 232px が 1024×600 で 39%・844×390 で 59%）が、同じ形のフィルターなので条件をそろえる。カテゴリが増えて3行になったら測り直す。
+  - 制作事例（`.bm-category-filter`）とビズ書庫（`.works-filter`）: 追従は**共通クラス `.bm-sticky-filter`**（`css/bizmanga.css` に1回だけ定義。works.html・biz-library.html の両方のフィルターに付ける）で付け、`position: sticky; top: var(--bm-header-height, 72px)` と `@media (max-width: 768px), (max-height: 620px)` の `position: static` をまとめて持つ。⚠️ 各フィルターのクラスに position / top を書かない（works.css は bizmanga.css より後に書かれて勝つので、そこに sticky を書くと共通クラスの static を打ち消す）。ビズ書庫は bizmanga.css を非同期で読むので、届くまでの一瞬はフィルターが追従しない（普通の位置に置かれるだけで害は無い）。768px 以下は3〜4行（124〜356px）になり、ヘッダー込みだけで画面の約2〜7割（320px幅の制作事例で67%）。769px 以上でも10カテゴリで2行（制作事例 168px・ビズ書庫 160px）。制作事例は 72＋168＋72＝312px が 1024×600 で 52%・932×430 で 73%・844×390 で 80% を埋める。高さ 621px 以上（1366×768 のノートPCの表示域 約630〜660px で 47〜50%弱、1280×800 で 39%）は追従させる。ビズ書庫は追従ボタンが無いぶん少し余裕がある（ヘッダー込み 232px が 1024×600 で 39%・844×390 で 59%）が、同じ形のフィルターなので条件をそろえる。カテゴリが増えて3行になったら測り直す。
   - コラム（`.bm-column-filter`）: `@media (max-height: 430px)`（スマホ横向き）で `position: static`。帯は1行の横スクロール（54〜68px）と低いが、72＋68＋72＝212px が 844×390 で 54%・932×430 で 49% を埋め、本文が見えるのは 180〜220px だけになる。高さ 431px 以上（1024×600 で 35%、縦持ちスマホ 390×844 で 22%）は全幅で追従させる。
   - 資料DLフォーム（`.bm-dl-card`）: `@media (min-width: 861px) and (min-height: 940px)` のときだけ追従。カード（805〜820px）が画面より高いまま貼り付くと、貼り付いている間は送信ボタンが画面の下に隠れたまま動かないため（940px = 96 + 820 + 下の余白 24）。
 - **追従する範囲**: sticky は親の箱の中でしか動かない。コラムは column.html の `.bm-column-listing`（フィルター帯・特集記事・一覧を包む箱。`BUILD:COLUMN_GRID` マーカーの外）で包み、一覧を過ぎたら CTA・フッターの上に残らないようにしている（以前は body 直下でフッターまで貼り付いていた）。制作事例は `.bm-container`、ビズ書庫は `.works-section` の中だけ。
 - **帯の背景は不透明の白（`#fff`）で `backdrop-filter` は付けない**。以前の「白95%＋blur(8px)」は裏が5%しか透けず見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（外した前後の帯の画像の差は各色 最大 2〜5/255）。
-- **帯の下へスクロールする処理は、帯の実際の高さを読んで計算する**（行数で高さが変わるため固定値にしない）。帯が貼り付いているときは「帯が貼り付き始める位置」（帯の下に帯の `margin-bottom` を挟んで一覧の先頭が来る位置）へ送る。
-  - 制作事例のページ送り（`js/bm-works-page.js` の `scrollToGridTop()`）: 追従しない画面はヘッダーの下 16px に1行目（以前の `scrollIntoView` は1行目がヘッダー＋帯の裏に隠れた）。
-  - ビズ書庫のページ番号（`js/works.js` の `gridTopBelowStickyFilter()`）: 追従しない画面（768px 以下など）は従来どおり `worksGrid.offsetTop - 120`。
-  - チップでの絞り込み（コラム `js/bm-column-filter.js` の `scrollToListTop()`、ビズ書庫 `filterWorks()`）: 一覧の途中・下でチップを押したら、絞り込んだ結果の先頭（コラムは表示中の特集記事、無ければカード一覧）を帯のすぐ下へ戻す。一覧の先頭より上にいるとき・帯が追従していないときは動かさない。制作事例のカテゴリはページ遷移なので対象外。
+- **一覧の先頭を帯のすぐ下へ戻すスクロールは、全ページ共通の `window.bmScrollBelowSticky(target, bar, options)`（`js/bm-nav.js` 末尾の独立IIFE）1つで計算する**（PR #78 再レビューで3か所の重複を統合）。呼び出し元の JS は bm-nav.js より後に defer で読む（`tools/check-site.py` の `DEPENDENCIES` で順序を検査）。
+  - 送り先: 帯が追従している画面（帯の position が sticky）は「帯が貼り付き始める位置」＝ target の上端 − 帯の top − 帯の高さ − 帯の margin-bottom（帯の下に本来の余白を挟んで一覧の先頭が来る。帯の高さは行数で変わるので毎回実際の値を読む）。帯が追従しない画面（768px 以下・低い画面）は**固定ヘッダーの下端から 16px 下**に一覧の先頭。
+  - `options.onlyIfBelow: true` は、今の位置が送り先より上（一覧の先頭より上にいる）なら動かさない。絞り込みのボタンで使う。ページ送りは常に送る。
+  - 動きを減らす設定（`prefers-reduced-motion: reduce`）では瞬時に移動する。`behavior: 'auto'` は html の `scroll-behavior: smooth` に従ってしまう（ビズ書庫は works.css の smooth が bizmanga.css の reduced-motion 用 `auto` より後に書かれて勝つ）ので、html の scroll-behavior を一時的に auto にしてから `scrollTo(0, y)` する。
+  - 使う場所: コラムのチップ（`js/bm-column-filter.js`、onlyIfBelow。先頭は表示中の特集記事、無ければカード一覧）／制作事例のページ送り（`js/bm-works-page.js`、常に）と「すべて」・カテゴリページの無いカテゴリのボタン（その場で絞り込む `<button>`、onlyIfBelow。カテゴリページのあるカテゴリは `<a>` でページ遷移なので対象外）／ビズ書庫のチップ（`js/works.js`、onlyIfBelow）とページ送り（番号・‹ Previous・Next ›、常に。`#gridPagination` へのクリック委譲で1か所。押したボタンが今のページ・押せない端なら動かさない）。
+  - ⚠️ ビズ書庫のチップは**利用者が押したとき（`event.isTrusted`）だけ**スクロールする。WP の `/library` が届いたときの再構築は、選んでいたカテゴリを戻すために同じボタンを `.click()` する（isTrusted が false）ので、そこで動かすと一覧を読んでいる途中でページが跳ねた（PR #78 再レビュー。修正後は到着時のスクロール命令が0回）。
+  - 以前との差（判断材料）: ビズ書庫の 768px 以下・低い画面（帯が追従しない）のページ送りは、以前の `worksGrid.offsetTop - 120`（一覧の先頭がヘッダーの下 48px）から「ヘッダーの下 16px」になり、一覧の先頭が **32px 上**に来る（制作事例と同じ）。以前は番号のボタンだけ戻り、‹ Previous・Next › は戻らなかった。今のページの番号を押したときは、以前は戻ったが今は動かない（ページが変わらないため）。
 - コラム詳細のプレビューバナー（`?preview=1`、`js/bm-column-detail.js` がインラインで sticky を付ける）は `top: var(--bm-header-height, 72px)` と **`z-index: 999`（ヘッダーの 1000 より下）**。`top:0` だとヘッダーの上に重なりスマホでハンバーガーの中心が押せず、`z-index: 9999` だとヘッダーの重なり順の中にある PC のメガメニュー・1024px 以下のドロワーの先頭を覆い、PC ではメニューへポインタを下ろす途中でバナーに乗ってメニューが閉じ、押せなかった（いずれも実測）。
 - 既知の制限（別 Issue）: ドロワー・モーダルを開いている間のスクロール止め（`body.bm-nav-locked` や `document.body.style.overflow = 'hidden'`）は body をスクロールコンテナに戻すため、開いている間だけ帯の追従が外れる（帯は本来の位置へ移り画面外に出る。閉じると元の位置に戻り、スクロール位置は変わらない）。ドロワー（ヘッダーの下を白で覆う）とビズ書庫のビューア（不透明）では見えない。制作事例のモーダル（黒85%の幕）では、幕の裏で帯が消えるのがうっすら見える。止める対象を html に移す修正は works.js・bm-hero.js・artists.js・bm-work-modal.js・bm-works-page.js・bm-nav.js にまたがるため別 Issue。
 - 副作用（見た目は変わらない）: body は独立した配置の区切り（BFC）ではなくなったので、body の最初の子の `margin-top` が body の外に出る（LP・FAQ・料金などで `document.body.getBoundingClientRect().top` が 68〜72px になる）。html に背景が無く body の背景はキャンバスに描かれるため、表示は同じ（変更前後でスクロール位置0のスクリーンショットを比較し、差は同じ版どうしでも出る揺らぎのみと確認）。
-- 横スクロールの確認は `document.documentElement.scrollWidth <= innerWidth + 1`（＝実際に横に動くか。`tools/check-browser.py`・`tools/smoke-manga-wp.py` もこの式）。`document.body.scrollWidth` は clip/hidden で切り取られる前の中身の幅を返すので、トップ・コラム一覧のスマホ幅では innerWidth を超える（変更前から同じ値で、横には動かない）。
+- **横スクロールの判定は目的で使い分ける**（PR #78 再レビュー）。
+  - 実際に横へ動くか（全ページ共通の検査。`tools/check-browser.py` 等）: `document.documentElement.scrollWidth <= innerWidth + 1`。html/body の clip で切った後の幅なので、はみ出して切り取られた内容があっても画面幅のまま＝この式では見つからない。`document.body.scrollWidth` は全ページ共通の検査に使わない（トップ・コラム一覧のスマホ幅では、変更前から innerWidth を超えるが横には動かない）。
+  - 画面からはみ出して切り取られる内容が無いか（より厳しい）: `document.body.scrollWidth <= innerWidth`（切り取る前の中身の幅）。ビズ書庫の確認（`tools/smoke-manga-wp.py` のスマホ 390px「横スクロール無し」）はこちら（ビズ書庫は 390px で body.scrollWidth = 390）。⚠️ documentElement に変えると、切り取られた内容を見逃す。
 
 ---
 
@@ -575,6 +583,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - `js/bm-works-page.js` の `buildFilter()` を改修。「すべて」以外のカテゴリボタンは `<a href="/works/category/{slug}">` リンクとして描画
 - JS フィルター動作は廃止（同URL内での絞り込みはGoogleに別ページとして認識されないため）
 - `CATEGORY_SLUG` マップで JA カテゴリ名 → slug 変換
+- 例外としてその場で絞り込む `<button>` は2種類: 「すべて」（絞り込み解除）と、`CATEGORY_SLUG` に無い（カテゴリページの無い）カテゴリ（保険）。どちらも一覧の途中・下で押したら一覧の先頭を追従する帯のすぐ下へ戻す（`window.bmScrollBelowSticky`、§0.6）
 
 **ビルド統合:**
 - 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
@@ -649,7 +658,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
 | `js/bm-cta.js` | 共通CTAセクション生成 | `<section id="bmCtaMount"></section>` を置く |
-| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（ファイル末尾の独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④） | 全ページで読込（defer） |
+| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④）+ **一覧の先頭を追従する帯の下へ戻すスクロール `window.bmScrollBelowSticky`**（ファイル末尾の独立IIFE。§0.6） | 全ページで読込（defer） |
 | `js/bm-nav.js` | 日本語固定表示エンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
@@ -1099,7 +1108,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 **構造変更**
 1. Hero を h=1019px の全面イラスト → h=360px のシネマスコープ帯（`.bm-column-hero-strip`）に圧縮。LCPを H1 テキストへシフト。新画像 `hero-column.webp` (2400×1018) に差替（旧版は `hero-column.old.webp` にバックアップ）
 2. Editorial Masthead セクション追加: `EYEBROW · ISSUE N` → Noto Serif JP 900 の H1 超大サイズ（clamp 40-88px）→ 赤アクセント線 → リード段落
-3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。追従位置はヘッダー下端 `top: var(--bm-header-height, 72px)`（全幅共通。2026-10-14 に修正・§0.6）。追従する範囲はフィルター帯・特集記事・一覧を包む `.bm-column-listing` の中だけ（CTA・フッターの上には残らない）。一覧の途中・下でチップを押すと、絞り込んだ結果の先頭を帯のすぐ下へ戻す（`scrollToListTop()`）。WP API の `data.category` から動的生成
+3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。追従位置はヘッダー下端 `top: var(--bm-header-height, 72px)`（全幅共通。2026-10-14 に修正・§0.6）。追従する範囲はフィルター帯・特集記事・一覧を包む `.bm-column-listing` の中だけ（CTA・フッターの上には残らない）。一覧の途中・下でチップを押すと、絞り込んだ結果の先頭を帯のすぐ下へ戻す（`scrollToListTop()` → 共通の `window.bmScrollBelowSticky`。§0.6）。WP API の `data.category` から動的生成
 4. Featured 記事セクション追加（最新1件を 21:9 大判＋右本文のグリッドで表示）。JS で `<script id="bm-column-data">` の JSON から注入。**スマホ（`@media max-width:768px`）では `.bm-column-featured` を `display:none !important` で非表示**（2026-06-04）。JS([bm-column-filter.js](js/bm-column-filter.js))のカテゴリ絞り込みは `style.display=""/"none"` を切替えるため、CSS側に `!important` を付けて優先させPCのみ表示
 5. カードを `data-category` 属性 + 読了時間メタ表示対応に拡張
 

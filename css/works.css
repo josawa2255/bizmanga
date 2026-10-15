@@ -1,12 +1,12 @@
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-/* ⚠️ html / body の横溢れ防止（overflow-x）はここに書かない。bizmanga.css の1か所だけにある
+/* 横溢れ防止（html / body の overflow-x）。⚠️ 値は bizmanga.css の html / body と必ず同じにする
    （hidden → clip の2行。理由は bizmanga.css の html のコメントと SPEC §0.6）。
-   以前はここにも同じ指定があり、このファイルは biz-library.html で bizmanga.css より後に書かれて勝つため、
-   値がずれると bizmanga.css を直しても効かなかった（Issue #73 で hidden のまま残り sticky が効かなかった原因）。
-   外してよい根拠（PR #78 レビューで実測）: bizmanga.css は非同期で後から届くが、届く前（読み込みを止めた状態）に
-   ここの指定も外しても、320〜1920px の12幅で横溢れ無し（documentElement.scrollWidth = innerWidth、横に動かない）。 */
-html { scroll-behavior: smooth; }
+   このページ（biz-library.html）は bizmanga.css を非同期（preload → onload）で読むので、届くのが遅い・
+   読み込みに失敗した・切り替えが動かないときも横溢れを止めるため、同期で読むこのファイルにも書く（PR #78 再レビュー）。
+   ⚠️ このファイルは bizmanga.css より後に書かれて勝つ。値がずれると bizmanga.css を直しても効かない
+   （以前ここだけ hidden のまま残り、ビズ書庫のフィルターが追従しなかった。Issue #73）。 */
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
     -apple-system, BlinkMacSystemFont, sans-serif;
@@ -14,6 +14,8 @@ body {
   background: #fff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-x: clip; /* bizmanga.css の body と同じ2行（上のコメント） */
 }
 
 /* ===== Header / Nav ===== */
@@ -102,24 +104,15 @@ body {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  /* 固定ヘッダー（.bm-header 72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた。
-     変数は bizmanga.css の :root。このページは bizmanga.css を後から読むので、読み込み前用に 72px を残す */
-  position: sticky;
-  top: var(--bm-header-height, 72px);
+  /* 追従（position: sticky・top・追従させない画面）は共通クラス .bm-sticky-filter（bizmanga.css）で付ける
+     （biz-library.html で class="works-filter bm-sticky-filter"）。⚠️ ここに position / top を書かない:
+     このファイルは bizmanga.css より後に書かれて勝つので、ここの sticky が bizmanga.css の
+     「追従させない画面」の static を打ち消してしまう。bizmanga.css が届く前（非同期読込中）は追従しないだけ（害は無い） */
   z-index: 100;
   /* 不透明の白。以前の「白95%＋backdrop-filter: blur(8px)」は裏のカードが5%しか透けず
      見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（PR #78 レビュー） */
   background: #fff;
   padding: 16px 0;
-}
-/* 追従させない画面。制作事例（bizmanga.css の .bm-category-filter）と同じ条件にそろえる（SPEC §0.6）。
-   - 768px 以下: 複数行（10カテゴリで 124〜234px）になり、ヘッダー込みで画面の約2〜5割を覆う
-   - 高さ 620px 以下: 769px 以上でもフィルターは2行（160px）。ヘッダー込み 232px が
-     844×390（スマホ横向き）で 59%・932×430 で 54%・1024×600 で 39% を覆う。
-     このページには画面下の追従ボタン（.bm-fab）が無いぶん制作事例より少し余裕があるが、
-     同じ形のフィルターなので条件をそろえる */
-@media (max-width: 768px), (max-height: 620px) {
-  .works-filter { position: static; }
 }
 /* === マンガ吹き出し風 フィルターボタン === */
 .filter-btn {
@@ -1512,7 +1505,7 @@ body {
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
   .works-filter {
-    /* 追従させない指定は .works-filter 本体の直後の @media にまとめてある
+    /* 追従させない指定（768px 以下）は bizmanga.css の共通クラス .bm-sticky-filter にまとめてある
        （旧ヘッダー56px用の top:56px は Issue #73 で廃止） */
     gap: 6px;
     padding: 10px 4px;

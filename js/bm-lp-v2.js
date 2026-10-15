@@ -55,8 +55,10 @@
         var target = document.getElementById(href.slice(1));
         if (!target) return;
         e.preventDefault();
-        // 目次が貼り付く位置（= 固定ヘッダーの高さ。CSS の top: var(--bm-header-height) を読む。SPEC §0.6）
-        var headerH = parseFloat(getComputedStyle(toc).top) || 72;
+        // 目次が貼り付く位置（= 固定ヘッダーの高さ。CSS の top: var(--bm-header-height) を読む。SPEC §0.6）。
+        // 0px も正しい値として使う（`|| 72` だと 0 が欠損扱いになる）。読めない（auto 等）ときだけ 72
+        var tocTop = parseFloat(getComputedStyle(toc).top);
+        var headerH = isNaN(tocTop) ? 72 : tocTop;
         var tocH = toc.offsetHeight || 56;
         var y = target.getBoundingClientRect().top + window.pageYOffset - (headerH + tocH - 4);
         window.scrollTo({ top: y, behavior: 'smooth' });
