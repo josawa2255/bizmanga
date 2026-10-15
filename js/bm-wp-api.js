@@ -50,7 +50,8 @@
   /* ── 各データを使う画面要素 ──
      使う側の JS（右のコメント）も、この要素が無いページでは何もしない。
      要素があるページでだけ取得する（Issue #85。以前は全ページで6本取得していた）。
-     /library は読む側が無いので取得しない（ビズ書庫は works.js、用途別LPは bm-lp-library-embed.js が自前で取得） */
+     library は先読みだけ: ビズ書庫（works.js）が同じ /library を取得するので、漫画の一覧から書庫へ進む前に
+     ブラウザのキャッシュ（WP の応答は max-age=300）に載せておく。結果は使わず、ほかの描画も待たせない */
   var USED_BY = {
     // BM_HERO_WORKS_DATA: bm-hero.js（Hero マーキー）
     heroWorks: '#bmHeroWorksBg',
@@ -61,7 +62,9 @@
     // BM_NEWS_DATA: loadNews()（ホームのニュース枠・news.html の一覧）
     news: '#bmNewsList',
     // BM_COLUMNS_DATA: loadColumns()（ホームのコラム枠・column.html の予備）
-    columns: '#bmColumnGrid'
+    columns: '#bmColumnGrid',
+    // 先読みのみ（上の説明）: 漫画事例を並べるページ（ホームのギャラリー・制作事例）
+    library: '#bmGalleryGridManga, #bmGalleryGridWebtoon, #bmWorksGrid, .bm-works-card[data-work-id]'
   };
   function isUsed(key) {
     return !!document.querySelector(USED_BY[key]);
@@ -316,6 +319,8 @@
     if (isUsed('newWorks')) all.push(settle(loadNewWorks(), 'new works'));
     if (isUsed('news')) all.push(settle(loadNews(), 'news'));
     if (isUsed('columns')) all.push(settle(loadColumns(), 'columns'));
+    // ビズ書庫の先読み（bm-all-data-ready は待たせない）
+    if (isUsed('library')) settle(apiFetch('/library'), 'library prefetch');
 
     // 全データ揃った後の再描画（ホームギャラリーはここで描く）
     Promise.all(all).then(function() {

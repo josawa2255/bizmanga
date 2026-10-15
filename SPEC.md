@@ -633,7 +633,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | `js/bm-nav.js` | 日本語固定表示エンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()`（自社ドメインのみ）/ `.linkUrl()`（外部サイト可・スキームだけ確認。§12） |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
-| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開。**取得するのはそのデータを使う画面要素があるページだけ**（ファイル内の `USED_BY`。2026-10-15 Issue #85）: ホーム＝`/works`・`/works?site=bizmanga`・`/works-new`・`/news`・`/columns`、制作事例＝`/works?site=bizmanga`、ニュース＝`/news`、コラム一覧＝静的カードがあれば無し。`/library` は読む側が無いので取得しない（`BM_LIBRARY_DATA` は廃止。ビズ書庫・用途別LPは各JSが自前で取得）。全部を同時に取りに行き、ニュース・コラムは漫画事例の取得を待たない。イベント: `bm-data-ready`（漫画事例の取得後。使わないページでは即時）/ `bm-news-ready`（ニュースの取得後。`detail = { ok, count }`）/ `bm-all-data-ready`（このページで取得したもの全部の後。失敗があっても出す） |
+| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開。**取得するのはそのデータを使う画面要素があるページだけ**（ファイル内の `USED_BY`。2026-10-15 Issue #85）: ホーム＝`/works`・`/works?site=bizmanga`・`/works-new`・`/news`・`/columns`、制作事例＝`/works?site=bizmanga`、ニュース＝`/news`、コラム一覧＝静的カードがあれば無し。`/library` はホームと制作事例でだけ先読みする（結果は使わない。ビズ書庫の `works.js` が同じURLを取得するので、WP の応答の max-age=300 でブラウザのキャッシュに載せておく。`BM_LIBRARY_DATA` は読む側が無いので廃止し、先読みは `bm-all-data-ready` を待たせない）。全部を同時に取りに行き、ニュース・コラムは漫画事例の取得を待たない。イベント: `bm-data-ready`（漫画事例の取得後。使わないページでは即時）/ `bm-news-ready`（ニュースの取得後。`detail = { ok, count }`）/ `bm-all-data-ready`（このページで取得したもの全部の後。失敗があっても出す） |
 | `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
@@ -686,7 +686,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
-- `/library` — ビズ書庫全作品（`js/works.js`・`js/bm-lp-library-embed.js` が取得。`bm-wp-api.js` は取得しない）
+- `/library` — ビズ書庫全作品（`js/works.js`・`js/bm-lp-library-embed.js` が取得。`bm-wp-api.js` はホームと制作事例で先読みだけする）
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
 - `/columns?site=bizmanga&per_page=50` — ホームのコラム枠（最新8件）。コラム一覧ページは静的カードがあればブラウザで取得しない（静的ビルド `tools/build-columns.py` が `per_page=100` で取得）
 - `/columns/{id}` — コラム個別（本文含む）
