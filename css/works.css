@@ -1,10 +1,12 @@
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-/* 横溢れ防止。hidden の後に clip を書く（clip 対応ブラウザでは clip が勝つ）。
-   hidden だけだとスクロールコンテナができ、ビズ書庫のフィルター（.works-filter）の
-   position:sticky が追従しない。理由の詳細は bizmanga.css の html のコメント（Issue #73）。
-   biz-library.html ではこのファイルが bizmanga.css より後に読まれて勝つので、必ず同じ値にそろえる。 */
-html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
+/* ⚠️ html / body の横溢れ防止（overflow-x）はここに書かない。bizmanga.css の1か所だけにある
+   （hidden → clip の2行。理由は bizmanga.css の html のコメントと SPEC §0.6）。
+   以前はここにも同じ指定があり、このファイルは biz-library.html で bizmanga.css より後に書かれて勝つため、
+   値がずれると bizmanga.css を直しても効かなかった（Issue #73 で hidden のまま残り sticky が効かなかった原因）。
+   外してよい根拠（PR #78 レビューで実測）: bizmanga.css は非同期で後から届くが、届く前（読み込みを止めた状態）に
+   ここの指定も外しても、320〜1920px の12幅で横溢れ無し（documentElement.scrollWidth = innerWidth、横に動かない）。 */
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
     -apple-system, BlinkMacSystemFont, sans-serif;
@@ -12,8 +14,6 @@ body {
   background: #fff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  overflow-x: clip; /* 上の html と同じ理由 */
 }
 
 /* ===== Header / Nav ===== */
@@ -102,14 +102,24 @@ body {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  /* 固定ヘッダー（.bm-header 72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた */
+  /* 固定ヘッダー（.bm-header 72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた。
+     変数は bizmanga.css の :root。このページは bizmanga.css を後から読むので、読み込み前用に 72px を残す */
   position: sticky;
   top: var(--bm-header-height, 72px);
   z-index: 100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* 不透明の白。以前の「白95%＋backdrop-filter: blur(8px)」は裏のカードが5%しか透けず
+     見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（PR #78 レビュー） */
+  background: #fff;
   padding: 16px 0;
+}
+/* 追従させない画面。制作事例（bizmanga.css の .bm-category-filter）と同じ条件にそろえる（SPEC §0.6）。
+   - 768px 以下: 複数行（10カテゴリで 124〜234px）になり、ヘッダー込みで画面の約2〜5割を覆う
+   - 高さ 620px 以下: 769px 以上でもフィルターは2行（160px）。ヘッダー込み 232px が
+     844×390（スマホ横向き）で 59%・932×430 で 54%・1024×600 で 39% を覆う。
+     このページには画面下の追従ボタン（.bm-fab）が無いぶん制作事例より少し余裕があるが、
+     同じ形のフィルターなので条件をそろえる */
+@media (max-width: 768px), (max-height: 620px) {
+  .works-filter { position: static; }
 }
 /* === マンガ吹き出し風 フィルターボタン === */
 .filter-btn {
@@ -1502,9 +1512,8 @@ body {
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
   .works-filter {
-    /* スマホは複数行（10カテゴリで 124〜234px）になり、追従させるとヘッダーと合わせて
-       画面の約2〜5割を覆う。追従させない（旧ヘッダー56px用の top:56px もここで廃止） */
-    position: static;
+    /* 追従させない指定は .works-filter 本体の直後の @media にまとめてある
+       （旧ヘッダー56px用の top:56px は Issue #73 で廃止） */
     gap: 6px;
     padding: 10px 4px;
   }

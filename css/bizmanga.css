@@ -50,6 +50,12 @@
   /* コンテナ */
   --container-max: 1200px;
   --container-pad: clamp(16px, 4vw, 48px);
+
+  /* 固定ヘッダー（.bm-header）の高さ。全幅共通で 72px。
+     ヘッダー直下に貼り付ける帯（sticky の top）や、帯の下へスクロールする位置はここから計算する
+     （SPEC §0.6）。例外: bizanime のスマホ（1024px 以下）だけ bizanime.css が .bm-header の中で
+     56px に上書きする（ヘッダーの中のドロワーもそれに従う）。 */
+  --bm-header-height: 72px;
 }
 
 /* ---------- Reset & Base ---------- */
@@ -83,7 +89,8 @@ h1, h2, h3, h4, h5, h6,
    - clip 未対応の古いブラウザ（Safari 15 以前・旧Edge 等）は前の hidden が残る
      ＝横スクロールは従来どおり止まり、sticky だけが効かない（修正前と同じ）。
    ⚠️ ページごとに clip で打ち消す書き方は不要（以前の bizanime/use-cases の上書きは削除済み）。
-   ⚠️ works.css（ビズ書庫）にも同じ指定がある。後から読まれて勝つので両方そろえる。 */
+   ⚠️ 指定はここ1か所だけ。他のCSS（works.css など後から書かれて勝つファイル）に html/body の
+      overflow-x を書かない（以前 works.css に重複があり、値がずれると sticky が効かなくなった）。 */
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -128,7 +135,7 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0,0,0,0.06);
-  height: 72px;
+  height: var(--bm-header-height); /* 72px（:root）。高さを変えるときは変数を変える */
   transition: box-shadow 0.3s;
 }
 /* モバイルではbackdrop-filterを無効化(スクロールジャンク回避) */
@@ -2269,7 +2276,11 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 /* フィルターチップ */
 /* 追従位置は固定ヘッダー（.bm-header 高さ72px・全幅共通）の下端ぴったり。
    以前の 68px / スマホ 60px は旧ヘッダー高さの名残で、追従が効くようになったら
-   チップの上端がヘッダーに潜った（Issue #73 で実測）。 */
+   チップの上端がヘッダーに潜った（Issue #73 で実測）。
+   追従する範囲は column.html の .bm-column-listing（フィルター・特集記事・一覧を包む箱）の中だけ。
+   sticky は親の箱の中でしか動かないので、一覧を過ぎたら CTA・フッターの上には残らない。
+   背景は不透明の白なので backdrop-filter は付けない（ぼかしが見えないのに毎フレーム計算される）。
+   追従させない画面は下の @media (max-height: 430px)（基準は制作事例のフィルターと同じ）。 */
 .bm-column-filter {
   position: sticky;
   top: var(--bm-header-height, 72px);
@@ -2279,8 +2290,13 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   border-bottom: 1px solid #eee;
   padding: 14px 0;
   margin-bottom: 40px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+}
+/* 追従させない画面＝スマホ横向き（高さ 430px 以下）。目安は制作事例のフィルターと同じ
+   「ヘッダー＋帯＋画面下の追従ボタンで画面の約半分以上が埋まるなら追従させない」。
+   帯は1行（54〜68px）と低いが、72＋68＋72＝212px が 844×390 で 54%・932×430 で 49% を埋め、
+   本文が見えるのは 180〜220px だけになる。高さ 431px 以上（1024×600 で 35%、縦持ちスマホ 390×844 で 22%）は追従させる。 */
+@media (max-height: 430px) {
+  .bm-column-filter { position: static; }
 }
 .bm-column-filter-list {
   display: flex;
@@ -3726,10 +3742,21 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   /* 固定ヘッダー（72px）の下端ぴったりに追従。80px だと 8px の隙間から本文が透けた */
   position: sticky; top: var(--bm-header-height, 72px);
   z-index: 100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* 不透明の白。以前の「白95%＋backdrop-filter: blur(8px)」は裏のカードが5%しか透けず
+     見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（PR #78 レビュー） */
+  background: #fff;
   padding: 16px 0;
+}
+/* 追従させない画面（Issue #73・PR #78 レビュー。SPEC §0.6）。
+   目安: 貼り付いたとき、ヘッダー（72px）＋帯＋画面下の追従ボタン（.bm-fab 72px）で
+   画面の高さの約半分以上が埋まる画面では追従させない（コラムのフィルターも同じ目安）。
+   - 768px 以下: 3列×複数行（10カテゴリで 266〜356px）になり、ヘッダー込みだけで画面の約3〜7割
+   - 高さ 620px 以下: 769px 以上でもフィルターは2行（168px）。72＋168＋72＝312px が
+     1024×600 で 52%・932×430（スマホ横向き）で 73%・844×390 で 80% を埋める
+     （1366×768 のノートPC（表示域 約630〜660px）は 47〜50% 弱、1280×800 は 39% なので追従させる）
+   ビズ書庫のフィルター（works.css の .works-filter）も同じ条件。カテゴリが増えて3行になったら測り直す。 */
+@media (max-width: 768px), (max-height: 620px) {
+  .bm-category-filter { position: static; }
 }
 /* === マンガ吹き出し風 (works.css と統一) === */
 .bm-filter-btn {
@@ -5235,9 +5262,8 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 @media (max-width: 768px) {
   .bm-header-right .bm-nav-cta { display: none; }
   .bm-category-filter {
-    /* スマホは3列×複数行（10カテゴリで 266〜356px）になり、追従させると
-       ヘッダーと合わせて画面の約3〜7割を覆って一覧が読めない。追従させない */
-    position: static;
+    /* 追従させない（position: static）指定は .bm-category-filter 本体の直後の
+       @media (max-width: 768px), (max-height: 620px) にまとめてある */
     gap: 8px;
     padding: 12px 16px;
     display: grid;

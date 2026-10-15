@@ -160,6 +160,25 @@
 
   }
 
+  // ===== ページ送り後に一覧の1行目を見せる位置 =====
+  // 追従するフィルター（.bm-category-filter・sticky）がヘッダーの下に貼り付いている間は、
+  // その下端より下に1行目が来るよう、帯の実際の高さ（行数で変わる）を読んで差し引く。
+  // grid.scrollIntoView だと1行目がヘッダー＋帯の裏に隠れていた（PR #78 レビュー）。
+  // 帯が追従しない画面（768px 以下・高さ 620px 以下）はヘッダーの下端を基準にする。
+  function scrollToGridTop() {
+    var gridTop = grid.getBoundingClientRect().top + window.pageYOffset;
+    var cs = filterContainer ? getComputedStyle(filterContainer) : null;
+    var y;
+    if (cs && cs.position === 'sticky') {
+      // 帯が貼り付き始める位置（＝帯の下に本来の余白 margin-bottom を挟んで1行目が来る位置）
+      y = gridTop - (parseFloat(cs.top) || 0) - filterContainer.offsetHeight - (parseFloat(cs.marginBottom) || 0);
+    } else {
+      var header = document.querySelector('.bm-header');
+      y = gridTop - (header ? header.getBoundingClientRect().bottom : 72) - 16;
+    }
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
+
   function buildPagination(totalItems, activePage) {
     var paginationEl = document.getElementById('bmWorksPagination');
     if (!paginationEl) return;
@@ -188,7 +207,7 @@
       btn.addEventListener('click', function() {
         var page = parseInt(btn.getAttribute('data-page'), 10);
         renderWorks(currentAllWorks, currentFilterCategory, page);
-        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        scrollToGridTop();
       });
     });
   }

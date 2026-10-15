@@ -55,7 +55,8 @@
         var target = document.getElementById(href.slice(1));
         if (!target) return;
         e.preventDefault();
-        var headerH = 68;
+        // 目次が貼り付く位置（= 固定ヘッダーの高さ。CSS の top: var(--bm-header-height) を読む。SPEC §0.6）
+        var headerH = parseFloat(getComputedStyle(toc).top) || 72;
         var tocH = toc.offsetHeight || 56;
         var y = target.getBoundingClientRect().top + window.pageYOffset - (headerH + tocH - 4);
         window.scrollTo({ top: y, behavior: 'smooth' });

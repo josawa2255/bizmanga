@@ -482,8 +482,10 @@ def check_browser(base, data):
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", True)
             except Exception:
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", False)
-            hs = pg.evaluate("() => document.body.scrollWidth > window.innerWidth")
-            rec("スマホ(390px): 横スクロール無し", not hs)
+            # 横に動くかは documentElement で見る（SPEC §0.6）。body.scrollWidth は html/body の
+            # overflow-x: clip で切り取られる前の中身の幅を返すので、横に動かなくても innerWidth を超える。
+            sw = pg.evaluate("() => [document.documentElement.scrollWidth, window.innerWidth]")
+            rec("スマホ(390px): 横スクロール無し", sw[0] <= sw[1] + 1, f"scrollWidth={sw[0]} innerWidth={sw[1]}")
             pr.finish("スマホ")
             close_ctx(ctx)
 

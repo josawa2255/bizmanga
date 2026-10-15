@@ -444,7 +444,11 @@ p{margin:0 0 16px;}
     </div>
   </header>
 
-  <!-- ===== フィルター帯 ===== -->
+  <!-- ===== フィルター帯＋特集記事＋一覧 =====
+       .bm-column-listing はフィルター帯（sticky）の追従範囲を一覧までに限る箱。
+       sticky は親の箱の中でしか動かないので、一覧を過ぎたら CTA・フッターの上には残らない（PR #78 レビュー）。
+       ⚠️ フィルター・特集記事・一覧をこの箱の外に出さない。CTA（#bmCtaMount）は箱の外 -->
+  <div class="bm-column-listing">
   <nav class="bm-column-filter" aria-label="カテゴリフィルター">
     <div class="bm-container">
       <ul class="bm-column-filter-list" id="bmColumnFilter">
@@ -1072,6 +1076,7 @@ p{margin:0 0 16px;}
       </div>
     </div>
   </section>
+  </div><!-- /.bm-column-listing -->
 
   <!-- ===== CTA ===== -->
   <section id="bmCtaMount"></section>
