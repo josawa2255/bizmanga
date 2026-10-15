@@ -621,6 +621,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `?utm_source=...` `?utm_medium=...` `?utm_campaign=...` `?source=...`
 - contact フォーム送信時にメッセージ本文末尾に自動付加
 - `[BizManga経由のお問い合わせ]` タグも必ず付与
+- 行動ログ（`js/bm-tracking.js`）の「閲覧FAQ」は、FAQの質問部分のクリックを記録する。対象は `.lpv2-faq-item > summary`（faq・pricing）と `.ba-faq-q > button`（bizanime。番号 `.ba-faq-num` は除く）。FAQの構造を変えたらセレクタと `tools/test-bm-tracking.cjs` も直す
 
 ## 3. 共通 JS コンポーネント
 
