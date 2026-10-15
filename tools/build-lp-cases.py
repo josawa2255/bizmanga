@@ -9,7 +9,7 @@ LP事例自動注入スクリプト
 GitHub Actions で週1 + 手動実行。実行後は git commit & push。
 """
 from bm_build import API_BASE, SITE_URL
-from bm_build import bizmanga_works, fetch_json as _fetch_json, output_batch, write_text
+from bm_build import bizmanga_works, fetch_json as _fetch_json, output_batch, work_page_count, write_text
 import re
 import sys
 from pathlib import Path
@@ -87,10 +87,10 @@ def filter_for_lp(works, lp_slug):
 
 
 def select_top(works, n):
-    """hero_order_bm の昇順、なければ pages の降順、で上位 n 件。"""
+    """hero_order_bm の昇順、なければページ数（gallery の実枚数優先）の降順、で上位 n 件。"""
     def key(w):
         order = w.get("hero_order_bm") or w.get("hero_order_cx") or 9999
-        return (order, -int(w.get("pages") or 0))
+        return (order, -work_page_count(w))
     return sorted(works, key=key)[:n]
 
 
@@ -106,17 +106,26 @@ def html_escape(s):
     )
 
 
+def strip_outer_quotes(text):
+    """WP のコメントが既に「…」で囲まれていれば外す（カードで「」を付けるので「「…」」にしない、Issue #86）。"""
+    text = str(text or "").strip()
+    if len(text) >= 2 and text.startswith("「") and text.endswith("」"):
+        return text[1:-1].strip()
+    return text
+
+
 def render_card(work):
     """1事例分の静的 HTML カード（.lpv2-* クラス）。"""
     wid = work.get("id", "")
     title = html_escape(work.get("title_ja", ""))
     subtitle = html_escape(work.get("subtitle_ja", "") or "")
     client = html_escape(work.get("client", ""))
-    pages = int(work.get("pages") or 0)
+    # gallery の実枚数を優先（BUGS #049/#050。制作事例ページと同じ規則）
+    pages = work_page_count(work)
     spec = work.get("spec") or {}
     period = html_escape(spec.get("period", ""))
     point = html_escape(work.get("point", ""))
-    comment = html_escape(work.get("comment", ""))
+    comment = html_escape(strip_outer_quotes(work.get("comment")))
     media_list = work.get("media", []) or []
     media = " / ".join(html_escape(m) for m in media_list[:3])
     thumb = work.get("thumbnail") or ""

@@ -22,13 +22,12 @@ import pathlib
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date as _date
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
     fetch_json, output_batch, remove_file, render_template,
     replace_block, require_records, script_json, write_text,
 )
-from bm_content import make_slug
+from bm_content import COLUMNS_API, column_modified_ymd, make_slug
 from bm_html import _Sanitizer
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
 
@@ -38,7 +37,7 @@ DESC_OVERRIDES = {
 }
 
 
-API_LIST = API_BASE + '/columns?site=bizmanga&per_page=100'
+API_LIST = COLUMNS_API
 API_SINGLE = API_BASE + '/columns/{id}'
 SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -53,26 +52,27 @@ def esc(s):
 
 def normalize_brand_text(text, *, prices=True):
     """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
-    - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
+    - AI混在比率表現（「人間7割×AI3割」「人間7割・AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
       （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
+      区切りは「×」「x」「X」のほか「・」も同じ扱い（Issue #86: 「・」の表記だけ素通りしていた）
     - 旧料金コピー → 現行基本料金25,740円〜（税抜・原稿料別途）
     WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
     """
     if not text:
         return text
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」の体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割の体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」の体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割の体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割', '独自の制作メソッド', text)
     text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX・]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX・]AI3割', '独自の制作メソッド', text)
     return normalize_price_text(text) if prices else text
 
 
@@ -279,13 +279,8 @@ def build_detail_page(col, detail_data, template):
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
-    # WP の post_modified が全記事「今日」になっているケースは信頼しない（QRG的に不自然）
-    today_iso = _date.today().isoformat()
-    wp_modified = col.get("modified_ymd") or ""
-    if wp_modified and wp_modified != today_iso and wp_modified >= date_ymd:
-        modified_ymd = wp_modified
-    else:
-        modified_ymd = date_ymd
+    # 更新日の決め方は sitemap・RSS と共通（「今日」や公開日より前の WP 更新日は使わない）
+    modified_ymd = column_modified_ymd(col)
     excerpt = normalize_brand_text(col.get("excerpt_ja") or "")
     # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
@@ -386,7 +381,8 @@ def update_sitemap(columns):
         slug = make_slug(c)
         # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
         # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
-        modified = c.get("modified_ymd") or c.get("date_ymd") or ""
+        # 記事ページの dateModified と同じ決め方にする（公開日より前の WP 更新日は使わない、Issue #86）
+        modified = column_modified_ymd(c)
         lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
             "  <url>\n"
