@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  # push した後に pages.yml を起動するため（tools/commit-generated.py が gh workflow run を呼ぶ）
+  actions: write
 
 # All jobs writing generated content serialize checkout/build/push.
 concurrency:
@@ -26,19 +28,12 @@ jobs:
         with:
           python-version: '3.11'
       - run: python3 tools/build-lp-cases.py
-      - name: Commit generated files
-        id: commit
+      # push に成功したら pages.yml を起動する（GITHUB_TOKEN の push は pages.yml の push を起動しないため。
+      # IndexNow への送信は pages.yml がデプロイの成功後に行う）
+      - name: Commit generated files and start the deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python tools/commit-generated.py
           --message "chore(lp-cases): auto-inject static cases from WP [skip ci]"
           product-manga.html recruit-manga.html manga-ad-lp.html company-manga.html sales-manga.html training-manga.html inbound-manga.html ir-manga.html
-      # GITHUB_TOKEN での push は indexnow.yml を起動しない（GitHub の仕様）ので、ここで送る（Issue #72）。
-      # 送るのは今回 push した生成物だけ（rebase 先〜push したコミット）。生成物の push は済んでおり、
-      # ジョブが失敗扱いだと pages.yml がデプロイしないので、通知の失敗ではジョブを止めない
-      - name: Submit generated URLs to IndexNow
-        if: steps.commit.outputs.pushed == 'true'
-        continue-on-error: true
-        env:
-          INDEXNOW_BEFORE: ${{ steps.commit.outputs.before }}
-          INDEXNOW_AFTER: ${{ steps.commit.outputs.after }}
-        run: python3 tools/indexnow-ping.py

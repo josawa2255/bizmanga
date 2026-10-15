@@ -134,10 +134,11 @@ git checkout -b feat/42-testimonials-restore
 | ワークフロー | 何をするか |
 |------------|-----------|
 | `build-works.yml` | WPの作品データから静的ページを毎日生成 |
-| `build-columns.yml` | WPのコラムから静的ページ（詳細・一覧・ホームのコラム枠・サイトマップ）を毎時生成。変化が無ければ push しない |
-| `build-columns.yml` | WPのコラムから静的ページとRSS（`feed.xml`）を生成 |
+| `build-columns.yml` | WPのコラムから静的ページ（詳細・一覧・ホームのコラム枠・サイトマップ）とRSS（`feed.xml`）を生成。WPでコラムを公開・更新したとき（WPプラグインが起動）と毎日03:00 JST。変化が無ければ push しない |
 | `build-lp-cases.yml` | LP用事例を生成 |
 | `rank-tracker.yml` | GSC順位を毎朝記録 |
+
+ビルドの3本（works・columns・lp-cases）は、push に成功した直後に `tools/commit-generated.py` がデプロイ（`pages.yml`）を起動する（Botの push はデプロイを起動しないため）。IndexNow への送信はデプロイの成功後に `pages.yml` が行う。詳細は [SPEC.md §16.2](SPEC.md)。
 
 → ブランチ保護を設定する際は、これらの Bot（`github-actions[bot]`）を**例外として許可**します（§5参照）。人間だけがPR必須になるよう設定します。
 

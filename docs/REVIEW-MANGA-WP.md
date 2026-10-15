@@ -18,7 +18,8 @@
 | 埋込・LP | `embed-viewer.html` / `js/bm-lp-library-embed.js`（用途別LP 8本の `data-bm-lp-library*`） | ホームの3D画面・用途別LPの書庫埋込が真っ黒 |
 | WP 接続 | `js/bm-wp-api.js` / `js/bm-wp-config.js` / `js/bm-sanitize.js` | 全ページの WP 由来データが消える／XSS（#009/#039） |
 | WP 由来データを描くページ | `artists.html` `js/artists*.js` / `testimonials.html` `testimonial-detail.html` `js/bm-testimonials*.js` / `column.html` `column-detail.html` `news.html` `news-detail.html` `js/bm-column-filter.js` / `js/bizanime.js` | 該当ページが空になる |
-| 静的ビルド | `tools/build-*.py` / `tools/templates/` / `.github/workflows/build-*.yml` | `/works/{slug}` `/column/{slug}` が消える・古い文言で上書き（#021/#048） |
+| 静的ビルド | `tools/build-*.py` / `tools/templates/` / `.github/workflows/build-*.yml` / `tools/commit-generated.py` / `tools/bm_*.py` | `/works/{slug}` `/column/{slug}` が消える・古い文言で上書き（#021/#048）・生成物が公開されない |
+| 公開・IndexNow | `.github/workflows/pages.yml` / `tools/build-site-artifact.py` / `tools/indexnow-ping.py` / `tools/bm_indexnow.py` | 全ページが公開されない・内部資料が公開される・IndexNow の所有確認が通らない |
 | Service Worker | `sw.js` | 表紙画像が古いまま／読めない |
 | この仕組み自身 | `.claude/pr-gate-paths.txt` / `docs/REVIEW-MANGA-WP.md` / `tools/smoke-manga-wp.py` | ゲートやテストを緩める変更が素通りする（だからこれらも保護対象） |
 
@@ -82,6 +83,18 @@ python3 tools/smoke-manga-wp.py --serve .
 - ローカルでビルドを回して生成物の差分を見る: `python3 tools/build-works.py && git diff --stat works/ works.html sitemap.xml`
   （意図しない大量削除・全件書き換えが無いか。テンプレ `tools/templates/` と生成HTMLを同時に直す、#021）
 - ビルド直後は WP 側の nginx キャッシュで旧文言が入ることがある（#048）。生成物を grep して新値を確認するまでが1セット
+- 公開WPに対して全ビルドを一時コピーで2回ずつ回す: `python3 tools/check-builds.py`（作業ツリーは変えない）
+
+### 自動ビルドとデプロイ・IndexNow の流れ（2026-10-16 Issue #89）
+
+1. 自動ビルド（`build-columns.yml` / `build-works.yml` / `build-lp-cases.yml`）が生成物を作る。コラムは WP での公開・更新時（WP プラグインが起動）と毎日03:00 JST。RSS（`feed.xml`）はコラムのビルドが同じ取得データで最後に書く
+2. `tools/commit-generated.py` が生成物だけを commit して main に push し、**push に成功した直後に `gh workflow run pages.yml --ref main` でデプロイを起動する**（Bot の push は `pages.yml` を起動しないため）
+3. `pages.yml` が main の先端をチェックアウトし、`check-site.py`・`test_site_artifact.py` を通して公開するファイルだけをデプロイする
+4. デプロイ成功後、`pages.yml` が前回のデプロイからの差分を IndexNow に送る（送るのはここだけ）
+
+- **自動ビルドを足したら、生成物は `commit-generated.py` で push する**（デプロイの起動はそこで行われる）。そのワークフローに `permissions: actions: write` と、commit のステップの env に `GH_TOKEN: ${{ github.token }}` を足す。IndexNow の送信ステップは足さない
+- ワークフローの値は env で渡し、`run:` の中に `${{ }}` を書かない。権限は最小に
+- この流れを変えたら `python3 -m unittest discover -s tools -p 'test_*.py'` を通す（ワークフローの構成・デプロイの起動・IndexNow の範囲を偽の `gh` と一時 git リポジトリで確かめる）
 
 ## 5. 完了条件とマージ
 

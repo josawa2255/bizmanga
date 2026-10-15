@@ -1,19 +1,21 @@
 name: Build column static pages
 
 on:
-  # 毎時17分に実行（新しいコラムは公開から最大1時間で一覧・詳細・サイトマップ・ホームに出る）。
-  # コラム一覧（Issue #74）とホームの枠（Issue #79）はブラウザで WP から作り直さず、この静的ビルドが正。
-  # 公開は月5〜7本と少ないが、JS で補わない分、公開から表示までの遅れはこの頻度で決まるので毎時にした。
-  # 17分にしたのは、GitHub の予定実行が混んで遅れやすい毎時0分を避けるため。
-  # WP への負荷は1回につき一覧1件＋詳細の数（約45件）を5並列で取得。何も変わらなければ commit も push もしない
-  # （その場合 main は公開済みのままなので、pages.yml もデプロイを飛ばす）。
-  # 経緯: 週1（土曜）→ 毎日03:00 JST（BUGS #018）→ 毎時（Issue #79）
+  # 毎日 18:00 UTC = 03:00 JST に実行。コラム一覧（Issue #74）とホームの枠（Issue #79）はブラウザで WP から
+  # 作り直さず、この静的ビルドが正。公開・更新したコラムを早く出すのは、WP でコラムを公開・更新したときに
+  # WP プラグインがこのワークフローを workflow_dispatch で起動する仕組み（WP プラグイン側）。予定実行はその取りこぼしの保険。
+  # 毎時にしない理由: GitHub の予定実行はこのリポジトリで普段3〜6時間遅れ、毎時にしても公開から1時間以内にならない。
+  # また毎時の push は GSC ランク追跡（rank-tracker.yml）の push とぶつかりうる。
+  # WP への負荷は1回につき一覧＋詳細の数（約45件）を5並列で取得。何も変わらなければ commit も push もデプロイもしない。
+  # 経緯: 週1（土曜）→ 毎日03:00 JST（BUGS #018）→ 毎時（Issue #79）→ 毎日03:00 JST＋WP からの起動（Issue #89）
   schedule:
-    - cron: '17 * * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  # push した後に pages.yml を起動するため（tools/commit-generated.py が gh workflow run を呼ぶ）
+  actions: write
 
 # All jobs writing generated content serialize checkout/build/push.
 concurrency:
@@ -32,25 +34,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python3 tools/build-columns.py
-      # feed.xml もコラムと同じ記事から作る（Issue #72。それまでどのワークフローにも無く4月から更新されていなかった）。
-      # 失敗しても既存の feed.xml はそのまま残る（書き込みは成功時だけ）ので、フィードの失敗でコラムの公開を止めない
-      - name: Build RSS feed
-        continue-on-error: true
-        run: python3 tools/build-feed.py
-      - name: Commit generated files
-        id: commit
+      # ページと同じ取得データで最後に feed.xml も書く（Issue #72 / #89）。フィードの失敗ではコラムの公開を止めない
+      # （ページを書き終えてから作るので、ページは残る。結果は steps.columns.outputs.feed＝ok / failed）
+      - name: Build column pages and RSS feed
+        id: columns
+        run: python3 tools/build-columns.py
+      # push に成功したら pages.yml を起動する（GITHUB_TOKEN の push は pages.yml の push を起動しないため。
+      # IndexNow への送信は pages.yml がデプロイの成功後に行う）
+      - name: Commit generated files and start the deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python tools/commit-generated.py
           --message "chore(column): auto-rebuild static pages [skip ci]"
           column.html column/ index.html sitemap.xml js/bm-pricing.js feed.xml
-      # GITHUB_TOKEN での push は indexnow.yml を起動しない（GitHub の仕様）ので、ここで送る（Issue #72）。
-      # 送るのは今回 push した生成物だけ（rebase 先〜push したコミット）。生成物の push は済んでおり、
-      # ジョブが失敗扱いだと pages.yml がデプロイしないので、通知の失敗ではジョブを止めない
-      - name: Submit generated URLs to IndexNow
-        if: steps.commit.outputs.pushed == 'true'
-        continue-on-error: true
-        env:
-          INDEXNOW_BEFORE: ${{ steps.commit.outputs.before }}
-          INDEXNOW_AFTER: ${{ steps.commit.outputs.after }}
-        run: python3 tools/indexnow-ping.py
+      # フィードを作れなかったときは、コラムの push・デプロイの起動を済ませた後でジョブを失敗にする（GitHub が通知する）
+      - name: Fail the job if the RSS feed was not updated
+        if: steps.columns.outputs.feed != 'ok'
+        run: |
+          echo "::error::feed.xml was not updated (see the build step). The column pages were published."
+          exit 1

@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
-"""Commit only declared generated paths, and retry a normal push after rebasing.
+"""Commit only declared generated paths, push them (rebasing onto other pushes), and start the deploy.
 
 For GitHub Actions only; concurrent generator workflows share one concurrency
 group. A conflicting human edit fails the job for review rather than overwriting it.
 
-After a successful push, the step outputs pushed=true, before (the remote tip the
-commit was rebased onto) and after (the pushed commit), so the workflow can send
-exactly the generated changes to IndexNow. A push with GITHUB_TOKEN does not
-start other workflows, so indexnow.yml never sees these commits. Nothing is
-output when there was nothing to push.
+A push with GITHUB_TOKEN does not start other workflows (GitHub's rule), so the
+push trigger of pages.yml never sees these commits. Right after a successful push
+to main, this starts the deploy itself: `gh workflow run pages.yml --ref main`
+(a workflow_dispatch made with GITHUB_TOKEN does start workflows). The workflow
+step needs GH_TOKEN and `permissions: actions: write`. pages.yml deploys the tip
+of main and then sends the changes since the last deployment to IndexNow.
+Nothing is started when nothing was pushed, or when the branch is not main.
+If the deploy cannot be started, the job fails (the push has already happened).
 """
 import argparse
 import os
 import subprocess
+
+DEPLOY_WORKFLOW = "pages.yml"
+DEPLOY_BRANCH = "main"
 
 
 def git(*args, check=True):
@@ -25,13 +31,22 @@ def commit_id(ref):
     ).stdout.strip()
 
 
-def write_outputs(**values):
-    path = os.environ.get("GITHUB_OUTPUT")
-    if not path:
+def start_deploy(repository, branch):
+    """Start pages.yml for main after a push. Other branches are never deployed."""
+    if branch != DEPLOY_BRANCH:
+        print(f"Not starting {DEPLOY_WORKFLOW}: it deploys {DEPLOY_BRANCH}, not {branch}.", flush=True)
         return
-    with open(path, "a", encoding="utf-8") as output:
-        for key, value in values.items():
-            output.write(f"{key}={value}\n")
+    command = ["gh", "workflow", "run", DEPLOY_WORKFLOW, "--ref", DEPLOY_BRANCH, "--repo", repository]
+    try:
+        started = subprocess.run(command, check=False).returncode == 0
+    except OSError as error:
+        print(error, flush=True)
+        started = False
+    if not started:
+        raise SystemExit(
+            f"::error::The generated files were pushed to {branch}, but {DEPLOY_WORKFLOW} could not be started, "
+            "so they are not deployed yet. Run 'Deploy to GitHub Pages' by hand (Actions > Run workflow).")
+    print(f"Started {DEPLOY_WORKFLOW} on {DEPLOY_BRANCH}.", flush=True)
 
 
 def main():
@@ -42,6 +57,7 @@ def main():
     if os.environ.get("GITHUB_ACTIONS") != "true":
         parser.error("This publishing command is restricted to GitHub Actions")
     branch = os.environ["GITHUB_REF_NAME"]
+    repository = os.environ["GITHUB_REPOSITORY"]
     git("check-ref-format", "--branch", branch)
     git("config", "user.name", "github-actions[bot]")
     git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
@@ -56,13 +72,13 @@ def main():
     for _ in range(3):
         git("fetch", "origin", branch)
         git("rebase", "FETCH_HEAD")
-        before, after = commit_id("FETCH_HEAD"), commit_id("HEAD")
-        if before == after:
+        if commit_id("FETCH_HEAD") == commit_id("HEAD"):
             # The rebase dropped the commit: the branch already has the same output.
             print("Generated changes are already on the branch.")
             return
         if git("push", "origin", f"HEAD:refs/heads/{branch}", check=False).returncode == 0:
-            write_outputs(pushed="true", before=before, after=after)
+            print(f"Pushed {commit_id('HEAD')} to {branch}.", flush=True)
+            start_deploy(repository, branch)
             return
     raise RuntimeError("Push failed after three attempts")
 

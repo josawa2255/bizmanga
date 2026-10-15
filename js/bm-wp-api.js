@@ -5,7 +5,7 @@
  *   - /works-new … 新作漫画（ホーム横スクロールトラック）
  *   - /news      … ニュース（ホームのニュース枠・news.html の一覧）
  *   コラム（/columns）はここで取得しない。ホームの枠（index.html の BUILD:HOME_COLUMN_GRID）も
- *   一覧（column.html）も tools/build-columns.py が毎時書き出す静的カードが正（Issue #74 / #79）
+ *   一覧（column.html）も tools/build-columns.py が書き出す静的カードが正（Issue #74 / #79）
  *   JS が作る自サイトのリンクはすべて / 始まり（BUGS #006）
  *
  * WP投稿側で publish_to フィールドを想定:

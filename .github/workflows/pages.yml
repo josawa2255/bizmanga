@@ -3,26 +3,23 @@
 # ⚠️ リポジトリの Settings → Pages → Source が「GitHub Actions」のときだけデプロイする。
 #    「ブランチから公開（legacy）」のままだと従来型の公開処理がリポジトリ全体を同時に公開して競合するため
 #    （ContentsX で 2026-10-14 に発生。ContentX_HP/BUGS.md #067）。切り替えまではデプロイの手前で止まる。
+# デプロイに成功したら、前回のデプロイから変わった URL を IndexNow に送る（送るのはここの1か所だけ。Issue #89）。
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  # 自動ビルド（build-columns / build-works / build-lp-cases）の push は GITHUB_TOKEN なので上の push を起動しない
+  # （GitHub の仕様）。代わりに tools/commit-generated.py が push に成功した直後に
+  # `gh workflow run pages.yml --ref main` で起動する（本番のファイルを書き換える自動ビルドを足したら
+  # commit-generated.py で push する）。手動で出し直すときもこれ
   workflow_dispatch:
-  # 自動ビルド（GITHUB_TOKEN での push）は上の push を起動しない（GitHub の仕様）ので、完了でもデプロイする。
-  # ただし main の先端が既にデプロイ済み（最後に成功した github-pages のデプロイと同じ）ならデプロイを飛ばす
-  # （コラムは毎時ビルドするので、同じ内容の全量デプロイが1日24回走るのを防ぐ。Issue #79）。
-  # 前回のデプロイが失敗・置き換えで出ていなければ、次の自動ビルドの後で出し直す。
-  # 本番のファイルを書き換える自動ビルドを新しく足したら、ここにも足す
-  workflow_run:
-    workflows: ["Build column static pages", "Build LP cases (static injection)", "Build works static pages"]
-    types: [completed]
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  # 自動ビルド後に「最後に成功したデプロイ」を読むため（読むだけ）
+  # IndexNow に送る範囲を決めるため、最後に成功した github-pages のデプロイを読む（読むだけ）
   deployments: read
 
 concurrency:
@@ -31,19 +28,16 @@ concurrency:
 
 jobs:
   deploy:
-    # 自動ビルドが失敗したときはデプロイしない
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check that Pages is set to deploy from GitHub Actions (and that main is not already deployed)
+      - name: Check that Pages is set to deploy from GitHub Actions
         id: mode
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           mode=$(gh api "repos/$REPO/pages" --jq .build_type)
           echo "Pages build_type: $mode"
@@ -52,57 +46,80 @@ jobs:
             echo "deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          # 自動ビルドの完了で起動したとき: 最後に成功した github-pages のデプロイが main の先端と同じなら、
-          # 公開中の内容は最新なのでデプロイしない（何も push しなかった毎時のコラムビルドの後など）。
-          # 違えば（前回のデプロイが失敗・置き換えで出ていない分がある場合も含む）デプロイして取り戻す。
-          # 新しい順に見て、success の状態を持つ最初の記録を使う。このジョブ自身の記録（まだ success でない）は拾わない。
-          # 記録・先端が読めない／見つからないときは、出し損ねないようデプロイする。push / 手動実行は従来どおり常にデプロイ。
-          if [ "$EVENT_NAME" = "workflow_run" ]; then
-            deployed=""
-            if list=$(gh api "repos/$REPO/deployments?environment=github-pages&per_page=20" --jq '.[] | "\(.id) \(.sha)"'); then
-              while read -r id sha; do
-                [ -n "$id" ] || continue
-                if ! ok=$(gh api "repos/$REPO/deployments/$id/statuses?per_page=100" --jq '[.[] | select(.state == "success")] | length'); then
-                  deployed=""
-                  break
-                fi
-                if [ "$ok" -gt 0 ] 2>/dev/null; then
-                  deployed=$sha
-                  break
-                fi
-              done <<< "$list"
-            fi
-            tip=$(gh api "repos/$REPO/commits/main" --jq .sha) || tip=""
-            echo "Last successful Pages deployment: ${deployed:-none}; main is at ${tip:-unknown}"
-            if [ -n "$deployed" ] && [ "$deployed" = "$tip" ]; then
-              echo "::notice::main is already deployed. Skipping the deploy."
-              echo "deploy=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
           echo "deploy=true" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout
+      # 常に main の先端を公開する（古い実行を再実行しても古いコミットを出さない）。公開物と IndexNow の基準は
+      # このチェックアウトの HEAD（起動したときのコミット github.sha ではない）。差分を取るため履歴も取る
+      - name: Checkout the tip of main
         if: steps.mode.outputs.deploy == 'true'
         uses: actions/checkout@v4
-
-      - name: Collect public files only (no internal docs / tools)
+        with:
+          ref: main
+          fetch-depth: 0
+      # IndexNow に送る範囲（デプロイの前に読む）: 最後に成功した github-pages のデプロイのコミット 〜 この HEAD。
+      # 新しい順に見て、statuses に success があり environment_url が空でない（＝実際に公開した）最初の記録の sha。
+      # このジョブ自身の記録はまだ success でないので拾わない。
+      # 記録が読めない・見つからない・その commit がチェックアウトに無いときは before を空にして送らない（全件は送らない）
+      - name: Find the commit of the last successful deployment
+        id: range
         if: steps.mode.outputs.deploy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tools -p 'test_site_artifact.py'
+          head=$(git rev-parse --verify HEAD)
+          echo "after=$head" >> "$GITHUB_OUTPUT"
+          before=""
+          if list=$(gh api "repos/$REPO/deployments?environment=github-pages&per_page=30" --jq '.[] | "\(.id) \(.sha)"'); then
+            while read -r id sha; do
+              [ -n "$id" ] || continue
+              if ! ok=$(gh api "repos/$REPO/deployments/$id/statuses?per_page=100" --jq '[.[] | select(.state == "success" and (.environment_url // "") != "")] | length'); then
+                echo "::warning::Could not read the statuses of deployment $id."
+                break
+              fi
+              if [ "$ok" -gt 0 ] 2>/dev/null; then
+                before=$sha
+                break
+              fi
+            done <<< "$list"
+          else
+            echo "::warning::Could not read the Pages deployments."
+          fi
+          if [ -n "$before" ] && ! { [[ "$before" =~ ^[0-9a-f]{40}([0-9a-f]{24})?$ ]] && git cat-file -e "$before^{commit}" 2>/dev/null; }; then
+            echo "::warning::The last deployed commit $before is not in this checkout."
+            before=""
+          fi
+          if [ -n "$before" ]; then
+            echo "IndexNow: changes from $before (last successful deployment) to $head"
+          else
+            echo "::notice::No previous deployment was found. IndexNow is not sent this time (never the whole site)."
+          fi
+          echo "before=$before" >> "$GITHUB_OUTPUT"
+      # JS・CSS の参照漏れを本番に出さない（check-site.py）。公開するファイルだけを _site/ に集める
+      - name: Check the site and collect public files only (no internal docs / tools)
+        if: steps.mode.outputs.deploy == 'true'
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/check-site.py
+          python3 -m unittest discover -s tools -p 'test_site_artifact.py'
           python3 tools/build-site-artifact.py
-
       - name: Setup Pages
         if: steps.mode.outputs.deploy == 'true'
         uses: actions/configure-pages@v5
-
       - name: Upload artifact
         if: steps.mode.outputs.deploy == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: '_site'
-
       - name: Deploy to GitHub Pages
         if: steps.mode.outputs.deploy == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
+      # デプロイが成功したときだけ送る。送信の失敗はデプロイの成功を取り消さない（このステップだけ失敗表示）
+      - name: Submit the deployed changes to IndexNow
+        if: steps.mode.outputs.deploy == 'true' && steps.range.outputs.before != ''
+        continue-on-error: true
+        env:
+          INDEXNOW_BEFORE: ${{ steps.range.outputs.before }}
+          INDEXNOW_AFTER: ${{ steps.range.outputs.after }}
+        run: python3 tools/indexnow-ping.py

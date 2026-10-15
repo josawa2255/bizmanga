@@ -22,6 +22,32 @@ _pending = ContextVar("build_outputs", default=None)
 FETCH_ATTEMPTS = 3
 FETCH_RETRY_DELAY = 2  # seconds; doubles on each retry
 
+# cms.contentsx.jp の WP API の前には nginx のキャッシュがある（s-maxage=600。応答ヘッダー x-nginx-cache）。
+# WP で公開した直後のビルドが最大10分前の一覧・詳細を取らないよう、取得 URL に実行ごとの値を付ける
+# （キャッシュはクエリ違いを別扱いにする。WP の各エンドポイントは知らないクエリを無視する。2026-10-15 確認）。
+# 取得にだけ使い、生成物には書かない。応答を記録・比較する道具は without_cache_buster した URL をキーにする。
+CACHE_BUST_PARAM = "_cb"
+RUN_TOKEN = f"{time.time_ns():x}"
+
+
+def _split_query(url):
+    base, hash_mark, fragment = url.partition("#")
+    path, _, query = base.partition("?")
+    params = [p for p in query.split("&") if p and p.split("=", 1)[0] != CACHE_BUST_PARAM]
+    return path, params, hash_mark + fragment
+
+
+def cache_busted(url, token=None):
+    """url に _cb=<実行ごとの値> を付ける（既存のクエリがあれば & でつなぎ、既にある _cb は置き換える）。"""
+    path, params, fragment = _split_query(url)
+    return f"{path}?{'&'.join([*params, f'{CACHE_BUST_PARAM}={token or RUN_TOKEN}'])}{fragment}"
+
+
+def without_cache_buster(url):
+    """cache_busted の逆。_cb を除いた URL（ほかのクエリ・順序はそのまま）。"""
+    path, params, fragment = _split_query(url)
+    return path + (f"?{'&'.join(params)}" if params else "") + fragment
+
 
 def _is_transient(error):
     """Timeouts, connection failures, 429 and 5xx; other HTTP errors are final."""
@@ -30,17 +56,24 @@ def _is_transient(error):
     return isinstance(error, (urllib.error.URLError, TimeoutError, ConnectionError))
 
 
-def fetch_json(url, timeout=30, user_agent="BizManga-Builder/1.0"):
-    """Fetch JSON, retrying transient failures so one blip does not fail a build."""
-    request = urllib.request.Request(url, headers={"User-Agent": user_agent})
+def fetch_response(url, timeout=30, user_agent="BizManga-Builder/1.0"):
+    """(JSON, 応答ヘッダー（名前は小文字）)。一時的な失敗は間隔を空けて再試行する。
+    WP の前のキャッシュを避けるため、実際に取る URL には cache_busted で _cb を付ける。"""
+    request = urllib.request.Request(cache_busted(url), headers={"User-Agent": user_agent})
     for attempt in range(1, FETCH_ATTEMPTS + 1):
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
-                return json.loads(response.read().decode("utf-8"))
+                headers = {name.lower(): value for name, value in response.headers.items()}
+                return json.loads(response.read().decode("utf-8")), headers
         except Exception as error:
             if attempt == FETCH_ATTEMPTS or not _is_transient(error):
                 raise
             time.sleep(FETCH_RETRY_DELAY * 2 ** (attempt - 1))
+
+
+def fetch_json(url, timeout=30, user_agent="BizManga-Builder/1.0"):
+    """Fetch JSON, retrying transient failures so one blip does not fail a build."""
+    return fetch_response(url, timeout=timeout, user_agent=user_agent)[0]
 
 
 def require_records(value, *, label="API response", key="id", allow_empty=False):

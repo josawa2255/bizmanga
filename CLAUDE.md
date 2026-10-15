@@ -18,7 +18,7 @@
 
 | ページ | ファイル | ページ固有の主要JS |
 |--------|---------|--------|
-| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-campaign-month.js（キャンペーン見出しの「○月限定」を日本時間の当月に更新）。**コラム枠（最新8件）は JS ではなく `tools/build-columns.py` が毎時 `BUILD:HOME_COLUMN_GRID` に書き出す静的カード**（Issue #79。マーカー内は手で編集しない） |
+| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-campaign-month.js（キャンペーン見出しの「○月限定」を日本時間の当月に更新）。**コラム枠（最新8件）は JS ではなく `tools/build-columns.py` が `BUILD:HOME_COLUMN_GRID` に書き出す静的カード**（Issue #79。マーカー内は手で編集しない。ビルドの起動は下の「自動ビルドとデプロイ」） |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
 | 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
@@ -26,7 +26,7 @@
 | お問い合わせ | contact.html | bm-lead.js, bm-contact.js（JS未読込時は送信を無効化し、再読み込み・電話連絡の案内を表示） |
 | 資料ダウンロード | download.html | bm-lead.js, bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
 | お客様の声 | testimonials.html / testimonial-detail.html | bm-testimonials-page.js / bm-testimonial-detail.js |
-| コラム一覧/詳細 | column.html / column-detail.html | 一覧は `tools/build-columns.py` が毎時書き出す静的カードが正（bm-column-filter.js で絞り込み。新しいコラムは公開から最大1時間で一覧・詳細・サイトマップ・ホームに出る）。**column.html に bm-wp-api.js を読ませない**（作り直すと絞り込み・読了時間・禁則が消える、Issue #74）。詳細は bm-column-detail.js |
+| コラム一覧/詳細 | column.html / column-detail.html | 一覧は `tools/build-columns.py` が書き出す静的カードが正（bm-column-filter.js は絞り込みの表示/非表示だけ。ビルドは WP でコラムを公開・更新したとき〈WP プラグインが起動〉と毎日03:00 JST。下の「自動ビルドとデプロイ」）。**特集枠（最新1件）もビルダーが `BUILD:COLUMN_FEATURED` に書き出す静的HTML**（JS無効でも出る。PC は特集枠・スマホは一覧の先頭カード `bm-column-card--featured`。Issue #89）。カード・特集枠・ホーム枠の文字の正規化・エスケープ・画像URLの検査は `build-columns.py` の `card_fields` の1か所。**column.html に bm-wp-api.js を読ませない**（作り直すと絞り込み・読了時間・禁則が消える、Issue #74）。詳細は bm-column-detail.js |
 | ニュース | news.html / news-detail.html | bm-wp-api.js、詳細は bm-news-detail.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
@@ -63,11 +63,17 @@
 
 ## 公開範囲（2026-10-14 セキュリティ強化）⭐
 - ⛔ **このリポジトリは PUBLIC。顧客情報・インフラ構成・未対応の弱点リスト・認証の手順をコミットしない**（ContentsX で内部資料が本番から取得できた件 = ContentX_HP/BUGS.md #067）。
-- 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json` と検索エンジンの所有確認ファイル）だけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
+- 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json`）と、公開時に作る IndexNow のキーファイルだけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
+- IndexNow のキーファイルはリポジトリに置かない。`build-site-artifact.py` が `tools/bm_indexnow.py` の `KEY` から、サイト直下の `/{KEY}.txt`（中身は KEY だけ）を作る。送信（`tools/indexnow-ping.py`）も同じ `bm_indexnow` を読む。**キーを替えるときは `bm_indexnow.py` の `KEY` だけ替える**。KEY の書式が IndexNow の決まりに合わないときは、警告してキーファイルだけ出さない（デプロイは止めない）。
 - デプロイは `.github/workflows/pages.yml`。**Settings → Pages → Source が「GitHub Actions」のときだけ**デプロイする（legacy＝ブランチから公開のままだと、従来型の公開処理がリポジトリ全体を同時に公開して競合する）。
-- ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。ただし main の先端が既に公開済み（最後に成功した github-pages のデプロイと同じ SHA）ならデプロイを飛ばす（コラムは毎時ビルドのため。Issue #79。前回のデプロイが出ていなければ次の自動ビルド後に出し直す）。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足す**。
-- ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足し、IndexNow の送信ステップ（`commit-generated.py` の push 範囲を使う。同じ理由で `indexnow.yml` は起動しない。[SPEC.md §16.2](SPEC.md)）も足す**。
 - 公開範囲を変えたら `python3 tools/build-site-artifact.py && python3 tools/smoke-manga-wp.py --serve _site` で漫画表示を確認する（2026-10-14: 48 PASS）。
+
+## 自動ビルドとデプロイ・IndexNow（2026-10-16 Issue #89）⭐
+- 自動ビルド: `build-columns.yml`（コラム。毎日03:00 JST＋**WP でコラムを公開・更新したときに WP プラグインが workflow_dispatch で起動**）・`build-works.yml`（毎日03:00 JST）・`build-lp-cases.yml`（週1）。コラムを毎時にしないのは、GitHub の予定実行がこのリポジトリで普段3〜6時間遅れて毎時でも1時間以内にならないのと、毎時の push がランク追跡の push とぶつかりうるため。
+- 生成物は `tools/commit-generated.py` で push する。GITHUB_TOKEN の push は `pages.yml` の push トリガーを起動しないので、**push に成功した直後に `commit-generated.py` が `gh workflow run pages.yml --ref main` でデプロイを起動する**（main のときだけ。起動できなければジョブを失敗にする）。**本番のファイルを書き換える自動ビルドを足したら、生成物は `commit-generated.py` で push し、そのワークフローに `permissions: actions: write` とそのステップの `GH_TOKEN` を足す**（[SPEC.md §16.2](SPEC.md)）。
+- `pages.yml` は push（main）と手動・上の起動で動き、常に main の先端をチェックアウトして公開する（`check-site.py` → 公開物の検査 → デプロイ）。
+- IndexNow はデプロイ成功後に `pages.yml` から1回だけ送る（前回成功したデプロイのコミット〜今回公開したコミットの差分。前回が分からなければ送らない＝全件は送らない）。送信の失敗はデプロイを取り消さない。ビルドのワークフローや別のワークフローで送らない（`indexnow.yml` は廃止）。
+- RSS（`feed.xml`）はコラムのビルドが同じ取得データで最後に書く（`tools/bm_feed.py`。手動は `tools/build-feed.py`）。フィードの失敗ではコラムの公開を止めず、push・デプロイの起動の後でジョブを失敗にして知らせる。
 
 ## 外部サービス
 - HubSpot: Portal 48367061（ContentsXと共通）
@@ -76,6 +82,11 @@
 本文のURLサニタイズはブラウザの `js/bm-sanitize.js` と静的生成の `tools/bm_html.py` で共通の方針を使う。
 制御文字を拒否し、用途別にスキームを許可する。記事中の外部リンクは維持するため、
 自社ドメインに制限する `bmSanitize.url` とは区別する。仕様と回帰検証は [SPEC.md §16.2](SPEC.md) を参照。
+自社ドメインに制限するURL検査（`bmSanitize.url` と静的生成の `bm_html.site_url`）も同じ方針で、回帰ケース `tools/fixtures/site-urls.json` を両方で確かめる。片方を直したらもう片方とケースも直す。
+
+コラムの日付（詳細ページの dateModified・sitemap の lastmod・フィードの並び）は `tools/bm_content.py` の `updated_ymd` の1か所で決める（公開日と WP の更新日の新しい方。実行時刻に依存しない）。WP 由来の文の正規化（料金・ブランド表現）も `bm_content.normalize_brand_text` の1か所で、ページとフィードが使う。
+コラム一覧の取得は `bm_content.fetch_columns`（ページ送りつき。取り切れなければ何も書かず古いページも消さずに失敗）。詳細は [SPEC.md §2.0a](SPEC.md)。
+ビルダーの WP 取得（`bm_build.fetch_response` / `fetch_json`）は nginx のキャッシュを避けるため URL に `_cb=<実行ごとの値>` を付ける（生成物には入れない。記録・使い回しのキーは `without_cache_buster` で除く。[SPEC.md §16.2](SPEC.md)）。
 
 ## GSC日次ランク追跡（2026-04-20〜稼働）
 - 毎朝 JST 09:00 に `.github/workflows/rank-tracker.yml` が自動発火

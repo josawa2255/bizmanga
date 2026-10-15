@@ -33,3 +33,7 @@
 # 公開範囲（全ページに効く。2026-10-14）
 ^\.github/workflows/pages\.yml$
 ^tools/build-site-artifact\.py$
+# IndexNow（キーの正本・送信。キーファイルは公開時に作る）と、ビルド・URL 検査のテストが共有する回帰ケース（2026-10-16 Issue #89）
+^tools/bm_indexnow\.py$
+^tools/indexnow-ping\.py$
+^tools/fixtures/

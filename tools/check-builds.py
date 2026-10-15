@@ -31,16 +31,25 @@ def snapshot(folder):
     return {str(path.relative_to(folder)): path.read_bytes() for path in folder.rglob('*') if path.is_file()}
 
 
-def main():
-    fetch = bm_build.fetch_json
+def caching(fetch):
+    """WP の応答を URL ごとに1回だけ取る（同じ実行の2回のビルドが同じ応答を使う）。
+    キーはキャッシュよけ（_cb。bm_build.cache_busted）を除いた URL。"""
     cache = {}
 
     def cached_fetch(url, **kwargs):
-        if url not in cache:
-            cache[url] = fetch(url, **kwargs)
-        return copy.deepcopy(cache[url])
+        key = bm_build.without_cache_buster(url)
+        if key not in cache:
+            cache[key] = fetch(url, **kwargs)
+        return copy.deepcopy(cache[key])
 
-    bm_build.fetch_json = cached_fetch
+    return cached_fetch, cache
+
+
+def main():
+    # 全ビルダーの取得（bm_build.fetch_json と bm_content のコラム一覧）はここを通る
+    fetch = bm_build.fetch_response
+    cached_fetch, cache = caching(fetch)
+    bm_build.fetch_response = cached_fetch
     try:
         with tempfile.TemporaryDirectory(prefix='bizmanga-build-check-') as directory:
             target = Path(directory)
@@ -75,6 +84,9 @@ def main():
                     raise
                 deleted = before.keys() - first.keys()
                 changed = sum(before.get(p) != data for p, data in first.items())
+                if name == 'build-feed' and first.get('feed.xml') != before.get('feed.xml'):
+                    # build-columns wrote the feed from the same data; the manual tool must agree byte for byte.
+                    raise AssertionError('build-feed.py wrote a different feed.xml than build-columns.py')
                 print(f'PASS {name}: generated/updated={changed}, removed={len(deleted)}, repeat is stable')
             # The feed must link to the column pages build-columns generated (same articles, same slugs).
             import re
@@ -91,7 +103,7 @@ def main():
                     json.loads(match[1])
             print(f'PASS generated JSON; fetched {len(cache)} API responses; working tree untouched')
     finally:
-        bm_build.fetch_json = fetch
+        bm_build.fetch_response = fetch
         bm_pricing.ROOT = ROOT
 
 

@@ -20,26 +20,21 @@
 
   /**
    * URL検証（相対URLまたは自社ドメインのみ許可）
+   * 静的ビルドの tools/bm_html.py の site_url と同じ方針。回帰ケースは tools/fixtures/site-urls.json
    */
   function sanitizeUrl(url) {
     if (!url) return '';
     var s = String(url).trim();
-    // 制御文字・空白の混入（"java\tscript:" 等のスキーム偽装）は拒否
-    if (/[\u0000-\u0020\u007f]/.test(s)) return '';
+    // 制御文字・空白の混入（"java\tscript:" 等のスキーム偽装）と、バックスラッシュは拒否。
+    // ブラウザは \ を / と読むので、"/\evil.example/x" はプロトコル相対URL（外部ドメイン）に化ける
+    if (/[\u0000-\u0020\u007f\\]/.test(s)) return '';
     // プロトコル相対URL (//evil.com) は外部ドメインに化けるので拒否
     if (s.startsWith('//')) return '';
-    // スキーム付き (javascript:, data:, vbscript: 等を含む) は http/https のみ許可ドメインで通す
+    // スキーム付き (javascript:, data:, vbscript: 等を含む) は「http(s)://」＋許可ドメインのものだけ通す。
+    // ホスト名は書かれたままの文字で判定する（user@ や %エンコード・全角など、ブラウザが読むホスト名と
+    // 見た目がずれる書き方は通さない）
     if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s)) {
-      var allowed = ['contentsx.jp'];
-      try {
-        var parsed = new URL(s);
-        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
-        var host = parsed.hostname;
-        for (var i = 0; i < allowed.length; i++) {
-          if (host === allowed[i] || host.endsWith('.' + allowed[i])) return s;
-        }
-      } catch (e) { /* invalid URL */ }
-      return '';
+      return /^https?:\/\/(?:[a-z0-9-]+\.)*contentsx\.jp(?::[0-9]{1,5})?(?:[\/?#]|$)/i.test(s) ? s : '';
     }
     // スキーム無し = 相対URL（/path, ./path, path, #hash, ?query）
     return s;

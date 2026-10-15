@@ -5,6 +5,7 @@ from html.parser import HTMLParser
 import importlib.util
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -69,6 +70,37 @@ class Page(HTMLParser):
         self.active = None
 
 
+def check_column_page():
+    """column.html: 一覧・特集枠は静的ビルド（tools/build-columns.py）の HTML が正。WP から作り直す
+    bm-wp-api.js を読まず、特集枠と、同じ記事の一覧の先頭カード（スマホ用）がビルダーの出力で入っていること。"""
+    source = (ROOT / "column.html").read_text(encoding="utf-8")
+    scripts = [Path(urlsplit(src).path).name for src in re.findall(r"<script\b[^>]*\bsrc=\"([^\"]+)\"", source)]
+    for name in ("bm-wp-api.js", "bm-wp-config.js"):
+        if name in scripts:
+            raise ValueError(f"column.html must not load {name}: it rebuilds the static list (Issue #74)")
+
+    def block(name):
+        start, end = f"<!-- BUILD:{name} -->", f"<!-- /BUILD:{name} -->"
+        if source.count(start) != 1 or source.count(end) != 1:
+            raise ValueError(f"column.html: expected one {start} ... {end}")
+        return source.split(start, 1)[1].split(end, 1)[0]
+
+    section = re.search(r"<section\b[^>]*\bid=\"bmColumnFeatured\"[^>]*>", source)
+    if not section or re.search(r"\b(?:style|hidden)\b", section[0]):
+        raise ValueError("column.html: #bmColumnFeatured must be shown without JavaScript")
+    featured = re.findall(r'<a class="bm-column-featured-card"[^>]*\bhref="(/column/[^"]+)"[^>]*\bdata-category="[^"]+"',
+                          block("COLUMN_FEATURED"))
+    cards = re.findall(r'<a class="(bm-column-card[^"]*)" href="([^"]+)"( data-category="[^"]+")?', block("COLUMN_GRID"))
+    if len(featured) != 1 or not cards:
+        raise ValueError("column.html: the builder must write one featured article and the cards")
+    marked = [href for cls, href, _ in cards if "bm-column-card--featured" in cls.split()]
+    if marked != [featured[0]] or cards[0][1] != featured[0]:
+        raise ValueError("column.html: the first card must be the featured article (shown on phones)")
+    if any(not href.startswith("/column/") or not category for _, href, category in cards):
+        raise ValueError("column.html: every card needs a /column/ link and data-category")
+    return len(cards)
+
+
 def node_executable():
     executable = shutil.which("node")
     if executable:
@@ -100,13 +132,15 @@ def main():
         except Exception as error:
             raise ValueError(f"{path.relative_to(ROOT)}: {error}") from error
         inline.update(page.inline)
+    column_cards = check_column_page()
     with tempfile.TemporaryDirectory(prefix="bm-js-check-") as folder:
         for index, (code, kind) in enumerate(sorted(inline)):
             path = Path(folder) / f"inline-{index}.{'mjs' if kind == 'module' else 'js'}"
             path.write_text(code, encoding="utf-8")
             subprocess.run([node, "--check", str(path)], check=True)
     print(f"PASS: {len(python_files)} Python files, {len(scripts)} JS files, "
-          f"{len(pages)} HTML/templates, {len(inline)} unique inline scripts")
+          f"{len(pages)} HTML/templates, {len(inline)} unique inline scripts, "
+          f"column.html static featured + {column_cards} cards")
 
 
 if __name__ == "__main__":

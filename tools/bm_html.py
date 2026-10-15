@@ -1,7 +1,31 @@
-"""Allowlist sanitizer for WordPress article HTML."""
+"""Allowlist sanitizer for WordPress article HTML, and the own-site URL check."""
 import html
 import re
 from html.parser import HTMLParser
+
+# ── 自サイト系URL（コラムのサムネイル等）。js/bm-sanitize.js の bmSanitize.url と同じ方針 ──
+# 回帰ケースは tools/fixtures/site-urls.json（Python と JS の両方で同じ結果になることを test_build.py が確かめる）。
+# String.prototype.trim が除く文字（JS と同じ前後の空白だけを落とす）
+_JS_TRIM = "\t\n\v\f\r \xa0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a" \
+           "\u2028\u2029\u202f\u205f\u3000\ufeff"
+# スキーム付きは「http(s)://」＋書かれたままのホスト名が contentsx.jp かそのサブドメインのものだけ。
+# ユーザー情報（user@）・%エンコード・全角などで、ブラウザが読むホスト名と食い違う書き方は通さない。
+# re.ASCII: IGNORECASE の [a-z] に ſ や K（ケルビン記号）を含めない（JS の /i と同じにする）
+_SITE_ABSOLUTE = re.compile(r"https?://(?:[a-z0-9-]+\.)*contentsx\.jp(?::[0-9]{1,5})?(?:[/?#]|$)",
+                            re.IGNORECASE | re.ASCII)
+
+
+def site_url(value):
+    """相対URLか、contentsx.jp（とそのサブドメイン）の http(s) URL だけを返し、それ以外は ""。
+    制御文字・空白・バックスラッシュ（ブラウザは \\ を / と読むので "/\\evil.example" が外部ドメインに化ける）と
+    プロトコル相対（//host）は拒否する。"""
+    s = str(value or "").strip(_JS_TRIM)
+    if not s or re.search(r"[\x00-\x20\x7f\\]", s) or s.startswith("//"):
+        return ""
+    if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", s) and not _SITE_ABSOLUTE.match(s):
+        return ""
+    return s
+
 
 # ── WP本文HTMLのallowlistサニタイズ（標準ライブラリのみ。bleach等の追加依存なし）──
 # WP管理画面が侵害された場合の持続的XSS（SPEC §15.1 S1）対策。
