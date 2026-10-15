@@ -80,6 +80,12 @@
       // lerp（線形補間）でなめらかに追従
       currentX += (targetX - currentX) * 0.05;
       currentY += (targetY - currentY) * 0.05;
+      // 目標との差が見た目に出ない大きさ（0.001 未満＝回転 0.003deg・移動 0.008px）になったら目標値に合わせる。
+      // 完全一致を待つと、0 へ戻るときは浮動小数が非正規化数まで減り続け、約14,000フレーム（約4分）止まらない
+      if (Math.abs(targetX - currentX) < 0.001 && Math.abs(targetY - currentY) < 0.001) {
+        currentX = targetX;
+        currentY = targetY;
+      }
       // 値が変わらなくなったら止める（マウスの移動・離脱、ヒーローが画面に戻ったときに再開）
       if (currentX === lastX && currentY === lastY) { rafId = null; return; }
       lastX = currentX;
