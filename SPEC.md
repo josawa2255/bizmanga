@@ -1313,6 +1313,7 @@ IndexNowはpushのbefore〜after全体を対象とする。beforeが取得でき
 - お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う。
 - 送信機能の準備中はHTML内の `#bmContactStatus` に再読み込み・電話連絡の案内を表示し、初期化成功後に隠す。フォームJSの読込失敗時とJavaScript無効時にも案内を残す。
 - お客様の声の詳細では、共通サニタイザーが利用できない場合に読込表示を終了してエラーを表示し、未処理の本文は挿入しない。
+- お客様の声の詳細の Review JSON-LD の `datePublished` は、WP の日付（`date_ymd` = Y-m-d または `date` = Y.m.d）があるときだけ YYYY-MM-DD で出し、無ければ項目ごと出さない。2026-10 時点の `/testimonials/{id}` は日付を返さないので出力しない（2026-10-15 まで閲覧した日を入れていた。Issue #88）。
 - 動的詳細: `js/bm-column-detail.js`、`js/bm-news-detail.js`、`js/bm-testimonial-detail.js`。本文のブラウザサニタイズは `bm-sanitize.js` を使用。
 - 埋込ビューア: `js/bm-embed-viewer.js` と `css/bm-embed-viewer.css`。URL・DOM・実行順は維持。
 - ページCSS: `css/bm-{column-detail,news-detail,testimonial-detail,privacy-policy}.css`。静的コラムの共通CSSは `css/bm-column-static.css`（テンプレートも同期）。Critical CSSは初期描画のためインラインで維持。

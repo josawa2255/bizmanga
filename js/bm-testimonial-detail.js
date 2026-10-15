@@ -55,6 +55,12 @@
         }
 
         // Review JSON-LD 動的更新
+        /* datePublished は WP の実際の日付だけを使い、無ければ出さない（undefined は JSON.stringify で消える）。
+           閲覧した日を入れると、毎回「今日公開」の構造化データになる（Issue #88）。
+           2026-10 時点の /testimonials/{id} は日付を返さないので省略される。WP 側に他の API と同じ
+           date_ymd（Y-m-d）/ date（Y.m.d）が足されたら、その日付を YYYY-MM-DD にして使う */
+        const ymd = /^(\d{4})([-.])(\d{2})\2(\d{2})$/.exec(String(data.date_ymd || data.date || ''));
+        const datePublished = ymd ? ymd[1] + '-' + ymd[3] + '-' + ymd[4] : undefined;
         const oldLd = document.getElementById('testimonialReviewSchema');
         if (oldLd) oldLd.remove();
         const ld = document.createElement('script');
@@ -67,7 +73,7 @@
           "description": plainExcerpt,
           "url": articleUrl,
           "image": thumb || undefined,
-          "datePublished": new Date().toISOString().slice(0, 10),
+          "datePublished": datePublished,
           "itemReviewed": {
             "@type": "Service",
             "name": "BizManga ビジネスマンガ制作",
