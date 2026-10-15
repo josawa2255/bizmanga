@@ -1,4 +1,58 @@
-/* Shared article typography. Keep page-specific overrides in their own stylesheets. */
+/* コラム記事の共通スタイル。静的コラム（column/*.html → bm-column-static.css）と
+   動的コラム（column-detail.html → bm-column-detail.css）の両方が、
+   bizmanga.css → このファイル → 各ページ CSS の順で読む。
+   ここには両ページで同じ「記事の頭（戻るリンク・メタ行・カテゴリ・タイトル・ヒーロー画像）」と
+   「本文の組版」を .bm-col-static-* / .bm-col-detail-* の並べ書きで置く。
+   日付・目次・モバイル用の上書きなど、ページごとに違うものは各ページ CSS に書く
+   （各ページ CSS の方が後に読まれるので、同じ詳細度ならそちらが勝つ）。 */
+
+/* ---- 記事の頭 ---- */
+
+/* 戻るリンク */
+.bm-col-static-back,
+.bm-col-detail-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; color: var(--bm-accent, #e85500);
+  text-decoration: none; margin-bottom: 40px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  transition: opacity 0.25s;
+}
+.bm-col-static-back:hover,
+.bm-col-detail-back:hover { opacity: 0.6; }
+
+/* メタ情報（日付の文字間隔はページごとに違うので各ページ CSS） */
+.bm-col-static-meta,
+.bm-col-detail-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.bm-col-static-cat,
+.bm-col-detail-cat {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #fff; background: var(--bm-accent, #e85500);
+  padding: 4px 12px; border-radius: 2px;
+}
+
+/* タイトル */
+.bm-col-static-title,
+.bm-col-detail-title {
+  font-size: clamp(26px, 4vw, 38px); font-weight: 900;
+  color: #1a1a1a; margin-bottom: 36px;
+  line-height: 1.45; letter-spacing: -0.01em;
+}
+
+/* ヒーロー画像 */
+.bm-col-static-hero,
+.bm-col-detail-hero {
+  width: 100%; max-height: 480px; overflow: hidden;
+  margin-bottom: 40px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.bm-col-static-hero img,
+.bm-col-detail-hero img {
+  max-width: 100%; max-height: 480px;
+  width: auto; height: auto;
+  object-fit: contain; display: block;
+}
+
+/* ---- 本文の組版 ---- */
 .bm-col-static-content,
 .bm-col-detail-content {
   font-size: 16px;

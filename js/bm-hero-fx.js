@@ -55,24 +55,41 @@
   // ===== マウス追従パララックス（PCのみ） =====
   if (!prefersReducedMotion && window.innerWidth > 768) {
     var targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+    var lastX = null, lastY = null;
     var rafId = null;
+    var heroVisible = true;
+    function startParallax() {
+      if (!rafId && heroVisible) rafId = requestAnimationFrame(animateParallax);
+    }
 
     hero.addEventListener('mousemove', function(e) {
       var rect = hero.getBoundingClientRect();
       // -1〜1 に正規化
       targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      startParallax();
     });
 
     hero.addEventListener('mouseleave', function() {
       targetX = 0;
       targetY = 0;
+      startParallax();
     });
 
     function animateParallax() {
       // lerp（線形補間）でなめらかに追従
       currentX += (targetX - currentX) * 0.05;
       currentY += (targetY - currentY) * 0.05;
+      // 目標との差が見た目に出ない大きさ（0.001 未満＝回転 0.003deg・移動 0.008px）になったら目標値に合わせる。
+      // 完全一致を待つと、0 へ戻るときは浮動小数が非正規化数まで減り続け、約14,000フレーム（約4分）止まらない
+      if (Math.abs(targetX - currentX) < 0.001 && Math.abs(targetY - currentY) < 0.001) {
+        currentX = targetX;
+        currentY = targetY;
+      }
+      // 値が変わらなくなったら止める（マウスの移動・離脱、ヒーローが画面に戻ったときに再開）
+      if (currentX === lastX && currentY === lastY) { rafId = null; return; }
+      lastX = currentX;
+      lastY = currentY;
 
       if (worksBg) {
         // 3Dパースペクティブ回転 + 平行移動
@@ -89,12 +106,13 @@
 
       rafId = requestAnimationFrame(animateParallax);
     }
-    rafId = requestAnimationFrame(animateParallax);
+    startParallax();
 
     // ヒーロー外に出たらRAFを止める（パフォーマンス）
     var observer = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting) {
-        if (!rafId) rafId = requestAnimationFrame(animateParallax);
+      heroVisible = entries[0].isIntersecting;
+      if (heroVisible) {
+        startParallax();
       } else {
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
       }

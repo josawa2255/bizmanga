@@ -279,6 +279,85 @@ class BuildTests(unittest.TestCase):
                     self.assertFalse(lp.patch_lp(name, section))
                     self.assertEqual(first, path.read_bytes())
 
+    def test_browser_category_tables_follow_python(self):
+        """The JS copies of the category tables must match the Python source of truth."""
+
+        def js_entries(path, name, value):
+            source = (ROOT / path).read_text(encoding='utf-8')
+            body = re.search(rf'var {name} = \{{(.*?)\}};', source, re.S)[1]
+            return re.findall(rf'[\'"]([^\'"]+)[\'"]\s*:\s*{value}', body)
+
+        class Library(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.categories = []
+
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if 'data-bm-lp-library' in attrs:
+                    self.categories.append(attrs.get('data-category'))
+
+        # Each LP names its library category in HTML; the JS aliases are keyed by that name.
+        lp = module('build-lp-cases.py')
+        expected = {}
+        for slug, categories in lp.LP_CATEGORIES.items():
+            page = Library()
+            page.feed((ROOT / f'{slug}.html').read_text(encoding='utf-8'))
+            self.assertEqual(len(page.categories), 1, slug)
+            expected[page.categories[0]] = categories
+        aliases = {
+            key: re.findall(r'[\'"]([^\'"]*)[\'"]', values)
+            for key, values in js_entries(
+                'js/bm-lp-library-embed.js', 'LP_CATEGORY_ALIASES', r'\[([^\]]*)\]'
+            )
+        }
+        self.assertEqual(aliases, expected)
+
+        # works.html links each WP category to the first category page that collects it.
+        from bm_work_content import CATEGORY_PAGES
+
+        first_page = {}
+        for slug, config in CATEGORY_PAGES.items():
+            for category in config['data_categories']:
+                first_page.setdefault(category, slug)
+        slugs = dict(js_entries('js/bm-works-page.js', 'CATEGORY_SLUG', r'[\'"]([^\'"]*)[\'"]'))
+        self.assertEqual(slugs, first_page)
+
+    def test_sitemap_blocks_keep_their_place(self):
+        """works and columns rebuilt in turn must not reorder sitemap.xml (no-op commits)."""
+        builders = {'works': module('build-works.py'), 'columns': module('build-columns.py')}
+        records = {
+            'works': [{'id': 'review-work', 'category': '採用', 'modified_ymd': '2026-10-01'}],
+            'columns': [{'id': 7, 'slug': 'review-column', 'modified_ymd': '2026-10-02'}],
+        }
+        empty = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>\n'
+        for start, order in (
+            ((ROOT / 'sitemap.xml').read_text(encoding='utf-8'), ('works', 'columns')),
+            ((ROOT / 'sitemap.xml').read_text(encoding='utf-8'), ('columns', 'works')),
+            (empty, ('works', 'columns')),
+            (empty, ('columns', 'works')),
+        ):
+            with self.subTest(order=order), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                sitemap = root / 'sitemap.xml'
+                sitemap.write_text(start, encoding='utf-8')
+                outputs = []
+                for kind in order * 3:
+                    with patch.object(builders[kind], 'ROOT', root), redirect_stdout(io.StringIO()):
+                        with output_batch(root):
+                            builders[kind].update_sitemap(records[kind])
+                    outputs.append(sitemap.read_text(encoding='utf-8'))
+                # After each builder has run once, rerunning either one changes nothing.
+                self.assertEqual(set(outputs[1:]), {outputs[1]})
+                blocks = re.findall(r'<!-- BUILD:(\w+)', outputs[-1])
+                existing = re.findall(r'<!-- BUILD:(\w+)', start)
+                if existing:
+                    self.assertEqual(blocks, existing)
+                else:
+                    first = ['WORKS', 'WORKS_CATEGORIES'] if order[0] == 'works' else ['COLUMNS']
+                    self.assertEqual(blocks[: len(first)], first)
+                    self.assertEqual(sorted(blocks), ['COLUMNS', 'WORKS', 'WORKS_CATEGORIES'])
+
     def test_generated_pricing_matches_source(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

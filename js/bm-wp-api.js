@@ -46,35 +46,18 @@
     }
   }
 
-  /* ── 漫画事例をロード（制作事例ページ用, show_siteでフィルタ済み） ── */
-  async function loadWorks() {
-    var data = await apiFetch('/works?site=bizmanga');
-    if (!data || !Array.isArray(data)) return;
-    window.BM_WORKS_DATA = data;
+  /* ── 一覧を取得して window[name] に置く（読むのは各ページのスクリプト） ──
+     /works?site=bizmanga → BM_WORKS_DATA      … 制作事例ページ用（show_siteでフィルタ済み）
+     /works               → BM_HERO_WORKS_DATA … Hero用の全作品（Hero側でshow_hero_siteで判定）
+     /works-new           → BM_NEW_WORKS_DATA  … ホームの新作ギャラリー（js/bm-home.js）
+     /library             → BM_LIBRARY_DATA    … 読むスクリプトは無いが、同じURLをビズ書庫（js/works.js）
+       も取得するため、応答（max-age=300）がブラウザキャッシュに残り、続けて開いたビズ書庫の読み込みが速くなる */
+  async function loadInto(endpoint, name) {
+    var data = await apiFetch(endpoint);
+    if (Array.isArray(data)) window[name] = data;
   }
 
-  /* ── Hero用全作品ロード（?site= 無しで全作品取得、Hero側でshow_hero_siteで判定） ── */
-  async function loadWorksForHero() {
-    var data = await apiFetch('/works');
-    if (!data || !Array.isArray(data)) return;
-    window.BM_HERO_WORKS_DATA = data;
-  }
-
-  /* ── 新作漫画をロード ── */
-  async function loadNewWorks() {
-    var data = await apiFetch('/works-new?site=bizmanga');
-    if (!data || !Array.isArray(data)) return;
-    window.BM_NEW_WORKS_DATA = data;
-  }
-
-  /* ── ビズ書庫データをロード ──
-     BM_LIBRARY_DATA を読むスクリプトは無いが、同じURLをビズ書庫（js/works.js）も取得するため、
-     応答（max-age=300）がブラウザキャッシュに残り、続けて開いたビズ書庫の読み込みが速くなる */
-  async function loadLibrary() {
-    var data = await apiFetch('/library');
-    if (!data || !Array.isArray(data)) return;
-    window.BM_LIBRARY_DATA = data;
-  }
+  function has(id) { return !!document.getElementById(id); }
 
   /* ── ニュースDOM を動的に生成 ── */
   var NEWS_HOME_LIMIT = 5;
@@ -230,15 +213,19 @@
   document.addEventListener('DOMContentLoaded', async function() {
     try {
       // Hero用全作品データと制作事例用フィルタ済みデータを並列取得
-      await Promise.all([loadWorksForHero(), loadWorks()]);
+      await Promise.all([
+        loadInto('/works', 'BM_HERO_WORKS_DATA'),
+        loadInto('/works?site=bizmanga', 'BM_WORKS_DATA')
+      ]);
       window.dispatchEvent(new CustomEvent('bm-data-ready'));
 
-      // 残りは並列で取得（Heroをブロックしない）
+      // 残りは並列で取得（Heroをブロックしない）。描く先の要素が無いページでは取得しない
       await Promise.all([
-        loadNewWorks(),
-        loadNews(),
-        loadLibrary(),
-        loadColumns()
+        (has('bmGalleryGridManga') || has('bmGalleryGridWebtoon')) &&
+          loadInto('/works-new?site=bizmanga', 'BM_NEW_WORKS_DATA'),
+        has('bmNewsList') && loadNews(),
+        loadInto('/library', 'BM_LIBRARY_DATA'),
+        has('bmColumnGrid') && loadColumns()
       ]);
       // 全データ揃った後の再描画
       window.dispatchEvent(new CustomEvent('bm-all-data-ready'));

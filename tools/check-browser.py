@@ -353,16 +353,7 @@ def check_page_layouts(page, state, screenshots):
         )
         page.goto(state.base + '/privacy-policy', wait_until='domcontentloaded')
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
-        for slug in (
-            'product-manga',
-            'recruit-manga',
-            'manga-ad-lp',
-            'company-manga',
-            'sales-manga',
-            'training-manga',
-            'inbound-manga',
-            'ir-manga',
-        ):
+        for slug in lp.LP_CATEGORIES:
             page.goto(state.base + '/' + slug, wait_until='domcontentloaded')
             cases = check_lp_cases(page)
             if screenshots and slug == 'product-manga':

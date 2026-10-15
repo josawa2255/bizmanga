@@ -59,23 +59,15 @@
     if (!grid) return;
     while (grid.firstChild) grid.removeChild(grid.firstChild);
 
-    /* WP /works-new は cx_sort_order 昇順で返ってくる（sort_order 0 は末尾扱い） */
-    var sorted = data.slice();
-    var hasOrder = sorted.some(function(d) { return d && typeof d.sort_order === 'number' && d.sort_order > 0; });
-    if (hasOrder) {
-      sorted.sort(function(a, b) {
-        var ao = (typeof a.sort_order === 'number' && a.sort_order > 0) ? a.sort_order : 9999;
-        var bo = (typeof b.sort_order === 'number' && b.sort_order > 0) ? b.sort_order : 9999;
-        if (ao !== bo) return ao - bo;
-        return new Date(b.added || 0) - new Date(a.added || 0);
-      });
-    } else {
-      var hasAdded = sorted.some(function(d) { return d && d.added; });
-      if (hasAdded) {
-        sorted.sort(function(a, b) { return new Date(b.added || 0) - new Date(a.added || 0); });
-      }
+    /* WP /works-new は cx_sort_order 昇順で返ってくる（sort_order 0 は末尾扱い）。
+       同じ順位どうしは追加日の新しい順、どちらも無ければ元の並び（安定ソート） */
+    function order(d) {
+      return d && typeof d.sort_order === 'number' && d.sort_order > 0 ? d.sort_order : 9999;
     }
-    sorted = sorted.slice(0, MAX_PER_GROUP);
+    function added(d) { return new Date((d && d.added) || 0); }
+    var sorted = data.slice().sort(function(a, b) {
+      return order(a) - order(b) || added(b) - added(a);
+    }).slice(0, MAX_PER_GROUP);
 
     var groupEl = grid.closest('.bm-gallery-group');
     if (sorted.length === 0) {

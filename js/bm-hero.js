@@ -239,7 +239,7 @@
       wdCarousel.innerHTML = '';
       wdCarousel.style.transform = 'translateX(0)';
 
-      function buildPages(isVertical) {
+      function buildPages() {
         var frag = document.createDocumentFragment();
         var hasGallery = work.gallery && work.gallery.length > 0;
         for (var i = 1; i <= previewPages; i++) {
@@ -265,7 +265,7 @@
         wdCarousel.classList.add('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.add('has-vertical-scroll');
         wdCarousel.style.transform = '';
-        buildPages(true);
+        buildPages();
         if (wdDots) wdDots.style.display = 'none';
         if (wdPrev) wdPrev.style.display = 'none';
         if (wdNext) wdNext.style.display = 'none';
@@ -275,7 +275,7 @@
       function applyCarouselMode() {
         wdCarousel.classList.remove('vertical-scroll');
         if (wdCarousel.parentElement) wdCarousel.parentElement.classList.remove('has-vertical-scroll');
-        buildPages(false);
+        buildPages();
         if (wdDots) {
           wdDots.style.display = 'flex';
           wdDots.innerHTML = '';

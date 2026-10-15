@@ -124,10 +124,9 @@ a { text-decoration: none; color: inherit; transition: color 0.3s, opacity 0.3s;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  /* ロゴ横潰れ防止のため狭幅では間隔を詰める（お問い合わせ非表示は下部の
-     @media 768 ブロックで実施）。ロゴ高さも少し下げて 320px 端末でも収める */
-  .bm-header-inner { gap: 10px; padding: 0 14px; }
-  .bm-header-right { gap: 6px; }
+  /* 狭幅ではロゴ高さを少し下げて 320px 端末でも収める（お問い合わせ非表示は下部の
+     @media 768 ブロックで実施）。ヘッダー内の間隔・左右余白は狭幅でも詰めておらず、
+     下の .bm-header-inner / .bm-header-right と @media (max-width: 1100px) の値のまま */
   .bm-header-inner .bm-logo-img { height: 33px; }
 }
 .bm-header.scrolled {
@@ -960,7 +959,7 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
 }
 .bm-cta-icon--tel .bm-cta-tooltip { background: #1a1a1a; }
 
-/* Hamburger */
+/* Hamburger（開いた時の X 変化は @media (max-width: 1024px) 内の .bm-hamburger.is-open） */
 .bm-hamburger {
   display: none;
   flex-direction: column; gap: 5px;
@@ -976,9 +975,6 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
   background: #333; border-radius: 2px;
   transition: transform 0.3s, opacity 0.3s;
 }
-.bm-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-.bm-hamburger.active span:nth-child(2) { opacity: 0; }
-.bm-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
 /* ============================================
    Hero (集英社スタイル マーキーカルーセル)
@@ -1055,7 +1051,8 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
   width: max-content;
 }
 /* マーキーは集合完了後にJSで開始 */
-/* PC(1025px+): 3行 / タブレット(769-1024): 4行 / スマホ(〜768): 5行 */
+/* PC(1025px+): 3行 / タブレット(769-1024): 4行 / スマホ(〜768): 5行
+   （スマホの4・5行目の表示は下部 Responsive の @media (max-width: 768px) で指定） */
 .bm-hero-works-row--1 { animation: none; }
 .bm-hero-works-row--2 { animation: none; }
 .bm-hero-works-row--3 { animation: none; }
@@ -1063,10 +1060,6 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
 .bm-hero-works-row--5 { animation: none; display: none; }
 @media (max-width: 1024px) {
   .bm-hero-works-row--4 { display: flex; }
-}
-@media (max-width: 768px) {
-  .bm-hero-works-row--4 { display: flex; }
-  .bm-hero-works-row--5 { display: flex; }
 }
 .hero-marquee-go .bm-hero-works-row--1 { animation: bmMarqueeLeft 30s linear infinite; }
 .hero-marquee-go .bm-hero-works-row--2 { animation: bmMarqueeRight 35s linear infinite; }
@@ -1903,12 +1896,11 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   flex: 1;
 }
 
-/* カテゴリバッジ: 塗り背景 */
+/* カテゴリバッジ: 塗り背景（背景色は下の「カテゴリバッジのカラーマップ」で指定） */
 .bm-column-card-cat {
   display: inline-block; align-self: flex-start;
   font-size: 10px; font-weight: 800;
   color: #fff;
-  background: var(--bm-accent, #e85500);
   letter-spacing: 0.08em; text-transform: uppercase;
   padding: 3px 10px; border-radius: 4px;
   border: none;
@@ -1953,9 +1945,9 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   .bm-column-card:hover .bm-column-card-img img { transform: none; }
 }
 
-/* 一覧ページ */
+/* 一覧ページ（Editorial デザイン。上余白は 0） */
 .bm-column-page {
-  padding-top: 140px; padding-bottom: 80px;
+  padding-top: 0; padding-bottom: 80px;
   min-height: 60vh;
   background: radial-gradient(ellipse 100% 60% at 50% 100%, #faf8f5 0%, #fff 70%);
 }
@@ -2200,10 +2192,10 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.05em;
 }
+/* 背景色は下の「カテゴリバッジのカラーマップ」で指定 */
 .bm-column-featured-cat {
   display: inline-block;
   align-self: flex-start;
-  background: var(--bm-accent, #e85500);
   color: #fff;
   font-size: 10px;
   font-weight: 800;
@@ -2296,12 +2288,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 /* フィルター中のカード非表示（JSでクラス付与） */
 .bm-column-card.is-filtered-out {
   display: none !important;
-}
-
-/* Editorial 用のページ全体コンテナ調整 */
-.bm-column-page {
-  padding-top: 0;
-  padding-bottom: 80px;
 }
 
 /* モバイル */
@@ -4418,37 +4404,17 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
      1タップ目で is-open が付いて子リンクが出る、2タップ目で親ページへ遷移、という
      既存ドロップダウンと同じ操作にそろえる。
      ⚠️ これが無いと子ページがモバイルから到達不能になる（PCはホバーで開くが
-     モバイルはホバーが無く、親リンクのタップはトグル処理に吸われるため） */
+     モバイルはホバーが無く、親リンクのタップはトグル処理に吸われるため）
+     配置・表示切替・見出しの指定は下の「メガメニュー: モバイルではドロワー内インライン展開」に
+     まとめてある。ここには、そちらで指定していない2つだけを置く */
   .bm-nav.open .bm-nav-megamenu {
-    display: none;
-    position: static;
-    width: 100%;
-    max-width: none;
-    max-height: none;
-    transform: none;
-    opacity: 1;
     visibility: visible;
-    pointer-events: auto;
-    box-shadow: none;
-    border: 0;
-    border-radius: 0;
-    background: #fafafa;
-    padding: 0 0 8px;
     margin: 0;
-    overflow: visible;
-  }
-  .bm-nav.open .bm-nav-dropdown.is-open .bm-nav-megamenu {
-    display: block;
   }
   .bm-nav.open .bm-nav-megamenu-col + .bm-nav-megamenu-col {
     margin-top: 0;
     padding-top: 0;
     border-top: 0;
-  }
-  .bm-nav.open .bm-nav-megamenu-heading {
-    padding: 12px 24px 4px;
-    font-size: 12px;
-    color: #888;
   }
   .bm-nav.open .bm-nav-megamenu-item {
     padding: 16px 24px 16px 36px;   /* 親より字下げして階層を示す */

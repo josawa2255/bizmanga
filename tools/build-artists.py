@@ -30,7 +30,14 @@ import sys
 import urllib.error
 import urllib.request
 
-from bm_build import API_BASE, SITE_URL, output_batch, replace_block, script_json, write_text
+from bm_build import (
+    API_BASE,
+    SITE_URL,
+    output_batch,
+    replace_grid,
+    replace_json_script,
+    write_text,
+)
 from bm_build import escape_html as esc
 from bm_build import fetch_json as _fetch_json
 
@@ -154,24 +161,22 @@ def _build():
     # 2) 静的カード + JSON-LD
     s = HTML_PATH.read_text(encoding="utf-8")
 
-    cards = "".join(build_card(c) for c in creators)
     start, end = "<!-- BUILD:ARTISTS_GRID -->", "<!-- /BUILD:ARTISTS_GRID -->"
-    s, ok = replace_block(s, start, end, f"{start}\n{cards}      {end}")
-    if not ok:
-        # 目印が消えていたら、グリッドの先頭に入れ直す
+    if start not in s:
+        # 目印が消えていたら、グリッドの先頭に空の目印を入れ直す
         grid = '<div class="art-grid" id="artGrid">'
         if grid not in s:
             raise ValueError("Missing artists grid")
-        s = s.replace(grid, f"{grid}\n      {start}\n{cards}      {end}", 1)
+        s = s.replace(grid, f"{grid}\n      {start}\n{end}", 1)
+    s = replace_grid(s, "ARTISTS_GRID", "".join(build_card(c) for c in creators))
 
     ld_open = '<script type="application/ld+json" id="artistsItemList">'
-    ld_block = f"{ld_open}\n{script_json(build_jsonld(creators), indent=2)}\n</script>"
-    s, ok = replace_block(s, ld_open, "</script>", ld_block)
-    if not ok:
-        # JSON-LD が無ければ head の末尾に入れる
+    if ld_open not in s:
+        # JSON-LD が無ければ head の末尾に空の script を入れる
         if "</head>" not in s:
             raise ValueError("Missing artists head")
-        s = s.replace("</head>", f"  {ld_block}\n</head>", 1)
+        s = s.replace("</head>", f"  {ld_open}\n</script>\n</head>", 1)
+    s = replace_json_script(s, ld_open, build_jsonld(creators))
 
     write_text(HTML_PATH, s)
     print(f"[build-artists] artists.html を更新（カード{len(creators)}枚 + JSON-LD）")

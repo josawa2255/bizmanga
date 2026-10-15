@@ -18,14 +18,16 @@ DEPENDENCIES = {
     "bm-testimonial-detail.js": ["bm-sanitize.js"],
     "bm-column-detail.js": ["bm-sanitize.js", "bm-pricing.js"],
     "bm-news-detail.js": ["bm-sanitize.js"],
-    "bm-wp-api.js": ["bm-wp-config.js"],
-    "artists.js": ["artists-data.js"],
-    # Manga view type is resolved in one place (SPEC §3); the split-pane helper must exist
-    # before the modals that call it (SPEC §8.1).
-    "bm-hero.js": ["bm-view-type.js", "bm-wd-split.js"],
-    "bm-works-page.js": ["bm-view-type.js", "bm-wd-split.js"],
-    "bm-work-modal.js": ["bm-view-type.js"],
-    "works.js": ["bm-view-type.js"],
+    "bm-testimonials-page.js": ["bm-sanitize.js"],
+    "bm-wp-api.js": ["bm-sanitize.js", "bm-wp-config.js"],
+    # artists.js adds its toggle to the floating CTA that bm-nav.js has already inserted.
+    "artists.js": ["artists-data.js", "bm-nav.js"],
+    # WP data is escaped with bmSanitize (SPEC §16.4). Manga view type is resolved in one
+    # place (SPEC §3); the split-pane helper must exist before the modals that call it (SPEC §8.1).
+    "bm-hero.js": ["bm-sanitize.js", "bm-view-type.js", "bm-wd-split.js"],
+    "bm-works-page.js": ["bm-sanitize.js", "bm-view-type.js", "bm-wd-split.js"],
+    "bm-work-modal.js": ["bm-sanitize.js", "bm-view-type.js"],
+    "works.js": ["bm-sanitize.js", "bm-view-type.js"],
     "bm-embed-viewer.js": ["bm-view-type.js"],
     "bm-scroll-anim.js": ["bm-cta.js"],
 }

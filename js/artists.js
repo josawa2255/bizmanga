@@ -573,7 +573,7 @@
      共通CTAは幅200px×3個=600pxあり、カードの1列目に被って作例が隠れる。
      このページでは既定をアイコンのみに畳み、トグルで開くようにする（CSS側は
      body.art-page にスコープ済みなので他ページの .bm-fab は変わらない）。
-     .bm-fab は bm-nav.js が load 後に body へ挿す＝ここでは未生成のことがあるため待つ。 */
+     .bm-fab は、このファイルより先に読む bm-nav.js（defer）が実行時に body へ挿している。 */
   function setupFabToggle(fab) {
     if (!fab || fab.querySelector('.art-fab-toggle')) return;
 
@@ -605,21 +605,7 @@
     fab.appendChild(btn);
   }
 
-  var fabNow = document.querySelector('.bm-fab');
-  if (fabNow) {
-    setupFabToggle(fabNow);
-  } else {
-    /* bm-nav.js の挿入を待つ。取り逃すと巨大なCTAが出たままになるので監視する */
-    var mo = new MutationObserver(function() {
-      var f = document.querySelector('.bm-fab');
-      if (f) { setupFabToggle(f); mo.disconnect(); }
-    });
-    mo.observe(document.body, { childList: true });
-    window.addEventListener('load', function() {
-      var f = document.querySelector('.bm-fab');
-      if (f) { setupFabToggle(f); mo.disconnect(); }
-    });
-  }
+  setupFabToggle(document.querySelector('.bm-fab'));
 
   /* CRM 連携時の入口。CREATORS と同じ形の配列を渡せば差し替わる */
   window.bmArtists = {

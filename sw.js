@@ -35,6 +35,9 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
   if (!shouldCache(e.request.url)) return;
+  // 他サイトの <img> 等（no-cors）は中身の見えない応答（ok=false）になり保存できないので、
+  // キャッシュを引かずにブラウザへ任せる
+  if (e.request.mode === 'no-cors' && new URL(e.request.url).origin !== self.location.origin) return;
 
   var lookup = caches.open(CACHE_NAME).then(function(cache) {
     return cache.match(e.request).then(function(cached) {

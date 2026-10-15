@@ -633,7 +633,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()`。WP由来データを描くスクリプトがあるページだけで読込 |
 | `js/bm-kinsoku.js` | 日本語の禁則（「」の内側の改行禁止・末尾1文字の孤立防止） | 実行時に1回だけ `SELECTORS` に一致する要素を処理する（defer なので HTML の解析後。あとから WP データで描かれる要素は対象外）。対象要素が静的HTMLにあるページ（index / column / manga-types）だけで読込 |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
-| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
+| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開。新作（`/works-new`）・ニュース・コラムは、描く先の要素（ホームの新作ギャラリー / `#bmNewsList` / `#bmColumnGrid`）があるページでだけ取得する |
 | `js/bm-wp-config.js` | WP設定 | API baseURL / タイムアウト |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `js/bm-sw-register.js` が `index.html` / `biz-library.html` の load 後に登録 |
@@ -701,7 +701,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - ビズマンガの表示には日本語項目だけを使用する。WordPressと共有APIに残る英語用カスタムフィールドは、本サイトのフロントエンドから参照しない互換項目である。
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
-    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
+    - `/biz-library`ビューア（`js/works.js`）: 作品データを登録する全経路（`/library`・直リンクの `/manga/{id}`・`/preproduction`・赤ペン/ネーム）で `pageCount()` によりページ数を確定する。開くとき（`openManga()`）の補正は不要になったので置かない
     - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
@@ -922,6 +922,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - キャッシュ名: `bm-covers-v1`
 - **キャッシュ対象**: `/material/manga/` / `/material/images/` / `/wp-content/uploads/`
 - 初回: ネットワーク → キャッシュ保存、2回目以降: キャッシュから即返却
+- 他サイト（contentsx.jp / cms.contentsx.jp）の `<img>` 等の no-cors リクエストは、中身の見えない応答（ok=false）になって保存できないので扱わない（キャッシュを引かずブラウザに任せる）。保存されるのは同じサイトの画像だけ
 
 ## 11. パフォーマンス最適化
 
@@ -930,7 +931,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - **works ヒーロー画像の解像度整合**（2026-04-21修正）: build-works.py で `gallery[0]`（フル解像度）を hero に使う。WPの `thumbnail` フィールドは 188x300 の自動生成サムネで、1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため避ける
 - **ギャラリー画像**: `loading="lazy" decoding="async"` で非同期デコード（works 17ページ・2026-04-20導入）
 - **dns-prefetch**: `cms.contentsx.jp`
-- **preconnect**: フォント / WP API
+- **preconnect**: フォント / WP API。index の `https://contentsx.jp` は画像（CORS なし）しか取らないので `crossorigin` を付けない（付けると匿名用の別接続になり、画像に使われない）
 - **Lazy load**: カルーセル複製分は `loading="lazy"`
 - **CSS重複排除**: `/works/*.html` 17ページのインラインCSS（`.bm-work-detail-*` ブロック）を `bizmanga.css` へ集約（2026-04-20）。テンプレート `tools/templates/work-detail.html.tpl` も同期済み
 
@@ -1258,9 +1259,8 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 
 [tools/test_mobile_nav.py](tools/test_mobile_nav.py) — Playwright でハンバーガーの表示/クリック可/開閉/ESC/scroll lock を6ページ分検証。
 
-**実行**（cwd は BizManga/ 直下。`serve.py` は .html なしのURLを解決して http://localhost:8000 で配信する）:
+**実行**（cwd は BizManga/ 直下。テストが `bm_test_support.start_server` で serve.py と同じ配信〈.html なしのURLを解決〉を 127.0.0.1 の空きポートに自動で起動するので、別ターミナルでの serve.py 起動は不要）:
 ```bash
-python3 serve.py              # 別のターミナルで起動したままにする
 python3 tools/test_mobile_nav.py
 ```
 
@@ -1276,13 +1276,13 @@ python3 tools/test_mobile_nav.py
 
 - Pythonの整形・静的チェックは `ruff.toml`（Ruff 0.15.17。ルールは F・E4/E7/E9・I・B・UP・RUF100）で統一し、CIでも `ruff check .` と `ruff format --check .` を実行する。エディターの基本設定は `.editorconfig`。
 - `tools/bm_test_support.py` は検証用のモジュール読込・ローカル配信・Git実行環境を共有する。`check-browser.py` はフォーム送信・依存スクリプトの障害・本文表示・LP・広告計測の場面別に検証する。
-- 制作事例のカテゴリ文言・SEO辞書は `tools/bm_work_content.py`、順序付きブランド置換は `tools/bm_brand.py`、サイトマップのマークアップは `tools/bm_sitemap.py` に分離する。URL選択と更新日の方針は各ビルダーで保持する。HTMLエスケープは `bm_build.escape_html` を共有する。
-- 静的・動的コラム本文の共通スタイルは `css/bm-column-body.css`。各ページ専用CSSより前に読み込み、目次・モバイル表示などの個別指定は各CSSに保持する。
+- 制作事例のカテゴリ文言・SEO辞書は `tools/bm_work_content.py`、順序付きブランド置換は `tools/bm_brand.py`、サイトマップのマークアップは `tools/bm_sitemap.py` に分離する。URL選択と更新日の方針は各ビルダーで保持する。各ビルダーは自分の BUILD ブロックを `bm_sitemap.replace_or_append_block` でその場で置き換え（無ければ末尾に追加）、他方のブロックとの並びを変えない（以前は末尾へ付け直していたため、WP に変更がなくても並びの入れ替えだけの自動コミットが毎晩出ていた）。HTMLエスケープは `bm_build.escape_html` を共有する。
+- 静的・動的コラムで同じ記事の頭（戻るリンク・メタ行・カテゴリ・タイトル・ヒーロー画像）と本文の組版は `css/bm-column-body.css` に並べ書き（`.bm-col-static-*, .bm-col-detail-*`）で置く。各ページ専用CSSより前に読み込み、日付の文字間隔・目次・モバイル表示などの個別指定は各CSSに保持する。
 - フォームの流入情報は `bmLead.trackingNote` で整形し、項目名・見出しは各フォームが指定する。連絡先・資料DLの送信文面、完了条件、CRM連携は従来どおり。
 - 広告計測は `js/bm-conversions.js` に分離し、`bm-nav.js` とともに全ページ・生成テンプレートで読み込む。LINE・電話のラベル、capture段階でのクリック検知、`bmReportConversion` を維持する。
-- `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
-- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
-- `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
+- `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。依存順には、WP データを描くスクリプト（bm-wp-api / bm-hero / bm-works-page / bm-work-modal / works / bm-testimonials-page）より前に `bm-sanitize.js` があること、`artists.js` より前に `bm-nav.js`（追従CTAを挿す）があることを含む。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。JS に写したカテゴリ対応表（`js/bm-lp-library-embed.js` の `LP_CATEGORY_ALIASES`・`js/bm-works-page.js` の `CATEGORY_SLUG`）が Python の正本（`LP_CATEGORIES`・`CATEGORY_PAGES`）と一致すること、works/columns を交互に再実行しても sitemap.xml が変わらないことも確かめる。
+- `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了・他サイトの no-cors 画像を扱わないこと、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。

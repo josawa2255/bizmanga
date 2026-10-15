@@ -3,11 +3,11 @@ BizManga モバイルヘッダー回帰テスト
 
 目的: ハンバーガーメニューが「押せない」「開かない」「閉じない」系の再発を防ぐ。
 実行（cwd は BizManga/ 直下）:
-    python3 serve.py              # 別のターミナルで起動したままにする
     python3 tools/test_mobile_nav.py
 
-前提: serve.py が http://localhost:8000 で配信している（.html なしのURLも解決する）。
-index.html は Hero の大量画像で networkidle が来ないため domcontentloaded + 固定待ちで対応。
+リポジトリを内蔵サーバー（bm_test_support.start_server。serve.py と同じく .html なしのURLも
+解決する）で 127.0.0.1 の空きポートに配信して検証する。別のターミナルでの起動は不要。
+index.html は Hero の大量画像で networkidle が来ないため domcontentloaded + 対象要素の待ちで対応。
 
 テスト対象ページ:
     / (index), /works, /pricing, /biz-library, /faq, /contact
@@ -18,14 +18,16 @@ from __future__ import annotations
 import functools
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
+from bm_test_support import start_server
 from playwright.sync_api import Page, sync_playwright
 from playwright.sync_api import TimeoutError as PWTimeout
 
 # 全 print を即フラッシュ（with_server.py 経由でも出力が見えるように）
 print = functools.partial(print, flush=True)  # type: ignore[assignment]
 
-BASE = "http://localhost:8000"
+ROOT = Path(__file__).resolve().parents[1]
 TARGET_PAGES = ["/", "/works", "/pricing", "/biz-library", "/faq", "/contact"]
 MOBILE_VIEWPORT = {"width": 375, "height": 667}  # iPhone SE 相当
 DESKTOP_VIEWPORT = {"width": 1280, "height": 800}
@@ -48,19 +50,19 @@ def record(page_path: str, name: str, ok: bool, detail: str = "") -> None:
     print(f"  [{status}] {name}{' — ' + detail if detail else ''}")
 
 
-def open_and_wait(page: Page, path: str) -> None:
+def open_and_wait(page: Page, base: str, path: str) -> None:
     # index の Hero は画像ストリーミングで networkidle が来ないので
     # domcontentloaded + 対象要素の attached 待ちで確定させる
-    page.goto(BASE + path, wait_until="domcontentloaded", timeout=10000)
+    page.goto(base + path, wait_until="domcontentloaded", timeout=10000)
     page.wait_for_selector("#bmHamburger", state="attached", timeout=5000)
     # bm-nav.js(defer) の初期化完了 = ナビゲーションリンクが生成済み
     page.wait_for_selector("#bmNav .bm-nav-link", state="attached", timeout=5000)
 
 
-def check_mobile(page: Page, path: str) -> None:
+def check_mobile(page: Page, base: str, path: str) -> None:
     print(f"\n[MOBILE] {path}")
     page.set_viewport_size(MOBILE_VIEWPORT)
-    open_and_wait(page, path)
+    open_and_wait(page, base, path)
 
     hamburger = page.locator("#bmHamburger")
 
@@ -118,32 +120,38 @@ def check_mobile(page: Page, path: str) -> None:
         record(path, "ESC closes nav", False)
 
 
-def check_desktop(page: Page, path: str) -> None:
+def check_desktop(page: Page, base: str, path: str) -> None:
     print(f"\n[DESKTOP] {path}")
     page.set_viewport_size(DESKTOP_VIEWPORT)
-    open_and_wait(page, path)
+    open_and_wait(page, base, path)
     hamburger = page.locator("#bmHamburger")
     # CSSで display:none になっているはず
     record(path, "hamburger hidden on desktop", not hamburger.is_visible())
 
 
 def main() -> int:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        ctx = browser.new_context()
-        page = ctx.new_page()
+    server = start_server(ROOT, 0)
+    base = f"http://127.0.0.1:{server.server_port}"
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            ctx = browser.new_context()
+            page = ctx.new_page()
 
-        for path in TARGET_PAGES:
-            try:
-                check_mobile(page, path)
-            except Exception as e:
-                record(path, "mobile run crashed", False, str(e)[:160])
-            try:
-                check_desktop(page, path)
-            except Exception as e:
-                record(path, "desktop run crashed", False, str(e)[:160])
+            for path in TARGET_PAGES:
+                try:
+                    check_mobile(page, base, path)
+                except Exception as e:
+                    record(path, "mobile run crashed", False, str(e)[:160])
+                try:
+                    check_desktop(page, base, path)
+                except Exception as e:
+                    record(path, "desktop run crashed", False, str(e)[:160])
 
-        browser.close()
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
 
     # サマリ
     passed = sum(1 for r in results if r.ok)
