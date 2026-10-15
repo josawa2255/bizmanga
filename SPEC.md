@@ -598,21 +598,25 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
-- **開くデータは `/manga/{id}`・開くのは1回だけ（2026-10-14 / Issue #71）⭐**: 作品（`pre-` で始まらないID）は、手書きの `FALLBACK_WORKS` や先に届いた `/library` では先に開かず、**常に `/manga/{id}` の応答を登録して1回だけ開く**（`openDirectMangaOnce()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する。登録するデータの形・view_type の決め方（`window.bmViewType.isForcedVertical`、BUGS #012/#013）・CTA 項目は従来の `/manga/{id}` 分岐のまま
+- **開くデータは `/manga/{id}`・開くのは1回だけ（2026-10-14 / Issue #71、2026-10-15 レビュー指摘で補強）⭐**: 作品は、手書きの `FALLBACK_WORKS` や先に届いた `/library` では先に開かず、**`/manga/{id}` の応答を登録して1回だけ開く**（`openDirectMangaOnce()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する
   - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時は表示モードが変わったときだけ開き直し・それ以外は CTA だけ貼り直していた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
-  - `/manga/{id}` の取得に失敗したときだけ、その時点のデータで開く: 先に届いた `/library` のデータ → 無ければ手書きの `FALLBACK_WORKS`（`/library` が先に届くと手書きデータは mangaData から消えるので `FALLBACK_WORKS` から戻す）→ どちらも無ければ「作品が見つかりませんでした」
-  - WP に無く手書きデータだけで公開している作品（2026-10-14 時点で `life-school` / `sixtones`。`/manga/{id}` は 404）は、この失敗時の経路で手書きデータで開く（従来どおり読める）
-  - `/library` 到着後の処理（`fetchLibraryFromAPI`）は作品の直リンクを開き直さない・CTA も貼り直さない（不要になった）
-  - **制作過程（`pre-red-*` / `pre-name-*`）は従来どおり**: 手書きの制作過程データがあれば即開き、無ければ `/manga/{id}` を試し（制作過程は `/manga/{id}` に無く 404）、`/library` 到着後の登録（`rebuildPreCarousels()`）で開く経路と表示モードが変わったときの開き直しも残す。開く処理は作品と同じく `openDirectMangaOnce()` で1回だけ
+  - **WP の作品データ→mangaData の変換は `toMangaEntry(w)` 1つ**: `/library` と `/manga/{id}` の両分岐が同じ関数を通る（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。ページ数はギャラリー枚数を優先、`path` は `https://contentsx.jp/material/manga/{id}/`（ギャラリーが空のときの画像の置き場）、view_type は WP の値＋強制縦読みの判定を `window.bmViewType.isForcedVertical` に委譲、CTA 項目（`client_url` / `cta_label_ja` / `cta_enabled`）・赤ペン/ネームのギャラリーも同じ
+  - **開くキー**: `?manga=` の値は小文字にそろえる（`/manga/{id}` は大文字小文字を区別せず小文字の id を返す。例 `?manga=Seko` → `seko`）。取得に成功したら応答の `id` で開く（登録したキー＝開くキー）
+  - **時間切れ**: `/manga/{id}` は `BM_WP_CONFIG.timeout`（ビズ書庫は `bm-wp-config.js` を読まないので既定 5000ms。`bm-wp-api.js` の `apiFetch` と同じ）で中断し、下の「通信障害」と同じ扱い
+  - **`/manga/{id}` が 404**（WP が隠した＝完全非公開・削除した）: 「作品が見つかりませんでした」。例外は WP に作品が無く手書きデータだけで公開している作品（`works.js` の `DIRECT_FALLBACK_ONLY_IDS`。2026-10-15 時点で `life-school` / `sixtones`。FALLBACK_WORKS の他17件は `/manga/{id}` が 200）で、手書きデータで開く。WP に登録したら許可リストから外す
+  - **`/manga/{id}` が通信障害・5xx・時間切れ・不正な応答**: `/library` が届いていればそのデータで開く。まだなら `/library` の到着（または失敗）を最大3秒（`DIRECT_LIBRARY_WAIT_MS`）待ち、届けばそのデータ、届かなければ手書きの `FALLBACK_WORKS` で開く（`/library` に無い作品も `FALLBACK_WORKS` から戻す）。どれにも無ければ「作品が見つかりませんでした」。`/library` も応答しないときは最大で約8秒（5秒＋3秒）暗い画面のあと開く／見つかりません
+  - **`/library` 到着時（`fetchLibraryFromAPI`）**: 直リンクを開かない・開き直さない・CTA も貼り直さない（直リンクの処理が `waitForLibrary()` で到着を待つ）。直リンクで開いた（開く処理を始めた）作品のデータは**消さない・差し替えない**（表示中のビューアと PC の見開き/縦読み切替が `mangaData[作品ID]` を読むため。消すと `/library` に無い QR 限定公開の作品で切替が効かなくなる）
+  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形か、登録済みデータが `_isPreProduction` のものだけを制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として `/manga/{id}` で開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録）を最大約8秒待って開く。登録されなければ「作品が見つかりませんでした」。制作過程は `/manga/{id}` に無い（404）ので取得しない。`/library` 到着での開き直しは無い（PC で見開きに切り替えた後に縦読みへ戻されない）
+  - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）。逆に開く処理（`openManga` 等）で例外が出て、まだ開いていなければ「見つかりませんでした」を出す（暗い画面のまま止めない）
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
   - 作品は常に `fetch(api + '/manga/' + id)` で取得（上記）
-  - 取得に失敗（404 等）し、先に届いた `/library` にも手書きの `FALLBACK_WORKS` にも無ければ「作品が見つかりませんでした」画面 + トップへ戻るリンク
+  - `/manga/{id}` が 404 なら（許可リストの作品を除き）「作品が見つかりませんでした」画面 + トップへ戻るリンク。通信障害等で取得できず、`/library` にも手書きの `FALLBACK_WORKS` にも無いときも同じ画面
   - これにより「ビズ書庫・ギャラリー・新作情報 全て非表示だがQR経由でだけ見せたい」運用が可能
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
   - WP管理画面以外からは一切閲覧できない
-  - ⚠️ 例外: `js/works.js` の手書き `FALLBACK_WORKS`（19件）に載っている作品は、`/manga/{id}` が 404 でも手書きデータ（`contentsx.jp/material/manga/{id}/` の画像）で開く（2026-10-14 以前も即オープンしていたので従来どおり）。完全に閉じるなら `FALLBACK_WORKS` からも外す
+  - `/manga/{id}` が 404 を返すので、手書きの `FALLBACK_WORKS` に載っている作品も「見つかりませんでした」になる（2026-10-15 から。以前は手書きデータで開いていた）。⚠️ 例外: 許可リスト `DIRECT_FALLBACK_ONLY_IDS` の作品と、`/manga/{id}` が通信障害・5xx・時間切れで取れなかったときの `FALLBACK_WORKS` の作品は手書きデータ（`contentsx.jp/material/manga/{id}/` の画像）で開く。確実に閉じるなら `FALLBACK_WORKS`（と許可リスト）からも外す
   - 運用: 制作中・お蔵入り・クライアント契約切れなどで完全に閉じたい時
 
 ### 2.2 プラン事前選択
