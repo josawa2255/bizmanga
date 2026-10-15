@@ -46,11 +46,18 @@ python3 tools/smoke-manga-wp.py --serve .
 3. **制作事例**: カードが出る → クリックでモーダル `#workDetailOverlay` が開き、漫画画像が実際に読み込まれ、読み込み失敗の画像が無い
 4. **ビズ書庫**: グリッドの作品数が `/library` と一致 → クリックで `#mangaModal` が開き画像が読み込まれ、読み込み失敗が無い → 閉じられる
 5. **QRモード**: referrer なしで `?manga=id` を開くと `html.qr-mode` が付く／サイト内遷移（referrer あり）なら付かない（#010）。
-   作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（フォールバックにある作品は、WP に繋がらない＝通信障害・5xx・時間切れ のとき
-   手書きデータで開くので、開けたことが WP 接続の確認にならない。`/manga/{id}` が 404 のときは、WP に無い許可リストの作品以外は開かない）
+   作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（フォールバックにある作品は WP に繋がらないときも
+   手書きデータで開くので、開けたことが WP 接続の確認にならない）
 5b. **QR直リンク（手書きデータにある作品）**: `FALLBACK_WORKS` にも**ある**作品（手書きと WP のページ数が違うもの・CTA 有効を優先して自動選択。2026-10 時点は `seko`）を
-   `?manga=id` で開き、ページ数が `/manga/{id}` のギャラリー枚数・1枚目が WP の画像・最終ページCTA が WP の `cta_enabled` どおりであること。
-   さらに `/library` を止めても同じく `/manga/{id}` のデータで開くこと（手書きデータで先に開いて `/library` で開き直す形に戻ると FAIL する。Issue #71）
+   `?manga=id` で開き、ページ数が WP のギャラリー枚数・1枚目が WP の画像・最終ページCTA が WP の `cta_enabled` どおりであること。
+   さらに `/library` を止めても同じく `/manga/{id}` のデータで開くこと（手書きデータで先に開いて `/library` で開き直す形に戻ると FAIL する。Issue #71）。
+   期待値は `--api` ではなく、ブラウザが実際に使う API（`works.js` の `WP_API_BASE`）から取る
+5c. **QR直リンクの分岐**（API の応答はブラウザ側で差し替える。本番の WP は変えない）: ① `/manga/{id}` がプラグインの「作品が無い」404
+   （本文は本番に存在しない ID を GET した実物）で `/library` にも無い → 「作品が見つかりませんでした」（手書きデータにある作品でも開かない）、
+   ② 存在しない ID を実際の API で → 「作品が見つかりませんでした」とトップへのリンク、③ WP 停止（`/manga/{id}` と `/library` が 503）→
+   手書きデータ（`FALLBACK_WORKS` のページ数・`contentsx.jp/material/manga/{id}/01.webp`）で開く。あわせて、存在しない ID への
+   `/manga/{id}` の応答がプラグインの形（本文に `error` があり `code` が無い）であることも確かめる（`works.js` の `isMangaGone()` がこの形で
+   「作品が無い」と「WP が応答できない」を見分けるため。形が変わったらここが FAIL する）
 6. **埋込ビューア**: `embed-viewer.html?manga=id&manual=1` で画像が出る
 7. **スマホ**（390px）: `?manga=id` で `mode-vertical`（見開き作品もSPでは縦スクロール）で開き、`#modalManga` に画像が出る。
    `#mobileView` は見開き専用要素なので非表示が正常
@@ -75,7 +82,9 @@ python3 tools/smoke-manga-wp.py --serve .
 
 - 生レスポンスを curl で数える（管理画面の設定を疑う前にまず API、#051）:
   `curl -s "https://cms.contentsx.jp/wp-json/contentsx/v1/works-new?site=bizmanga" | jq 'length'`
-- **`/library` と `/manga/{id}` の両分岐**で同じ作品を確認（#012）。新フィールドは両エンドポイントに通す（#001）
+- **`/library` と `/manga/{id}` の両分岐**で同じ作品を確認（#012）。新フィールドは両エンドポイントに通す（#001）。
+  ビズ書庫（`works.js`）は両方を `toMangaEntry()` で同じ形にし、QR直リンクはどちらか先に届いた方で開く（SPEC §2.1）
+- `/manga/{id}` の「作品が無い」応答（404 と本文 `{"error":"not found"}`）の形を変えるときは `works.js` の `isMangaGone()` も直す
 - WP 出力を `innerHTML` に入れる箇所は `bmSanitize` 経由か（#039、`js/bm-sanitize.js`）
 - 掲載先フラグは「未設定＝表示する」（SPEC §5 表示先・順序制御）。判定を `=== '1'` に戻していないか
 - **フォールバック**: DevTools で `cms.contentsx.jp` をブロック（または `bm-wp-config.js` の `enabled:false`）してホーム・制作事例がローカルデータで表示され、真っ白にならない

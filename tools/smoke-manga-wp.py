@@ -21,11 +21,13 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
   - http 配信では CSP frame-src（https: のみ）で 127.0.0.1 の埋込 iframe が拒否されるログが出る。そのローカル起因分だけ無視する
   - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の URL を使う
   - QR直リンク・埋込・スマホの確認には、works.js のローカルフォールバック表（FALLBACK_WORKS）に**無い**作品を選ぶ
-    （フォールバックにある作品は、WP に繋がらない＝通信障害・5xx・時間切れ のとき手書きデータで開くので、
-    開けたことが WP 接続の確認にならない。/manga/{id} が 404 のときは、WP に無い許可リストの作品以外は開かない）
-  - 逆に、フォールバックにある作品も WP が応答していれば手書きデータではなく /manga/{id} のデータで開く（Issue #71）。
-    これは別項目で、手書きと WP のページ数が違う作品を選んで確かめる（ページ数＝/manga/{id} のギャラリー枚数、
-    最終ページCTA＝WP の cta_enabled どおり）
+    （フォールバックにある作品は WP に繋がらないときも手書きデータで開くので、開けたことが WP 接続の確認にならない）
+  - 逆に、フォールバックにある作品も WP が応答していれば手書きデータではなく WP のデータで開く（Issue #71）。
+    これは別項目で、手書きと WP のページ数が違う作品を選んで確かめる（ページ数＝WP のギャラリー枚数、
+    最終ページCTA＝WP の cta_enabled どおり）。期待値は --api ではなく、ブラウザが実際に使う API
+    （js/works.js の WP_API_BASE）から取る
+  - QR直リンクの分岐（WP が「作品が無い」と答えた／WP が止まっている）は、ブラウザ側で API の応答を差し替えて確かめる。
+    「作品が無い」の応答は、本番の API に存在しない ID を GET した実物を使う
 
 終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
@@ -66,6 +68,20 @@ def get_text(url, timeout=25):
     req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read().decode("utf-8", "replace")
+
+
+def get_status_json(url, timeout=25):
+    """(状態コード, JSON か None) を返す。4xx/5xx でも例外にしない"""
+    req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            status, raw = r.status, r.read()
+    except urllib.error.HTTPError as e:
+        status, raw = e.code, e.read()
+    try:
+        return status, json.loads(raw.decode("utf-8"))
+    except Exception:
+        return status, None
 
 
 def url_ok(url, timeout=15):
@@ -355,6 +371,27 @@ def check_browser(base, data):
     def probe(ctx):
         return PageProbe(ctx, host, local_http=local_http)
 
+    site = {}
+
+    def site_api():
+        """ブラウザ（js/works.js）が実際に使う WP API の場所と、そこから取った /library。
+        QR直リンクの確認項目の期待値はここから取る（--api は Python 側の API 確認用で、ブラウザとずれうるため）"""
+        if "api" not in site:
+            ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+            pg = ctx.new_page()
+            try:
+                pg.goto(f"{base}/biz-library.html", wait_until="domcontentloaded")
+                api_b = pg.evaluate("() => (typeof WP_API_BASE === 'string') ? WP_API_BASE : null")
+            finally:
+                close_ctx(ctx)
+            rec("ブラウザの WP API の場所（works.js の WP_API_BASE）を読める", bool(api_b), str(api_b))
+            if not api_b:
+                raise RuntimeError("WP_API_BASE を読めない")
+            site["api"] = api_b
+            lib_b = get_json(f"{api_b}/library")
+            site["library"] = lib_b if isinstance(lib_b, list) else []
+        return site["api"], site["library"]
+
     def section(label, fn):
         """区画ごとに例外を隔離: 途中で落ちても残りを続け、落ちた区画は FAIL として残す"""
         try:
@@ -482,14 +519,16 @@ def check_browser(base, data):
             close_ctx(qr_ctx)
 
         def qr_fallback_work():
-            """手書きデータ（FALLBACK_WORKS）にある作品の QR直リンクも、WP の /manga/{id} のデータで開く（Issue #71）"""
-            fb_id, hand_pages, fb_why = pick_fallback_id(base, lib)
+            """手書きデータ（FALLBACK_WORKS）にある作品の QR直リンクも、WP のデータで開く（Issue #71）。
+            期待値はブラウザと同じ API（works.js の WP_API_BASE）から取る"""
+            api_b, lib_b = site_api()
+            fb_id, hand_pages, fb_why = pick_fallback_id(base, lib_b)
             label = f"QR直リンク(手書きデータにある作品) ?manga={fb_id}"
             if not fb_id:
                 rec("QR直リンク(手書きデータにある作品): 検証する作品を選べる", False, fb_why)
                 return
             print(f"   手書きデータにある作品: {fb_id}（手書き {hand_pages}P・{fb_why}）", flush=True)
-            one = get_json(f"{data['api']}/manga/{fb_id}")
+            one = get_json(f"{api_b}/manga/{fb_id}")
             gallery = [img_url(x) for x in (one.get("gallery") or [])]
             n_wp = len(gallery) or int(one.get("pages") or 0)
             cta_url = (one.get("client_url") or "").strip()
@@ -508,7 +547,7 @@ def check_browser(base, data):
             if opened:
                 # /library の到着後も開き直されず WP のデータのままであることを見るため、到着（グリッドの作品数）を待つ
                 try:
-                    pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib), timeout=25000)
+                    pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib_b), timeout=25000)
                 except Exception:
                     pass
                 pg.wait_for_timeout(1000)
@@ -554,6 +593,90 @@ def check_browser(base, data):
                 st2["page"].endswith(f"/ {n_wp}") and n_wp > 0 and cta_ok,
                 f"表示={st2['page']} WP={n_wp}P 手書き={hand_pages}P / CTA の設定={'有' if st2['cta'] else '無'}（期待={'有' if want_cta else '無'}）")
             close_ctx(ctx2)
+
+        def qr_branches():
+            """QR直リンクの分岐（Issue #71 再レビュー）。API の応答はブラウザ側で差し替える（本番の WP は変えない）。
+            ① /manga/{id} がプラグインの「作品が無い」404 で /library にも無い → 「作品が見つかりませんでした」
+              （手書きデータにある作品でも開かない）
+            ② 存在しない ID（差し替えなし・実際の API）→ 「作品が見つかりませんでした」
+            ③ WP が止まっている（/manga/{id} と /library が 503）→ 手書きデータ（FALLBACK_WORKS）で開く
+            API の 4xx/5xx はわざと起こしているので、これらのページは 404 の集計に入れず JS の未捕捉エラーだけ見る"""
+            api_b, lib_b = site_api()
+            fb_id, hand_pages, fb_why = pick_fallback_id(base, lib_b)
+            if not fb_id:
+                rec("QR直リンクの分岐: 検証する作品（手書きデータにある作品）を選べる", False, fb_why)
+                return
+            missing_id = "bm-smoke-no-such-work"
+            st404, body404 = get_status_json(f"{api_b}/manga/{missing_id}")
+            plugin_shape = (st404 == 404 and isinstance(body404, dict) and isinstance(body404.get("error"), str)
+                            and "code" not in body404)
+            rec("API /manga/{存在しない ID} がプラグインの「作品が無い」404（本文に error があり code が無い）",
+                plugin_shape, f"HTTP {st404} {json.dumps(body404, ensure_ascii=False)[:120]}")
+            if not plugin_shape:
+                return
+            json_headers = {"content-type": "application/json; charset=UTF-8", "access-control-allow-origin": "*"}
+            NOT_FOUND = "() => document.body.textContent.indexOf('作品が見つかりませんでした') !== -1"
+
+            def open_page(routes, mid):
+                ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+                for pattern, handler in routes:
+                    ctx.route(pattern, handler)
+                pg = ctx.new_page()
+                errors = []
+                pg.on("pageerror", lambda e: errors.append(str(e)[:160]))
+                pg.goto(f"{base}/biz-library.html?manga={mid}", wait_until="domcontentloaded")
+                return ctx, pg, errors
+
+            # ① プラグインの 404（実物の本文）・/library からもその作品を外す
+            lib_without = [w for w in lib_b if w.get("id") != fb_id]
+            ctx, pg, errors = open_page([
+                ("**/wp-json/contentsx/v1/manga/**",
+                 lambda route: route.fulfill(status=404, headers=json_headers, body=json.dumps(body404))),
+                ("**/wp-json/contentsx/v1/library*",
+                 lambda route: route.fulfill(status=200, headers=json_headers, body=json.dumps(lib_without, ensure_ascii=False))),
+            ], fb_id)
+            try:
+                pg.wait_for_function(NOT_FOUND, timeout=15000)
+                nf = True
+            except Exception:
+                nf = False
+            opened = pg.evaluate("() => { const m = document.getElementById('mangaModal'); return !!(m && m.classList.contains('open')); }")
+            rec(f"QR直リンク ?manga={fb_id}: WP が「作品が無い」と答え /library にも無ければ「作品が見つかりませんでした」（手書きデータで開かない）",
+                nf and not opened, f"見つかりません={'有' if nf else '無'} ビューア={'開いた' if opened else '無'}")
+            rec("QR直リンク(「作品が無い」): JSエラー無し", not errors, "; ".join(errors)[:300])
+            close_ctx(ctx)
+
+            # ② 存在しない ID（実際の API。差し替えなし）
+            ctx, pg, errors = open_page([], missing_id)
+            try:
+                pg.wait_for_function(NOT_FOUND, timeout=15000)
+                nf = True
+            except Exception:
+                nf = False
+            link = pg.evaluate("() => { const a = document.querySelector('body > div > a'); return a ? a.getAttribute('href') : null; }") if nf else None
+            rec(f"QR直リンク ?manga={missing_id}（存在しない ID）: 「作品が見つかりませんでした」とトップへのリンク",
+                nf and link == "/", f"見つかりません={'有' if nf else '無'} リンク={link}")
+            rec("QR直リンク(存在しない ID): JSエラー無し", not errors, "; ".join(errors)[:300])
+            close_ctx(ctx)
+
+            # ③ WP が止まっている（/manga/{id}・/library とも 503）→ 手書きデータで開く
+            down = lambda route: route.fulfill(status=503, headers=json_headers, body='{"code":"service_unavailable"}')
+            ctx, pg, errors = open_page([
+                ("**/wp-json/contentsx/v1/manga/**", down),
+                ("**/wp-json/contentsx/v1/library*", down),
+            ], fb_id)
+            try:
+                pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
+                pg.wait_for_timeout(1000)
+                st3 = pg.evaluate(VIEWER_STATE)
+            except Exception as e:
+                st3 = {"page": f"開かない（{type(e).__name__}）", "first": None}
+            hand_first = f"https://contentsx.jp/material/manga/{fb_id}/01.webp"
+            rec(f"QR直リンク ?manga={fb_id}: WP が止まっている（/manga/{{id}}・/library が 503）ときは手書きデータで開く",
+                st3["page"].endswith(f"/ {hand_pages}") and st3.get("first") == hand_first,
+                f"表示={st3['page']} 手書き={hand_pages}P / 1枚目={str(st3.get('first'))[-50:]}")
+            rec("QR直リンク(WP 停止): JSエラー無し", not errors, "; ".join(errors)[:300])
+            close_ctx(ctx)
 
         def internal_nav():
             pr = probe(desktop)
@@ -607,6 +730,7 @@ def check_browser(base, data):
         if wp_id:
             section("QR直リンク", qr_direct)
         section("QR直リンク(手書きデータにある作品)", qr_fallback_work)
+        section("QR直リンクの分岐(作品が無い・WP 停止)", qr_branches)
         if wp_id:
             section("サイト内遷移", internal_nav)
             section("埋込ビューア", embed)

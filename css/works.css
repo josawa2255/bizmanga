@@ -1694,6 +1694,13 @@ html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
 /* QR経由(外部リファラー)のときだけ閉じるボタンを非表示にして書庫へ戻らせない */
 html.qr-mode .modal-close { display: none !important; }
+/* 直リンクで作品データを待つ間の読み込み表示（js/works.js の showDirectLoader）。スピナーは bizmanga.css の
+   .bm-manga-loader（暗い背景用の白とオレンジ）。ビューア（.manga-modal z-index 2000）の下に置き、開いたら外す */
+html.direct-mode .bm-direct-loader {
+  position: fixed; inset: 0; z-index: 1999;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
 
 /* ===== Manga Page Loader ===== */
 /* 見開き: スピナー要素が背景カバー + スピナー表示を兼ねる */
