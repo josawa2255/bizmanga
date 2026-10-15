@@ -18,7 +18,7 @@
 
 | ページ | ファイル | ページ固有の主要JS |
 |--------|---------|--------|
-| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-campaign-month.js（キャンペーン見出しの「○月限定」を日本時間の当月に更新） |
+| トップ | index.html | bm-home.js, bm-hero.js, bm-hero-fx.js, bm-pre-production.js, bm-s3d-screens.js, bm-campaign-month.js（キャンペーン見出しの「○月限定」を日本時間の当月に更新）。**コラム枠（最新8件）は JS ではなく `tools/build-columns.py` が毎時 `BUILD:HOME_COLUMN_GRID` に書き出す静的カード**（Issue #79。マーカー内は手で編集しない） |
 | 制作事例 | works.html | bm-works-page.js |
 | ビズ書庫 | biz-library.html | works.js |
 | 料金 | pricing.html | （なし。2プランカード型料金表〈フル漫画家/ハイブリッド〉、2026-08-19刷新） |
@@ -26,7 +26,7 @@
 | お問い合わせ | contact.html | bm-lead.js, bm-contact.js（JS未読込時は送信を無効化し、再読み込み・電話連絡の案内を表示） |
 | 資料ダウンロード | download.html | bm-lead.js, bm-download.js（CRM の受信箱「資料DL」へ送信＋PDFをその場でダウンロード。PDF の差し替え手順・公開範囲は [SPEC.md §5.2](SPEC.md)） |
 | お客様の声 | testimonials.html / testimonial-detail.html | bm-testimonials-page.js / bm-testimonial-detail.js |
-| コラム一覧/詳細 | column.html / column-detail.html | 一覧は `tools/build-columns.py` が毎日書き出す静的カードが正（bm-column-filter.js で絞り込み）。**column.html に bm-wp-api.js を読ませない**（作り直すと絞り込み・読了時間・禁則が消える、Issue #74）。詳細は bm-column-detail.js |
+| コラム一覧/詳細 | column.html / column-detail.html | 一覧は `tools/build-columns.py` が毎時書き出す静的カードが正（bm-column-filter.js で絞り込み。新しいコラムは公開から最大1時間で一覧・詳細・サイトマップ・ホームに出る）。**column.html に bm-wp-api.js を読ませない**（作り直すと絞り込み・読了時間・禁則が消える、Issue #74）。詳細は bm-column-detail.js |
 | ニュース | news.html / news-detail.html | bm-wp-api.js、詳細は bm-news-detail.js |
 | 漫画制作会社 比較ガイド | manga-production-company.html | mpc.js, mpc-scale.js, bm-fuwa.js |
 | 用途別LP 8本 | product/recruit/sales/training/company/inbound/ir-manga.html, manga-ad-lp.html | （**全8本v2デザイン統一済**: bm-lp-v2.css/js。lpv2-*構造・hero_LP流用ヒーロー・関連7枚。recruitが型の正本） |
@@ -65,7 +65,7 @@
 - ⛔ **このリポジトリは PUBLIC。顧客情報・インフラ構成・未対応の弱点リスト・認証の手順をコミットしない**（ContentsX で内部資料が本番から取得できた件 = ContentX_HP/BUGS.md #067）。
 - 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json` と検索エンジンの所有確認ファイル）だけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
 - デプロイは `.github/workflows/pages.yml`。**Settings → Pages → Source が「GitHub Actions」のときだけ**デプロイする（legacy＝ブランチから公開のままだと、従来型の公開処理がリポジトリ全体を同時に公開して競合する）。
-- ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足す**。
+- ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。ただし main の先端が既に公開済み（最後に成功した github-pages のデプロイと同じ SHA）ならデプロイを飛ばす（コラムは毎時ビルドのため。Issue #79。前回のデプロイが出ていなければ次の自動ビルド後に出し直す）。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足す**。
 - 公開範囲を変えたら `python3 tools/build-site-artifact.py && python3 tools/smoke-manga-wp.py --serve _site` で漫画表示を確認する（2026-10-14: 48 PASS）。
 
 ## 外部サービス
