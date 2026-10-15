@@ -807,6 +807,8 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - **単調増加のみ**: 最大到達 progress を保持、下→上スクロールで逆再生しない
   - `transform-origin: 50% 0%`（上端軸）でスマホ下端だけ伸縮、見出し衝突回避
 - 依存: `https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/{gsap,ScrollTrigger}.min.js`
+  - GSAP が読めない（CDN ブロック等）ときは**スクロール演出だけ**を省く。ボイスコミックの「動画を見る」ボタン・ポスターのクリック・音声バー（ミュート/音量）は GSAP の有無に関係なく動く（`bm-s3d-screens.js` で GSAP の確認より前に結び付ける。2026-10-15 まで確認の `return` が先にあり、GSAP なしではボタンが何もしなかった。Issue #88）
+  - 見出し・ラベル・CTA の表示と、横読み/縦読み iframe の操作可能化（`is-settled`）は演出のタイムラインが行うので GSAP が必要
 - 実装: [css/bm-s3d-screens.css](BizManga/css/bm-s3d-screens.css) / [js/bm-s3d-screens.js](BizManga/js/bm-s3d-screens.js)
 - CSP: `script-src` に `https://cdnjs.cloudflare.com` 必須
 - **クリック遷移なし**: 3D showcase は「こういう媒体がある」と見せるだけ。個別作品へは下のギャラリーで
