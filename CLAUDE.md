@@ -66,6 +66,7 @@
 - 本番に出るのは `tools/build-site-artifact.py` の**許可リスト**（HTML・CSS・JS・画像・動画・PDF・sitemap/feed と、名前を指定した `CNAME` `robots.txt` `llms.txt` `manifest.json` と検索エンジンの所有確認ファイル）だけ。`*.md`・`docs/`・`tools/`・`_archive/`・`serve.py` は公開しない。**新しい種類のファイルを公開したいときは許可リストに足す**（足さないと本番で 404）。検査は `tools/test_site_artifact.py`。
 - デプロイは `.github/workflows/pages.yml`。**Settings → Pages → Source が「GitHub Actions」のときだけ**デプロイする（legacy＝ブランチから公開のままだと、従来型の公開処理がリポジトリ全体を同時に公開して競合する）。
 - ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。ただし main の先端が既に公開済み（最後に成功した github-pages のデプロイと同じ SHA）ならデプロイを飛ばす（コラムは毎時ビルドのため。Issue #79。前回のデプロイが出ていなければ次の自動ビルド後に出し直す）。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足す**。
+- ⚠️ 自動ビルド（GITHUB_TOKEN での push）は push イベントでデプロイを起動しないため、`pages.yml` は `workflow_run`（コラム・LP事例・制作事例のビルド完了）でもデプロイする。**本番のファイルを書き換える自動ビルドを足したら `workflow_run.workflows` にも足し、IndexNow の送信ステップ（`commit-generated.py` の push 範囲を使う。同じ理由で `indexnow.yml` は起動しない。[SPEC.md §16.2](SPEC.md)）も足す**。
 - 公開範囲を変えたら `python3 tools/build-site-artifact.py && python3 tools/smoke-manga-wp.py --serve _site` で漫画表示を確認する（2026-10-14: 48 PASS）。
 
 ## 外部サービス

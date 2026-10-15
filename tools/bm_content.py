@@ -1,7 +1,10 @@
 """Canonical column URLs shared by page and feed builders."""
 import sys
 
-from bm_build import safe_slug
+from bm_build import API_BASE, safe_slug
+
+# The column pages and the RSS feed must list the same articles.
+COLUMNS_API = API_BASE + "/columns?site=bizmanga&per_page=100"
 
 SLUG_MAP = {
     "4コマ漫画をビジネス活用するには": "4koma-business-guide",

@@ -1,5 +1,7 @@
 """Offline regression tests for builder boundaries and existing output contracts."""
 from contextlib import redirect_stdout
+import copy
+import datetime
 from html.parser import HTMLParser
 import importlib.util
 import io
@@ -10,6 +12,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from unittest.mock import patch
 
@@ -30,10 +33,21 @@ def module(filename):
 
 def git_test_env():
     # Isolate test identities, config and signing from the user's setup.
-    return dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
-                GIT_AUTHOR_NAME='Test', GIT_AUTHOR_EMAIL='test@example.test',
-                GIT_COMMITTER_NAME='Test', GIT_COMMITTER_EMAIL='test@example.test',
-                GIT_TERMINAL_PROMPT='0', GIT_EDITOR='true')
+    env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
+               GIT_AUTHOR_NAME='Test', GIT_AUTHOR_EMAIL='test@example.test',
+               GIT_COMMITTER_NAME='Test', GIT_COMMITTER_EMAIL='test@example.test',
+               GIT_TERMINAL_PROMPT='0', GIT_EDITOR='true')
+    # Under Actions (checks.yml), a publish test must not write the real step's outputs.
+    env.pop('GITHUB_OUTPUT', None)
+    return env
+
+
+def workflow_steps(workflow):
+    """Step blocks of a single-job workflow, without comment lines."""
+    source = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8')
+    body = source.split('\n    steps:\n', 1)[1]
+    return [re.sub(r'^ *#[^\n]*\n', '', '      - ' + step, flags=re.M)
+            for step in re.split(r'^      - ', body, flags=re.M)[1:]]
 
 
 def workflow_checkout_ref(workflow):
@@ -419,6 +433,68 @@ class BuildTests(unittest.TestCase):
                                   'thumbnail': 'https://contentsx.jp/a?x=1&y="2"'}, 'column')
         item = ElementTree.fromstring(result)
         self.assertTrue(item.findtext('link').endswith('/column/column-7'))
+        self.assertIsNone(item.find('pubDate'), 'no date is omitted, never filled with the clock')
+
+    def test_feed_output_does_not_depend_on_clock(self):
+        from xml.etree import ElementTree
+        feed = module('build-feed.py')
+        columns_builder = module('build-columns.py')
+        self.assertEqual(feed.COLUMNS_API, columns_builder.API_LIST, 'feed and pages list the same columns')
+        responses = {
+            feed.COLUMNS_API: [
+                {'id': 1, 'slug': 'older', 'title_ja': 'Older', 'date_ymd': '2026-09-01',
+                 'modified_ymd': '2026-10-05'},
+                # WordPress can report a modified date before the publication date.
+                {'id': 2, 'slug': 'newest', 'title_ja': 'Newest', 'date_ymd': '2026-10-14',
+                 'modified_ymd': '2026-10-05'},
+            ],
+            # News has only a dotted date.
+            feed.API_BASE + '/news?site=bizmanga&per_page=20': [
+                {'id': 9, 'date': '2026.10.12', 'title_ja': 'News'}],
+        }
+
+        class Clock(datetime.datetime):
+            current = None
+
+            @classmethod
+            def now(cls, tz=None):
+                return cls.current if tz is None else cls.current.astimezone(tz)
+
+        class Day(datetime.date):
+            @classmethod
+            def today(cls):
+                return Clock.current.date()
+
+        clock = types.SimpleNamespace(datetime=Clock, date=Day, timezone=datetime.timezone,
+                                      timedelta=datetime.timedelta)
+
+        def build(root, now, data):
+            Clock.current = now
+            with patch.object(feed, 'datetime', clock), patch.object(feed, 'ROOT', root), \
+                    patch.object(feed, 'OUT_PATH', root / 'feed.xml'), \
+                    patch.object(feed, 'fetch_json', side_effect=lambda url, **_: copy.deepcopy(data[url])), \
+                    redirect_stdout(io.StringIO()):
+                feed.main()
+            return (root / 'feed.xml').read_bytes()
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            jst = datetime.timezone(datetime.timedelta(hours=9))
+            first = build(root, datetime.datetime(2026, 10, 14, 3, 0, 5, tzinfo=jst), responses)
+            second = build(root, datetime.datetime(2027, 1, 1, 23, 59, 59, tzinfo=jst), responses)
+            self.assertEqual(first, second, 'unchanged articles must give a byte-identical feed')
+            channel = ElementTree.fromstring(first).find('channel')
+            self.assertEqual(channel.findtext('lastBuildDate'), 'Wed, 14 Oct 2026 09:00:00 +0900',
+                             'the newest article date, not the build time')
+            items = channel.findall('item')
+            self.assertEqual([i.findtext('link').rsplit('/', 1)[1] for i in items],
+                             ['newest', 'news-detail?id=9', 'older'])
+            self.assertEqual(items[1].findtext('pubDate'), 'Mon, 12 Oct 2026 09:00:00 +0900')
+            self.assertEqual(items[2].findtext('pubDate'), 'Tue, 01 Sep 2026 09:00:00 +0900')
+            # No columns (an API failure) must not replace the published feed.
+            with self.assertRaises(ValueError):
+                build(root, Clock.current, dict(responses, **{feed.COLUMNS_API: []}))
+            self.assertEqual((root / 'feed.xml').read_bytes(), first)
 
     def test_indexnow_covers_entire_push_and_initial_push(self):
         indexnow = module('indexnow-ping.py')
@@ -565,6 +641,112 @@ sys.exit(subprocess.run(['jq', '-r', query], input=json.dumps(body), text=True).
                 decision, calls = decide('workflow_run', {'mode': 'legacy', 'tip': tip, 'deployments': []})
                 self.assertEqual(decision, 'deploy=false')
                 self.assertNotIn('deployments', calls)
+    def test_generators_send_pushed_changes_to_indexnow(self):
+        # GITHUB_TOKEN pushes do not start indexnow.yml, so each generator sends its own push (#72).
+        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml'):
+            with self.subTest(workflow=workflow):
+                steps = workflow_steps(workflow)
+                names = [re.search(r'name: ([^\n]+)', step) for step in steps]
+                index = {match[1]: i for i, match in enumerate(names) if match}
+                commit = steps[index['Commit generated files']]
+                ping = steps[index['Submit generated URLs to IndexNow']]
+                self.assertIn('        id: commit\n', commit)
+                self.assertGreater(index['Submit generated URLs to IndexNow'], index['Commit generated files'])
+                self.assertIn("        if: steps.commit.outputs.pushed == 'true'\n", ping)
+                self.assertIn('        continue-on-error: true\n', ping, 'a failed ping must not block deployment')
+                self.assertIn('          INDEXNOW_BEFORE: ${{ steps.commit.outputs.before }}\n', ping)
+                self.assertIn('          INDEXNOW_AFTER: ${{ steps.commit.outputs.after }}\n', ping)
+                self.assertIn('        run: python3 tools/indexnow-ping.py\n', ping)
+                for step in steps:
+                    run = step.split('run:', 1)[1] if 'run:' in step else ''
+                    self.assertNotIn('${{', run, 'pass expressions through env, not into the shell')
+        steps = workflow_steps('build-columns.yml')
+        feed = next(i for i, step in enumerate(steps) if 'tools/build-feed.py' in step)
+        commit = next(i for i, step in enumerate(steps) if 'tools/commit-generated.py' in step)
+        self.assertLess(next(i for i, step in enumerate(steps) if 'tools/build-columns.py' in step), feed)
+        self.assertLess(feed, commit)
+        self.assertIn(' feed.xml\n', steps[commit])
+
+    def test_push_outputs_generated_range_for_indexnow(self):
+        indexnow = module('indexnow-ping.py')
+        with tempfile.TemporaryDirectory(prefix='bm-output-test-') as directory:
+            folder = Path(directory)
+            remote, writer, human = (folder / name for name in ('remote.git', 'writer', 'human'))
+            output = folder / 'github-output'
+            env = git_test_env()
+
+            def git(cwd, *args):
+                return subprocess.check_output(['git', *args], cwd=cwd, env=env,
+                                               stderr=subprocess.STDOUT, text=True).strip()
+
+            def publish():
+                output.write_text('', encoding='utf-8')
+                result = subprocess.run(
+                    [sys.executable, '-B', str(ROOT / 'tools/commit-generated.py'),
+                     '--message', 'generated', 'column/', 'sitemap.xml'], cwd=writer,
+                    env=dict(env, GITHUB_ACTIONS='true', GITHUB_REF_NAME='main', GITHUB_OUTPUT=str(output)),
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout)
+                return dict(line.split('=', 1) for line in output.read_text(encoding='utf-8').splitlines())
+
+            def human_push(path, text):
+                git(human, 'pull', '--ff-only')
+                (human / path).parent.mkdir(exist_ok=True)
+                (human / path).write_text(text, encoding='utf-8')
+                git(human, 'add', path)
+                git(human, 'commit', '-m', 'human edit')
+                git(human, 'push')
+                return git(human, 'rev-parse', 'HEAD')
+
+            def urls(values):
+                real = subprocess.check_output
+                with patch.dict('os.environ', {'INDEXNOW_BEFORE': values['before'],
+                                               'INDEXNOW_AFTER': values['after']}), \
+                        patch.object(indexnow.subprocess, 'check_output',
+                                     side_effect=lambda command, **kw: real(command, cwd=writer, env=env, **kw)):
+                    return indexnow.get_changed_urls()
+
+            git(folder, 'init', '--bare', '--initial-branch=main', str(remote))
+            git(folder, 'clone', str(remote), str(human))
+            (human / 'column').mkdir()
+            (human / 'column/old.html').write_text('old\n', encoding='utf-8')
+            (human / 'sitemap.xml').write_text('<urlset/>\n', encoding='utf-8')
+            git(human, 'add', '.')
+            git(human, 'commit', '-m', 'initial')
+            git(human, 'push', '-u', 'origin', 'main')
+            # actions/checkout fetches a single commit.
+            git(folder, 'clone', '--depth', '1', remote.as_uri(), str(writer))
+
+            with self.subTest('changed while a human pushed: rebase'):
+                human_tip = human_push('about.html', 'human\n')
+                (writer / 'column/new.html').write_text('new\n', encoding='utf-8')
+                (writer / 'sitemap.xml').write_text('<urlset>new</urlset>\n', encoding='utf-8')
+                values = publish()
+                self.assertEqual(values, {'pushed': 'true', 'before': human_tip,
+                                          'after': git(remote, 'rev-parse', 'main')})
+                # Only the generated commit, not the human edit (indexnow.yml sends that one).
+                self.assertEqual(urls(values), ['https://bizmanga.contentsx.jp/column/new',
+                                                'https://bizmanga.contentsx.jp/sitemap.xml'])
+
+            with self.subTest('changed, no rebase needed'):
+                previous = git(remote, 'rev-parse', 'main')
+                (writer / 'column/old.html').write_text('updated\n', encoding='utf-8')
+                values = publish()
+                self.assertEqual(values['before'], previous)
+                self.assertEqual(values['after'], git(remote, 'rev-parse', 'main'))
+                self.assertEqual(urls(values), ['https://bizmanga.contentsx.jp/column/old'])
+
+            with self.subTest('no generated changes'):
+                previous = git(remote, 'rev-parse', 'main')
+                self.assertEqual(publish(), {})
+                self.assertEqual(git(remote, 'rev-parse', 'main'), previous)
+
+            with self.subTest('the branch already has the same output'):
+                human_tip = human_push('column/same.html', 'same\n')
+                (writer / 'column/same.html').write_text('same\n', encoding='utf-8')
+                self.assertEqual(publish(), {})
+                self.assertEqual(git(remote, 'rev-parse', 'main'), human_tip)
 
     def test_queued_sitemap_generators_preserve_both_updates(self):
         from xml.etree import ElementTree

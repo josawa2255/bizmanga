@@ -33,8 +33,24 @@ jobs:
         with:
           python-version: '3.11'
       - run: python3 tools/build-columns.py
+      # feed.xml もコラムと同じ記事から作る（Issue #72。それまでどのワークフローにも無く4月から更新されていなかった）。
+      # 失敗しても既存の feed.xml はそのまま残る（書き込みは成功時だけ）ので、フィードの失敗でコラムの公開を止めない
+      - name: Build RSS feed
+        continue-on-error: true
+        run: python3 tools/build-feed.py
       - name: Commit generated files
+        id: commit
         run: >-
           python tools/commit-generated.py
           --message "chore(column): auto-rebuild static pages [skip ci]"
-          column.html column/ index.html sitemap.xml js/bm-pricing.js
+          column.html column/ index.html sitemap.xml js/bm-pricing.js feed.xml
+      # GITHUB_TOKEN での push は indexnow.yml を起動しない（GitHub の仕様）ので、ここで送る（Issue #72）。
+      # 送るのは今回 push した生成物だけ（rebase 先〜push したコミット）。生成物の push は済んでおり、
+      # ジョブが失敗扱いだと pages.yml がデプロイしないので、通知の失敗ではジョブを止めない
+      - name: Submit generated URLs to IndexNow
+        if: steps.commit.outputs.pushed == 'true'
+        continue-on-error: true
+        env:
+          INDEXNOW_BEFORE: ${{ steps.commit.outputs.before }}
+          INDEXNOW_AFTER: ${{ steps.commit.outputs.after }}
+        run: python3 tools/indexnow-ping.py
