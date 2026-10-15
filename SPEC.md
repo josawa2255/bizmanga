@@ -509,7 +509,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
-- `?manga=id`: `biz-library.html` の `js/works.js` が URLSearchParams を読んで `isDirectMode` 分岐。作品は WP API の `/manga/{id}` と `/library` のどちらか先に届いた WP のデータで開く（§2.1）。新作品にも即時対応。
+- `?manga=id`: `biz-library.html` の `js/works.js` が URLSearchParams を読んで `isDirectMode` 分岐。作品は WP API の `/manga/{id}` と `/library` のどちらか先に届いた WP のデータで開く（手書きデータでは開かない。WP が応答しない間は「表示に時間がかかっています」と再読み込みボタンを出して待つ。§2.1）。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
@@ -593,28 +593,31 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - [biz-library.html:45](biz-library.html#L45) — `<head>` で即座に `<html class="direct-mode">` を付与（フリッカ防止）
   - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
-- **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与
+- **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与。「表示に時間がかかっています」の再読み込みボタンで読み込み直したときは、読み込み直す前の判定を引き継ぐ（ブラウザは再読み込みの referrer をこのページ自身にするため。引き継げないブラウザでは QR 経由として扱う）
 - **閉じるボタン (✕)**:
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
-- **開き方（2026-10-14 / Issue #71、2026-10-15 レビュー指摘で変更）⭐**: 作品は WP のデータで**1回だけ**開く（`openDirect()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する
-  - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時は表示モードが変わったときだけ開き直し・それ以外は CTA だけ貼り直していた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
-  - **どちらか先に届いた WP のデータで開く**: `/manga/{id}`（1作品）と、ページを開いた時点で走っている `/library`（一覧）の**どちらか先に「その作品のデータ」を返した方**で開く（どちらも同じ WP のデータ）。`/library` に無い作品（QR 限定公開など）は `/manga/{id}` を待つ。後から届いた方では開き直さない
-  - **WP の作品データ→mangaData の変換は `toMangaEntry(w)` 1つ**: `/library` と `/manga/{id}` の両分岐が同じ関数を通る（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。ページ数はギャラリー枚数→WP の `pages`→1 の順（0 にしない）、タイトルが空なら作品 ID、`path` は `https://contentsx.jp/material/manga/{id}/`（ギャラリーが空のときの画像の置き場）、view_type は WP の値＋強制縦読みの判定を `window.bmViewType.isForcedVertical` に委譲、CTA 項目（`client_url` / `cta_label_ja` / `cta_enabled`）・赤ペン/ネームのギャラリーも同じ
-  - **API の場所と時間切れ**: ビズ書庫は `bm-wp-api.js` / `bm-wp-config.js` を読まないので、`works.js` の `WP_API_BASE`（`bm-wp-config.js` と同じ既定値）と `wpApiGet()`（`bm-wp-api.js` の `apiFetch` と同じ AbortController の時間切れ。`WP_API_TIMEOUT_MS` 既定 5000ms）に1か所でまとめ、`/library` と `/manga/{id}` の両方が使う。`/manga/{id}` は時間切れで中断する。`/library` は中断しない（遅れて届いても一覧を更新する）が、直リンクの判断では同じ時刻（開いてから5秒）までに届かなければ「届かなかった」として扱う
-  - **キーの照合**: `?manga=` の値は書き換えず、登録キー（`/library` の作品 ID・手書きデータ・制作過程）と**まず完全一致、無ければ大文字小文字を区別せずに**照合する（`matchKey()`。例 `?manga=SEKO` → `seko`）。`/manga/{id}` で開くときは応答の `id` をキーにする
-  - **`/manga/{id}` が「作品が無い」と答えたとき**（プラグインの 404。本文 `{"error":"not found"}`。401/403/410 も同じ扱い）: `/library` にその作品があればそれで開く。無ければ「作品が見つかりませんでした」。例外は WP に作品が無く手書きデータだけで公開している作品（`works.js` の `DIRECT_FALLBACK_ONLY_IDS`。2026-10-15 時点で `life-school` / `sixtones`）で、手書きデータで開く。WP に登録したら許可リストから外す
-  - **WP が応答できないとき**（通信の失敗・時間切れ・5xx・429、プラグインの形でない 404〈WP のルートが無い `rest_no_route`・HTML の 404〉、作品データでない応答）: `/library` が届いていればそのデータ、`/library` も失敗・時間切れなら手書きの `FALLBACK_WORKS`（あれば）で開く。どれにも無ければ「作品が見つかりませんでした」。最長でも開いてから約5秒で開く／見つかりません
-  - **待っている間は読み込み中の表示**（暗い背景の上の白とオレンジのスピナー。`showDirectLoader()`、見た目は `bizmanga.css` の `.bm-manga-loader`、位置は `css/works.css` の `.bm-direct-loader`）。ビューアが開いたら（`openManga` の `proceedOpen`）・「見つかりませんでした」を出したら消す
-  - **手書きデータで開いた後に `/library` が届いたとき**: 開き直さず、`mangaData` のその作品を届いたデータに差し替える（`applyLibrary()`）。表示中のビューアの最終ページCTA と見開き/縦読み切替ボタンも届いたデータに合わせ（`refreshDirectViewer()`）、切替で開き直すときは届いたデータを使う。縦読み専用の作品を見開きで表示中なら、縦読みへの切替だけできる
-  - **WP のデータで開いた作品・`/library` に無い作品のデータは `/library` 到着時に消さない・差し替えない**（表示中のビューアと PC の見開き/縦読み切替が `mangaData[作品ID]` を読むため。消すと `/library` に無い作品で切替が効かなくなる）
-  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録）を最大約8秒（時間切れ＋3秒）待って開く。登録されなければ「作品が見つかりませんでした」。制作過程は `/manga/{id}` に無いので取得しない。`/library` 到着での開き直しは無い
-  - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）。逆に開く処理（`openManga`）で例外が出て、まだ開いていなければ「見つかりませんでした」を出す（暗い画面のまま止めない）
+- **開き方（2026-10-14 / Issue #71。2026-10-15 平澤さんの方針で変更）⭐**: 作品は **WP のデータでだけ・1回だけ**開く（`openDirect()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する。**手書きの `FALLBACK_WORKS` では開かない**（WP と違う古いページ数・画像で壊れた表示にしない）
+  - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時に開き直し・CTA の貼り直しをしていた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
+  - **どちらか先に届いた WP のデータで開く**: `/manga/{id}`（1作品）と、ページを開いた時点で走っている `/library`（一覧）の**どちらか先に「その作品のデータ」を返した方**で開く（どちらも同じ WP のデータ）。`/library` に無い作品（QR 限定公開など）は `/manga/{id}` を待つ。後から届いた方では開き直さず、開いた作品のデータも差し替えない（`/library` 到着時の `applyLibrary()` は開いた作品の `mangaData` を消さない・別のオブジェクトにしない。最終ページCTA・見開き/縦読み切替は開いたときのデータのまま）
+  - **結果は次の3つだけ**:
+    1. **開く**: `/manga/{id}` か `/library` から作品のデータが届いた
+    2. **「作品が見つかりませんでした」**（トップへ戻るリンク）: WP の `/manga/{id}` が「その作品は無い」と答え、**かつ** `/library` が届いていてその作品が無い（`/library` がまだなら届くまで待つ）
+    3. **「ただいま表示に時間がかかっています」＋「再読み込み」ボタン**: それ以外（WP が応答しない・エラー・時間切れ・`/library` も取れない等）。**打ち切らずに待ち続ける**: ページを開いてから5秒（`DIRECT_SLOW_MS`）たってもビューアを出せていなければ、スピナーの下にメッセージとボタン（`location.reload()`）を出す。その間も `/manga/{id}` を間隔をあけて取り直し（`DIRECT_RETRY_MS`。2→5→10→20→30秒、以後30秒ごと。1回ごとの取得は5秒で打ち切り）、`/library` が遅れて届くのも待つ。データが届いたらメッセージを消して開く
+  - **WP 未登録の作品**: 手書きデータだけで公開していた `life-school` / `sixtones` は WP に登録する方針（登録は別作業）。**登録されるまでは直リンクが「作品が見つかりませんでした」になる**（以前の例外リスト `DIRECT_FALLBACK_ONLY_IDS` は廃止）
+  - **WP の作品データ→mangaData の変換は `toMangaEntry(w)` 1つ**: `/library` と `/manga/{id}` の両分岐が同じ関数を通る（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。ページ数はギャラリー枚数→WP の `pages`→1 の順（0 にしない。ギャラリー枚数への補正はここだけで、`openManga` では直さない）、タイトルが空なら作品 ID、`path` は `https://contentsx.jp/material/manga/{id}/`（ギャラリーが空のときの画像の置き場）、view_type は WP の値＋強制縦読み（`window.bmViewType.isForcedVertical`）・縦読み専用＝切替不可（`window.bmViewType.isVerticalOnly`）の判定を委譲、CTA 項目（`client_url` / `cta_label_ja` / `cta_enabled`）・赤ペン/ネームのギャラリーも同じ
+  - **API の場所と時間切れ**: ビズ書庫は `bm-wp-api.js` / `bm-wp-config.js` を読まないので、`works.js` の `WP_API_BASE`（`bm-wp-config.js` と同じ既定値）と `wpApiGet()`（`bm-wp-api.js` の `apiFetch` と同じ AbortController の時間切れ。`WP_API_TIMEOUT_MS` 既定 5000ms）に1か所でまとめ、`/library` と `/manga/{id}` の両方が使う。`/library` は中断しない（遅れて届いても使う）
+  - **キーの照合**: `?manga=` の値は書き換えず、登録キー（`/library` の作品 ID・制作過程）と**まず完全一致、無ければ大文字小文字を区別せずに**照合する（`matchKey()`。例 `?manga=SEKO` → `seko`）。`/manga/{id}` で開くときは応答の `id` をキーにする
+  - **待っている間は読み込み中の表示**（暗い背景の上の白とオレンジのスピナー。`showDirectLoader()`、見た目は `bizmanga.css` の `.bm-manga-loader`、位置とメッセージ・ボタンは `css/works.css` の `.bm-direct-loader` / `.bm-direct-stalled`）。ビューアが開いたら（`openManga` の `proceedOpen`）・「見つかりませんでした」を出したら消す
+  - **開く処理の例外**（`openManga` 本体・画像読込後の `proceedOpen`・見開きの組み立て）: スピナーを残さない。まだ漫画のページを表示できていなければ開きかけのビューアを閉じ、スピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す（`failOpen()`。「見つかりませんでした」にはしない）
+  - **直リンクでは一覧を作らない**: 隠れている書庫の一覧（手書きデータでの初期表示・`/library` 到着時の作り直し・表紙の縦長判定）を省き、制作過程カルーセルの自動送り（rAF）も始めない（ビューアだけを表示するため）
+  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録。直リンクでは制作過程のキーのときだけ呼ぶ）を最大約8秒（時間切れ＋3秒）待って開く。登録されなければ「作品が見つかりませんでした」。制作過程は `/manga/{id}` に無いので取得しない（制作過程のキー・`/preproduction` の扱いは Issue #84 で見直し中）
+  - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
   - `/library` に無い作品は `/manga/{id}` の応答で開く（上記）
-  - `/manga/{id}` が「作品が無い」と答えたら（許可リストの作品を除き）「作品が見つかりませんでした」画面 + トップへ戻るリンク
+  - `/manga/{id}` が「作品が無い」と答え、`/library` にも無ければ「作品が見つかりませんでした」画面 + トップへ戻るリンク
   - これにより「ビズ書庫・ギャラリー・新作情報 全て非表示だがQR経由でだけ見せたい」運用が可能
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
@@ -711,7 +714,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - ビズマンガの表示には日本語項目だけを使用する。WordPressと共有APIに残る英語用カスタムフィールドは、本サイトのフロントエンドから参照しない互換項目である。
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
-    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
+    - `/biz-library`ビューア（`js/works.js`）: WP の作品データの登録（`toMangaEntry()`。`/library` と QR直リンクの `/manga/{id}` の両方）と赤ペン/ネーム（`/library` 由来・`/preproduction`）の登録で gallery優先。`openManga()` は登録済みのページ数を使う（2026-10-15 に補正を `toMangaEntry()` へ一本化。Issue #71）
     - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
