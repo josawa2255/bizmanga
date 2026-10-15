@@ -1298,10 +1298,16 @@
 
   /* ================================================================
      6d. FAQ — 1項目ずつ開くアコーディオン（WAI-ARIA）
+     ---------------------------------------------------------------
+     FAQ は静的HTMLで動画APIのデータを使わない。起動時に1回だけ呼ぶ（§7）。
+     2回呼ぶとボタンにクリック処理が二重に付き、開いてすぐ閉じるので防ぐ。
      ================================================================ */
+  var faqReady = false;
   function initFaq() {
+    if (faqReady) return;
     var sec = document.getElementById('baFaq');
     if (!sec) return;
+    faqReady = true;
     var items = Array.prototype.slice.call(sec.querySelectorAll('.ba-faq-item'));
 
     items.forEach(function (item) {
@@ -1344,6 +1350,13 @@
   /* ================================================================
      7. 起動
      ================================================================ */
+  /* FAQ は動画APIの応答を待たずに有効にする。API待ちの中で呼ぶと、
+     応答（失敗時は最大5秒のタイムアウト）まで .is-in が付かず、
+     透明（opacity:0）のまま押せなかった（Issue #88） */
+  try { initFaq(); } catch (e4) {
+    if (window.console && console.warn) console.warn('[bizanime faq]', e4);
+  }
+
   fetchVideos().then(function (data) {
     try {
       initScrollStory(data.main || []);
@@ -1363,9 +1376,6 @@
       initRange(pool);
     } catch (e3) {
       if (window.console && console.warn) console.warn('[bizanime sections]', e3);
-    }
-    try { initFaq(); } catch (e4) {
-      if (window.console && console.warn) console.warn('[bizanime faq]', e4);
     }
     window.dispatchEvent(new CustomEvent('bizanime-data', { detail: data }));
   });

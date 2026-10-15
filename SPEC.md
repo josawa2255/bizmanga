@@ -172,7 +172,7 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 
 ### 追加4セクション（2026-08-30 実装）
 Hero下に USE CASE / WHY BIZ ANIME / PRODUCTION RANGE / FAQ を追加。
-**全セクションがWP動画APIのデータ駆動**（動画をハードコードしない）。
+**FAQ以外の3セクションはWP動画APIのデータ駆動**（動画をハードコードしない）。FAQ は静的HTML。
 
 - 共通: poster first・activeのみプレイヤー生成・**ページ全体で自動プレビュー同時1本**
   （previewマネージャで強制）・セクション画面外でプレビュー破棄・Hero動画も画面外で一時停止・
@@ -186,7 +186,10 @@ Hero下に USE CASE / WHY BIZ ANIME / PRODUCTION RANGE / FAQ を追加。
   **フォーマット表記(16:9/VERTICAL等)は断定しない**（全ソース16:9のため。フォーマット情報が
   入ったら差し替え）。フィルタは減光方式（レイアウト移動なし）
 - FAQ: 30/70の静かなアコーディオン(WAI-ARIA・1つだけopen)。回答は断定できる事項のみ断定、
-  条件依存は「ご相談」。末尾に主CTA1つ(/contact)
+  条件依存は「ご相談」。末尾に主CTA1つ(/contact)。
+  **`initFaq()` は起動時に1回だけ呼ぶ**（動画APIの応答・失敗・5秒タイムアウトを待たない。二重に呼んでも
+  フラグで2回目は何もしない＝クリック処理が二重に付いて開いてすぐ閉じるのを防ぐ）。2026-10-15 まで
+  API 待ちの中で呼んでいたため、応答が遅い・返らないと出現演出の `.is-in` が付かず、FAQ が透明で押せなかった（Issue #88）
 - 調整ノブ: CSS変数(:root `--uc-active-grow` `--range-tile-gap` 等) + `window.BA_TUNE`
   (USECASE_PREVIEW_DELAY / WHY_TRANSITION_MS / RANGE_MAX_TILES / FAQ_ANIMATION_MS 等)
 
