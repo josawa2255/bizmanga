@@ -10,6 +10,7 @@ import sys
 import urllib.request
 
 HOST = "bizmanga.contentsx.jp"
+# キーの正本。公開時に tools/build-site-artifact.py がこの3つを読み、KEY_LOCATION の場所に中身 KEY のファイルを作る
 KEY = "d3aa5088bd3c49f988a9c1ead3f8206a"
 KEY_LOCATION = f"https://{HOST}/{KEY}.txt"
 

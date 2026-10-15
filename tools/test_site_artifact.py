@@ -1,12 +1,20 @@
 """公開ファイルの絞り込み（tools/build-site-artifact.py）の検査。デプロイ前に実行する（.github/workflows/pages.yml）。
 - 内部資料（md・docs・スクリプト・テスト・順位の履歴）が公開対象に入っていない
 - 公開する HTML / CSS が参照するサイト内ファイルが、公開対象から漏れていない
+- IndexNow のキーファイルが tools/indexnow-ping.py の KEY_LOCATION の場所に、中身 KEY で出る
+公開物は build() で一時ディレクトリに作って確かめる（作業ツリーの _site/ は触らない）
 python3 -m unittest discover -s tools -p test_site_artifact.py"""
 import importlib.util
+import io
 import posixpath
 import re
+import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,7 +24,9 @@ spec.loader.exec_module(bsa)
 
 CANDIDATES = bsa.tracked_files()
 CANDIDATE_SET = set(CANDIDATES)
-PUBLIC = {f for f in CANDIDATES if bsa.is_public(f)}
+PUBLIC = {f for f in CANDIDATES if bsa.is_public(f)}      # 許可リストを通るリポジトリのファイル
+INDEXNOW = bsa.load_indexnow()
+KEY_FILE = urlsplit(INDEXNOW.KEY_LOCATION).path.lstrip("/")  # IndexNow が取りに来るキーファイル（リポジトリには無い）
 REF = re.compile(r'''(?:src|href|poster|content)\s*=\s*["']([^"'#?]+)|url\(\s*["']?([^"')#?]+)''', re.I)
 MUST_HIDE = ("CLAUDE.md", "SPEC.md", "README.md", "github.md", "serve.py", "tools/rank-history.jsonl",
              "tools/build-works.py", "tools/smoke-manga-wp.py", "docs/REVIEW-MANGA-WP.md", "_archive/README.md")
@@ -42,24 +52,57 @@ def site_path(page, ref):
 
 
 class SiteArtifact(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # pages.yml と同じ build() を一時ディレクトリへ出す
+        cls.tmp = tempfile.TemporaryDirectory(prefix="bm-site-artifact-")
+        cls.site = Path(cls.tmp.name) / "_site"
+        bsa.build(cls.site)
+        cls.built = {p.relative_to(cls.site).as_posix() for p in cls.site.rglob("*") if p.is_file()}
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_artifact_is_allowed_files_and_key_file(self):
+        # 公開物 = 許可リストを通るリポジトリのファイル + IndexNow のキーファイル。ほかには何も出さない
+        self.assertEqual(self.built, PUBLIC | {KEY_FILE})
+
     def test_internal_files_are_not_public(self):
-        leaked = sorted(f for f in PUBLIC if re.search(
-            r"\.(md|py|pyc|tpl|sh|ya?ml|json|jsonl|cjs|txt)$", f) and f not in bsa.ALLOWED_FILES)
+        leaked = sorted(f for f in self.built if re.search(
+            r"\.(md|py|pyc|tpl|sh|ya?ml|json|jsonl|cjs|txt)$", f) and f not in bsa.ALLOWED_FILES and f != KEY_FILE)
         self.assertEqual(leaked, [])
         for must_hide in MUST_HIDE:
-            self.assertNotIn(must_hide, PUBLIC)
+            self.assertNotIn(must_hide, self.built)
 
     def test_pages_and_assets_are_public(self):
         for must_show in ("index.html", "404.html", "biz-library.html", "embed-viewer.html", "sw.js",
                           "robots.txt", "sitemap.xml", "feed.xml", "llms.txt", "manifest.json", "CNAME",
                           "js/works.js", "js/bm-wp-api.js", "js/bm-nav.js"):
-            self.assertIn(must_show, PUBLIC)
+            self.assertIn(must_show, self.built)
 
-    def test_indexnow_key_file_is_public(self):
-        # IndexNow は KEY_LOCATION（/{KEY}.txt）を取りに来る。キーを替えたら許可リストも替える
-        source = (ROOT / "tools" / "indexnow-ping.py").read_text(encoding="utf-8")
-        key = re.search(r'^KEY = "([0-9a-f]+)"$', source, re.M).group(1)
-        self.assertIn(f"{key}.txt", PUBLIC)
+    def test_indexnow_key_file_is_published(self):
+        # IndexNow は KEY_LOCATION を取りに来て、中身が KEY と一致するかで所有を確かめる
+        self.assertEqual(urlsplit(INDEXNOW.KEY_LOCATION).netloc, (ROOT / "CNAME").read_text(encoding="utf-8").strip())
+        self.assertEqual((self.site / KEY_FILE).read_bytes(), INDEXNOW.KEY.encode("utf-8"))
+        listing = io.StringIO()
+        with patch.object(sys, "argv", ["build-site-artifact.py", "--list"]), redirect_stdout(listing):
+            self.assertEqual(bsa.main(), 0)
+        self.assertIn(KEY_FILE, listing.getvalue().splitlines())
+
+    def test_unusable_key_location_stops_publishing(self):
+        host, key = INDEXNOW.HOST, INDEXNOW.KEY
+        good = {"HOST": host, "KEY": key, "KEY_LOCATION": f"https://{host}/{key}.txt"}
+        with patch.object(bsa, "load_indexnow", return_value=SimpleNamespace(**good)):
+            self.assertEqual(bsa.generated_files(PUBLIC), {f"{key}.txt": key})
+        for bad in ({"KEY_LOCATION": f"https://example.com/{key}.txt"}, {"HOST": "example.com"},
+                    {"KEY_LOCATION": f"http://{host}/{key}.txt"}, {"KEY_LOCATION": f"https://{host}/keys/{key}.txt"},
+                    {"KEY_LOCATION": f"https://{host}/../{key}.txt"}, {"KEY_LOCATION": f"https://{host}/robots.txt"},
+                    {"KEY_LOCATION": f"https://{host}/{key}.txt?x=1"}, {"KEY": "short"}):
+            with self.subTest(bad), \
+                    patch.object(bsa, "load_indexnow", return_value=SimpleNamespace(**{**good, **bad})), \
+                    self.assertRaises(bsa.PublishError):
+                bsa.generated_files(PUBLIC)
 
     def test_site_path_resolution(self):
         self.assertEqual(site_path("index.html", "../css/x.css"), "/css/x.css")
