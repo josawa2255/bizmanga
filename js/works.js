@@ -91,10 +91,9 @@ function getImageSrc(data, pageIndex) {
 // ビズ書庫の一覧の初期表示（WP の /library が届くまで）と、その間にカードを押したときに開くデータ（表紙は素材フォルダの画像）。
 // /library が届いたら WP のデータに置き換わる。QR直リンクでは使わない（WP に未登録の当面の例外〈UNREGISTERED_FALLBACK_IDS〉を除く）。
 // ページ数は WP の値ではなく、素材フォルダ（contentsx.jp/material/manga/{id}/01.webp〜）に実際にある枚数
-// ＝このデータで開いたときに表示できる枚数（WP のギャラリーの方が多い作品もある。2026-10-16 ContentsX の main で数えた値）。
-// 縦読み専用かどうかは WP に合わせる。
+// ＝このデータで開いたときに表示できる枚数（WP のギャラリーの方が多い作品もある。WP に合わせると素材フォルダに無いページが
+// 404 になる。2026-10-16 ContentsX の main で数えた値）。表示モードは WP の /library に合わせる（WP 側で変えたらここも直す）。
 // 列: 作品 ID・タイトル・ページ数・カテゴリ・表示モード（WP の view_type と同じ値: 'spread'＝見開き / 'vertical_only'＝縦読み専用）。
-// ページ数と表示モードは WP の /library に合わせる（2026-10-16 時点。WP 側で変えたらここも直す）。
 // WP の作品データと同じ形にして toMangaEntry() で変換する（表示モードの判定を window.bmViewType に任せる。BUGS #012/#013）
 const FALLBACK_WORKS = (function() {
   var F = [
@@ -327,9 +326,9 @@ function wpApiGet(endpoint, timeoutMs, controller) {
 
 // ===== /library（ビズ書庫の作品一覧）=====
 // 作品の配列を返す。取得の失敗・WP 以外の応答・空（0件）・中断なら null（0件は WP の異常として扱い、一覧は手書きデータのまま、
-// QR直リンクは必要なら取り直す）。timeoutMs・controller は wpApiGet と同じ（timeoutMs が 0 なら時間では中断しない）
-function fetchLibrary(timeoutMs, controller) {
-  return wpApiGet('/library', timeoutMs, controller).then(function(r) {
+// QR直リンクは必要なら取り直す）。時間では中断しない（中断したいときは controller を渡す。wpApiGet と同じ）
+function fetchLibrary(controller) {
+  return wpApiGet('/library', 0, controller).then(function(r) {
     return (r.status >= 200 && r.status < 300 && Array.isArray(r.data) && r.data.length > 0) ? r.data : null;
   }, function(err) {
     console.warn('WP API（/library）を取得できません:', (err && err.name === 'AbortError') ? '時間切れ' : err);
@@ -393,7 +392,7 @@ function applyLibrary(works) {
 // 一覧の /library。時間切れで中断しない（遅れて届いても一覧と mangaData を WP のデータに更新する）。
 // QR直リンクは一覧を出さず、/library を直リンク用の時間切れつきで取る（下の「Direct access mode」の startDirectFlow）
 if (!isDirectMode) {
-  fetchLibrary(0).then(applyLibrary).catch(function(err) {
+  fetchLibrary().then(applyLibrary).catch(function(err) {
     console.warn('WP API（/library）のデータを反映できませんでした:', err);
   });
 }
@@ -2058,7 +2057,7 @@ function startDirectFlow() {
     var controller = typeof AbortController === 'function' ? new AbortController() : null;
     libraryFetch = { started: Date.now(), timeout: timeout, controller: controller, timer: null };
     armLibraryTimeout();
-    fetchLibrary(0, controller).then(onLibrary).catch(directFlowFailed);
+    fetchLibrary(controller).then(onLibrary).catch(directFlowFailed);
   }
   // 取得中の /library の時間切れ: 判定に /library が要る（libraryNeeded）ときだけ、取りに行ってから timeout で中断して
   // 取り直しに回す（要るようになった時点で過ぎていれば、すぐ中断する）。要らない間（/manga/{id} の答えを待っている間）は

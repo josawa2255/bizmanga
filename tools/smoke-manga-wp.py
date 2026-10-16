@@ -248,7 +248,7 @@ def pick_fallback_id(base, lib):
     """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
     手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
     見分けられる）→ 最終ページCTA が有効 → 手書きのページ数と WP のギャラリー枚数が違う、の順に優先する（手書きデータの
-    ページ数は WP に合わせてあるので、ふつうは違わない）。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
+    ページ数は素材フォルダの枚数なので、WP のギャラリーの方が多い作品もある）。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
     （WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、確認にならない）。
     戻り値: (作品ID, 手書きのページ数, 理由)"""
     try:
@@ -585,9 +585,9 @@ def check_browser(base, data):
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
                 pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", True)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る", True)
             except Exception:
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", False)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る", False)
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）", qr)
             pr.finish("QR直リンク")
