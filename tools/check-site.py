@@ -16,6 +16,7 @@ DEPENDENCIES = {
     "bm-testimonial-detail.js": ["bm-sanitize.js"],
     "bm-column-detail.js": ["bm-sanitize.js", "bm-pricing.js"],
     "bm-news-detail.js": ["bm-sanitize.js"],
+    "works.js": ["bm-wp-config.js"],
 }
 
 

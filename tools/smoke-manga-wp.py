@@ -19,14 +19,15 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
     既定ポート 5500 なら**実際の CORS 設定のまま**通る。別ポートを指定したときだけ、Playwright で API 応答を中継して
     Access-Control-Allow-Origin を足す（その場合 CORS 設定そのものは検証されない）
   - http 配信では CSP frame-src（https: のみ）で 127.0.0.1 の埋込 iframe が拒否されるログが出る。そのローカル起因分だけ無視する
-  - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の URL を使う
+  - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の apiBase を使う
+    （ビズ書庫の js/works.js も、先に読む bm-wp-config.js の apiBase を WP_API_BASE として使う）
   - QR直リンク・埋込・スマホの確認には、works.js のローカルフォールバック表（FALLBACK_WORKS）に**無い**作品を選ぶ
     （ビズ書庫の一覧の初期表示と埋込ビューアは、WP に繋がらないとき手書きデータ・素材フォルダの画像を使うので、
     手書きデータにある作品だと開けたことが WP 接続の確認にならない）
   - QR直リンクは手書きデータでは開かない（Issue #71。2026-10-15 方針）。手書きデータにもある作品が WP のデータで開くことは
-    別項目で、手書きと WP のページ数が違う作品を選んで確かめる（ページ数＝WP のギャラリー枚数、
-    最終ページCTA＝WP の cta_enabled どおり）。期待値は --api ではなく、ブラウザが実際に使う API
-    （js/works.js の WP_API_BASE）から取る
+    別項目で、手書きデータで開いたときと見分けられる作品（WP のギャラリーがある＝1枚目が WP の画像になる・最終ページCTA が
+    有効）を選んで確かめる（ページ数＝WP のギャラリー枚数、1枚目＝WP の画像、最終ページCTA＝WP の cta_enabled どおり）。
+    期待値は --api ではなく、ブラウザが実際に使う API（js/works.js の WP_API_BASE）から取る
   - QR直リンクの分岐（WP が「作品が無い」と答えた／WP が止まっている→「表示に時間がかかっています」→WP が戻ると開く）は、
     ブラウザ側で API の応答を差し替えて確かめる。「作品が無い」の応答は、本番の API に存在しない ID を GET した実物を使う
   - 手書きデータにある作品を選ぶ項目では、WP に未登録の当面の例外（js/works.js の UNREGISTERED_FALLBACK_IDS）を選ばない
@@ -245,8 +246,9 @@ def unregistered_fallback_ids(src):
 
 def pick_fallback_id(base, lib):
     """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
-    手書きのページ数と WP のギャラリー枚数が違う作品（違えば手書きデータで開いたときに見分けられる）→ その中でも
-    最終ページCTA が有効な作品を優先する。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
+    手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
+    見分けられる）→ 最終ページCTA が有効 → 手書きのページ数と WP のギャラリー枚数が違う、の順に優先する（手書きデータの
+    ページ数は WP に合わせてあるので、ふつうは違わない）。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
     （WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、確認にならない）。
     戻り値: (作品ID, 手書きのページ数, 理由)"""
     try:
@@ -263,12 +265,13 @@ def pick_fallback_id(base, lib):
 
     def rank(w):
         differs = len(w.get("gallery") or []) != hand[w["id"]]
-        return (0 if differs else 1, 0 if w.get("cta_enabled") else 1)
+        return (0 if w.get("gallery") else 1, 0 if w.get("cta_enabled") else 1, 0 if differs else 1)
 
     w = sorted(both, key=rank)[0]
     differs = len(w.get("gallery") or []) != hand[w["id"]]
-    why = ("手書きと WP のページ数が違う" if differs else "手書きと WP のページ数が同じ（見分けとしては弱い）") + \
-          ("・CTA 有効" if w.get("cta_enabled") else "")
+    why = ("WP のギャラリーあり（1枚目の画像で見分けられる）" if w.get("gallery") else "WP のギャラリーなし（見分けとしては弱い）") + \
+          ("・CTA 有効" if w.get("cta_enabled") else "") + \
+          ("・手書きと WP のページ数が違う" if differs else "")
     return w["id"], hand[w["id"]], why
 
 
@@ -297,6 +300,7 @@ VIEWER_STATE = """() => {
 }"""
 
 LIBRARY_URL_RE = re.compile(r"/wp-json/contentsx/v1/library(?:[?#]|$)")
+WP_API_PATH = "/wp-json/contentsx/v1/"
 
 
 def watch_library(pg):
@@ -330,12 +334,16 @@ BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
 
 
 class PageProbe:
-    """1ページぶんのエラー・404の記録"""
+    """1ページぶんのエラー・404の記録。
+    expected_api_failures=True: WP API の応答をわざと 4xx/5xx にしたページ用。その応答に対してブラウザが出す読込失敗のログ
+    （"Failed to load resource" で、場所が WP API の URL）と、WP API の 4xx/5xx を数えない。console.error・未捕捉の例外・
+    サイト/素材の 404 は他のページと同じく数える"""
 
-    def __init__(self, ctx, host, local_http=False, **kw):
+    def __init__(self, ctx, host, local_http=False, expected_api_failures=False, **kw):
         self.page = ctx.new_page(**kw)
         self.host = host
         self.local_http = local_http
+        self.expected_api_failures = expected_api_failures
         self.errors, self.bad = [], []
         self.page.on("pageerror", lambda e: self.errors.append("pageerror: " + str(e)[:160]))
         self.page.on("console", self._on_console)
@@ -353,17 +361,23 @@ class PageProbe:
         # http 配信のときだけ: 127.0.0.1 の埋込 iframe に対する CSP frame-src 違反は配信方式の差なので無視
         if self.local_http and "Content Security Policy" in text and ("127.0.0.1" in text or "localhost" in text):
             return
+        # わざと 4xx/5xx にした WP API の応答に対する、ブラウザの読込失敗のログ（JS の console.error ではない）
+        if self.expected_api_failures and text.startswith("Failed to load resource") and WP_API_PATH in loc:
+            return
         # 自サイト・WP・素材ホスト起因（または場所不明）のエラーだけ数える。GA/Clarity/HubSpot 等は無視
         if (not loc) or self._watched(loc):
             self.errors.append("console: " + text[:160])
 
     def _on_response(self, r):
+        if self.expected_api_failures and WP_API_PATH in r.url:
+            return
         if self._watched(r.url) and r.status >= 400:
             self.bad.append(f"{r.status} {r.url}")
 
     def finish(self, label):
         rec(f"{label}: JSエラー無し", not self.errors, "; ".join(self.errors)[:300])
-        rec(f"{label}: サイト/WP/素材への 404 無し", not self.bad, "; ".join(self.bad)[:300])
+        rec(f"{label}: サイト/WP/素材への 404 無し" + ("（わざと失敗させた WP API の応答を除く）" if self.expected_api_failures else ""),
+            not self.bad, "; ".join(self.bad)[:300])
         try:
             self.page.close()
         except Exception:
@@ -665,7 +679,8 @@ def check_browser(base, data):
             ② 存在しない ID（差し替えなし・実際の API）→ 「作品が見つかりませんでした」
             ③ WP が止まっている（/manga/{id} と /library が 503）→ 「表示に時間がかかっています」と再読み込みボタンが出て、
               手書きデータ（FALLBACK_WORKS）では開かない。WP が戻る（/manga/{id} が応答する）と WP のデータで開く
-            API の 4xx/5xx はわざと起こしているので、これらのページは 404 の集計に入れず JS の未捕捉エラーだけ見る"""
+            API の 4xx/5xx はわざと起こしているので、その応答（と、それに対するブラウザの読込失敗のログ）だけは数えず、
+            JS のエラー（未捕捉の例外・console.error）とサイト/素材の 404 は他の区画と同じく PageProbe で見る"""
             api_b, lib_b, why = site_api()
             if lib_b is None:
                 skip("QR直リンクの分岐(作品が無い・WP 停止)", why)
@@ -689,20 +704,19 @@ def check_browser(base, data):
                 ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
                 for pattern, handler in routes:
                     ctx.route(pattern, handler)
-                pg = ctx.new_page()
-                errors = []
-                pg.on("pageerror", lambda e: errors.append(str(e)[:160]))
-                pg.goto(f"{base}/biz-library.html?manga={mid}", wait_until="domcontentloaded")
-                return ctx, pg, errors
+                pr = PageProbe(ctx, host, local_http=local_http, expected_api_failures=True)
+                pr.page.goto(f"{base}/biz-library.html?manga={mid}", wait_until="domcontentloaded")
+                return ctx, pr
 
             # ① プラグインの 404（実物の本文）・/library からもその作品を外す
             lib_without = [w for w in lib_b if w.get("id") != fb_id]
-            ctx, pg, errors = open_page([
+            ctx, pr = open_page([
                 ("**/wp-json/contentsx/v1/manga/**",
                  lambda route: route.fulfill(status=404, headers=json_headers, body=json.dumps(body404))),
                 ("**/wp-json/contentsx/v1/library*",
                  lambda route: route.fulfill(status=200, headers=json_headers, body=json.dumps(lib_without, ensure_ascii=False))),
             ], fb_id)
+            pg = pr.page
             try:
                 pg.wait_for_function(NOT_FOUND, timeout=15000)
                 nf = True
@@ -711,11 +725,12 @@ def check_browser(base, data):
             opened = pg.evaluate("() => { const m = document.getElementById('mangaModal'); return !!(m && m.classList.contains('open')); }")
             rec(f"QR直リンク ?manga={fb_id}: WP が「作品が無い」と答え /library にも無ければ「作品が見つかりませんでした」（手書きデータで開かない）",
                 nf and not opened, f"見つかりません={'有' if nf else '無'} ビューア={'開いた' if opened else '無'}")
-            rec("QR直リンク(「作品が無い」): JSエラー無し", not errors, "; ".join(errors)[:300])
+            pr.finish("QR直リンク(「作品が無い」)")
             close_ctx(ctx)
 
             # ② 存在しない ID（実際の API。差し替えなし）
-            ctx, pg, errors = open_page([], missing_id)
+            ctx, pr = open_page([], missing_id)
+            pg = pr.page
             try:
                 pg.wait_for_function(NOT_FOUND, timeout=15000)
                 nf = True
@@ -724,7 +739,7 @@ def check_browser(base, data):
             link = pg.evaluate("() => { const a = document.querySelector('body > div > a'); return a ? a.getAttribute('href') : null; }") if nf else None
             rec(f"QR直リンク ?manga={missing_id}（存在しない ID）: 「作品が見つかりませんでした」とトップへのリンク",
                 nf and link == "/", f"見つかりません={'有' if nf else '無'} リンク={link}")
-            rec("QR直リンク(存在しない ID): JSエラー無し", not errors, "; ".join(errors)[:300])
+            pr.finish("QR直リンク(存在しない ID)")
             close_ctx(ctx)
 
             # ③ WP が止まっている（/manga/{id}・/library とも 503）→ 「表示に時間がかかっています」と再読み込みボタン。
@@ -739,10 +754,11 @@ def check_browser(base, data):
                     route.fulfill(status=503, headers=json_headers, body='{"code":"service_unavailable"}')
                 else:
                     route.fallback()  # 実際の API へ（別ポートのときは CORS の中継へ）
-            ctx, pg, errors = open_page([
+            ctx, pr = open_page([
                 ("**/wp-json/contentsx/v1/manga/**", down_or_through),
                 ("**/wp-json/contentsx/v1/library*", down_or_through),
             ], fb_id)
+            pg = pr.page
             label3 = f"QR直リンク ?manga={fb_id}: WP が止まっている（/manga/{{id}}・/library が 503）とき"
             try:
                 pg.wait_for_selector(".bm-direct-stalled", state="visible", timeout=12000)
@@ -767,7 +783,7 @@ def check_browser(base, data):
             rec(f"{label3}、WP が戻ると WP のデータ（ページ数・画像）で開き、メッセージが消える",
                 st3["page"].endswith(f"/ {n_wp}") and n_wp > 0 and (wp_first is None or st3.get("first") == wp_first) and st3.get("stalled") == 0,
                 f"表示={st3['page']} WP={n_wp}P 手書き={hand_pages}P / 1枚目={str(st3.get('first'))[-50:]}")
-            rec("QR直リンク(WP 停止→復旧): JSエラー無し", not errors, "; ".join(errors)[:300])
+            pr.finish("QR直リンク(WP 停止→復旧)")
             close_ctx(ctx)
 
         def internal_nav():
