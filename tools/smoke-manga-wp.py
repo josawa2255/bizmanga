@@ -29,6 +29,8 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
     （js/works.js の WP_API_BASE）から取る
   - QR直リンクの分岐（WP が「作品が無い」と答えた／WP が止まっている→「表示に時間がかかっています」→WP が戻ると開く）は、
     ブラウザ側で API の応答を差し替えて確かめる。「作品が無い」の応答は、本番の API に存在しない ID を GET した実物を使う
+  - 手書きデータにある作品を選ぶ項目では、WP に未登録の当面の例外（js/works.js の UNREGISTERED_FALLBACK_IDS）を選ばない
+    （この例外は WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、「手書きデータでは開かない」の確認にならない）
 
 終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
@@ -235,10 +237,18 @@ def pick_wp_only_id(base, lib):
     return ids[0], "全作品が FALLBACK_WORKS にあるため先頭を使用（WP 接続の確認としては弱い）"
 
 
+def unregistered_fallback_ids(src):
+    """works.js の UNREGISTERED_FALLBACK_IDS（WP に未登録の当面の例外。WP がデータを返せないとき手書きデータで開く）"""
+    m = re.search(r"UNREGISTERED_FALLBACK_IDS\s*=\s*\[([^\]]*)\]", src)
+    return set(re.findall(r"'([^']+)'", m.group(1))) if m else set()
+
+
 def pick_fallback_id(base, lib):
     """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
     手書きのページ数と WP のギャラリー枚数が違う作品（違えば手書きデータで開いたときに見分けられる）→ その中でも
-    最終ページCTA が有効な作品を優先する。戻り値: (作品ID, 手書きのページ数, 理由)"""
+    最終ページCTA が有効な作品を優先する。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
+    （WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、確認にならない）。
+    戻り値: (作品ID, 手書きのページ数, 理由)"""
     try:
         src = get_text(f"{base}/js/works.js")
     except Exception as e:
@@ -246,9 +256,10 @@ def pick_fallback_id(base, lib):
     # ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → id と手書きのページ数
     hand = {m.group(1): int(m.group(2))
             for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
-    both = [w for w in lib if w.get("id") in hand]
+    excluded = unregistered_fallback_ids(src)
+    both = [w for w in lib if w.get("id") in hand and w.get("id") not in excluded]
     if not both:
-        return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い"
+        return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い（WP に未登録の当面の例外を除く）"
 
     def rank(w):
         differs = len(w.get("gallery") or []) != hand[w["id"]]
@@ -284,6 +295,33 @@ VIEWER_STATE = """() => {
            first: first ? first.getAttribute('src') : null,
            cta: (typeof currentCtaData !== 'undefined' && currentCtaData) ? currentCtaData.client_url : null };
 }"""
+
+LIBRARY_URL_RE = re.compile(r"/wp-json/contentsx/v1/library(?:[?#]|$)")
+
+
+def watch_library(pg):
+    """このページの /library の応答を集める（goto より前に呼ぶ。読み込み中に届いた応答も逃さない）"""
+    box = []
+    pg.on("response", lambda r: box.append(r) if LIBRARY_URL_RE.search(r.url) else None)
+    return box
+
+
+def wait_library_ok(pg, box, timeout_ms=25000):
+    """/library の 200 の応答が届き、本文を受け取り終えるまで待つ。戻り値: (届いたか, 説明)"""
+    waited = 0
+    while waited < timeout_ms:
+        ok = [r for r in box if r.status == 200]
+        if ok:
+            try:
+                ok[0].finished()  # 本文の受信完了まで
+            except Exception:
+                pass
+            return True, f"HTTP 200（{waited}ms 待った）"
+        pg.wait_for_timeout(100)
+        waited += 100
+    return False, (f"{timeout_ms}ms 以内に 200 が届かない（届いた応答: " +
+                   (", ".join(str(r.status) for r in box) or "無し") + "）")
+
 
 # 読み込みを試みた（complete）のに幅ゼロ＝壊れている画像。未着手の lazy 画像は数えない
 BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
@@ -562,6 +600,7 @@ def check_browser(base, data):
             ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
             pr = probe(ctx)
             pg = pr.page
+            lib_box = watch_library(pg)
             pg.goto(f"{base}/biz-library.html?manga={fb_id}", wait_until="load")
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
@@ -571,11 +610,10 @@ def check_browser(base, data):
                 opened = False
             rec(f"{label}: ビューアが自動で開き画像が出る", opened)
             if opened:
-                # /library の到着後も開き直されず WP のデータのままであることを見るため、到着（グリッドの作品数）を待つ
-                try:
-                    pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib_b), timeout=25000)
-                except Exception:
-                    pass
+                # /library の到着後も開き直されず WP のデータのままであることを見るため、/library の応答（ネットワーク）を待つ。
+                # 直リンクでは一覧（#worksGrid）を作らないので、グリッドの作品数では待てない
+                lib_ok, lib_why = wait_library_ok(pg, lib_box)
+                rec(f"{label}: /library の応答が届く（届いた後もそのまま WP のデータで表示されているかを見る前提）", lib_ok, lib_why)
                 pg.wait_for_timeout(1000)
                 st = pg.evaluate(VIEWER_STATE)
                 rec(f"{label}: ページ数が WP（/manga/{{id}} のギャラリー枚数）どおり", st["page"].endswith(f"/ {n_wp}") and n_wp > 0,
