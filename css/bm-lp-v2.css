@@ -1135,7 +1135,87 @@
   display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
 }
-.lpv2-library .bm-lp-lib-loading { color: rgba(255,255,255,0.6); text-align: center; padding: 32px; }
+/* bm-lp-library-embed.js が描く作品カード・読み込み中・空/エラー表示。
+   旧 bm-lp-template.css（v2 移行で読み込み停止、2026-10-07 削除）にあった指定を
+   生成り地の v2 トークンで移植した（Issue #82: 未指定のままで、ページ数が表紙の下に
+   素の文字で並び、表紙なしの作品は枠の高さが無く、読み込み中の文字は生成り地に
+   白60%で読めず、空・エラー表示も1マス幅に押し込まれていた）。 */
+.lpv2-library .bm-lp-lib-loading,
+.lpv2-library .bm-lp-lib-empty {
+  grid-column: 1 / -1;          /* 1マスに押し込まれず、グリッド全幅に出す */
+  margin: 0;
+  padding: 48px 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--lpv2-ink-mute);  /* 生成り地で 5.7:1 */
+}
+.lpv2-library .bm-lp-lib-empty a {
+  color: var(--lpv2-accent-deep); /* 生成り地で 5.2:1（--lpv2-accent は 3.5:1 で小さい文字に足りない） */
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lpv2-library .bm-lp-lib-item {
+  display: block;
+  min-width: 0;
+  color: var(--lpv2-ink);
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+.lpv2-library .bm-lp-lib-item:hover { transform: translate(-2px, -2px); }
+.lpv2-library .bm-lp-lib-cover {
+  position: relative;
+  aspect-ratio: 4 / 5.65;
+  background: var(--lpv2-cream-deep);
+  border: 2px solid var(--lpv2-ink);
+  box-shadow: var(--lpv2-shadow-panel-sm);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+.lpv2-library .bm-lp-lib-item:hover .bm-lp-lib-cover { box-shadow: 7px 7px 0 var(--lpv2-rule); }
+.lpv2-library .bm-lp-lib-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.lpv2-library .bm-lp-lib-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lpv2-ink-mute);  /* cream-deep 地で 5.1:1 */
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+.lpv2-library .bm-lp-lib-pages {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--lpv2-ink);
+  color: #fff;
+  font-family: var(--lpv2-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.lpv2-library .bm-lp-lib-meta { padding: 12px 4px 4px; }
+.lpv2-library .bm-lp-lib-title {
+  display: block;
+  font-family: var(--lpv2-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--lpv2-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lpv2-library .bm-lp-lib-item,
+  .lpv2-library .bm-lp-lib-cover { transition: none; }
+}
 
 /* SP: 書庫は2列流動にして、画面幅に応じて縮小する */
 @media (max-width: 560px) {

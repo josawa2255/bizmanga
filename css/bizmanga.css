@@ -17,6 +17,10 @@
   --bm-bg-light: #FFF9F4;
   --bm-text: #333333;
   --bm-text-muted: #666666;
+  /* 補足文（表のスクロール案内など）。以前は一部ページのインライン critical CSS にしか無く、
+     静的生成のコラム（column/*.html）などでは未定義で色が効いていなかった（Issue #82）。
+     値はそのインライン定義と同じ。 */
+  --bm-text-sub: #4a4640;
   --bm-text-light: #999999;
   --bm-border: #e0d6cc;
   --bm-card-bg: #ffffff;
@@ -366,10 +370,13 @@ body:has(.bm-nav-dropdown:not(.bm-nav-dropdown-dismissed):is(.is-open, .is-mega-
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: max-height 0.25s cubic-bezier(0.2, 0, 0, 1),
-              opacity 0.2s cubic-bezier(0.2, 0, 0, 1),
-              padding 0.25s cubic-bezier(0.2, 0, 0, 1),
-              transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  /* 閉じるときの指定（ゆっくり消えて、カードへ手を伸ばす時間を稼ぐ。SPEC §1b）。
+     開くときは下の is-mega-open 側で 0.25s に上書きして速いまま保つ。
+     以前は 0.45s が未使用の .bm-nav-dropdown-menu にだけ書かれ、ここは 0.25s のままだった（Issue #82） */
+  transition: max-height 0.45s cubic-bezier(0.2, 0, 0, 1),
+              opacity 0.4s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.45s cubic-bezier(0.2, 0, 0, 1),
+              transform 0.45s cubic-bezier(0.2, 0, 0, 1);
   z-index: 1000;
   display: grid;
   /* 列数は中身に追従させる（1列のビズ書庫は狭く、3列のサービスは従来どおり） */
@@ -378,7 +385,7 @@ body:has(.bm-nav-dropdown:not(.bm-nav-dropdown-dismissed):is(.is-open, .is-mega-
   gap: 0;
 }
 /* ⚠️ :hover は入れない。入れるとカーソルが外れた瞬間に閉じ始めてしまい、
-   JS側の遅延クローズ(300ms)が効かなくなる。開閉は js/bm-nav.js が
+   JS側の遅延クローズ(MEGA_CLOSE_DELAY 160ms)が効かなくなる。開閉は js/bm-nav.js が
    is-mega-open を付け外して制御する（:focus-within はキーボード操作用に残す）。 */
 .bm-nav-megamenu-wrap.is-mega-open .bm-nav-megamenu,
 .bm-nav-megamenu-wrap.is-open .bm-nav-megamenu,
@@ -665,7 +672,7 @@ body:has(.art-modal.is-open) .bm-fab { display: none !important; }
   bottom: calc(100% + 6px);
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #000;
+  border-top-color: #333; /* 吹き出し（::before の background）と同じ色 */
 }
 .bm-fab__btn:hover::before,
 .bm-fab__btn:hover::after {
@@ -2258,7 +2265,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 /* フィルターチップ */
 .bm-column-filter {
   position: sticky;
-  top: 68px;
+  top: var(--bm-header-height, 72px);
   z-index: 30;
   background: #fff;
   border-top: 1px solid #eee;
@@ -2528,7 +2535,6 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
     line-height: 1.8;
   }
   .bm-column-filter {
-    top: 60px;
     padding: 10px 0;
     margin-bottom: 28px;
   }
@@ -3497,7 +3503,7 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
   transform: translateX(-50%);
   bottom: calc(100% + 12px);
   border: 6px solid transparent;
-  border-top-color: #000;
+  border-top-color: #333; /* 吹き出し（::before の background）と同じ色 */
 }
 .bm-cta-btn:hover::before,
 .bm-cta-btn:hover::after {
@@ -4875,7 +4881,8 @@ a.bm-news-thumb:hover .bm-news-thumb-crop { transform: scale(1.05); }
 /* 1100px 未満: ヘッダーナビを詰める (Windows 1280px スクロールバー込み対策) */
 @media (max-width: 1100px) {
   .bm-header-inner { padding: 0 12px; }
-  .bm-nav { gap: 16px; }
+  /* .bm-nav の gap はここで上書きしない（基本の 11px のまま）。
+     以前は 16px を指定しており、詰めるためのこの幅でかえって広がっていた（Issue #82） */
   .bm-nav-link { font-size: 13px; }
   .bm-nav-cta { padding: 8px 14px; font-size: 13px; }
 }
@@ -5974,7 +5981,9 @@ html[lang="ja"] p,
 }
 .bm-work-detail-cta-btn:hover::before { width: 260%; }
 
-.bm-work-detail-cta-sub {
+/* 親クラス付きにして .bm-work-detail-cta p（14px・margin-top 0）より詳細度を上げる。
+   単独クラスだと負けて 13px / margin-top 16px が効いていなかった（Issue #82） */
+.bm-work-detail-cta .bm-work-detail-cta-sub {
   font-size: 13px;
   color: #000;
   margin-top: 16px;
