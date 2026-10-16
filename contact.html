@@ -157,27 +157,27 @@ p{margin:0 0 16px;}
             <p>解決しない場合やお急ぎの場合は、お電話（<a href="tel:03-6261-0764">03-6261-0764</a>）にてお問い合わせください。</p>
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label"> 会社名 <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="text" id="bmCompany" name="company" placeholder="Contents X 株式会社" required data-crm-field="company_name">
+            <label class="bm-form-label" for="bmCompany"> 会社名 <span class="bm-required">必須</span></label>
+            <input class="bm-form-input" type="text" id="bmCompany" name="company" autocomplete="organization" placeholder="Contents X 株式会社" required data-crm-field="company_name">
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label">部署 <span class="bm-required">必須</span></label>
+            <label class="bm-form-label" for="bmDepartment">部署 <span class="bm-required">必須</span></label>
             <input class="bm-form-input" type="text" id="bmDepartment" name="department" placeholder="マーケティング部" required data-crm-field="department">
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label">お名前 <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="text" id="bmName" name="fullName" placeholder="佐藤 太郎" required data-crm-field="full_name">
+            <label class="bm-form-label" for="bmName">お名前 <span class="bm-required">必須</span></label>
+            <input class="bm-form-input" type="text" id="bmName" name="fullName" autocomplete="name" placeholder="佐藤 太郎" required data-crm-field="full_name">
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label">メールアドレス <span class="bm-required">必須</span></label>
-            <input class="bm-form-input" type="email" id="bmEmail" name="email" placeholder="example@company.com" required data-crm-field="email">
+            <label class="bm-form-label" for="bmEmail">メールアドレス <span class="bm-required">必須</span></label>
+            <input class="bm-form-input" type="email" id="bmEmail" name="email" autocomplete="email" placeholder="example@company.com" required data-crm-field="email">
           </div>
           <div class="bm-form-group">
-            <label class="bm-form-label">お問い合わせ内容 <span class="bm-required">必須</span></label>
+            <label class="bm-form-label" for="bmMessage">お問い合わせ内容 <span class="bm-required">必須</span></label>
             <textarea class="bm-form-textarea" id="bmMessage" name="message" placeholder="ご質問やご要望をご記入ください" required data-crm-field="message"></textarea>
           </div>
           <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
-               値が入っていた送信はCRM側で黙って破棄する。
+               値が入っていた送信は js/bm-contact.js がどこへも送らず完了表示だけ出す（CRM側も data-honeypot で破棄する）。
                display:none ではなく画面外に飛ばす（display:none を無視するボット対策）。
                tabindex=-1 と autocomplete=off でキーボード操作・自動補完からも外す。 -->
           <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">

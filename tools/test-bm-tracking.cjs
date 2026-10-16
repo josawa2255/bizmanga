@@ -6,10 +6,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const source = fs.readFileSync(process.argv[2] || path.join(__dirname, '../js/bm-tracking.js'), 'utf8');
+// Must stay identical to the selector in bm-tracking.js (FAQ markup of faq/pricing and bizanime).
+const FAQ_SELECTOR = '.lpv2-faq-item > summary, .ba-faq-q > button';
 let passed = 0;
 function test(name, check) { check(); passed++; console.log('PASS ' + name); }
 function setup(options = {}) {
-  const hits = [], winListeners = {}, docListeners = {}, faqListeners = {};
+  const hits = [], winListeners = {}, docListeners = {}, faqListeners = {}, baFaqListeners = {};
   let stored = options.stored || '{}';
   function on(store, name, fn, opts) { (store[name] ||= []).push({ fn, once: !!(opts && opts.once) }); }
   function emit(store, name, event) {
@@ -18,11 +20,16 @@ function setup(options = {}) {
     listeners.forEach(x => x.fn(event));
   }
   const location = new URL(options.url || 'https://bizmanga.contentsx.jp/pricing?utm_source=test');
-  const faq = { textContent: '料金は？', addEventListener: (name, fn, opts) => on(faqListeners, name, fn, opts) };
+  // <summary> of faq.html / pricing.html, and the numbered <button> of bizanime.html.
+  const faq = { textContent: '料金は？', querySelector: () => null,
+    addEventListener: (name, fn, opts) => on(faqListeners, name, fn, opts) };
+  const baFaq = { textContent: '01企画段階から相談できますか？',
+    querySelector: s => s === '.ba-faq-num + span' ? { textContent: '企画段階から相談できますか？' } : null,
+    addEventListener: (name, fn, opts) => on(baFaqListeners, name, fn, opts) };
   const document = {
     readyState: options.readyState || 'complete',
     documentElement: { scrollHeight: options.scrollHeight ?? 1800 },
-    querySelectorAll: selector => selector === '.bm-faq-q' ? [faq] : [],
+    querySelectorAll: selector => selector === FAQ_SELECTOR ? [faq, baFaq] : [],
     addEventListener: (name, fn, opts) => on(docListeners, name, fn, opts)
   };
   const window = {
@@ -52,6 +59,7 @@ function setup(options = {}) {
   return { hits, window, document, run, click, data: () => JSON.parse(stored),
     note: () => window.bmGetTrackingNote(),
     faq: () => emit(faqListeners, 'click', {}),
+    baFaq: () => emit(baFaqListeners, 'click', {}),
     event: event => emit(docListeners, 'click', event),
     load: () => { document.readyState = 'complete'; emit(winListeners, 'load', {}); },
     scroll: y => { window.scrollY = y; emit(winListeners, 'scroll', {}); }
@@ -118,6 +126,20 @@ test('FAQ and category logging retain existing form-note behavior', () => {
   const h=setup(); h.faq(); h.faq();
   h.event({target:{closest: s => s === '.bm-filter-btn, .filter-btn' ? {textContent:'採用 (3)'} : null}, isTrusted:true});
   assert.equal(h.data().faqClicked.length,1); assert.match(h.note(),/閲覧FAQ: 料金は？/); assert.match(h.note(),/関心カテゴリ: 採用/);
+});
+test('numbered FAQ buttons log only the question text', () => {
+  const h=setup(); h.faq(); h.baFaq(); h.baFaq();
+  assert.deepEqual(h.data().faqClicked, ['料金は？', '企画段階から相談できますか？']);
+  assert.match(h.note(), /閲覧FAQ: 料金は？, 企画段階から相談できますか？/);
+});
+test('FAQ selector matches the FAQ markup of pages that load the script', () => {
+  const page = name => fs.readFileSync(path.join(__dirname, '..', name), 'utf8');
+  for (const [name, markup] of [['faq.html', /<details class="lpv2-faq-item"[^>]*>\s*<summary>/],
+    ['pricing.html', /<details class="lpv2-faq-item"[^>]*>\s*<summary>/],
+    ['bizanime.html', /<h3 class="ba-faq-q"><button[^>]*><span class="ba-faq-num">[^<]*<\/span><span>/]]) {
+    const html = page(name); assert.match(html, /bm-tracking\.js/, name); assert.match(html, markup, name);
+  }
+  assert.ok(source.includes(`querySelectorAll('${FAQ_SELECTOR}')`));
 });
 test('no click emits a lead or Google Ads conversion', () => {
   const h=setup(); ['/contact','/download','tel:000','https://line.me/R/'].forEach(href=>h.click(href));
