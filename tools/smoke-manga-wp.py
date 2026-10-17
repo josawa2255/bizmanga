@@ -482,8 +482,11 @@ def check_browser(base, data):
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", True)
             except Exception:
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", False)
-            hs = pg.evaluate("() => document.body.scrollWidth > window.innerWidth")
-            rec("スマホ(390px): 横スクロール無し", not hs)
+            # ビズ書庫の中身が画面より広くはみ出していないかを body.scrollWidth（切り取る前の中身の幅）で見る（SPEC §0.6）。
+            # ⚠️ documentElement.scrollWidth に変えない: html/body の overflow-x: clip で切った後の幅なので常に画面幅になり、
+            #    画面からはみ出して切り取られた（見えなくなった）内容を見逃す。ビズ書庫は 390px で body.scrollWidth = 390
+            sw = pg.evaluate("() => [document.body.scrollWidth, window.innerWidth]")
+            rec("スマホ(390px): 横スクロール無し", not (sw[0] > sw[1]), f"body.scrollWidth={sw[0]} innerWidth={sw[1]}")
             pr.finish("スマホ")
             close_ctx(ctx)
 

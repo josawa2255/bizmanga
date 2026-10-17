@@ -242,10 +242,16 @@
   .bm-dl-meta { margin-bottom: 24px; }
   .bm-dl-points { margin-top: 48px; }
 }
-/* 2カラム時はフォームを追従させ、左の説明を読みながら入力できるようにする */
-@media (min-width: 861px) {
+/* 2カラム時はフォームを追従させ、左の説明を読みながら入力できるようにする。
+   追従位置はヘッダー（--bm-header-height: 72px）の下に 24px 空けた 96px。
+   ⚠️ 縦の長さの条件（min-height）を外さない: カード（実測 805〜820px）が画面より高いまま
+   貼り付くと、貼り付いている間は送信ボタンが画面の下に隠れたまま動かない（PR #78 レビュー）。
+   940px = 追従位置 96px ＋ カード 820px ＋ 下の余白 24px。これより低い画面（1366×768・1440×900 の
+   ノートPC等）は追従させず、普通にスクロールして送信ボタンまで行ける。
+   フォームの項目を増やしてカードが高くなったら測り直す（SPEC「資料ダウンロード」のレイアウト）。 */
+@media (min-width: 861px) and (min-height: 940px) {
   .bm-dl-card {
     position: sticky;
-    top: 96px;
+    top: calc(var(--bm-header-height, 72px) + 24px);
   }
 }
