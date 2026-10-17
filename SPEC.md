@@ -486,6 +486,11 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 
 - ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
 - ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
+- RSS（`/feed.xml`）も同じワークフローで `tools/build-columns.py` の後に `tools/build-feed.py` が生成し、`feed.xml` もコミット対象（2026-10-15、Issue #86。それまでどのワークフローにも無く 2026-04-25 から更新されていなかった。#75 と同じ方式）。
+  - コラムは `build-columns.py` と同じ一覧（`bm_content.COLUMNS_API`、per_page=100）・同じslug（`make_slug`）で `/column/{slug}` を指す。ニュースは `news-detail?id=`（日付 `YYYY.MM.DD` も読む）。
+  - 並びは記事が最後に変わった日の新しい順で最大30件。`lastBuildDate` はその先頭の日付の 09:00 JST（実行時刻ではない＝記事が変わらなければ feed.xml は同じで、空のコミットを作らない）。日付が読めない記事は `pubDate` を省く。
+  - コラム0件・ID欠落は書かずに失敗し既存の feed.xml を残す。ワークフローではフィードの失敗でコラムの公開を止めない（`continue-on-error`）。
+- **コラムの更新日は1か所で決める**（`tools/bm_content.py` の `column_modified_ymd`。2026-10-15、Issue #86）: 記事ページ（`dateModified`・`article:modified_time`・`last-modified`）、sitemap の `lastmod`、RSS の並び順が同じ値を使う。WP の `modified_ymd` が公開日より前（予約投稿など）または「今日」（一括更新の可能性）のときは公開日 `date_ymd` にする。以前は sitemap だけ WP の値をそのまま使い、公開日より前の lastmod が出ていた。
 
 ### 2.0b embed-viewer のパラメータ（埋込ビューア）
 
@@ -700,7 +705,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
     - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
-    - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
+    - 静的ビルドは `tools/bm_build.py` の `work_page_count()`（数）/ `work_pages_label()`（表示文字列「8P」）に一本化（2026-10-15、Issue #86）: gallery実枚数があればそれ、無ければWP手入力（`spec.pages` → `pages`）。使う箇所: 詳細ページのスペック表記・「この事例について」の「全Nページ」（`build-works.py`）、カテゴリページのモーダル用データ `pages` / `spec.pages`（gallery を5枚に絞る**前**の実枚数。`build_category_works_json`）、LP の CASE STUDY の「/ NP」と並び順（`build-lp-cases.py`）。それまでカテゴリページのデータとLP事例はWP手入力のままだった。ページ数を出す生成物を足すときもこの2関数を通す
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先URL
@@ -755,6 +760,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
     - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
   - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示（お問い合わせpillのみ可視）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
+- **静的生成ページのテンプレート**（`tools/templates/column-detail.html.tpl` / `work-detail.html.tpl` / `works-category.html.tpl`）もルートページと同じヘッダー（お問い合わせ pill + `bm-cta-icons`、ロゴ `width="140" height="40"`、リンクは `/` 始まり）にする（2026-10-15、Issue #86。それまでコラム・制作事例詳細はアイコン無し、カテゴリは廃止済みの `.bm-nav-cta--line` のままだった）。CSP もルートページ（`works.html` 等）と同じ文字列にし、Google 広告（`AW-…`）用の `googleads.g.doubleclick.net` / `www.googleadservices.com` を含める。`tools/test_build.py` の `test_templates_match_root_pages` が検査する
 - **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視
 
 ### 6.2 ドロップダウン仕様
@@ -926,6 +932,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - **Preload**: hero表紙6枚 (index), 3枚 (biz-library) を `<link rel="preload" as="image">`
 - **works個別ページ**: ヒーロー画像を `<link rel="preload" as="image" fetchpriority="high">` + `<img fetchpriority="high" decoding="async">`。LCP候補を明示してクリティカルリクエストを先読み（2026-04-20導入）
 - **works ヒーロー画像の解像度整合**（2026-04-21修正）: build-works.py で `gallery[0]`（フル解像度）を hero に使う。WPの `thumbnail` フィールドは 188x300 の自動生成サムネで、1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため避ける
+- **works ヒーロー画像の width/height**（2026-10-15、Issue #86）: 以前は縦長の漫画ページに `width="1200" height="630"`（横長）を宣言していた。WP の gallery は URL だけで寸法が無いため、`build-works.py` の `hero_image_size()` が WP の縮小版 `thumbnail`（`…-212x300.webp`）が `gallery[0]` と同じ画像なら、その寸法（＝実画像の縦横比）を出す（2026-10 時点で31作品中26作品）。分からなければ一覧カードと同じ漫画1ページの標準比 `400x560`。**属性を外すと表示領域が確保されず、読み込み時に本文が大きくずれる**（1280x800 で CLS 0.006 → 0.53 を計測）ので外さない
 - **ギャラリー画像**: `loading="lazy" decoding="async"` で非同期デコード（works 17ページ・2026-04-20導入）
 - **dns-prefetch**: `cms.contentsx.jp`
 - **preconnect**: フォント / WP API
@@ -1235,7 +1242,7 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 
 | # | 場所 | リスク | 対応方針 |
 |---|------|--------|---------|
-| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用。さらに同経路に `normalize_brand_text()`（冪等）を組込み、禁止コピー「人間7割×AI3割」系→「独自の制作メソッド」・旧料金14,700→16,600 をビルド時に自動正規化（BUGS #040。WP本文がマスターのままでも公開HTMLを方針準拠に保つ防壁） |
+| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用。さらに同経路に `normalize_brand_text()`（冪等）を組込み、禁止コピー「人間7割×AI3割」系（区切りが「・」の「人間7割・AI3割」も、2026-10-15 Issue #86）→「独自の制作メソッド」・旧料金14,700→16,600 をビルド時に自動正規化（BUGS #040。WP本文がマスターのままでも公開HTMLを方針準拠に保つ防壁） |
 | S2 | [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl):80-87 / [work-detail.html.tpl](tools/templates/work-detail.html.tpl):60-86 | `{{title_ja}}` 等が `html.escape(quote=True)` 経由でJSON-LD内に挿入。`\` や `\n` が含まれるとJSON構文破壊リスク | JSON-LD自体を build側で `json.dumps` してテンプレに `{{json_ld}}` で1ブロック差し込む設計に変更 |
 | ~~S3~~ | ランタイムJS全般（bm-wp-api.js / works.js / bm-testimonials*.js / bm-works-page.js / column-detail.html / testimonial-detail.html） | WP由来文字列を未エスケープで `innerHTML` 連結。`column-detail.html` は `richHTML` typoで本文サニタイズ自体が無効だった | ✅ **解消(2026-06-10 BUGS #039)** 全描画を `bmSanitize.html()`/`rich()`/`url()`＋`safePos` 経由に統一、Playwrightでペイロード注入検証済み |
 | S4 | 全HTMLヘッダー | CSP / HSTS / Permissions-Policy ヘッダなし（GitHub Pages制約） | `<meta http-equiv="Content-Security-Policy">` で許容範囲のCSPを meta タグで追加 |
@@ -1274,12 +1281,12 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 ### 16.2 共通チェックと自動生成（2026-10-05）
 
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
-- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。Issue #86 分（`StaticBuildIssue86Tests`）: 「人間7割・AI3割」の正規化、旧料金「1ページ1万円台」の正規化（meta・OG・JSON-LD・一覧カード）、ページ数の gallery 実枚数優先（gallery 3枚・手入力10ページ）、LPコメントの「」の二重化防止、コラム更新日の記事ページ・sitemap・RSS での一致、build-columns.yml の RSS 生成とコミット対象、制作事例ヒーロー画像の縦横比、テンプレートの CSP・ヘッダー・ロゴ寸法・フッター社名がルートページと揃っていること。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
-- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性（feed.xml も実行時刻に依存しないので完全一致）を検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
 `tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
@@ -1314,5 +1321,6 @@ IndexNowはpushのbefore〜after全体を対象とする。beforeが取得でき
 - ロゴ表示: `js/client-logos.js` が2種類のデータ・クラス名を扱う。`js/data/` のデータは従来どおり分離。
 - 8本のLPはHTML全体のv2マーカーを判定して事例セクションを生成。繰り返し実行しても空行を増やさない。
 - LP事例は最大3件、カード幅は最大340pxで中央配置し、件数に応じて空の列を残さない。0件時は準備中の案内と制作事例・ビズ書庫へのリンクを表示する。
+- LP事例のお客様コメントはカード側で「」で囲む。WP のコメントが既に「…」で囲まれていれば外してから囲む（`strip_outer_quotes`。2026-10-15、Issue #86。以前は company/ir/product/sales の4LPで「「…」」になっていた）。
 - 参照がなくなっていた `js/bm-flow.js`、`js/bm-product-manga.js`、`css/production-flow.css`、`css/bm-lp-template.css` は削除。画像の元データは保持。
 - Service Workerは `bm-covers-` 系の旧キャッシュだけを削除し、背景の再取得・キャッシュ保存を `waitUntil` で完了させる。

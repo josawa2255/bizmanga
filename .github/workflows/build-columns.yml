@@ -28,8 +28,13 @@ jobs:
         with:
           python-version: '3.11'
       - run: python3 tools/build-columns.py
+      # feed.xml もコラムと同じ記事から作る（Issue #86 / #72。それまでどのワークフローにも無く4月から更新されていなかった）。
+      # 失敗しても既存の feed.xml はそのまま残る（書き込みは成功時だけ）ので、フィードの失敗でコラムの公開を止めない
+      - name: Build RSS feed
+        continue-on-error: true
+        run: python3 tools/build-feed.py
       - name: Commit generated files
         run: >-
           python tools/commit-generated.py
           --message "chore(column): auto-rebuild static pages [skip ci]"
-          column.html column/ sitemap.xml js/bm-pricing.js
+          column.html column/ sitemap.xml js/bm-pricing.js feed.xml
