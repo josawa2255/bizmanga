@@ -3,7 +3,10 @@
  * ContentsX と同じ仕様:
  *   - /works     … 漫画事例（Hero + 制作事例ページ）
  *   - /works-new … 新作漫画（ホーム横スクロールトラック）
- *   - /news      … ニュース（ホームニュースセクション）
+ *   - /news      … ニュース（ホームのニュース枠・news.html の一覧）
+ *   コラム（/columns）はここで取得しない。ホームの枠（index.html の BUILD:HOME_COLUMN_GRID）も
+ *   一覧（column.html）も tools/build-columns.py が書き出す静的カードが正（Issue #74 / #79）
+ *   JS が作る自サイトのリンクはすべて / 始まり（BUGS #006）
  *
  * WP投稿側で publish_to フィールドを想定:
  *   "news"      → ニュースのみ
@@ -21,12 +24,7 @@
   var CACHE_TTL = BM_WP_CONFIG.cacheTTL || 300000;
   var cache = {};
 
-  /* XSS対策ヘルパー（bm-sanitize.js 未ロード時も最低限エスケープ） */
-  function esc(s) {
-    if (window.bmSanitize && window.bmSanitize.html) return window.bmSanitize.html(s);
-    if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
+  /* XSS対策: WP 由来の文字は textContent で入れ、URL はこれで検証する（bm-sanitize.js 未ロード時も最低限の拒否） */
   function safeUrl(s) {
     if (window.bmSanitize && window.bmSanitize.url) return window.bmSanitize.url(s);
     return /^javascript:|^data:|^vbscript:/i.test(String(s || '').trim()) ? '' : (s || '');
@@ -110,7 +108,8 @@
       li.className = 'bm-news-item';
 
       var hasLink = item.url || (item.has_detail && item.id);
-      var rawUrl = hasLink ? (item.url || ('news-detail?id=' + item.id)) : '';
+      /* 自サイトのリンクは / 始まり（BUGS #006） */
+      var rawUrl = hasLink ? (item.url || ('/news-detail?id=' + encodeURIComponent(item.id))) : '';
       var linkUrl = hasLink ? safeUrl(rawUrl) : '';
 
       /* サムネイル（左） */
@@ -196,53 +195,6 @@
     console.log('[BM-WP-API] ニュース: ' + displayData.length + '/' + data.length + '件 rendered');
   }
 
-  /* ── コラムデータをロード・ホームカード描画 ── */
-  var COLUMN_HOME_LIMIT = 8;
-
-  async function loadColumns() {
-    var data = await apiFetch('/columns?site=bizmanga&per_page=50');
-    if (!data || !Array.isArray(data)) return;
-    if (window.bmPricing) data = window.bmPricing.post(data);
-    window.BM_COLUMNS_DATA = data;
-
-    var grid = document.getElementById('bmColumnGrid');
-    if (!grid) return;
-    var isHome = !document.body.hasAttribute('data-page-column');
-    var displayData = isHome ? data.slice(0, COLUMN_HOME_LIMIT) : data;
-
-    grid.innerHTML = '';
-    var colFrag = document.createDocumentFragment();
-    displayData.forEach(function(item) {
-      var card = document.createElement('a');
-      card.className = 'bm-column-card';
-      var slug = item.slug || String(item.id);
-      if (!slug.match(/^[a-z0-9-]+$/)) slug = 'column-detail?id=' + encodeURIComponent(item.id);
-      else slug = 'column/' + slug;
-      card.href = slug;
-
-      var thumb = safeUrl(item.thumbnail) || 'https://contentsx.jp/material/images/og/og-index.webp';
-      var catHtml = item.category ? '<span class="bm-column-card-cat">' + esc(item.category) + '</span>' : '';
-
-      /* 全フィールド esc() 済み（XSS対策） */
-      card.innerHTML =
-        '<div class="bm-column-card-img"><img src="' + esc(thumb) + '" alt="' + esc(item.title_ja) + '" loading="lazy" width="400" height="225"></div>' +
-        '<div class="bm-column-card-body">' +
-          catHtml +
-          '<h3 class="bm-column-card-title">' + esc(item.title_ja) + '</h3>' +
-          '<p class="bm-column-card-excerpt">' + esc(item.excerpt_ja) + '</p>' +
-          '<time class="bm-column-card-date">' + esc(item.date) + '</time>' +
-        '</div>';
-      colFrag.appendChild(card);
-    });
-    grid.appendChild(colFrag);
-
-    if (isHome && data.length > COLUMN_HOME_LIMIT) {
-      var more = document.getElementById('bmColumnMore');
-      if (more) more.style.display = '';
-    }
-    console.log('[BM-WP-API] コラム: ' + displayData.length + '/' + data.length + '件 rendered');
-  }
-
   /* ── 初期化（Hero優先読み込み） ── */
   document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -254,8 +206,7 @@
       await Promise.all([
         loadNewWorks(),
         loadNews(),
-        loadLibrary(),
-        loadColumns()
+        loadLibrary()
       ]);
       // 全データ揃った後の再描画
       window.dispatchEvent(new CustomEvent('bm-all-data-ready'));

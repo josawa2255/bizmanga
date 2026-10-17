@@ -9,6 +9,8 @@ on:
 
 permissions:
   contents: write
+  # push した後に pages.yml を起動するため（tools/commit-generated.py が gh workflow run を呼ぶ）
+  actions: write
 
 # All jobs writing generated content serialize checkout/build/push.
 concurrency:
@@ -28,7 +30,11 @@ jobs:
         with:
           python-version: '3.11'
       - run: python3 tools/build-works.py
-      - name: Commit generated files
+      # push に成功したら pages.yml を起動する（GITHUB_TOKEN の push は pages.yml の push を起動しないため。
+      # IndexNow への送信は pages.yml がデプロイの成功後に行う）
+      - name: Commit generated files and start the deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python tools/commit-generated.py
           --message "chore(works): auto-rebuild static pages [skip ci]"

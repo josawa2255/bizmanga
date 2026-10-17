@@ -31,16 +31,25 @@ def snapshot(folder):
     return {str(path.relative_to(folder)): path.read_bytes() for path in folder.rglob('*') if path.is_file()}
 
 
-def main():
-    fetch = bm_build.fetch_json
+def caching(fetch):
+    """WP の応答を URL ごとに1回だけ取る（同じ実行の2回のビルドが同じ応答を使う）。
+    キーはキャッシュよけ（_cb。bm_build.cache_busted）を除いた URL。"""
     cache = {}
 
     def cached_fetch(url, **kwargs):
-        if url not in cache:
-            cache[url] = fetch(url, **kwargs)
-        return copy.deepcopy(cache[url])
+        key = bm_build.without_cache_buster(url)
+        if key not in cache:
+            cache[key] = fetch(url, **kwargs)
+        return copy.deepcopy(cache[key])
 
-    bm_build.fetch_json = cached_fetch
+    return cached_fetch, cache
+
+
+def main():
+    # 全ビルダーの取得（bm_build.fetch_json と bm_content のコラム一覧）はここを通る
+    fetch = bm_build.fetch_response
+    cached_fetch, cache = caching(fetch)
+    bm_build.fetch_response = cached_fetch
     try:
         with tempfile.TemporaryDirectory(prefix='bizmanga-build-check-') as directory:
             target = Path(directory)
@@ -65,9 +74,9 @@ def main():
                     with redirect_stdout(log):
                         module.main()
                     second = snapshot(target)
-                    # RSS lastBuildDate is intentionally the current time.
+                    # Every output, feed.xml included, depends only on WP data, not the clock.
                     changed_twice = [p for p in first.keys() | second.keys()
-                                     if p != 'feed.xml' and first.get(p) != second.get(p)]
+                                     if first.get(p) != second.get(p)]
                     if changed_twice:
                         raise AssertionError(f'Non-idempotent build: {changed_twice}')
                 except BaseException:
@@ -75,16 +84,26 @@ def main():
                     raise
                 deleted = before.keys() - first.keys()
                 changed = sum(before.get(p) != data for p, data in first.items())
+                if name == 'build-feed' and first.get('feed.xml') != before.get('feed.xml'):
+                    # build-columns wrote the feed from the same data; the manual tool must agree byte for byte.
+                    raise AssertionError('build-feed.py wrote a different feed.xml than build-columns.py')
                 print(f'PASS {name}: generated/updated={changed}, removed={len(deleted)}, repeat is stable')
-            # Parse JSON-LD and application/json in all freshly rendered documents.
+            # The feed must link to the column pages build-columns generated (same articles, same slugs).
             import re
             import json
+            feed_columns = re.findall(r'<link>https://bizmanga\.contentsx\.jp/column/([^<]+)</link>',
+                                      (target / 'feed.xml').read_text(encoding='utf-8'))
+            missing = [slug for slug in feed_columns if not (target / 'column' / (slug + '.html')).is_file()]
+            if not feed_columns or missing:
+                raise AssertionError(f'Feed column links without a generated page: {missing or "no column items"}')
+            print(f'PASS feed: {len(feed_columns)} column links match generated column pages')
+            # Parse JSON-LD and application/json in all freshly rendered documents.
             for path in target.rglob('*.html'):
                 for match in re.finditer(r'<script[^>]*type="application/(?:ld\+)?json"[^>]*>(.*?)</script>', path.read_text(encoding='utf-8'), re.S):
                     json.loads(match[1])
             print(f'PASS generated JSON; fetched {len(cache)} API responses; working tree untouched')
     finally:
-        bm_build.fetch_json = fetch
+        bm_build.fetch_response = fetch
         bm_pricing.ROOT = ROOT
 
 

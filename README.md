@@ -194,9 +194,16 @@ python -B tools/check-builds.py
 python -B tools/smoke-manga-wp.py --serve .
 ```
 
-`check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性を検証します。
+`check-builds.py` は一時コピーで5種類のビルドを各2回実行し、生成物・削除・再実行時の安定性（feed.xml も完全一致）と、フィードのコラムリンクが生成ページと一致することを検証します。
 作業ツリーを更新する場合は `tools/build-*.py` を個別に実行してください。
 漫画表示・WP接続の変更時は [確認手順](docs/REVIEW-MANGA-WP.md) も参照してください。
+
+### 自動ビルドとデプロイ
+
+- 静的ページは GitHub Actions の自動ビルドが作ります（`build-columns.yml`: コラムと RSS。WordPress でコラムを公開・更新したときと毎日 03:00 JST／`build-works.yml`: 制作事例。毎日 03:00 JST／`build-lp-cases.yml`: LP の事例。週1）。
+- 生成物は `tools/commit-generated.py` で `main` に push し、push に成功した直後に同じスクリプトがデプロイ（`.github/workflows/pages.yml`）を起動します。自動ビルドを足すときも生成物はこのスクリプトで push してください。
+- `pages.yml` は `main` の先端を公開し（公開するファイルは `tools/build-site-artifact.py` の許可リストだけ）、成功後に前回の公開からの変更を IndexNow に送ります。
+- RSS（`feed.xml`）はコラムのビルドが同じ取得データで書きます（手動で作り直すときは `python3 tools/build-feed.py`）。
 
 OG画像のフォントはMac・Windows・Linuxの既知パスから検出します。別のフォントを使う場合は
 環境変数 `BM_FONT_JP` / `BM_FONT_EN` にフォントファイルのパスを指定してください。

@@ -50,7 +50,7 @@
 
 | ページ | ファイル | 主要JS | 説明 |
 |---|---|---|---|
-| トップ | `index.html` | bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials, bm-videos | Hero + ギャラリー + 制作過程 + 対談動画 + CTA |
+| トップ | `index.html` | bm-nav, bm-home, bm-hero, bm-hero-fx, bm-cta, bm-testimonials, bm-videos | Hero + ギャラリー + 制作過程 + 対談動画 + コラム + CTA。**コラム枠（`#bmColumnGrid`、横スクロール・最新8件）は `tools/build-columns.py` が `BUILD:HOME_COLUMN_GRID` マーカー間へ書き出す静的カードが正**（2026-10-15 Issue #79。ブラウザで WP から取得しないので、WP が落ちていても8件が出る。新しいコラムはコラムのビルドとデプロイの後に出る。ビルドの起動は §2.0a）。カードの構造・件数・並び・リンク（`/column/{slug}`）は旧 `bm-wp-api.js` の描画と同じで、読了時間・`data-category` は付けない。カードは一覧と同じ関数 `build_card`（`home=True`）で作り、文字の正規化（料金＋ブランド表現）・エスケープ・画像URLの検査（`bm_html.site_url`）は一覧・特集枠と1か所（`card_fields`）で共通。サムネイルが無い・検査で落ちた記事の代替画像は一覧・特集枠・詳細ページと同じ **このサイトの** `https://bizmanga.contentsx.jp/material/images/og/og-index.webp`（2026-10-15 Issue #89 で統一。それまでホームだけ contentsx.jp 側の og-index だった。現在のWPの記事は全件サムネイルありなので表示は変わらない）。静的になったので抜粋にも `bm-kinsoku` の禁則がかかる。コラムの料金正規化のためだけに読んでいた `js/bm-pricing.js` は index.html から外した。マーカーの中は手で編集しない（次のビルドで上書き）。マーカーが無いとコラムのビルド全体が失敗する |
 | 制作事例 | `works.html` | bm-works-page | カード一覧 + モーダル（ページング20件） |
 | ビズ書庫 | `biz-library.html` | works.js | 全漫画アーカイブ + ブックビューア |
 | **ビズアニメ**（AI動画制作） | `bizanime.html` | `bm-nav` + `bizanime.js` | **Hero のみ実装（作業中）**。AI動画技術×クリエイターの演出力で、広告・VTuber・MV・IPまで手掛ける動画制作サービスの紹介ページ。詳細は §1b |
@@ -66,10 +66,10 @@
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。旧 `production-flow.html`（リダイレクト用HTML）は削除済み・sitemapにも無し |
 | プライバシーポリシー | `privacy-policy.html` | — | 個人情報保護法準拠。11条構成（事業者情報・取得情報・利用目的・第三者提供・外部サービス連携・安全管理措置・開示請求・Cookie・未成年・改定・窓口）。日本語固定表示対応。全ページフッターからリンク |
-| ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
-| コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
+| ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携（一覧は `/news?site=bizmanga` を描画。ホームのニュース枠は最新5件）。詳細へのリンクは `/news-detail?id=`（`/` 始まり、BUGS #006） |
+| コラム一覧 | `column.html` | 静的ビルド + bm-column-filter + bm-kinsoku | カードグリッド3列。**カードは `tools/build-columns.py` が `BUILD:COLUMN_GRID` マーカー間へ書き出す静的HTMLが正**（`data-category`・読了時間つき。カテゴリ未設定の記事は `data-category="その他"`）。**特集枠（`#bmColumnFeatured`、最新1件）も同じビルドが `BUILD:COLUMN_FEATURED` に書き出す静的HTML**（2026-10-15 Issue #89。それまでは `bm-column-filter.js` が埋込JSONから描いていたため、JSが動かない・JSONが壊れると PC で最新記事がどこにも出なかった）。JS無効でも PC は特集枠、スマホは先頭カードで最新記事が出る。特集枠のタイトル・抜粋・画像は先頭カードと同じ関数（`card_fields`）を通すので PC とスマホで同じ文になり、抜粋に `bm-kinsoku` の禁則もかかる。特集枠の `data-category` もカードと同じ（未設定は「その他」）なので「その他」で絞り込んでも消えない。埋込JSON `#bm-column-data` はカテゴリチップの件数（`total`・`categories`。件数の多い順、その他は末尾）だけ。`bm-column-filter.js` はチップを作り、`data-category` の一致で表示/非表示を切り替えるだけ（特集枠は `hidden` 属性。スマホは CSS で常に非表示）。PC/スマホの出し分けは CSS 読込前から崩れないよう column.html のインライン CSS にも同じ指定を置く。**ブラウザで WP から作り直さない**: column.html は `bm-wp-api.js`（とそのための `bm-wp-config` / `bm-pricing` / `bm-sanitize`）を読まない（2026-10-14 Issue #74。作り直すとカテゴリ絞り込み・読了時間・禁則処理が消え、特集記事が重複し、リンクが相対になっていた）。`bm-wp-api.js` はコラムを一切取得しない（2026-10-15 Issue #79）。**新しく WP に公開したコラムは、コラムのビルド（WP での公開・更新時に WP プラグインが起動。ほかに毎日03:00 JST。§2.0a）とデプロイの後に一覧・詳細ページ・サイトマップ・ホームに出る**（詳細ページ `/column/{slug}` と同じビルドで出るので、一覧・ホームから 404 に飛ぶことはない）。特集の記事は先頭カード `bm-column-card--featured` としてもグリッドに出し、PC（769px〜）は特集枠で見せてこのカードを隠す／スマホ（〜768px）は特集枠を隠してこのカードを見せる（css/bizmanga.css）。ホームにも横スクロール枠あり（同じビルドが index.html の `BUILD:HOME_COLUMN_GRID` に最新8件を書き出す。リンクは `/column/{slug}`。トップの行を参照） |
 | コラム詳細(動的) | `column-detail.html` | インラインJS | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日本語固定・OGP動的更新。Editorial Magazineデザイン |
-| コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
+| コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。WP での公開・更新時（WP プラグインが起動）＋毎日03:00 JST（`.github/workflows/build-columns.yml`。§2.0a）＋手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
 | **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）で8本すべて稼働**（2026-05-13 `recruit-manga.html` でパイロット導入→全LPへ展開。旧 `css/bm-lp-template.css`（`pm-*`）は削除済み）。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
 | **漫画制作会社 比較ガイド** | `manga-production-company.html` | `bm-nav` + `mpc.js` + `bm-fuwa` | 2026-04-27 公開、SEOブルーオーシャンKW「漫画制作会社」(月3,000-8,000検索)専用LP。専用CSS `css/mpc.css`。構成: Hero→Logoマーキー→PAIN(失敗の3パターン)→8選定基準→比較表(主要5社+ビズマンガ)→各社プロフィール→用途別マップ→FAQ(12問)→最終CTA。左sticky目次(1280px+)。JSON-LD 4種: Article + ItemList(6社) + BreadcrumbList + FAQPage。**2026-04-29 Xserver18項目に基づき可読性強化**: `mpc-mark`(マーカー強調)、`mpc-keyfacts`(業界数値の冒頭callout)、`mpc-pain-examples`(失敗パターン具体例リスト3行ずつ)、`mpc-summary`(比較表後の3行要約) を追加。**2026-05-12 SEO内部リンクハブ化**: 公開後ナビ登録のみで本文中リンクゼロ→Google重要度低判定→順位獲得未達という分析を踏まえ、pricing/faq/works/8用途LP の計11 HTML から `.bm-related-guide` aside で本文中アンカーテキスト付き内部リンクを集中投下。各LP固有のKW（採用マンガ対応の〜/IR漫画対応の〜 等）でアンカー多様化、ペナルティ回避と複合KW強化を両立。共通CSSは `css/bizmanga.css` 末尾。**ホーム(index.html)のバナー(`.bm-home-comparison-banner`)はCV重視で `/strength`（強み5選ページ）に流す方針** — 比較ガイド本体のコンテンツ完成度を訪問者向けに磨き上げるまで、検索流入経由でしか比較ガイドに到達しない設計にして他社情報経由のCV離脱を防ぐ。**2026-05-26 デザイン全面刷新 進行中(editorial路線へピボット)**: オレンジ全面のポップ路線から、アイボリー地＋黒セリフ見出し＋オレンジ差し色の上品なエディトリアル路線へ転換する方針。キービジュアルは手描きスケッチ調の天秤(¥コインvs時計)＋薄いマンガ絵コンテ背景(=ユーザーが用意した別デザイン、ビズちゃんは不使用)。**ヒーロー(TOP)から着手済み**。**一度作ったビズちゃん版①「漫画制作会社は何で選べばいいのか」セクション(mpc-choose)とそのCSSは削除済み**。**比較表(主要5社)は削除方針は維持**。**2026-05-26 ヒーローv3に全面刷新済み(`.mpc-hero-v3`、旧 `.mpc-hero-v2`+ビズちゃんbg/B案は廃止)**: editorial構成 = 比較ガイドpill→H1「漫画制作会社 比較ガイド」(SEO優先で漢字)→リード→**インタラクティブ天秤**→4比較ポイント(業界最安値/最短2週間/8用途/料金透明性)カードリスト→オレンジCTA「無料で比較してみる」→サブリンク。**天秤はユーザー生成の手描きスケッチ画像をパーツ分離して使用**(支柱固定/横棒回転/左右皿が上下、¥コイン・時計は皿画像に内包され連動)。素材は `material/images/mpc/scale-{stand,beam,pan-yen,pan-clock}-crop.webp`(4レイヤーをCSS%で絶対配置、配置座標はPython合成で確定→%化、横棒の `transform-origin:50% 27.8%`=支点)。※元画像 `images/scale_*_transparent_verified.png` 等はアルファ無し(透過プレビューを市松ごとRGB焼込み)だったため、こちらで「明るい・低彩度画素を透明化」(白ヒーロー上でコイン面/時計盤は白く見える)処理して webp 化。挙動JS=`js/mpc-scale.js`(`.comparison-scale`にホバー/タップで `is-tilt-left/right`、離脱で中央、初回0.6sアイドルスイング `is-idle-swing`、`prefers-reduced-motion`配慮、`(hover:hover)`でPC/スマホ分岐)。傾き角±7deg・transition `cubic-bezier(.2,.8,.2,1)`。色 #FF6A00/#111/#E8E1D8。CSSは `css/mpc.css` 末尾。**全サイズ崩れない設計**: 枠 `.comparison-scale` を `aspect-ratio:840/760` 固定＋内部は全%/deg なので、画面比率に関係なく相対配置(鎖↔皿連結)を維持し拡縮するだけ(320px〜超ワイドで検証済)。ヒーロー背景に薄いマンガ絵コンテ素材(白地に馴染む)を**PC/スマホで出し分け**: PCは縦長素材の中央スケッチ帯を切り出した横長版 `hero-bg-sketch-pc.webp` を `100% auto/center top`(左右のスケッチが天秤を挟む。**2026-06-01 `center`→`center top` に変更: 4ポイントQ&Aアコーディオン展開でヒーローが縦に伸びても背景が再センタリングされてズレないよう上端基準に固定**)、スマホ(≤640px)は縦長素材 `hero-bg-sketch.webp` を `100% auto/center top`(上部にスケッチを表示。元から上端基準で不動)。**※旧 `.mpc-hero-v2-*` CSS(~330行)と未使用画像 `material/images/mpc/hero-bg-{pc,sp}.webp` はデッドコード化(要掃除)**。**2026-05-27 ②セクション実装＝旧PAIN(失敗の3パターン)と旧8選定基準セクションをHTMLごと削除し、editorialの「依頼先を判断する基準」セクション(`#sec-choose`/`.mpc-choose`)に統合**: client-logos直下に配置。eyebrow `HOW TO CHOOSE`→H2「依頼先は、<em>何で見極めるか</em>」→リード→(keyfacts数値バンドは2026-05-27に削除)→`.mpc-choose-list`(付箋チェックリストの`<ol>`6項目=①料金が公開されているか ②用途への専門性 ③「伝わる構成」設計力 ④契約条件の明文化 ⑤サンプル&レスポンス速度 ⑥実績&アフターサポート)→末尾に比較表(`#comparison`)への導線。各項目末尾に `.mpc-choose-check`(「見極めポイント」callout)。CSSは `css/mpc.css` の旧criteria直後に `.mpc-choose-*` を追加(各項目は付箋カード(`#fffdf6`+影+折れ角dog-ear)で、チェックボックス `.mpc-choose-tick` を持つ。≤600pxは48px→38px列に縮小。**ワイド画面(≥881px)はコンテナ幅を `clamp(880px,76vw,1440px)` で画面幅連動拡大＋見出し/本文/余白も clamp+vw でスケールし、モニターでの左右余白を圧縮（単一列維持・チェック演出はそのまま）**)。**※クラス名 `mpc-choose` は旧ビズちゃん版から再利用だが完全に別物(editorialの判断基準セクション)**。アニメは見出し/keyfacts/本文=共通 `data-fuwa-auto`(bm-fuwa.js→`.is-fuwa-in`)、`.mpc-choose-item`=`data-fadeup`(mpc.js→`.is-visible`)で既存criteriaと同じ二重リビールパターン。**チェックは別系統**: `js/mpc.js` の `initChecklist()` が IntersectionObserver(`rootMargin:-45% 0 -40%`=画面中央の薄い帯)でカードが中央付近に来た時に `.is-checked` を付与→チェックボックスがオレンジに塗られチェックが弾けて出る。スクロールで上から1枚ずつ点く演出(フェードアップとは分離。IO非対応は全チェックfallback)。**旧 `.mpc-pain-*`/`.mpc-criteria-*` CSSはデッドコード化(要掃除)**。**現フロー: Hero→Logoマーキー→依頼先を判断する基準(NEW)→ビズマンガはどうなのか(NEW)→比較表→用途別マップ→FAQ→最終CTA**。**2026-05-27「では、ビズマンガはどうなのか」セクション追加**(`#sec-bizanswer`、判断基準と比較表の間): 判断基準6項目に1つずつ"答える"構成。**ビズちゃん(マスコット)＋参考イラストで分かりやすく**＝トップの `bm-reasons` コンポーネント(`.bm-reason-card` Z字交互カード)を流用し、`material/images/reasons/reason-0X-*.webp`(既存8枚から6枚)を各基準に割当(①料金=01-price/②用途=07-use-cases/③構成=08-artists/④契約=06-copyright/⑤速度=02-speed/⑥実績=04-multimedia)。各カードに `.bm-reason-kicker`「見極め基準｜◯◯」を追加し判断基準と1対1対応。**editorial路線の中でこの1セクションのみビズちゃん復活**(ユーザー指示)。背景は `.mpc-bizanswer` で白固定に上書き。CSSは `css/mpc.css` の choose 直後**。**2026-05-27 比較表(`#comparison`)を刷新**: 旧「主要5社(A〜E社)＋ビズマンガ」の6列横長表(`.mpc-table`)を廃止し、`/strength`の「まとめると!」と同じ **`bm-pricing-table`(他社 vs ビズマンガ の2列)** に置換。行は上の判断基準6項目(料金の透明性/用途への専門性/「伝わる構成」設計力/契約条件/サンプル・レスポンス速度/実績・アフター)に統一し、チェックリスト→比較表の流れを接続。「一般的な制作会社」列はグレー地、「ビズマンガ」列は薄オレンジ地＋オレンジ太字。`bm-pricing-table`はbizmanga.css共通クラス(pricing/strengthと共用)。**※2026-05-27に各社プロフィール(`#sec-profiles`、競合5社個別紹介セクション)を削除。整合のためJSON-LD ItemList(6社)も併せて除去**。旧 `.mpc-table*` CSSと `mpc.js initStickyTable`(if(!table)return でno-op)はデッドコード化(要掃除)。**2026-06-01 ヒーロー4ポイント(`.mpc-hero-v3-points`、業界最安値クラス/最短2週間納品/8用途の専門編集/料金の透明性)を「クリックでその場にQ&A展開」するアコーディオンに変更**: 旧 `<a href="#comparison">`(4枚とも比較表ジャンプ・末尾→)を廃止し、各行を `<button class="mpc-hero-v3-point" aria-expanded>` ＋直下の回答パネル `.mpc-hero-v3-panel`(`.mpc-hero-v3-item` で包む)に。末尾の→は開閉シェブロン `.mpc-hero-v3-point-toggle`(aria-expanded=trueで180°回転)。パネル内は質問 `.mpc-hero-v3-panel-q`(オレンジ)＋回答 `.mpc-hero-v3-panel-a`＋深掘りリンク `.mpc-hero-v3-panel-link`(価格→#comparison/速度→#sec-bizanswer/用途→#sec-usecase/透明性→/pricing)で、即答とナビ導線を両立。開閉JSは `js/mpc.js` の `initHeroPoints()`(max-height transition＋hidden属性トグル、prefers-reduced-motion配慮)。複数同時開き可。日本語固定表示は日本語の表示内容。**2026-06-01「8用途の専門編集」Q&Aは8用途を省略せず列挙(採用・IR・研修・商品紹介・営業・インバウンド・会社紹介・広告)し、文中の各用途語を専用LPへの文中インラインリンク `.mpc-hero-v3-inlink`(オレンジ下線)に**(採用=/recruit-manga, IR=/ir-manga, 研修=/training-manga, 商品紹介=/product-manga, 営業=/sales-manga, インバウンド=/inbound-manga, 会社紹介=/company-manga, 広告=/manga-ad-lp)。※当初チップ(`.mpc-hero-v3-panel-uses`)で実装→ユーザー要望で文字リンクに変更。パネル max-height はPC460/SP560 |
 
@@ -482,10 +482,21 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 | URL系統 | 例 | 用途 | 即時性 | ターゲット |
 |---|---|---|---|---|
 | **`?id=xxx`** | `column-detail?id=483` | 動的取得（JS）。WP公開直後から動作 | ✅ 即時 | フォールバック・プレビュー |
-| **`/column/{slug}`** | `/column/why-business-manga` | SEO向け静的ページ（JSON-LD付き） | ❌ 週1ビルド後（or 手動実行） | Google / AI検索 / SNSシェア |
+| **`/column/{slug}`** | `/column/why-business-manga` | SEO向け静的ページ（JSON-LD付き） | △ ビルド・デプロイ後（WP での公開・更新時に起動。ほかに毎日03:00 JST、手動実行） | Google / AI検索 / SNSシェア |
 
-- ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
+- ホーム・一覧ページのカードリンクは `/column/{slug}` を使用（どちらも `tools/build-columns.py` が書き出す静的カード。slug は詳細ページと同じ `make_slug` で決めるので、リンク先は必ず同じビルドで生成したページ。`/` 始まり）
 - ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
+- 起動と頻度（2026-10-16 Issue #89）: **WP でコラムを公開・更新したときに WP プラグインが `build-columns.yml` を workflow_dispatch で起動する**（WP プラグイン側。別リポジトリ）。予定実行は毎日 03:00 JST（`'0 18 * * *'`）で、起動の取りこぼしの保険。手動実行もできる。経緯: 週1（土曜）→ 毎日03:00 JST（BUGS #018）→ 毎時17分（Issue #79）→ 毎日03:00 JST＋WP からの起動（Issue #89）。毎時をやめた理由: GitHub の予定実行はこのリポジトリで普段3〜6時間遅れ、毎時にしても公開から1時間以内にならない。また毎時の push は不可侵のランク追跡（`rank-tracker.yml`）の push とぶつかりうる。一覧とホームの枠はブラウザで作り直さないので、鮮度はこのビルドで決まる（公開は月5〜7本）。1回のビルドで WP へ一覧＋詳細の数（約45件）を5並列で GET する。何も変わらなければ commit も push もデプロイもしない。push したらデプロイを起動する（§16.2）
+- RSS（`/feed.xml`）は**コラムのビルドが、ページを書き終えた後に同じ取得データで書く**（`tools/bm_feed.py` の `write_feed`。ニュースはそこで取る。2026-10-16 Issue #89。2026-10-14〜15 は別のステップで `build-feed.py` が一覧を取り直していた。それ以前はどのワークフローにも無く、4月から更新されていなかった＝Issue #72）。手動で作り直すときは `tools/build-feed.py`（同じ関数。一覧も同じ `bm_content.fetch_columns` で取る）。
+  - コラムはページと同じ slug（`make_slug`）で `/column/{slug}` を指し、タイトル・抜粋はページと同じ正規化（料金＋ブランド表現。`bm_content.normalize_brand_text`）。カテゴリが無ければ「コラム」。
+  - ニュースのリンクはサイトのニュース欄（`js/bm-wp-api.js` の `loadNews`）と同じ規則: `url` があればそれ（http(s) の URL かサイト内の相対 URL。`javascript:` などは使わない）、無ければ `has_detail` と `id` で `/news-detail?id=`、どちらも無ければ `/news`。カテゴリは `tag_ja`、無ければ「ニュース」。ニュースの文はニュース欄と同じく WP のまま。
+  - 抜粋が無ければ定型文。XML で使えない制御文字はタイトル・抜粋・カテゴリから取り除く。サムネイル（`enclosure`）はページと同じ URL 検査（`bm_html.site_url`）を通ったものだけ。
+  - 並びは記事が最後に変わった日（`bm_content.updated_ymd`。下の「コラムの日付」。ニュースの `YYYY.MM.DD` も読む）の新しい順で最大30件。`lastBuildDate` はその先頭（＝載せる記事の最新の日付）の **00:00 JST**（その日のビルドより未来にならない）。`pubDate` は公開日の 09:00 JST。日付が読めなければどちらも出さない（実行時刻で埋めない）。省いた要素の空行は残さない。
+  - 出力はWPのデータだけで決まり、実行時刻に依存しない（記事が変わらなければ feed.xml はバイト単位で同じ＝空のコミットを作らない）。
+  - コラム0件・ID欠落・取得の途中失敗ではページもフィードも書かない。ニュースが取れないときはコラムだけで作り、Actionsに警告を出す。
+  - **フィードの失敗ではコラムの公開を止めない**（ページは書き終えていて、既存の feed.xml は残る）。`build-columns.py` はステップ出力 `feed=ok` / `failed` を書き、ワークフローは生成物の commit・push・デプロイの起動を済ませた後、最後のステップでジョブを失敗にする（GitHub が失敗を通知する）。
+- **コラム一覧の取得**（2026-10-15 Issue #89）: `build-columns.py` と `build-feed.py` は同じ `bm_content.fetch_columns()` を使う。`per_page=100` で取り、100件ちょうど返ったら `&page=2` 以降も取る。総数ヘッダー `X-WP-Total` があれば件数を照合する。さらに掲載先で絞らない一覧（`/columns?per_page=100`）も同じ方法で最後のページまで取れることを確かめる（WPプラグインは「全サイトの新しい順に100件」を取ってから掲載先で絞るため、BizManga分が100件未満でも切られた記事があり得る）。取得の途中失敗・前のページと同じ記事が返る（ページ送りが効かない）・総数と合わない・0件では、**何も書き出さず、古い `column/*.html` も消さずに**ビルドを失敗させる。⚠️ 2026-10-15 時点のプラグイン（`cxcms_api_columns`）は `page` を無視し `X-WP-Total` も返さない。全サイトのコラムが100件（2026-10-15 時点 45件）に達するとビルドが止まるので、それまでにプラグイン側でページ送り・総数ヘッダー・掲載先の絞り込みをクエリ内で行うよう直す（PHP は別リポジトリ・手動アップロード）。
+- **コラムの日付**（2026-10-15 Issue #89）: 「最後に変わった日」は `bm_content.updated_ymd` の1か所で決める＝公開日と WP の更新日（`modified_ymd`）の新しい方。詳細ページの `dateModified`・`article:modified_time`、`sitemap.xml` の `lastmod`、フィードの並び・`lastBuildDate` はすべてこれ。予約投稿は WP の更新日が公開日より前になるが、その場合は公開日（`lastmod` が公開日より前にならない。それまで sitemap だけ更新日をそのまま使い、7件が公開日より前だった）。**実行時刻（ランナーの時計・タイムゾーン）には依存しない**: 以前の「WP の更新日が今日なら信頼せず公開日にする」判定（2026-04-20、ランナーの UTC の日付）は廃止。定期ビルドでは翌日に結局その日付が出るだけで、全記事一律の更新を防げていなかったため。
 
 ### 2.0b embed-viewer のパラメータ（埋込ビューア）
 
@@ -506,11 +517,11 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | URL系統 | 例 | 用途 | 即時性 | ターゲット |
 |---|---|---|---|---|
 | **`?manga=id`** | `biz-library?manga=diamond` | 漫画ビューアを全画面で直接開く（QR/直リンク共有） | ✅ WP公開直後から動作 | 人間（顧客・商談先・QR経由） |
-| **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
+| **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 日次ビルド後（毎日03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
 - `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
-- `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
+- `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎日 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
 
@@ -520,9 +531,9 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - 両方のURLは恒久的に並列存在。どちらかに統合する予定はない
 
 **よくある誤解:**
-- ❌「新作品追加したら `/works/{slug}` も即使える」→ 日曜ビルドまで404
+- ❌「新作品追加したら `/works/{slug}` も即使える」→ 翌朝の日次ビルド（or 手動実行）まで404
 - ❌「`?manga=id` は旧仕様で廃止予定」→ 現役、QR運用の中核
-- ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日曜ビルド後）
+- ✅「`works.html` の一覧は常に最新」→ JS が WP API から毎回取得するので新作品も即表示（ただしGoogleが読むのは日次ビルド後）
 
 ### 2.0b 制作事例の用途別カテゴリページ（2026-04-28追加）⭐SEO
 
@@ -557,7 +568,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 **ビルド統合:**
 - 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
 - sitemap.xml に `BUILD:WORKS_CATEGORIES` ブロックで自動追記
-- 週1ビルド（日曜03:00 JST、`.github/workflows/build-works.yml`）で更新
+- 日次ビルド（毎日03:00 JST、`.github/workflows/build-works.yml`）で更新
 
 ### 2.0c 制作事例のクリック挙動統一（2026-07-30）
 
@@ -631,7 +642,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | `js/bm-nav.js` | 日本語固定表示エンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
-| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
+| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開。読み込むのは index / works / news の3ページ（**column.html は読まない**。一覧は静的ビルドが正、Issue #74）。**コラム（`/columns`）は取得しない**（ホームの枠も静的ビルドが正、2026-10-15 Issue #79。旧 `loadColumns()`・`window.BM_COLUMNS_DATA` は削除）。JS が作る自サイトのリンクは `/` 始まり（`/news-detail?id=`） |
 | `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
@@ -686,7 +697,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
 - `/library` — ビズ書庫全作品
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
-- `/columns?site=bizmanga&per_page=50` — コラム一覧
+- `/columns?site=bizmanga&per_page=100` — コラム一覧。**サイトのページ表示では取得しない**（ホームの枠・一覧とも静的ビルド `tools/build-columns.py` が取得して書き出す。2026-10-15 Issue #79 でホームの `bm-wp-api.js` からの取得を廃止）。ブラウザから一覧を取るのは `404.html`（まだ静的ページが無い `/column/{slug}` を `/column-detail?id=` へ転送）と `js/bm-column-detail.js`（関連記事、`per_page=50`）だけ。`tools/build-columns.py`（フィードも同じ取得データで書く）・手動用の `tools/build-feed.py` は `bm_content.fetch_columns()`（`per_page=100`＋ページ送り。掲載先で絞らない `/columns?per_page=100` で件数も確かめる。§2.0a）
 - `/columns/{id}` — コラム個別（本文含む）
 
 ### WP 管理画面メニュー（2026-06-12 再編）
@@ -1078,7 +1089,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 1. Hero を h=1019px の全面イラスト → h=360px のシネマスコープ帯（`.bm-column-hero-strip`）に圧縮。LCPを H1 テキストへシフト。新画像 `hero-column.webp` (2400×1018) に差替（旧版は `hero-column.old.webp` にバックアップ）
 2. Editorial Masthead セクション追加: `EYEBROW · ISSUE N` → Noto Serif JP 900 の H1 超大サイズ（clamp 40-88px）→ 赤アクセント線 → リード段落
 3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。WP API の `data.category` から動的生成
-4. Featured 記事セクション追加（最新1件を 21:9 大判＋右本文のグリッドで表示）。JS で `<script id="bm-column-data">` の JSON から注入。**スマホ（`@media max-width:768px`）では `.bm-column-featured` を `display:none !important` で非表示**（2026-06-04）。JS([bm-column-filter.js](js/bm-column-filter.js))のカテゴリ絞り込みは `style.display=""/"none"` を切替えるため、CSS側に `!important` を付けて優先させPCのみ表示
+4. Featured 記事セクション追加（最新1件を 21:9 大判＋右本文のグリッドで表示）。JS で `<script id="bm-column-data">` の JSON から注入（→ 2026-10-15 Issue #89 でビルダーが静的HTMLで書き出す方式に変更。§1 の表）。**スマホ（`@media max-width:768px`）では `.bm-column-featured` を `display:none !important` で非表示**（2026-06-04）。JS([bm-column-filter.js](js/bm-column-filter.js))のカテゴリ絞り込みは `style.display=""/"none"` を切替えるため、CSS側に `!important` を付けて優先させPCのみ表示
 5. カードを `data-category` 属性 + 読了時間メタ表示対応に拡張
 
 **カテゴリ運用**
@@ -1107,7 +1118,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 
 3. **[index.html](index.html) お客様の声セクション復元**: 2026-04-16 にコメントアウトされていた `bm-testimonials` セクションを復活。Experience/Trust シグナル +8pt 見込み
 
-4. **[tools/build-columns.py](tools/build-columns.py) の dateModified ロジック強化**: WP 側 `post_modified` が全記事一律「今日」になっているケースを検出して、date_ymd にフォールバック。これで全15記事の dateModified が各 datePublished と一致する正常状態に戻る。QRG「コンテンツ鮮度偽装」ペナルティ回避
+4. **[tools/build-columns.py](tools/build-columns.py) の dateModified ロジック強化**（→ 2026-10-15 Issue #89 で廃止。§2.0a「コラムの日付」）: WP 側 `post_modified` が全記事一律「今日」になっているケースを検出して、date_ymd にフォールバック。これで全15記事の dateModified が各 datePublished と一致する正常状態に戻る。QRG「コンテンツ鮮度偽装」ペナルティ回避
 
 5. **コラム手動修正3ファイル再ビルドでの上書き防止**: `business-manga-production-guide.html` / `business-manga-production-guide-2.html` / `btob-manga-lp-lead-generation.html` は第3弾で title/description/FAQ Schema を手修正済み。再ビルドで上書きされたため `git restore` で復旧し、HubSpot置換のみ再適用。WP 側 excerpt_ja が正しく入るまでは、この3ファイルを build-columns.py で再生成してはいけない
 
@@ -1194,7 +1205,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 
 WordPress で works を追加・更新したら以下いずれか:
 
-- **自動**: 毎週日曜 03:00 JST に GitHub Actions が走る
+- **自動**: 毎日 03:00 JST に GitHub Actions が走る
 - **手動（即時）**: GitHub の Actions タブから "Build works static pages" → "Run workflow"
 - **ローカル**: `python3 tools/build-works.py && git add works.html works/ sitemap.xml && git commit -m "chore(works): update" && git push`
 
@@ -1274,21 +1285,36 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 ### 16.2 共通チェックと自動生成（2026-10-05）
 
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
-- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成を検証。ホームのコラム枠（最大8件・WPの並び・リンクは `/column/` 始まり・WP由来の文字はエスケープ・画像URLは `bmSanitize.url` と同じ方針・同じ入力で再実行しても index.html 不変・マーカーが無ければ失敗）も検証する。
+- `tools/test_build.py`（自動ビルドとデプロイ・IndexNow、2026-10-16 Issue #89）: ワークフローは PyYAML なしで読む（CI は pip を使わない。読み方は PyYAML と同じ結果になることを確認済み）。自動ビルド3本が `permissions` に `actions: write` だけを足し、`GH_TOKEN` は commit のステップだけに渡し、IndexNow を送らないこと（送るのは `pages.yml` だけ。`indexnow.yml` が無いこと）。コラムのビルドが毎日03:00 JST で、フィード専用のステップが無く、フィードの失敗を最後のステップで知らせること。`commit-generated.py` をローカルの bare リポジトリ（浅いクローン）に対して実行し、偽の `gh` で、push に成功したとき（rebase あり・なし）だけ・main のときだけ `gh workflow run pages.yml --ref main` を呼ぶこと（呼んだ時点でリモートに push 済み）、変更なし・同じ内容が既にある・rebase の競合・別ブランチでは呼ばないこと、起動できなければ push 済みと出してジョブを失敗にすること。`pages.yml` が `workflow_run` を持たず、`ref: main`・`fetch-depth: 0` でチェックアウトし、`check-site.py` を公開物の作成より前に実行し、IndexNow をデプロイの後に `continue-on-error` で送ること。範囲を決めるステップの bash を YAML から取り出し、実際の `--jq` 式を jq に通す偽の `gh` と一時 git リポジトリで実行して、前回のデプロイあり→その差分（slug の変更で消えた URL を含む）を送る／このジョブ自身の未完了の記録・environment_url の無い success・失敗した記録は拾わない／記録が無い・読めない・前回のコミットが無い・コミット ID でない→送らない、送信の失敗はそのステップの失敗だけになること。IndexNow の送信が `--no-renames` の差分を使い、0 や不正なコミットでは全件を送らずに止まり、`bm_indexnow` のキーで keyLocation を付けずに送ること。フィードが実行時刻に依存しないこと、制御文字入りでも XML として正しいこと、ニュースのリンク・カテゴリ・定型文、コラムの正規化、`lastBuildDate` が 00:00 JST、空行が残らないこと、コラムのビルドが一覧を1回だけ取ってページとフィードに使い、フィードの失敗ではページを残して `feed=failed` を出すこと。
+- `tools/test_build.py`（コラム、2026-10-15 Issue #89）: 一覧の特集枠が静的HTMLで出ること（初期非表示なし・先頭カードと同じ記事・同じ正規化の文・未設定カテゴリは「その他」・チップの件数＝カードの `data-category` の件数・再実行で不変・マーカーが無ければ失敗）、一覧の取得のページ送りと不完全な一覧の拒否（ページ送りが効かない・掲載先で絞る前に切られる・総数ヘッダー不一致・途中失敗）と、そのとき何も書き出さず古いページも消さないこと、詳細ページの `dateModified`・sitemap の `lastmod`・フィードの日付が一致すること、詳細ページの画像（ヒーロー・og:image・JSON-LD）が同じURL検査を通ること、自サイト系URLの共有回帰ケース（下）、WP 取得のキャッシュよけ（クエリあり・なし・既存の `_cb` の置き換え、`check-builds` のキーから除かれること、生成物に入らないこと）を検証。
+- `tools/check-site.py`（コラム）: 作業ツリーの column.html が `bm-wp-api.js`・`bm-wp-config.js` を読まず、特集枠（初期非表示なし）と、同じ記事の先頭カード（`bm-column-card--featured`）・全カードの `data-category` がビルダーの出力で入っていることを検査。
+- `tools/test_site_artifact.py`: 公開する候補（`collect()`。サイト全体のコピーはしない）に内部資料が入らないこと、HTML/CSSの参照が公開対象から漏れていないこと、IndexNow のキーファイルがリポジトリに無く、`build()` が `/{KEY}.txt` を中身 `KEY`（改行なし）で作ること、KEY の書式が不正ならキーファイルだけ出さずに警告すること、キーを `bm_indexnow` から呼ぶたびに読むことを検証（`checks.yml` とデプロイ前の `pages.yml` で実行。一時ディレクトリは必ず片付ける）。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
+- 自サイト系URL（コラムのサムネイル等）の回帰ケースは `tools/fixtures/site-urls.json`。Python（`tools/bm_html.py` の `site_url`）と JS（`js/bm-sanitize.js` の `bmSanitize.url`。node で実行）の両方で同じ結果になることを `test_build.py` が確かめる。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
-- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+- `tools/check-builds.py`: 公開WPから読み取り（応答は URL ごとに1回だけ取り、2回目のビルドに使い回す。キーは `_cb` を除いた URL）、一時ディレクトリでworks/columns（ホームの index.html とフィードを含む）/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性（feed.xml を含め完全一致）、手動用の `build-feed.py` がコラムのビルドと同じ feed.xml を書くこと、フィードのコラムリンクが生成した `column/{slug}.html` と一致することを検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
-`tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
+`tools/bm_html.py`（本文サニタイズ・自サイト系URLの検査）、`tools/bm_content.py`（コラムslug・一覧の取得・日付・文の正規化）、`tools/bm_feed.py`（RSS）、`tools/bm_indexnow.py`（IndexNow のサイトとキー）へ集約。
+自サイト系URL（コラムのサムネイル。一覧・特集枠・ホーム枠・詳細ページのヒーロー画像・og:image・JSON-LD の image）は `bm_html.site_url` で、
+ブラウザの `bmSanitize.url` と同じ方針: 前後の空白は JS の `trim` と同じだけ落とし、制御文字・空白・バックスラッシュ（ブラウザは `\` を `/` と読み、
+`/\evil.example` がプロトコル相対URLに化ける）・`//` 始まりを拒否。スキーム付きは `http(s)://` ＋書かれたままのホスト名が `contentsx.jp` かそのサブドメイン
+（`user@`・`%` エンコード・全角など、ブラウザが読むホスト名とずれる書き方は拒否）。それ以外は相対URLとして通す。2026-10-15 Issue #89 で両者を揃えた
+（それまで JS はバックスラッシュ入りの相対URLを通し、`new URL` でホスト名を正規化して読んでいた。Python は前後の空白の扱いが JS と違った）。
 本文URLはブラウザの `js/bm-sanitize.js` と同じ方針で検証する。C0制御文字・DELはトリム前に拒否し、
 相対URLとhttp(s)を許可する。リンクのhrefに限りmailto/tel、imgのsrcに限りPNG/GIF/JPEG/WebP/AVIF/BMP/ICOのbase64 data URLも許可する。
 srcsetは各候補を検証し、カンマ区切りと曖昧になるdata URLを許可しない。本文の外部リンクは許可し、自社ドメイン限定の `bmSanitize.url` とは分ける。
 描画がすべて成功してから出力を反映し、通常の書き込み例外では適用済みの変更も巻き戻す。
 復元中に失敗しても残りの復元を続け、元の書き込みエラーと全復元エラー（対象パス付き）をまとめて報告する。
 WP APIの取得は、タイムアウト・接続失敗・429・5xxに限り間隔を空けて最大3回まで試す（`bm_build.fetch_json`）。
+WP API の前には nginx のキャッシュ（`s-maxage=600`、応答ヘッダー `x-nginx-cache`）があるため、ビルダーの取得（`bm_build.fetch_response` / `fetch_json`。全ビルダー共通）は
+取得 URL に実行ごとの値 `_cb=<RUN_TOKEN>` を付ける（既存のクエリがあれば `&` でつなぎ、`build-lp-cases.py` の日付の `_cb` は置き換える。2026-10-15 Issue #89。
+WP の公開直後にビルドしても最大10分前の一覧・詳細を取らない）。WP の各エンドポイントは知らないクエリを無視して同じ応答を返すことを GET で確認済み。
+`_cb` は取得にだけ使い、生成物には書かない。応答を記録・使い回す道具（`check-builds.py` の応答キャッシュ）は `bm_build.without_cache_buster` で `_cb` を除いた URL をキーにする。
+ブラウザと同じ条件で見る `smoke-manga-wp.py` は付けない。
 再試行しても失敗したコラム詳細、不正なslug・JSON/XML・必須マーカー欠落はビルド失敗として扱う（既存ページは残る）。
 作品IDの検証・重複チェックは BizManga に出す作品（`show_site == "both"`）だけにかける（`bm_build.bizmanga_works`）。ContentX専用作品のIDでBizMangaの生成を止めないため。
 コラムのWP slugが安全なURLの条件（小文字英数字・`_`・`-`）に合わない場合は別URLへ切り替え、Actionsの画面に警告を出す（公開URLが変わるのでWP側のslugを直す）。
@@ -1296,11 +1322,26 @@ WP APIの取得は、タイムアウト・接続失敗・429・5xxに限り間�
 
 料金ルールは `tools/bm_pricing_rules.py`、ブラウザ向けの生成テンプレートは
 `tools/templates/bm-pricing.js.tpl`。`js/bm-pricing.js` は生成物として扱う。
-自動生成3ワークフロー（columns / works / lp-cases）は共通のconcurrency groupと `queue: max` で待機ジョブを保持して直列化し、
+自動生成3ワークフロー（columns＝毎日03:00 JST＋WP での公開・更新時に WP プラグインが起動 / works＝毎日03:00 JST / lp-cases＝週1）は共通のconcurrency groupと `queue: max` で待機ジョブを保持して直列化し、
 待機後のcheckoutでは `github.ref_name` を指定してブランチの最新状態から生成する。
-`tools/commit-generated.py` で指定された生成物だけをコミットする。push前にrebaseし、競合はジョブ失敗として残す。
+`tools/commit-generated.py` で指定された生成物だけをコミットする（columns は `column.html` `column/` `index.html` `sitemap.xml` `js/bm-pricing.js` `feed.xml`）。push前にrebaseし、競合はジョブ失敗として残す。
 GSC日次ランクトラッカー（`rank-tracker.yml` / `tools/rank-tracker.py`）は不可侵領域のため対象外で、従来どおり単独でコミットする（日付入りメッセージ）。
-IndexNowはpushのbefore〜after全体を対象とする。beforeが取得できない場合（強制push後など）は直前コミットとの差分で通知し、警告を出す。
+
+**デプロイの起動**（2026-10-16 Issue #89）: 自動ビルドの push（GITHUB_TOKEN・`[skip ci]` 付き）は `pages.yml` の push トリガーを起動しない（GitHub の仕様）。
+そこで `commit-generated.py` が、**push に成功した直後に `gh workflow run pages.yml --ref main` でデプロイを起動する**（GITHUB_TOKEN で起こした workflow_dispatch はワークフローを起動できる）。
+対象ブランチが main のときだけ。変更なし・rebase で同じ内容と分かったとき・push 失敗時は起動しない。起動できないときは「生成物は push 済み」とログに出してジョブを失敗にする（Actions の「Run workflow」で手動で出し直せる）。
+各ビルドのワークフローは `permissions` に `actions: write` を足し、commit のステップの env に `GH_TOKEN: ${{ github.token }}` を渡す（ほかの権限・ステップには足さない）。
+**本番のファイルを書き換える自動ビルドを足したら、生成物は `commit-generated.py` で push し、同じく `actions: write` と `GH_TOKEN` を足す**（デプロイの起動はそこで行われる）。
+2026-10-15 までは `pages.yml` が `workflow_run`（ビルドの完了）で起動し、main の先端が公開済みかをデプロイ記録で判定して飛ばしていた。push しなかったビルドの後にも毎回起動していたので、push したときだけ起動する形にした。
+
+**デプロイ**: `pages.yml` は main への push・手動実行・上の起動で動く。**チェックアウトは常に `ref: main` の先端**（古い実行を再実行しても古いコミットを公開しない）で、公開物と IndexNow の基準は起動したときのコミット（`github.sha`）ではなく、チェックアウトした HEAD。
+デプロイ前に `tools/check-site.py`（JS・CSS の参照漏れなど）と `tools/test_site_artifact.py` を実行し、`tools/build-site-artifact.py` で公開するファイルだけを集める。
+
+**IndexNow**（2026-10-16 Issue #89）: **送るのは `pages.yml` のデプロイ成功後の1か所だけ**（`indexnow.yml` と、ビルドのワークフローの送信ステップは廃止）。
+デプロイの前に「最後に成功した github-pages のデプロイのコミット」を読んでおく（`gh api repos/$REPO/deployments?environment=github-pages` を新しい順に見て、`statuses` に `success` があり `environment_url` が空でない＝実際に公開した最初の記録の `sha`。このジョブ自身の記録はまだ success でないので拾わない。permissions は `deployments: read` だけ）。
+デプロイに成功したら、そのコミット〜今回公開したコミットの差分を `tools/indexnow-ping.py` で送る（`INDEXNOW_BEFORE` / `INDEXNOW_AFTER` を env で渡す。チェックアウトは `fetch-depth: 0`）。差分は `git diff --no-renames` で、slug の変更で消えた URL も送る。
+前回の記録が見つからない・読めない・そのコミットがチェックアウトに無いときは送らない（全件は送らない）。送信の失敗はデプロイの成功を取り消さない（そのステップだけ失敗表示。`continue-on-error`）。
+人の push も自動ビルドも同じ経路で送る。デプロイ記録の `sha` は起動したときのコミットで、実際に公開した HEAD より古いことがある（その場合は同じ URL を重ねて送るだけで、送り漏れにはならない）。送信に失敗した範囲は次のデプロイで送り直されない（必要なら手元で `INDEXNOW_BEFORE` / `INDEXNOW_AFTER` を指定して `tools/indexnow-ping.py` を実行する）。キーとサイトは `tools/bm_indexnow.py`（キーファイルは公開時に `build-site-artifact.py` が作る。検査は上の `test_site_artifact.py`）。
 
 ### 16.3 ページ固有ファイルの配置（2026-10-05）
 

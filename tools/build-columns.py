@@ -4,33 +4,42 @@ BizManga コラム静的HTMLビルダー
 
 WP API `/columns` からコラム記事を取得し、以下を自動生成する:
   1. column/{slug}.html 個別ページを生成（SEOフレンドリーURL）
-  2. column.html 内の <!-- BUILD:COLUMN_GRID --> マーカー間に静的カードを展開
-  3. sitemap.xml に個別コラムURLを追加
-  4. column.html head に ItemList JSON-LD を挿入
+  2. column.html 内の <!-- BUILD:COLUMN_FEATURED --> に特集枠（最新1件）、<!-- BUILD:COLUMN_GRID --> に
+     一覧カードを展開（一覧・特集枠はこれが正。ブラウザ側で WP から作り直さず、JS は絞り込みの表示/非表示だけ）
+  3. index.html（ホーム）の <!-- BUILD:HOME_COLUMN_GRID --> マーカー間に最新8件のカードを展開
+     （ホームの枠もブラウザで WP から取得しない。Issue #79）
+  4. sitemap.xml に個別コラムURLを追加
+  5. column.html head に ItemList JSON-LD を挿入
+  6. 最後に、同じ取得データで RSS（feed.xml）を書く（tools/bm_feed.py。ニュースはそこで取る）。
+     フィードの失敗ではページを取り消さない（ページは先に書き終えている）。結果は GitHub Actions の
+     ステップ出力 feed=ok / failed に書き、ワークフローが push とデプロイの起動を済ませた後でジョブを失敗にする
 
 使い方:
     cd BizManga
     python3 tools/build-columns.py
 
-実行タイミング:
-    - WordPress でコラムを追加・更新した後
-    - 日次の定期実行（GitHub Actions）
+実行タイミング（.github/workflows/build-columns.yml）:
+    - WordPress でコラムを公開・更新したとき（WP プラグインが workflow_dispatch で起動する）
+    - 毎日 03:00 JST の定期実行（取りこぼしの保険）と手動実行
 """
 
 import html
+import os
 import pathlib
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date as _date
+from urllib.parse import urljoin
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
     fetch_json, output_batch, remove_file, render_template,
     replace_block, require_records, script_json, write_text,
 )
-from bm_content import make_slug
-from bm_html import _Sanitizer
-from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
+import bm_content
+import bm_feed
+from bm_content import make_slug, normalize_brand_text, updated_ymd
+from bm_html import _Sanitizer, site_url
+from bm_pricing import normalize_price_html, write_browser_script
 
 # WP excerpt が誤っているコラムの description override (再ビルド時の上書き対策)
 DESC_OVERRIDES = {
@@ -38,7 +47,6 @@ DESC_OVERRIDES = {
 }
 
 
-API_LIST = API_BASE + '/columns?site=bizmanga&per_page=100'
 API_SINGLE = API_BASE + '/columns/{id}'
 SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -47,33 +55,24 @@ COLUMN_DIR = ROOT / "column"
 
 DETAIL_FETCH_WORKERS = 5
 
+# サムネイルが無い・使えない記事の代わりの画像（一覧・特集枠・ホーム枠・詳細ページの og:image で共通）。
+# このサイト自身の OG 画像。ContentsX 側（contentsx.jp）の画像に頼らない（BUGS #020）
+FALLBACK_THUMB = f"{SITE}/material/images/og/og-index.webp"
+# カテゴリ未設定の記事の絞り込み名。カードの data-category・特集枠・チップの件数で同じ値を使う
+OTHER_CATEGORY = "その他"
+
+GRID_START = "<!-- BUILD:COLUMN_GRID -->"
+GRID_END = "<!-- /BUILD:COLUMN_GRID -->"
+FEATURED_START = "<!-- BUILD:COLUMN_FEATURED -->"
+FEATURED_END = "<!-- /BUILD:COLUMN_FEATURED -->"
+
+# ホームのコラム枠（index.html #bmColumnGrid）。旧 js/bm-wp-api.js の loadColumns() と同じ件数
+HOME_COLUMN_LIMIT = 8
+HOME_GRID_START = "<!-- BUILD:HOME_COLUMN_GRID -->"
+HOME_GRID_END = "<!-- /BUILD:HOME_COLUMN_GRID -->"
+
 def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
-
-
-def normalize_brand_text(text, *, prices=True):
-    """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
-    - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
-      （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
-    - 旧料金コピー → 現行基本料金25,740円〜（税抜・原稿料別途）
-    WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
-    """
-    if not text:
-        return text
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」の体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割の体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割', '独自の制作メソッド', text)
-    text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
-    return normalize_price_text(text) if prices else text
 
 
 def sanitize_content_html(raw):
@@ -88,7 +87,8 @@ def sanitize_content_html(raw):
 
 
 def fetch_columns():
-    return require_records(fetch_json(API_LIST), label="columns")
+    # 全ページを取り切れなければ例外（何も書き出さず、古いページも消さない）。フィードと同じ取得関数
+    return bm_content.fetch_columns()
 
 
 def fetch_column_detail(col_id):
@@ -170,34 +170,87 @@ def build_toc_and_inject_ids(content_html):
     return toc_html, content_with_ids
 
 
-def build_card(c):
-    slug = make_slug(c)
-    thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
-    title_ja = normalize_price_text(c.get("title_ja", ""))
-    category = c.get("category") or "その他"
-    excerpt = normalize_brand_text(c.get("excerpt_ja", ""))
-    date = c.get("date", "")
-    readtime = c.get("_readtime", 5)
-    detail_url = f"/column/{slug}"
+def card_fields(c):
+    """一覧カード・特集枠・ホーム枠で共通の表示データ。WP 由来の文字の正規化（料金＋ブランド表現）・
+    HTML エスケープ・画像 URL の検査はここだけで行い、返す値はすべてエスケープ済み。"""
+    title = normalize_brand_text(c.get("title_ja") or "")
+    return {
+        # 詳細ページは make_slug の名前で生成するので、リンクは常に /column/{slug}（/ 始まり、BUGS #006）
+        "href": esc(f"/column/{make_slug(c)}"),
+        "src": esc(site_url(c.get("thumbnail")) or FALLBACK_THUMB),
+        "title": esc(title),
+        "excerpt": esc(normalize_brand_text(c.get("excerpt_ja") or "")),
+        "category": esc(c.get("category") or ""),
+        "filter": esc(c.get("category") or OTHER_CATEGORY),
+        "date": esc(c.get("date") or ""),
+        "readtime": esc(c.get("_readtime", 5)),
+    }
 
-    cat_html = (
-        f'<span class="bm-column-card-cat">{esc(category)}</span>' if c.get("category") else ""
-    )
-    return (
-        f'      <a class="bm-column-card" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
-        f'        <div class="bm-column-card-img">\n'
-        f'          <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225">\n'
-        f'        </div>\n'
-        f'        <div class="bm-column-card-body">\n'
-        f'          {cat_html}\n'
-        f'          <h3 class="bm-column-card-title">{esc(title_ja)}</h3>\n'
-        f'          <p class="bm-column-card-excerpt">{esc(excerpt)}</p>\n'
-        f'          <div class="bm-column-card-meta">\n'
-        f'            <span class="bm-column-card-readtime">{readtime}分</span>\n'
-        f'            <time class="bm-column-card-date">{esc(date)}</time>\n'
-        f'          </div>\n'
-        f'        </div>\n'
-        f'      </a>\n'
+
+def build_card(c, *, indent=6, featured=False, home=False):
+    """コラムのカード1枚（一覧 column.html とホーム index.html の枠で共通）。
+    - home=False（一覧）: data-category（絞り込み用）と読了時間つき
+    - home=True（ホームの枠）: 旧 js/bm-wp-api.js の loadColumns() と同じ構造（読了時間・data-category 無し）
+    - featured=True: 特集枠と同じ記事のカード（bm-column-card--featured）。PC は特集枠があるので CSS で隠し、
+      特集枠を隠すスマホ（〜768px）でだけ一覧の先頭に見せる
+    indent はマーカーの位置に合わせた字下げ（出力の見た目だけ）。"""
+    f = card_fields(c)
+    card_class = "bm-column-card bm-column-card--featured" if featured else "bm-column-card"
+    category_attr = "" if home else f' data-category="{f["filter"]}"'
+    date = f'<time class="bm-column-card-date">{f["date"]}</time>'
+    rows = [
+        f'<a class="{card_class}" href="{f["href"]}"{category_attr}>',
+        f'  <div class="bm-column-card-img"><img src="{f["src"]}" alt="{f["title"]}" loading="lazy" width="400" height="225"></div>',
+        '  <div class="bm-column-card-body">',
+        *([f'    <span class="bm-column-card-cat">{f["category"]}</span>'] if f["category"] else []),
+        f'    <h3 class="bm-column-card-title">{f["title"]}</h3>',
+        f'    <p class="bm-column-card-excerpt">{f["excerpt"]}</p>',
+        *(['    ' + date] if home else [
+            '    <div class="bm-column-card-meta">',
+            f'      <span class="bm-column-card-readtime">{f["readtime"]}分</span>',
+            '      ' + date,
+            '    </div>',
+        ]),
+        '  </div>',
+        '</a>',
+    ]
+    return "".join(" " * indent + row + "\n" for row in rows)
+
+
+def build_featured(c):
+    """column.html の特集枠（#bmColumnFeatured の中身）。PC で最新記事を大きく見せる。
+    文字・URL は一覧カードと同じ card_fields を通すので、PC の特集枠とスマホの先頭カードは同じ文になる。"""
+    f = card_fields(c)
+    rows = [
+        f'<a class="bm-column-featured-card" id="bmColumnFeaturedCard" href="{f["href"]}" data-category="{f["filter"]}">',
+        '  <div class="bm-column-featured-img">',
+        # サムネイルは 16:9（一覧カードと同じ画像）。枠の 21:9 は CSS の object-fit: cover で切り抜く
+        f'    <img src="{f["src"]}" alt="{f["title"]}" loading="eager" width="1200" height="675">',
+        '  </div>',
+        '  <div class="bm-column-featured-body">',
+        '    <p class="bm-column-featured-label">',
+        '      <span>特集記事</span>',
+        f'      <time class="bm-column-featured-date">{f["date"]}</time>',
+        '    </p>',
+        *([f'    <span class="bm-column-featured-cat">{f["category"]}</span>'] if f["category"] else []),
+        f'    <h2 class="bm-column-featured-title">{f["title"]}</h2>',
+        f'    <p class="bm-column-featured-excerpt">{f["excerpt"]}</p>',
+        '    <span class="bm-column-featured-read">記事を読む →</span>',
+        '  </div>',
+        '</a>',
+    ]
+    return "".join("      " + row + "\n" for row in rows)
+
+
+def category_counts(columns):
+    """絞り込みチップのカテゴリと件数（件数の多い順、その他は末尾）。カードの data-category と同じ名前"""
+    counts = {}
+    for c in columns:
+        name = c.get("category") or OTHER_CATEGORY
+        counts[name] = counts.get(name, 0) + 1
+    return sorted(
+        [{"name": k, "count": v} for k, v in counts.items()],
+        key=lambda x: (x["name"] == OTHER_CATEGORY, -x["count"]),
     )
 
 
@@ -205,39 +258,15 @@ def update_column_html(columns):
     p = ROOT / "column.html"
     s = p.read_text(encoding="utf-8")
 
-    # Featured = 最新1件 (日付降順の先頭)
-    featured = columns[0] if columns else None
-    rest = columns[1:] if featured else columns
+    # 特集 = 最新1件（WP の並び＝公開日の新しい順の先頭）。PC は特集枠、スマホは一覧の先頭カードで見せる
+    s, _ = replace_block(s, FEATURED_START, FEATURED_END,
+                         f"{FEATURED_START}\n{build_featured(columns[0])}      {FEATURED_END}", required=True)
+    # 一覧はこの静的カードが正（ブラウザ側で WP から作り直さない。Issue #74）
+    cards = "".join(build_card(c, featured=i == 0) for i, c in enumerate(columns))
+    s, _ = replace_block(s, GRID_START, GRID_END, f"{GRID_START}\n{cards}      {GRID_END}", required=True)
 
-    cards = "".join(build_card(c) for c in rest)
-    start = "<!-- BUILD:COLUMN_GRID -->"
-    end = "<!-- /BUILD:COLUMN_GRID -->"
-    block = f"{start}\n{cards}      {end}"
-    s, _ = replace_block(s, start, end, block, required=True)
-
-    # Featured + カテゴリ一覧をJSONで埋め込む (bm-column-filter.jsが読む)
-    cat_counts = {}
-    for c in columns:
-        k = c.get("category") or "その他"
-        cat_counts[k] = cat_counts.get(k, 0) + 1
-    # カテゴリ一覧は件数降順、"その他"は末尾
-    sorted_cats = sorted(
-        [{"name": k, "count": v} for k, v in cat_counts.items()],
-        key=lambda x: (x["name"] == "その他", -x["count"]),
-    )
-    data_payload = {
-        "total": len(columns),
-        "categories": sorted_cats,
-        "featured": {
-            "slug": make_slug(featured),
-            "title": normalize_price_text(featured.get("title_ja", "")),
-            "excerpt": normalize_price_text(featured.get("excerpt_ja", "")),
-            "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
-            "category": featured.get("category") or "",
-            "date": featured.get("date", ""),
-            "readtime": featured.get("_readtime", 5),
-        } if featured else None,
-    }
+    # 絞り込みチップのカテゴリと件数（bm-column-filter.js が読む）
+    data_payload = {"total": len(columns), "categories": category_counts(columns)}
     data_tag = (
         '<script type="application/json" id="bm-column-data">\n'
         + script_json(data_payload, indent=2)
@@ -256,7 +285,7 @@ def update_column_html(columns):
                 "@type": "ListItem",
                 "position": i,
                 "url": f"{SITE}/column/{make_slug(c)}",
-                "name": normalize_price_text(c.get("title_ja") or str(c["id"])),
+                "name": normalize_brand_text(c.get("title_ja") or str(c["id"])),
             }
             for i, c in enumerate(columns, start=1)
         ],
@@ -272,20 +301,28 @@ def update_column_html(columns):
     print(f"Updated {p}")
 
 
+def update_home_html(columns):
+    """index.html のコラム枠（#bmColumnGrid）に、WP の一覧と同じ並びの先頭8件を書き込む。
+    マーカーが無ければ column.html と同じくビルド失敗にする（出力は1つも反映されない）。"""
+    p = ROOT / "index.html"
+    s = p.read_text(encoding="utf-8")
+    cards = "".join(build_card(c, indent=10, home=True) for c in columns[:HOME_COLUMN_LIMIT])
+    block = f"{HOME_GRID_START}\n{cards}          {HOME_GRID_END}"
+    s, _ = replace_block(s, HOME_GRID_START, HOME_GRID_END, block, required=True)
+    write_text(p, s)
+    print(f"Updated {p}")
+
+
 def build_detail_page(col, detail_data, template):
     slug = make_slug(col)
-    title_ja = normalize_price_text(col.get("title_ja") or slug)
-    thumb = col.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
+    title_ja = normalize_brand_text(col.get("title_ja") or slug)
+    # ヒーロー画像・og:image・JSON-LD の image。一覧カードと同じ検査を通し、og:image 用に絶対URLにする
+    thumb = urljoin(SITE + "/", site_url(col.get("thumbnail")) or FALLBACK_THUMB)
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
-    # WP の post_modified が全記事「今日」になっているケースは信頼しない（QRG的に不自然）
-    today_iso = _date.today().isoformat()
-    wp_modified = col.get("modified_ymd") or ""
-    if wp_modified and wp_modified != today_iso and wp_modified >= date_ymd:
-        modified_ymd = wp_modified
-    else:
-        modified_ymd = date_ymd
+    # dateModified は sitemap の lastmod・フィードと同じ関数（公開日と更新日の新しい方。実行時刻に依存しない）
+    modified_ymd = updated_ymd(col)
     excerpt = normalize_brand_text(col.get("excerpt_ja") or "")
     # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
@@ -385,8 +422,9 @@ def update_sitemap(columns):
     for c in columns:
         slug = make_slug(c)
         # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
-        # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
-        modified = c.get("modified_ymd") or c.get("date_ymd") or ""
+        # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)。
+        # 詳細ページの dateModified・フィードと同じ関数（予約投稿でも公開日より前にならない）
+        modified = updated_ymd(c)
         lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
             "  <url>\n"
@@ -417,16 +455,40 @@ def _build():
     # 0件は fetch_columns() が拒否する（既存ページを消さないため）
     print(f"Total columns from WP: {len(columns)}")
 
-    # 順序: detail生成 (readtimeを記録) → column.html 更新 → sitemap
+    # 順序: detail生成 (readtimeを記録) → column.html 更新 → ホームの枠 → sitemap
     generate_details(columns)
     update_column_html(columns)
+    update_home_html(columns)
     update_sitemap(columns)
     print("Done.")
+    return columns
+
+
+def write_feed(columns):
+    """ページと同じ取得データ（columns）で feed.xml を書く。成功なら True。
+    失敗してもページは取り消さない（書き終えている）。Actions の画面にエラーを出して False を返す。"""
+    try:
+        with output_batch(ROOT):
+            count = bm_feed.write_feed(columns, ROOT)
+    except Exception as e:
+        print(f"::error::feed.xml was not updated (the column pages were): {e}", file=sys.stderr)
+        return False
+    print(f"Updated feed.xml ({count} items)")
+    return True
+
+
+def step_output(**values):
+    """GitHub Actions のステップ出力（steps.<id>.outputs.*）。Actions の外では何もしない"""
+    path = os.environ.get("GITHUB_OUTPUT")
+    if path:
+        with open(path, "a", encoding="utf-8") as output:
+            output.writelines(f"{key}={value}\n" for key, value in values.items())
 
 
 def main():
     with output_batch(ROOT):
-        return _build()
+        columns = _build()
+    step_output(feed="ok" if write_feed(columns) else "failed")
 
 
 if __name__ == "__main__":

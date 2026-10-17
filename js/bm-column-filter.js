@@ -1,11 +1,11 @@
 /**
- * BizManga コラム一覧 - カテゴリフィルタ & Featured注入
+ * BizManga コラム一覧 - カテゴリ絞り込み
  *
- * column.html の <script id="bm-column-data"> にビルド時に埋め込まれた
- * データを読み、以下を実行する:
- *   1. Featured記事セクションに最新1件を注入
- *   2. フィルターチップをカテゴリ一覧から生成
- *   3. チップクリックで data-category マッチのカードのみ表示
+ * 特集枠（#bmColumnFeatured）と一覧カード（#bmColumnGrid）は tools/build-columns.py が書き出す
+ * 静的HTML。JS が無くても全記事が出る。ここでは次だけを行う:
+ *   1. 絞り込みチップを、ビルド時に埋め込んだ <script id="bm-column-data">（カテゴリと件数）から作る
+ *   2. チップを押したら、data-category が一致するカードと特集枠だけを表示する
+ *      （カテゴリ未設定の記事は、ビルダーが data-category="その他" を付ける）
  */
 (function () {
   "use strict";
@@ -19,38 +19,6 @@
       console.warn("[bm-column-filter] invalid data JSON", e);
       return null;
     }
-  }
-
-  function renderFeatured(data) {
-    var f = data && data.featured;
-    if (!f) return;
-    var section = document.getElementById("bmColumnFeatured");
-    var card = document.getElementById("bmColumnFeaturedCard");
-    var img = document.getElementById("bmColumnFeaturedImg");
-    var date = document.getElementById("bmColumnFeaturedDate");
-    var cat = document.getElementById("bmColumnFeaturedCat");
-    var title = document.getElementById("bmColumnFeaturedTitle");
-    var excerpt = document.getElementById("bmColumnFeaturedExcerpt");
-    if (!section || !card) return;
-
-    card.href = "/column/" + f.slug;
-    card.setAttribute("data-category", f.category || "");
-    if (img) {
-      img.src = f.thumbnail;
-      img.alt = f.title;
-    }
-    if (date) date.textContent = f.date;
-    if (cat) {
-      if (f.category) {
-        cat.textContent = f.category;
-        cat.style.display = "";
-      } else {
-        cat.style.display = "none";
-      }
-    }
-    if (title) title.textContent = f.title;
-    if (excerpt) excerpt.textContent = f.excerpt;
-    section.style.display = "";
   }
 
   function buildChip(label, filterValue, count) {
@@ -67,12 +35,12 @@
     return btn;
   }
 
-  function renderFilterChips(data, grid) {
+  function init() {
+    var data = loadData();
     var list = document.getElementById("bmColumnFilter");
-    if (!list || !data) return;
-    var cats = data.categories || [];
+    if (!data || !list) return;
 
-    // "すべて"チップの件数を更新
+    // "すべて"チップの件数
     var all = list.querySelector('[data-filter="all"]');
     if (all && data.total != null) {
       var count = document.createElement("span");
@@ -80,66 +48,36 @@
       count.textContent = String(data.total);
       all.appendChild(count);
     }
-
-    cats.forEach(function (c) {
+    (data.categories || []).forEach(function (c) {
       var li = document.createElement("li");
       li.appendChild(buildChip(c.name, c.name, c.count));
       list.appendChild(li);
     });
 
+    var grid = document.getElementById("bmColumnGrid");
     var featured = document.getElementById("bmColumnFeatured");
-    var updateActive = function (filter) {
-      Array.prototype.forEach.call(
-        list.querySelectorAll(".bm-column-filter-chip"),
-        function (c) {
-          if (c.getAttribute("data-filter") === filter) {
-            c.classList.add("is-active");
-          } else {
-            c.classList.remove("is-active");
-          }
-        }
-      );
+    var featuredCard = document.getElementById("bmColumnFeaturedCard");
+
+    function matches(el, filter) {
+      return filter === "all" || (el && el.getAttribute("data-category") === filter);
+    }
+
+    function applyFilter(filter) {
+      Array.prototype.forEach.call(list.querySelectorAll(".bm-column-filter-chip"), function (chip) {
+        chip.classList.toggle("is-active", chip.getAttribute("data-filter") === filter);
+      });
       var cards = grid ? grid.querySelectorAll(".bm-column-card") : [];
       Array.prototype.forEach.call(cards, function (card) {
-        if (filter === "all") {
-          card.classList.remove("is-filtered-out");
-        } else {
-          // data-category属性を優先、無ければバッジテキストから推定（キャッシュ耐性）
-          var cat = card.getAttribute("data-category");
-          if (!cat) {
-            var badge = card.querySelector(".bm-column-card-cat");
-            cat = badge ? badge.textContent.trim() : "";
-          }
-          if (cat === filter) card.classList.remove("is-filtered-out");
-          else card.classList.add("is-filtered-out");
-        }
+        card.classList.toggle("is-filtered-out", !matches(card, filter));
       });
-      // Featuredは「すべて」or カテゴリ一致時のみ表示
-      if (featured) {
-        var fCard = document.getElementById("bmColumnFeaturedCard");
-        var fCat = fCard ? fCard.getAttribute("data-category") : "";
-        if (filter === "all" || filter === fCat) {
-          featured.style.display = "";
-        } else {
-          featured.style.display = "none";
-        }
-      }
-    };
+      // 特集枠は「すべて」か、特集記事のカテゴリと一致するときだけ（スマホは CSS で常に非表示）
+      if (featured) featured.hidden = !matches(featuredCard, filter);
+    }
 
     list.addEventListener("click", function (e) {
-      var t = e.target.closest(".bm-column-filter-chip");
-      if (!t) return;
-      updateActive(t.getAttribute("data-filter"));
+      var chip = e.target.closest(".bm-column-filter-chip");
+      if (chip) applyFilter(chip.getAttribute("data-filter"));
     });
-  }
-
-  function init() {
-    var data = loadData();
-    if (!data) return;
-    var grid = document.getElementById("bmColumnGrid");
-
-    renderFeatured(data);
-    renderFilterChips(data, grid);
   }
 
   if (document.readyState === "loading") {
