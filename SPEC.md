@@ -62,7 +62,7 @@
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | 資料ダウンロード | `download.html` | `bm-nav` + `bm-tracking` + `js/bm-download.js` + CRM `inbound-v1.js` | 2026-09-28 新設。フォーム入力でサービス資料PDFをその場でダウンロード、CRM の受信箱「資料DL」へ届ける。詳細は §5.2 |
-| 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役 |
+| 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役。スライドのクリックは `biz-library?manga={キー}` へ遷移し、`/preproduction` の項目のキーは `pre-red-wp{投稿ID}` / `pre-name-wp{投稿ID}`（`works.js` と同じ形。§2.1） |
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。旧 `production-flow.html`（リダイレクト用HTML）は削除済み・sitemapにも無し |
 | プライバシーポリシー | `privacy-policy.html` | — | 個人情報保護法準拠。11条構成（事業者情報・取得情報・利用目的・第三者提供・外部サービス連携・安全管理措置・開示請求・Cookie・未成年・改定・窓口）。日本語固定表示対応。全ページフッターからリンク |
@@ -493,7 +493,7 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 
 | パラメータ | 役割 |
 |---|---|
-| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得） |
+| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得）。**`/manga/{id}` が 404（WP に無い・完全非公開）なら画像を推測せず「NO PAGES」**（2026-10-15 / Issue #84。以前は `contentsx.jp/material/manga/{id}/01〜30.webp` を推測して出していた）。ギャラリーが空の作品と通信障害のときは従来どおり素材フォルダの画像を推測する |
 | `slides=1` | 1ページずつのスライド表示（横読み向け）。`interval`で自動切替間隔(ms) |
 | `speed=0.5` | 縦/横自動スクロール速度(px/frame) |
 | `hold=1` | 親から`postMessage('s3d-start')`を受けるまで自動再生を保留 |
@@ -509,7 +509,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
-- `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
+- `?manga=id`: `biz-library.html` の `js/works.js` が URLSearchParams を読んで `isDirectMode` 分岐。作品は WP API `/manga/{id}` でリアルタイム取得したデータで開く（手書きの `FALLBACK_WORKS` では先に開かない。§2.1）。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
@@ -591,22 +591,35 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 - **動作**: 書庫UIを全て非表示 → 漫画ビューアのみ表示
 - **制御**:
   - [biz-library.html:45](biz-library.html#L45) — `<head>` で即座に `<html class="direct-mode">` を付与（フリッカ防止）
-  - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
+  - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示（ヘッダーは `<header class="bm-header">` なので `.bm-header` を指定する。2026-10-15 まで存在しない `.header` を指定していて、`works.js` が動くまでヘッダーが見えていた / Issue #84）
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
 - **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与
 - **閉じるボタン (✕)**:
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
-- **最終ページCTAの再適用（2026-05-29 修正 / BUGS #037）**: フォールバックデータ `FALLBACK_WORKS` に載っている作品をダイレクトモードで開くと、CTA情報を持たない静的データで即オープンされる。その後 `/library` API がCTA付きデータに差し替えるため、`fetchLibraryFromAPI` のダイレクトモード分岐で **表示モード不変時も `setupMangaCta(mangaData[autoOpen])` を再実行**してCTA設定を反映する（これが無いと `?manga=seko` 等でCTAが出ない）
+- **開くデータは `/manga/{id}`・開くのは1回だけ（2026-10-14 / Issue #71、2026-10-15 レビュー指摘で補強）⭐**: 作品は、手書きの `FALLBACK_WORKS` や先に届いた `/library` では先に開かず、**`/manga/{id}` の応答を登録して1回だけ開く**（`openDirectMangaOnce()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する
+  - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時は表示モードが変わったときだけ開き直し・それ以外は CTA だけ貼り直していた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
+  - **WP の作品データ→mangaData の変換は `toMangaEntry(w)` 1つ**: `/library` と `/manga/{id}` の両分岐が同じ関数を通る（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。ページ数はギャラリー枚数を優先、`path` は `https://contentsx.jp/material/manga/{id}/`（ギャラリーが空のときの画像の置き場）、view_type は WP の値＋強制縦読みの判定を `window.bmViewType.isForcedVertical` に委譲、CTA 項目（`client_url` / `cta_label_ja` / `cta_enabled`）・赤ペン/ネームのギャラリーも同じ
+  - **開くキー**: `?manga=` の値は小文字にそろえる（`/manga/{id}` は大文字小文字を区別せず小文字の id を返す。例 `?manga=Seko` → `seko`）。取得に成功したら応答の `id` で開く（登録したキー＝開くキー）
+  - **時間切れ**: `/manga/{id}` は `BM_WP_CONFIG.timeout`（ビズ書庫は `bm-wp-config.js` を読まないので既定 5000ms。`bm-wp-api.js` の `apiFetch` と同じ）で中断し、下の「通信障害」と同じ扱い
+  - **`/manga/{id}` が 404**（WP が隠した＝完全非公開・削除した）: 「作品が見つかりませんでした」。例外は WP に作品が無く手書きデータだけで公開している作品（`works.js` の `DIRECT_FALLBACK_ONLY_IDS`。2026-10-15 時点で `life-school` / `sixtones`。FALLBACK_WORKS の他17件は `/manga/{id}` が 200）で、手書きデータで開く。WP に登録したら許可リストから外す
+  - **`/manga/{id}` が通信障害・5xx・時間切れ・不正な応答**: `/library` が届いていればそのデータで開く。まだなら `/library` の到着（または失敗）を最大3秒（`DIRECT_LIBRARY_WAIT_MS`）待ち、届けばそのデータ、届かなければ手書きの `FALLBACK_WORKS` で開く（`/library` に無い作品も `FALLBACK_WORKS` から戻す）。どれにも無ければ「作品が見つかりませんでした」。`/library` も応答しないときは最大で約8秒（5秒＋3秒）暗い画面のあと開く／見つかりません
+  - **`/library` 到着時（`fetchLibraryFromAPI`）**: 直リンクを開かない・開き直さない・CTA も貼り直さない（直リンクの処理が `waitForLibrary()` で到着を待つ）。直リンクで開いた（開く処理を始めた）作品のデータは**消さない・差し替えない**（表示中のビューアと PC の見開き/縦読み切替が `mangaData[作品ID]` を読むため。消すと `/library` に無い QR 限定公開の作品で切替が効かなくなる）
+  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形か、登録済みデータが `_isPreProduction` のものだけを制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として `/manga/{id}` で開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録）を最大約8秒待って開く。登録されなければ「作品が見つかりませんでした」。制作過程は `/manga/{id}` に無い（404）ので取得しない。`/library` 到着での開き直しは無い（PC で見開きに切り替えた後に縦読みへ戻されない）
+  - **制作過程の専用API `/preproduction` の項目（2026-10-15 / Issue #84）⭐**: キーは **`pre-red-wp{投稿ID}` / `pre-name-wp{投稿ID}`**（`works.js` の `rebuildPreCarousels()` が登録。ホームの制作過程カルーセル `js/bm-pre-production.js` もこの形で `biz-library?manga=` を開く。**2つのファイルでキーの形を必ずそろえる**）。`/preproduction` は `/library` の到着後に取りに行くので、直リンクは `/library` を待ったあと、まだ登録が無ければ `/preproduction` の到着（または失敗）も最大5秒（`DIRECT_FETCH_TIMEOUT_MS`）待つ（`waitForPreproduction()`）。以前はこの登録より前に判定し、ホームのスライドから開くと必ず「作品が見つかりませんでした」になっていた
+    - 2026-10 まではホームが `wp` の付かない `pre-red-{投稿ID}` で開いていたため、その形の URL も `pre-red-wp{投稿ID}` として開く（`resolveDirectPreKey()`。同じキーが登録済みならそちらが優先）。`/library` が失敗・空のときは `/preproduction` を取りに行かないので「作品が見つかりませんでした」
+  - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）。逆に開く処理（`openManga` 等）で例外が出て、まだ開いていなければ「見つかりませんでした」を出す（暗い画面のまま止めない）
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
-  - mangaData に無い場合、`fetch(api + '/manga/' + id)` で取得
-  - 404なら「作品が見つかりませんでした」画面 + トップへ戻るリンク
+  - 作品は常に `fetch(api + '/manga/' + id)` で取得（上記）
+  - `/manga/{id}` が 404 なら（許可リストの作品を除き）「作品が見つかりませんでした」画面 + トップへ戻るリンク。通信障害等で取得できず、`/library` にも手書きの `FALLBACK_WORKS` にも無いときも同じ画面
   - これにより「ビズ書庫・ギャラリー・新作情報 全て非表示だがQR経由でだけ見せたい」運用が可能
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
   - WP管理画面以外からは一切閲覧できない
+  - `/manga/{id}` が 404 を返すので、手書きの `FALLBACK_WORKS` に載っている作品も「見つかりませんでした」になる（2026-10-15 から。以前は手書きデータで開いていた）。⚠️ 例外: 許可リスト `DIRECT_FALLBACK_ONLY_IDS` の作品と、`/manga/{id}` が通信障害・5xx・時間切れで取れなかったときの `FALLBACK_WORKS` の作品は手書きデータ（`contentsx.jp/material/manga/{id}/` の画像）で開く。確実に閉じるなら `FALLBACK_WORKS`（と許可リスト）からも外す
+  - 埋込ビューア（`embed-viewer.html`）も `/manga/{id}` が 404 なら画像を推測せず「NO PAGES」（§2.0b。2026-10-15 / Issue #84）
   - 運用: 制作中・お蔵入り・クライアント契約切れなどで完全に閉じたい時
 
 ### 2.2 プラン事前選択
@@ -699,7 +712,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - ビズマンガの表示には日本語項目だけを使用する。WordPressと共有APIに残る英語用カスタムフィールドは、本サイトのフロントエンドから参照しない互換項目である。
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
-    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
+    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先。QR直リンクの `/manga/{id}` も 2026-10-15 から `/library` と同じ変換 `toMangaEntry()` を通るので gallery優先（以前は `pages` 優先で、ギャラリーが空のとき画像の置き場 `path` も無かった / Issue #84）
     - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
@@ -894,6 +907,9 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - **PCデフォルト**: spread
 - **SPデフォルト**: vertical
 - **ページ送り**: `waitForImage()` で画像読込完了を待ってからクリック解放
+- **先読み（2026-10-15 / Issue #84）**: 開いた直後とカードのホバーで最大4ページを先読みする。**実際のページ数（ギャラリー枚数、無ければ `pages`。`realPageCount()`）を超えて読まない**（以前は開いた直後に必ず2ページ目を読み、1ページの作品で存在しない `02.webp` が 404 になっていた）
+- **書庫グリッドのページ送り**（18件/ページ、`updateGridPagination()`）: 端の「‹ Previous」「Next ›」は `disabled` 属性で止める（見た目は従来の `.disabled` クラス）。class だけだとマウスは止まってもキーボードの Enter で押せ、ページが 0 になってグリッドが空になっていた（2026-10-15 / Issue #84）。押されたときもページ番号は 1〜総ページ数に収める
+- **フッター（biz-library）**: 背景 `#222` に文字 `#aaa`（リンク）/ `#999`（会社情報）/ `#8f8f8f`（コピーライト）、いずれも 4.5:1 以上。2026-05-14 の灰色→`#000` 一括置換で黒地に黒文字になっていたのを 2026-10-15 に戻した（Issue #84）。⚠️ 灰色の一括置換をするときは背景が暗い箇所を除外する
 
 ### 9.1 最終ページCTA（クライアント送客） ⭐ 2026-04-22 追加
 - **データソース**: WP CMS 漫画事例カスタムフィールド `cx_client_url` / `cx_cta_label_ja` / `cx_cta_enabled`
