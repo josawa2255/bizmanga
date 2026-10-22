@@ -18,8 +18,8 @@ var BM_WP_CONFIG = {
   if (!BM_WP_CONFIG.maintenance || typeof window.fetch !== 'function') return;
 
   var WP_API_PREFIX = 'https://cms.contentsx.jp/wp-json/';
+  /* enabled は false にしない（bm-wp-api.js が早期 return して bm-data-ready が出ず、/news が読み込み中のまま止まる） */
   var originalFetch = window.fetch;
-  BM_WP_CONFIG.enabled = false;
 
   window.fetch = function (input) {
     var url = typeof input === 'string' ? input : (input && input.url) || String(input);

@@ -694,6 +694,8 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - そのページから WordPress API（`https://cms.contentsx.jp/wp-json/`）へのアクセスを一切しない（`fetch` 自体を設定ファイルで止めるので、URLを直書きしている部品も止まる）。各部品は既存の「読み込めなかったとき」の表示に落ちる（ビズ書庫は `FALLBACK_WORKS`）
 - 画面下に中立なお知らせ「ただいま一部の表示を一時停止しています。…」を出す（`css/bm-maintenance-notice.css`。どのセクションがWPかは名指ししない。×で閉じるとそのタブでは再表示しない。追従CTA・TOPへ戻るより上に置き、ビューア・ドロワーより下）。iframe（埋込ビューア）の中では出さない
 - QR直リンク（`/biz-library?manga=`）で作品を取れないときは「作品が見つかりません」ではなく一時停止の文言を出す（`js/works.js`）
+- 埋込ビューア（`embed-viewer`・用途別LP）は `01〜10.webp` を推測する予備表示を使わず「ただいま表示を一時停止しています」とだけ出す（`js/bm-embed-viewer.js`。P1.webp系・縦読み作品で崩れるため）
+- ⚠️ メンテナンス中も `BM_WP_CONFIG.enabled` は `false` にしない（`bm-wp-api.js` が早期 return して `bm-data-ready` が出ず、/news が読み込み中のまま止まる）
 - 自動ビルド3本（`build-columns` / `build-works` / `build-lp-cases`）はこの行を見て何もせず終わる（取り込み・コミットをしない）
 - ⚠️ WP を使うページは必ず `bm-wp-config.js` を **WPを読む部品より前**に読み込む（404.html は head の埋め込み処理より前に同期読込）。新しくWPを読むページ・部品を作ったら同じようにする
 - ⚠️ 行の書式（`  maintenance: false`）を変えない。ワークフローが `grep` で判定している
