@@ -651,7 +651,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
 | `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
-| `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL。ビズ書庫（`works.js`）も `apiBase` を使う（`works.js` より前に読む） |
+| `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL / メンテナンス表示スイッチ（§5「WordPress 一時停止スイッチ」）。ビズ書庫（`works.js`）も `apiBase` を使う（`works.js` より前に読む） |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
 
@@ -707,6 +707,19 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
 - `/columns?site=bizmanga&per_page=50` — コラム一覧
 - `/columns/{id}` — コラム個別（本文含む）
+
+### WordPress 一時停止スイッチ（メンテナンス表示・2026-10-22・Issue #101）⭐
+WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` の `maintenance: false` を `true` にしてmainへ反映するだけ**で次が一度に起きる。戻すときは `false` に戻して反映する。
+- そのページから WordPress API（`https://cms.contentsx.jp/wp-json/`）へのアクセスを一切しない（`fetch` 自体を設定ファイルで止めるので、URLを直書きしている部品も止まる）。各部品は既存の「読み込めなかったとき」の表示に落ちる（ビズ書庫は `FALLBACK_WORKS`）
+- 画面下に中立なお知らせ「ただいま一部の表示を一時停止しています。…」を出す（`css/bm-maintenance-notice.css`。どのセクションがWPかは名指ししない。×で閉じるとそのタブでは再表示しない。追従CTA・TOPへ戻るより上に置き、ビューア・ドロワーより下）。iframe（埋込ビューア）の中では出さない
+- QR直リンク（`/biz-library?manga=`）は WP の取り直し（最大10分）を始めず、すぐに「ただいま表示を一時停止しています。…」と再読み込みボタンを出す（`js/works.js` の `startDirectMode`）
+- 埋込ビューア（`embed-viewer`・用途別LP）は `01〜10.webp` を推測する予備表示を使わず「ただいま表示を一時停止しています」とだけ出す（`js/bm-embed-viewer.js`。P1.webp系・縦読み作品で崩れるため）
+- ⚠️ メンテナンス中も `BM_WP_CONFIG.enabled` は `false` にしない（`bm-wp-api.js` が早期 return して `bm-data-ready` が出ず、/news が読み込み中のまま止まる）
+- 自動ビルド3本（`build-columns` / `build-works` / `build-lp-cases`）はこの行を見て何もせず終わる（取り込み・コミットをしない）
+- ⚠️ WP を使うページは必ず `bm-wp-config.js` を **WPを読む部品より前**に読み込む（404.html は head の埋め込み処理より前に同期読込）。新しくWPを読むページ・部品を作ったら同じようにする
+- ⚠️ 行の書式（`  maintenance: false`）を変えない。ワークフローが `grep` で判定している
+- ⚠️ WordPress 画像（`/wp-content/uploads/`）は止めない（静的ファイルのため）
+- ⚠️ これはサイト側の表示を守るだけで、WordPress サーバー自体は守らない。サーバー側の対応は非公開の運用手順で行う
 
 ### WP 管理画面メニュー（2026-06-12 再編）
 - B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層

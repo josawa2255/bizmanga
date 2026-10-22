@@ -1842,7 +1842,7 @@ function hideDirectLoader() {
 // 「ただいま表示に時間がかかっています」と再読み込みボタン（読み込み中の表示の中、スピナーの下）。
 // failed = 待っても開かない（開く処理が失敗した・待つ上限に達した）: スピナーを外して再読み込みを案内する。
 // failed でなければ、ビューアがもう開いている（読み込み中の表示を外した後）なら出さない
-function showDirectStalled(failed) {
+function showDirectStalled(failed, message) {
   if (directNotFoundShown) return;
   if (!directLoaderEl) {
     if (!failed) return;
@@ -1859,7 +1859,7 @@ function showDirectStalled(failed) {
   directStalledEl.setAttribute('role', 'alert');
   var text = document.createElement('p');
   text.className = 'bm-direct-stalled__text';
-  text.textContent = 'ただいま表示に時間がかかっています';
+  text.textContent = message || 'ただいま表示に時間がかかっています';
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'bm-direct-stalled__btn';
@@ -2150,6 +2150,11 @@ function startDirectFlow() {
 
 function startDirectMode() {
   showDirectLoader();
+  // メンテナンス中（bm-wp-config.js の maintenance）は WP を取り直し続けず、すぐに一時停止の文言を出す（QR配布先向け）
+  if (window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance) {
+    showDirectStalled(true, 'ただいま表示を一時停止しています。しばらくしてから再度ご覧ください。');
+    return;
+  }
   startDirectFlow();
 }
 
