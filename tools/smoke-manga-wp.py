@@ -19,9 +19,19 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
     既定ポート 5500 なら**実際の CORS 設定のまま**通る。別ポートを指定したときだけ、Playwright で API 応答を中継して
     Access-Control-Allow-Origin を足す（その場合 CORS 設定そのものは検証されない）
   - http 配信では CSP frame-src（https: のみ）で 127.0.0.1 の埋込 iframe が拒否されるログが出る。そのローカル起因分だけ無視する
-  - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の URL を使う
+  - --api は Python 側の API 確認にだけ効く。ブラウザ側は常にサイト自身の js/bm-wp-config.js の apiBase を使う
+    （ビズ書庫の js/works.js も、先に読む bm-wp-config.js の apiBase を WP_API_BASE として使う）
   - QR直リンク・埋込・スマホの確認には、works.js のローカルフォールバック表（FALLBACK_WORKS）に**無い**作品を選ぶ
-    （フォールバックにある作品は WP が壊れていても開けてしまい、WP 接続の確認にならない）
+    （ビズ書庫の一覧の初期表示と埋込ビューアは、WP に繋がらないとき手書きデータ・素材フォルダの画像を使うので、
+    手書きデータにある作品だと開けたことが WP 接続の確認にならない）
+  - QR直リンクは手書きデータでは開かない（Issue #71。2026-10-15 方針）。手書きデータにもある作品が WP のデータで開くことは
+    別項目で、手書きデータで開いたときと見分けられる作品（WP のギャラリーがある＝1枚目が WP の画像になる・最終ページCTA が
+    有効）を選んで確かめる（ページ数＝WP のギャラリー枚数、1枚目＝WP の画像、最終ページCTA＝WP の cta_enabled どおり）。
+    期待値は --api ではなく、ブラウザが実際に使う API（js/works.js の WP_API_BASE）から取る
+  - QR直リンクの分岐（WP が「作品が無い」と答えた／WP が止まっている→「表示に時間がかかっています」→WP が戻ると開く）は、
+    ブラウザ側で API の応答を差し替えて確かめる。「作品が無い」の応答は、本番の API に存在しない ID を GET した実物を使う
+  - 手書きデータにある作品を選ぶ項目では、WP に未登録の当面の例外（js/works.js の UNREGISTERED_FALLBACK_IDS）を選ばない
+    （この例外は WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、「手書きデータでは開かない」の確認にならない）
 
 終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
@@ -45,11 +55,17 @@ CORS_ALLOWED_LOCAL_ORIGINS = {"http://127.0.0.1:5500", "http://localhost:3000"}
 # エラー・404 を「自分の責任範囲」として数えるホスト（サイト自身 + WP + 素材置き場）
 WATCH_HOST_SUFFIXES = ("contentsx.jp",)
 RESULTS = []  # (name, ok, detail)
+SKIPPED = []  # (name, reason)  前提の取得に失敗して確かめられなかった項目（前提の失敗は FAIL として RESULTS にある）
 
 
 def rec(name, ok, detail=""):
     RESULTS.append((name, bool(ok), detail))
     print(("PASS  " if ok else "FAIL  ") + name + ("  — " + detail if detail else ""), flush=True)
+
+
+def skip(name, reason):
+    SKIPPED.append((name, reason))
+    print(f"SKIP  {name}  — {reason}", flush=True)
 
 
 def get_json(url, timeout=25):
@@ -62,6 +78,20 @@ def get_text(url, timeout=25):
     req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read().decode("utf-8", "replace")
+
+
+def get_status_json(url, timeout=25):
+    """(状態コード, JSON か None) を返す。4xx/5xx でも例外にしない"""
+    req = urllib.request.Request(url, headers={"User-Agent": "bm-smoke/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            status, raw = r.status, r.read()
+    except urllib.error.HTTPError as e:
+        status, raw = e.code, e.read()
+    try:
+        return status, json.loads(raw.decode("utf-8"))
+    except Exception:
+        return status, None
 
 
 def url_ok(url, timeout=15):
@@ -137,7 +167,7 @@ def start_server(directory, port):
 
 # ---------------------------------------------------------------- API
 def check_api(api):
-    data = {"works": [], "works_new": [], "library": [], "manga_one": None}
+    data = {"works": [], "works_new": [], "library": [], "manga_one": None, "api": api}
     try:
         works = get_json(f"{api}/works?site=bizmanga")
         data["works"] = works if isinstance(works, list) else []
@@ -208,6 +238,43 @@ def pick_wp_only_id(base, lib):
     return ids[0], "全作品が FALLBACK_WORKS にあるため先頭を使用（WP 接続の確認としては弱い）"
 
 
+def unregistered_fallback_ids(src):
+    """works.js の UNREGISTERED_FALLBACK_IDS（WP に未登録の当面の例外。WP がデータを返せないとき手書きデータで開く）"""
+    m = re.search(r"UNREGISTERED_FALLBACK_IDS\s*=\s*\[([^\]]*)\]", src)
+    return set(re.findall(r"'([^']+)'", m.group(1))) if m else set()
+
+
+def pick_fallback_id(base, lib):
+    """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
+    手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
+    見分けられる）→ 最終ページCTA が有効 → 手書きのページ数と WP のギャラリー枚数が違う、の順に優先する（手書きデータの
+    ページ数は素材フォルダの枚数なので、WP のギャラリーの方が多い作品もある）。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
+    （WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、確認にならない）。
+    戻り値: (作品ID, 手書きのページ数, 理由)"""
+    try:
+        src = get_text(f"{base}/js/works.js")
+    except Exception as e:
+        return None, None, f"works.js を取得できない（{str(e)[:60]}）"
+    # ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → id と手書きのページ数
+    hand = {m.group(1): int(m.group(2))
+            for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
+    excluded = unregistered_fallback_ids(src)
+    both = [w for w in lib if w.get("id") in hand and w.get("id") not in excluded]
+    if not both:
+        return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い（WP に未登録の当面の例外を除く）"
+
+    def rank(w):
+        differs = len(w.get("gallery") or []) != hand[w["id"]]
+        return (0 if w.get("gallery") else 1, 0 if w.get("cta_enabled") else 1, 0 if differs else 1)
+
+    w = sorted(both, key=rank)[0]
+    differs = len(w.get("gallery") or []) != hand[w["id"]]
+    why = ("WP のギャラリーあり（1枚目の画像で見分けられる）" if w.get("gallery") else "WP のギャラリーなし（見分けとしては弱い）") + \
+          ("・CTA 有効" if w.get("cta_enabled") else "") + \
+          ("・手書きと WP のページ数が違う" if differs else "")
+    return w["id"], hand[w["id"]], why
+
+
 # ------------------------------------------------------------- Browser
 # ホーム/制作事例: bm-wp-api.js は 1段目(/works)で bm-data-ready、2段目(/works-new 等)完了で bm-all-data-ready を出す。
 # ホームのギャラリーは /works-new を使うので、全データ到着まで待つ
@@ -222,6 +289,44 @@ IMG_LOADED = """sel => {
   return imgs.some(i => i.complete && i.naturalWidth > 0);
 }"""
 
+# ビズ書庫ビューアの表示状態（ページ表示・1枚目の画像・最終ページCTA の設定先）
+VIEWER_STATE = """() => {
+  const m = document.getElementById('mangaModal');
+  const spread = m.classList.contains('mode-spread');
+  const first = spread ? document.getElementById('imgRight') : document.querySelector('#modalManga img');
+  return { page: (document.getElementById('modalPage') || {}).textContent || '', spread: spread,
+           first: first ? first.getAttribute('src') : null,
+           cta: (typeof currentCtaData !== 'undefined' && currentCtaData) ? currentCtaData.client_url : null };
+}"""
+
+LIBRARY_URL_RE = re.compile(r"/wp-json/contentsx/v1/library(?:[?#]|$)")
+WP_API_PATH = "/wp-json/contentsx/v1/"
+
+
+def watch_library(pg):
+    """このページの /library の応答を集める（goto より前に呼ぶ。読み込み中に届いた応答も逃さない）"""
+    box = []
+    pg.on("response", lambda r: box.append(r) if LIBRARY_URL_RE.search(r.url) else None)
+    return box
+
+
+def wait_library_ok(pg, box, timeout_ms=25000):
+    """/library の 200 の応答が届き、本文を受け取り終えるまで待つ。戻り値: (届いたか, 説明)"""
+    waited = 0
+    while waited < timeout_ms:
+        ok = [r for r in box if r.status == 200]
+        if ok:
+            try:
+                ok[0].finished()  # 本文の受信完了まで
+            except Exception:
+                pass
+            return True, f"HTTP 200（{waited}ms 待った）"
+        pg.wait_for_timeout(100)
+        waited += 100
+    return False, (f"{timeout_ms}ms 以内に 200 が届かない（届いた応答: " +
+                   (", ".join(str(r.status) for r in box) or "無し") + "）")
+
+
 # 読み込みを試みた（complete）のに幅ゼロ＝壊れている画像。未着手の lazy 画像は数えない
 BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
   .filter(i => i.complete && i.getAttribute('src') && i.naturalWidth === 0)
@@ -229,12 +334,16 @@ BROKEN_IMGS = """sel => [...document.querySelectorAll(sel)]
 
 
 class PageProbe:
-    """1ページぶんのエラー・404の記録"""
+    """1ページぶんのエラー・404の記録。
+    expected_api_failures=True: WP API の応答をわざと 4xx/5xx にしたページ用。その応答に対してブラウザが出す読込失敗のログ
+    （"Failed to load resource" で、場所が WP API の URL）と、WP API の 4xx/5xx を数えない。console.error・未捕捉の例外・
+    サイト/素材の 404 は他のページと同じく数える"""
 
-    def __init__(self, ctx, host, local_http=False, **kw):
+    def __init__(self, ctx, host, local_http=False, expected_api_failures=False, **kw):
         self.page = ctx.new_page(**kw)
         self.host = host
         self.local_http = local_http
+        self.expected_api_failures = expected_api_failures
         self.errors, self.bad = [], []
         self.page.on("pageerror", lambda e: self.errors.append("pageerror: " + str(e)[:160]))
         self.page.on("console", self._on_console)
@@ -252,17 +361,23 @@ class PageProbe:
         # http 配信のときだけ: 127.0.0.1 の埋込 iframe に対する CSP frame-src 違反は配信方式の差なので無視
         if self.local_http and "Content Security Policy" in text and ("127.0.0.1" in text or "localhost" in text):
             return
+        # わざと 4xx/5xx にした WP API の応答に対する、ブラウザの読込失敗のログ（JS の console.error ではない）
+        if self.expected_api_failures and text.startswith("Failed to load resource") and WP_API_PATH in loc:
+            return
         # 自サイト・WP・素材ホスト起因（または場所不明）のエラーだけ数える。GA/Clarity/HubSpot 等は無視
         if (not loc) or self._watched(loc):
             self.errors.append("console: " + text[:160])
 
     def _on_response(self, r):
+        if self.expected_api_failures and WP_API_PATH in r.url:
+            return
         if self._watched(r.url) and r.status >= 400:
             self.bad.append(f"{r.status} {r.url}")
 
     def finish(self, label):
         rec(f"{label}: JSエラー無し", not self.errors, "; ".join(self.errors)[:300])
-        rec(f"{label}: サイト/WP/素材への 404 無し", not self.bad, "; ".join(self.bad)[:300])
+        rec(f"{label}: サイト/WP/素材への 404 無し" + ("（わざと失敗させた WP API の応答を除く）" if self.expected_api_failures else ""),
+            not self.bad, "; ".join(self.bad)[:300])
         try:
             self.page.close()
         except Exception:
@@ -314,6 +429,43 @@ def check_browser(base, data):
 
     def probe(ctx):
         return PageProbe(ctx, host, local_http=local_http)
+
+    site = {}
+
+    def site_api():
+        """ブラウザ（js/works.js）が実際に使う WP API の場所と、そこから取った /library。
+        QR直リンクの確認項目の期待値はここから取る（--api は Python 側の API 確認用で、ブラウザとずれうるため）。
+        戻り値: (API の場所, /library の配列, 取れなかった理由)。取れなかったときは最初の1回だけ FAIL を記録し、
+        API の場所か /library が None になる（呼び出し側は理由つきで飛ばす。2回目以降は同じ結果を返す）"""
+        if "done" not in site:
+            site["done"] = True
+            site["api"], site["library"], site["why"] = None, None, None
+            api_b = None
+            try:
+                ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+                pg = ctx.new_page()
+                try:
+                    pg.goto(f"{base}/biz-library.html", wait_until="domcontentloaded")
+                    api_b = pg.evaluate("() => (typeof WP_API_BASE === 'string') ? WP_API_BASE : null")
+                finally:
+                    close_ctx(ctx)
+            except Exception as e:
+                site["why"] = f"ビズ書庫を開けない（{type(e).__name__}: {str(e)[:100]}）"
+            rec("ブラウザの WP API の場所（works.js の WP_API_BASE）を読める", bool(api_b), str(api_b if api_b else site["why"]))
+            if not api_b:
+                site["why"] = site["why"] or "WP_API_BASE を読めない"
+                return None, None, site["why"]
+            site["api"] = api_b
+            try:
+                lib_b = get_json(f"{api_b}/library")
+                if not isinstance(lib_b, list):
+                    raise ValueError(f"配列でない応答（{type(lib_b).__name__}）")
+                site["library"] = lib_b
+                rec("ブラウザの WP API から /library を取得できる（QR直リンクの期待値）", True, f"{len(lib_b)}件")
+            except Exception as e:
+                site["why"] = f"{api_b}/library を取得できない（{type(e).__name__}: {str(e)[:100]}）"
+                rec("ブラウザの WP API から /library を取得できる（QR直リンクの期待値）", False, site["why"])
+        return site["api"], site["library"], site["why"]
 
     def section(label, fn):
         """区画ごとに例外を隔離: 途中で落ちても残りを続け、落ちた区画は FAIL として残す"""
@@ -433,13 +585,206 @@ def check_browser(base, data):
             try:
                 pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
                 pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", True)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る", True)
             except Exception:
-                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る（/manga/{{id}} 経由）", False)
+                rec(f"QR直リンク ?manga={wp_id}: ビューアが自動で開き画像が出る", False)
             qr = pg.evaluate("() => document.documentElement.classList.contains('qr-mode')")
             rec("QR直リンク: referrer 無しなら qr-mode になる（BUGS #010）", qr)
             pr.finish("QR直リンク")
             close_ctx(qr_ctx)
+
+        def qr_fallback_work():
+            """手書きデータ（FALLBACK_WORKS）にある作品の QR直リンクも、WP のデータで開く（Issue #71）。
+            期待値はブラウザと同じ API（works.js の WP_API_BASE）から取る"""
+            api_b, lib_b, why = site_api()
+            if lib_b is None:
+                skip("QR直リンク(手書きデータにある作品)", why)
+                return
+            fb_id, hand_pages, fb_why = pick_fallback_id(base, lib_b)
+            label = f"QR直リンク(手書きデータにある作品) ?manga={fb_id}"
+            if not fb_id:
+                rec("QR直リンク(手書きデータにある作品): 検証する作品を選べる", False, fb_why)
+                return
+            print(f"   手書きデータにある作品: {fb_id}（手書き {hand_pages}P・{fb_why}）", flush=True)
+            one = get_json(f"{api_b}/manga/{fb_id}")
+            gallery = [img_url(x) for x in (one.get("gallery") or [])]
+            n_wp = len(gallery) or int(one.get("pages") or 0)
+            cta_url = (one.get("client_url") or "").strip()
+            want_cta = bool(one.get("cta_enabled")) and bool(re.match(r"^https?://", cta_url, re.I))
+            ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+            pr = probe(ctx)
+            pg = pr.page
+            lib_box = watch_library(pg)
+            pg.goto(f"{base}/biz-library.html?manga={fb_id}", wait_until="load")
+            try:
+                pg.wait_for_selector("#mangaModal", state="visible", timeout=15000)
+                pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
+                opened = True
+            except Exception:
+                opened = False
+            rec(f"{label}: ビューアが自動で開き画像が出る", opened)
+            if opened:
+                # /library の到着後も開き直されず WP のデータのままであることを見るため、/library の応答（ネットワーク）を待つ。
+                # 直リンクでは一覧（#worksGrid）を作らないので、グリッドの作品数では待てない
+                lib_ok, lib_why = wait_library_ok(pg, lib_box)
+                rec(f"{label}: /library の応答が届く（届いた後もそのまま WP のデータで表示されているかを見る前提）", lib_ok, lib_why)
+                pg.wait_for_timeout(1000)
+                st = pg.evaluate(VIEWER_STATE)
+                rec(f"{label}: ページ数が WP（/manga/{{id}} のギャラリー枚数）どおり", st["page"].endswith(f"/ {n_wp}") and n_wp > 0,
+                    f"表示={st['page']} WP={n_wp}P 手書き={hand_pages}P")
+                if gallery:
+                    rec(f"{label}: 1枚目が WP のギャラリーの画像", st["first"] == gallery[0], f"表示={str(st['first'])[-60:]}")
+                rec(f"{label}: 最終ページCTA の設定が WP の cta_enabled どおり",
+                    ((st["cta"] or "").strip() == cta_url) if want_cta else (st["cta"] is None),
+                    f"WP: cta_enabled={bool(one.get('cta_enabled'))} → 期待={'有' if want_cta else '無'} / 画面の設定={st['cta'] or '無'}")
+                # 最終ページへ進めて、CTA が実際に出る（出ない）ことを見る
+                if st["spread"]:
+                    pg.evaluate("""() => { const s = document.getElementById('navScrubber');
+                        s.value = s.max; s.dispatchEvent(new Event('input', { bubbles: true })); }""")
+                else:
+                    pg.evaluate("() => { const m = document.getElementById('mangaModal'); m.scrollTop = m.scrollHeight; }")
+                    pg.wait_for_timeout(300)
+                    pg.evaluate("() => { const m = document.getElementById('mangaModal'); m.scrollTop = m.scrollHeight; m.dispatchEvent(new Event('scroll')); }")
+                pg.wait_for_timeout(1500)
+                shown = pg.evaluate("""() => { const o = document.getElementById('mangaCtaOverlay');
+                    return !!(o && !o.hidden && o.classList.contains('visible')); }""")
+                rec(f"{label}: 最終ページで CTA が{'出る' if want_cta else '出ない'}", shown == want_cta, f"表示={'有' if shown else '無'}")
+            pr.finish("QR直リンク(手書きデータにある作品)")
+            close_ctx(ctx)
+
+            # /library を止めても（データの出どころが /manga/{id} だけでも）WP のページ数・CTA で開く。
+            # 手書きデータで先に開いて /library の到着で開き直す形（Issue #71 の原因）に戻ると、ここが手書きのページ数になる。
+            # /library を止めたことによる読込失敗のログは出るので、このページは JSエラー・404 の集計に入れない
+            ctx2 = new_ctx(browser, viewport={"width": 1440, "height": 900})
+            ctx2.route("**/wp-json/contentsx/v1/library*", lambda route: route.abort())
+            pg2 = ctx2.new_page()
+            pg2.goto(f"{base}/biz-library.html?manga={fb_id}", wait_until="load")
+            try:
+                pg2.wait_for_selector("#mangaModal", state="visible", timeout=15000)
+                pg2.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
+                pg2.wait_for_timeout(1500)
+                st2 = pg2.evaluate(VIEWER_STATE)
+            except Exception as e:
+                st2 = {"page": f"開かない（{type(e).__name__}）", "cta": None}
+            cta_ok = ((st2["cta"] or "").strip() == cta_url) if want_cta else (st2["cta"] is None)
+            rec(f"{label}: /library を止めても /manga/{{id}} のデータ（WP のページ数・CTA）で開く",
+                st2["page"].endswith(f"/ {n_wp}") and n_wp > 0 and cta_ok,
+                f"表示={st2['page']} WP={n_wp}P 手書き={hand_pages}P / CTA の設定={'有' if st2['cta'] else '無'}（期待={'有' if want_cta else '無'}）")
+            close_ctx(ctx2)
+
+        def qr_branches():
+            """QR直リンクの分岐（Issue #71。2026-10-15 方針）。API の応答はブラウザ側で差し替える（本番の WP は変えない）。
+            ① /manga/{id} がプラグインの「作品が無い」404 で /library にも無い → 「作品が見つかりませんでした」
+              （手書きデータにある作品でも開かない）
+            ② 存在しない ID（差し替えなし・実際の API）→ 「作品が見つかりませんでした」
+            ③ WP が止まっている（/manga/{id} と /library が 503）→ 「表示に時間がかかっています」と再読み込みボタンが出て、
+              手書きデータ（FALLBACK_WORKS）では開かない。WP が戻る（/manga/{id} が応答する）と WP のデータで開く
+            API の 4xx/5xx はわざと起こしているので、その応答（と、それに対するブラウザの読込失敗のログ）だけは数えず、
+            JS のエラー（未捕捉の例外・console.error）とサイト/素材の 404 は他の区画と同じく PageProbe で見る"""
+            api_b, lib_b, why = site_api()
+            if lib_b is None:
+                skip("QR直リンクの分岐(作品が無い・WP 停止)", why)
+                return
+            fb_id, hand_pages, fb_why = pick_fallback_id(base, lib_b)
+            if not fb_id:
+                rec("QR直リンクの分岐: 検証する作品（手書きデータにある作品）を選べる", False, fb_why)
+                return
+            missing_id = "bm-smoke-no-such-work"
+            st404, body404 = get_status_json(f"{api_b}/manga/{missing_id}")
+            plugin_shape = (st404 == 404 and isinstance(body404, dict) and isinstance(body404.get("error"), str)
+                            and "code" not in body404)
+            rec("API /manga/{存在しない ID} がプラグインの「作品が無い」404（本文に error があり code が無い）",
+                plugin_shape, f"HTTP {st404} {json.dumps(body404, ensure_ascii=False)[:120]}")
+            if not plugin_shape:
+                return
+            json_headers = {"content-type": "application/json; charset=UTF-8", "access-control-allow-origin": "*"}
+            NOT_FOUND = "() => document.body.textContent.indexOf('作品が見つかりませんでした') !== -1"
+
+            def open_page(routes, mid):
+                ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+                for pattern, handler in routes:
+                    ctx.route(pattern, handler)
+                pr = PageProbe(ctx, host, local_http=local_http, expected_api_failures=True)
+                pr.page.goto(f"{base}/biz-library.html?manga={mid}", wait_until="domcontentloaded")
+                return ctx, pr
+
+            # ① プラグインの 404（実物の本文）・/library からもその作品を外す
+            lib_without = [w for w in lib_b if w.get("id") != fb_id]
+            ctx, pr = open_page([
+                ("**/wp-json/contentsx/v1/manga/**",
+                 lambda route: route.fulfill(status=404, headers=json_headers, body=json.dumps(body404))),
+                ("**/wp-json/contentsx/v1/library*",
+                 lambda route: route.fulfill(status=200, headers=json_headers, body=json.dumps(lib_without, ensure_ascii=False))),
+            ], fb_id)
+            pg = pr.page
+            try:
+                pg.wait_for_function(NOT_FOUND, timeout=15000)
+                nf = True
+            except Exception:
+                nf = False
+            opened = pg.evaluate("() => { const m = document.getElementById('mangaModal'); return !!(m && m.classList.contains('open')); }")
+            rec(f"QR直リンク ?manga={fb_id}: WP が「作品が無い」と答え /library にも無ければ「作品が見つかりませんでした」（手書きデータで開かない）",
+                nf and not opened, f"見つかりません={'有' if nf else '無'} ビューア={'開いた' if opened else '無'}")
+            pr.finish("QR直リンク(「作品が無い」)")
+            close_ctx(ctx)
+
+            # ② 存在しない ID（実際の API。差し替えなし）
+            ctx, pr = open_page([], missing_id)
+            pg = pr.page
+            try:
+                pg.wait_for_function(NOT_FOUND, timeout=15000)
+                nf = True
+            except Exception:
+                nf = False
+            link = pg.evaluate("() => { const a = document.querySelector('body > div > a'); return a ? a.getAttribute('href') : null; }") if nf else None
+            rec(f"QR直リンク ?manga={missing_id}（存在しない ID）: 「作品が見つかりませんでした」とトップへのリンク",
+                nf and link == "/", f"見つかりません={'有' if nf else '無'} リンク={link}")
+            pr.finish("QR直リンク(存在しない ID)")
+            close_ctx(ctx)
+
+            # ③ WP が止まっている（/manga/{id}・/library とも 503）→ 「表示に時間がかかっています」と再読み込みボタン。
+            #   手書きデータでは開かない。その後 WP が戻ると（/manga/{id} を取り直したときに応答する）WP のデータで開く
+            wp_state = {"down": True}
+            one = get_json(f"{api_b}/manga/{fb_id}")  # WP が戻った後の期待値（ブラウザと同じ API）
+            n_wp = len(one.get("gallery") or []) or int(one.get("pages") or 0)
+            wp_first = img_url((one.get("gallery") or [None])[0]) if one.get("gallery") else None
+
+            def down_or_through(route):
+                if wp_state["down"]:
+                    route.fulfill(status=503, headers=json_headers, body='{"code":"service_unavailable"}')
+                else:
+                    route.fallback()  # 実際の API へ（別ポートのときは CORS の中継へ）
+            ctx, pr = open_page([
+                ("**/wp-json/contentsx/v1/manga/**", down_or_through),
+                ("**/wp-json/contentsx/v1/library*", down_or_through),
+            ], fb_id)
+            pg = pr.page
+            label3 = f"QR直リンク ?manga={fb_id}: WP が止まっている（/manga/{{id}}・/library が 503）とき"
+            try:
+                pg.wait_for_selector(".bm-direct-stalled", state="visible", timeout=12000)
+                stalled = pg.evaluate("""() => { const s = document.querySelector('.bm-direct-stalled');
+                    const b = s && s.querySelector('button');
+                    return { text: s && s.querySelector('p') ? s.querySelector('p').textContent : '', button: b ? b.textContent : null,
+                             open: document.getElementById('mangaModal').classList.contains('open') }; }""")
+            except Exception as e:
+                stalled = {"text": f"出ない（{type(e).__name__}）", "button": None, "open": None}
+            rec(f"{label3}は「表示に時間がかかっています」と再読み込みボタンが出て、手書きデータでは開かない",
+                "表示に時間がかかっています" in stalled["text"] and stalled["button"] == "再読み込み" and stalled["open"] is False,
+                f"メッセージ={stalled['text'][:40]} ボタン={stalled['button']} ビューア={'開いた' if stalled['open'] else '無'}")
+            wp_state["down"] = False
+            try:
+                pg.wait_for_selector("#mangaModal", state="visible", timeout=40000)
+                pg.wait_for_function(IMG_LOADED, arg="#mangaModal img", timeout=20000)
+                pg.wait_for_timeout(1000)
+                st3 = pg.evaluate(VIEWER_STATE)
+                st3["stalled"] = pg.locator(".bm-direct-stalled").count()
+            except Exception as e:
+                st3 = {"page": f"開かない（{type(e).__name__}）", "first": None, "stalled": None}
+            rec(f"{label3}、WP が戻ると WP のデータ（ページ数・画像）で開き、メッセージが消える",
+                st3["page"].endswith(f"/ {n_wp}") and n_wp > 0 and (wp_first is None or st3.get("first") == wp_first) and st3.get("stalled") == 0,
+                f"表示={st3['page']} WP={n_wp}P 手書き={hand_pages}P / 1枚目={str(st3.get('first'))[-50:]}")
+            pr.finish("QR直リンク(WP 停止→復旧)")
+            close_ctx(ctx)
 
         def internal_nav():
             pr = probe(desktop)
@@ -492,6 +837,9 @@ def check_browser(base, data):
         section("ビズ書庫", library)
         if wp_id:
             section("QR直リンク", qr_direct)
+        section("QR直リンク(手書きデータにある作品)", qr_fallback_work)
+        section("QR直リンクの分岐(作品が無い・WP 停止)", qr_branches)
+        if wp_id:
             section("サイト内遷移", internal_nav)
             section("埋込ビューア", embed)
         close_ctx(desktop)
@@ -534,10 +882,13 @@ def main():
         httpd.shutdown()
 
     n_fail = sum(1 for _, ok, _ in RESULTS if not ok)
-    print("\n== 結果: {} PASS / {} FAIL".format(len(RESULTS) - n_fail, n_fail))
+    print("\n== 結果: {} PASS / {} FAIL".format(len(RESULTS) - n_fail, n_fail) +
+          (f" / {len(SKIPPED)} 区画を飛ばした（前提の取得に失敗）" if SKIPPED else ""))
     for name, ok, detail in RESULTS:
         if not ok:
             print(f"   FAIL {name}" + (f"  — {detail}" if detail else ""))
+    for name, reason in SKIPPED:
+        print(f"   SKIP {name}  — {reason}")
     sys.exit(1 if n_fail else 0)
 
 

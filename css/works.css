@@ -1694,6 +1694,47 @@ html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
 /* QR経由(外部リファラー)のときだけ閉じるボタンを非表示にして書庫へ戻らせない */
 html.qr-mode .modal-close { display: none !important; }
+/* 直リンクで作品データを待つ間の読み込み表示（js/works.js の showDirectLoader）。スピナーは bizmanga.css の
+   .bm-manga-loader（暗い背景用の白とオレンジ）。ビューア（.manga-modal z-index 2000）の下に置き、開いたら外す */
+html.direct-mode .bm-direct-loader {
+  position: fixed; inset: 0; z-index: 1999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 28px;
+  padding: 16px;
+  pointer-events: none;
+}
+/* 待っても開けないときの「ただいま表示に時間がかかっています」と再読み込みボタン（showDirectStalled）。
+   スピナーの下に出す。暗い背景（#1a1a1a）の上なので白い文字・白いボタン */
+html.direct-mode .bm-direct-stalled {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  max-width: 100%;
+  pointer-events: auto;
+  text-align: center;
+}
+html.direct-mode .bm-direct-stalled__text {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.7;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+html.direct-mode .bm-direct-stalled__btn {
+  min-height: 44px;
+  min-width: 160px;
+  padding: 10px 28px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+html.direct-mode .bm-direct-stalled__btn:hover { background: #f1f1f1; }
+html.direct-mode .bm-direct-stalled__btn:focus-visible { outline: 2px solid #EB5200; outline-offset: 3px; }
 
 /* ===== Manga Page Loader ===== */
 /* 見開き: スピナー要素が背景カバー + スピナー表示を兼ねる */
