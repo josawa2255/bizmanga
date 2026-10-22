@@ -8,7 +8,7 @@ var BM_WP_CONFIG = {
   /* メンテナンス表示スイッチ（手順: SPEC.md「WordPress 一時停止スイッチ」）
      true にすると WordPress API へのアクセスをすべて止め、画面下に中立なお知らせを出す。
      自動ビルド（コラム・作品・LP事例）もこの行を見て止まる。行の書式を変えないこと。 */
-  maintenance: false
+  maintenance: true
 };
 
 /* メンテナンス中: WordPress API 宛ての fetch をここで一括して失敗させる。
