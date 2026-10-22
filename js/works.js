@@ -1679,7 +1679,22 @@ if (isDirectMode) {
       })
       .catch(function(err) {
         console.warn('[direct-mode] manga fetch failed:', err.message);
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;">作品が見つかりませんでした。<br><br><a href="/" style="color:#eb5200;">トップページへ戻る</a></div>';
+        // メンテナンス中（bm-wp-config.js の maintenance）は「見つからない」ではなく一時停止と伝える（QR配布先向け）
+        var inMaintenance = !!(window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance);
+        var failBox = document.createElement('div');
+        failBox.style.cssText = 'display:flex;flex-direction:column;gap:24px;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;line-height:1.7;text-align:center;padding:24px;';
+        var failMsg = document.createElement('p');
+        failMsg.style.margin = '0';
+        failMsg.textContent = inMaintenance
+          ? 'ただいま表示を一時停止しています。しばらくしてから再度ご覧ください。'
+          : '作品が見つかりませんでした。';
+        var failLink = document.createElement('a');
+        failLink.href = '/';
+        failLink.style.color = '#eb5200';
+        failLink.textContent = 'トップページへ戻る';
+        failBox.appendChild(failMsg);
+        failBox.appendChild(failLink);
+        document.body.replaceChildren(failBox);
       });
   }
 }
