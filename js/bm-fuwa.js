@@ -112,11 +112,17 @@
 
     // ---------- 4. Smooth anchor scroll (CSS scroll-behavior の補強) ----------
     document.addEventListener('click', function (e) {
+      // 他のハンドラーが処理済みのクリック（お客様の声の関連事例カード等）には関与しない
+      if (e.defaultPrevented) return;
       var a = e.target.closest('a[href^="#"]');
       if (!a) return;
       var hash = a.getAttribute('href');
       if (!hash || hash === '#' || hash === '#!') return;
-      var target = document.querySelector(hash);
+      // href="#id=12" のように CSS セレクタとして不正なフラグメントでも例外を出さないよう、
+      // querySelector ではなくデコードした ID を getElementById で引く（見つからなければ何もしない）
+      var id = hash.slice(1);
+      try { id = decodeURIComponent(id); } catch (err) { /* 不正なエスケープはそのまま使う */ }
+      var target = document.getElementById(id);
       if (!target) return;
       e.preventDefault();
       var headerOffset = 80; // bm-header 高さぶん
