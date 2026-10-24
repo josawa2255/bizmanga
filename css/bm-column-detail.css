@@ -80,6 +80,9 @@
       border-bottom: none;
     }
     .bm-col-detail-content h2:first-child { margin-top: 0; }
+    /* 目次（#sec-N）で飛んだ見出しが固定ヘッダー（72px）の下に隠れないように。
+       静的コラム（css/bm-column-static.css）と同じ値（Issue #88） */
+    .bm-col-detail-content h2 { scroll-margin-top: 100px; }
 
     /* h3 */
     .bm-col-detail-content h3 {
