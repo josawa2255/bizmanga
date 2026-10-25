@@ -72,7 +72,7 @@
 - 副作用（見た目は変わらない）: body は独立した配置の区切り（BFC）ではなくなったので、body の最初の子の `margin-top` が body の外に出る（LP・FAQ・料金などで `document.body.getBoundingClientRect().top` が 68〜72px になる）。html に背景が無く body の背景はキャンバスに描かれるため、表示は同じ（変更前後でスクロール位置0のスクリーンショットを比較し、差は同じ版どうしでも出る揺らぎのみと確認）。
 - **横スクロールの判定は目的で使い分ける**（PR #78 再レビュー）。
   - 実際に横へ動くか（全ページ共通の検査。`tools/check-browser.py` 等）: `document.documentElement.scrollWidth <= innerWidth + 1`。html/body の clip で切った後の幅なので、はみ出して切り取られた内容があっても画面幅のまま＝この式では見つからない。`document.body.scrollWidth` は全ページ共通の検査に使わない（トップ・コラム一覧のスマホ幅では、変更前から innerWidth を超えるが横には動かない）。
-  - 画面からはみ出して切り取られる内容が無いか（より厳しい）: `document.body.scrollWidth <= innerWidth`（切り取る前の中身の幅）。ビズ書庫の確認（`tools/smoke-manga-wp.py` のスマホ 390px「横スクロール無し」）はこちら（ビズ書庫は 390px で body.scrollWidth = 390）。⚠️ documentElement に変えると、切り取られた内容を見逃す。
+  - 画面からはみ出して切り取られる内容が無いか（より厳しい）: `document.body.scrollWidth <= innerWidth`（切り取る前の中身の幅）。ビズ書庫の確認（`tools/smoke-manga-wp.py` のスマホ 390px「ビズ書庫の一覧に横スクロール無し」）はこちら（ビズ書庫は 390px で body.scrollWidth = 390。直リンク表示は一覧を隠すので、`?manga=` なしの一覧の表示で測る）。⚠️ documentElement に変えると、切り取られた内容を見逃す。
 
 ---
 
