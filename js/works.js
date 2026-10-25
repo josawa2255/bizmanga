@@ -48,6 +48,30 @@ function escHtml(s) {
 // ===== Manga data registry =====
 const mangaData = {};
 
+// ===== 直リンク（QR: biz-library?manga=bms-unso）か =====
+// 一覧の組み立て（下の「フォールバックデータで即座に構築」）より前に判定する。直リンクでは一覧を出さないので組み立てない
+const params = new URLSearchParams(window.location.search);
+const autoOpen = params.get('manga');
+
+// ?manga= の値の末尾から取り除く文字: 空白・制御文字と、記号・句読点・かっこ（LINE・メールで URL の直後に続いた「。」「.」「)」
+// 「」」、全角の句読点・空白など）。作品 ID に使いうる文字（英数字・ハイフン・下線と、日本語などの文字。「々」「〇」も）は残す。
+// ⚠️ biz-library.html の <head> の direct-mode の判定も同じ文字の範囲を使う（変えるときは両方。食い違っても下で html の class を
+//    この判定に合わせ直すので、ずれるのは最初の一瞬の表示だけ）
+var DIRECT_KEY_TRAILING = /[\u0000-\u002c\u002e\u002f\u003a-\u0040\u005b-\u005e\u0060\u007b-\u00a0\u1680\u2000-\u206f\u3000-\u3004\u3008-\u3020\u3030\u3036\u3037\u303d-\u303f\ufe30-\ufe6f\ufeff\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff65]$/;
+// ?manga= の値を整える: 前後の空白と、末尾に付いた上の文字を取り除く。小文字にはそろえない（照合は matchKey が大文字小文字を
+// 区別せずに行う）
+function normalizeDirectKey(v) {
+  var s = String(v).trim();
+  while (s && DIRECT_KEY_TRAILING.test(s)) s = s.slice(0, -1);
+  return s;
+}
+// 直リンクの作品 ID（?manga= の値を normalizeDirectKey で整えたもの。例 ?manga=seko。→ seko）
+var directKey = autoOpen === null ? '' : normalizeDirectKey(autoOpen);
+// 直リンクか: 整えた値が空でないときだけ（?manga= の値が空・記号だけなら、通常のビズ書庫を表示する）
+const isDirectMode = !!directKey;
+// 書庫を隠す html.direct-mode（biz-library.html の <head> が先に付ける）を、この判定に合わせる
+document.documentElement.classList[isDirectMode ? 'add' : 'remove']('direct-mode');
+
 // ===== ページネーション状態（initLibraryUIより前に宣言が必要） =====
 let gridCurrentPage = 1;
 const ITEMS_PER_PAGE = 18; // 3列 × 6行
@@ -64,17 +88,23 @@ function getImageSrc(data, pageIndex) {
 // ===== フォールバック用ローカルデータ =====
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
-// 全作品の表紙＋最小情報（即座にカード表示用、WP API取得後にgallery等をマージ）
+// ビズ書庫の一覧の初期表示（WP の /library が届くまで）と、その間にカードを押したときに開くデータ（表紙は素材フォルダの画像）。
+// /library が届いたら WP のデータに置き換わる。QR直リンクでは使わない（WP に未登録の当面の例外〈UNREGISTERED_FALLBACK_IDS〉を除く）。
+// ページ数は WP の値ではなく、素材フォルダ（contentsx.jp/material/manga/{id}/01.webp〜）に実際にある枚数
+// ＝このデータで開いたときに表示できる枚数（WP のギャラリーの方が多い作品もある。WP に合わせると素材フォルダに無いページが
+// 404 になる。2026-10-16 ContentsX の main で数えた値）。表示モードは WP の /library に合わせる（WP 側で変えたらここも直す）。
+// 列: 作品 ID・タイトル・ページ数・カテゴリ・表示モード（WP の view_type と同じ値: 'spread'＝見開き / 'vertical_only'＝縦読み専用）。
+// WP の作品データと同じ形にして toMangaEntry() で変換する（表示モードの判定を window.bmViewType に任せる。BUGS #012/#013）
 const FALLBACK_WORKS = (function() {
   var F = [
     ['diamond','DIAMOND シャンパンコール',11,'研修','spread'],
     ['ichinohe-home','一戸ホーム',22,'営業','spread'],
     ['omatome-ninja','おまとめ忍者 見つけてみせる！トレンドの兆し',15,'紹介','spread'],
-    ['omatome-ninja-2','おまとめ忍者 手間な議事録をこっそり要約',15,'紹介','spread'],
-    ['omatome-ninja-3','おまとめ忍者 地獄のまとめ作業 拙者におまかせ！',15,'紹介','spread'],
-    ['omatome-ninja-4','おまとめ忍者 手書き派の悩み 拙者にお任せ！',15,'紹介','spread'],
-    ['omatome-ninja-5','おまとめ忍者 長時間会議も怖くない！',15,'紹介','spread'],
-    ['omatome-ninja-rohto','おまとめ忍者 忍者参上！！欠席者をお助けいたす！',15,'紹介','spread'],
+    ['omatome-ninja-2','おまとめ忍者 手間な議事録をこっそり要約',9,'紹介','spread'],
+    ['omatome-ninja-3','おまとめ忍者 地獄のまとめ作業 拙者におまかせ！',8,'紹介','spread'],
+    ['omatome-ninja-4','おまとめ忍者 手書き派の悩み 拙者にお任せ！',10,'紹介','spread'],
+    ['omatome-ninja-5','おまとめ忍者 長時間会議も怖くない！',11,'紹介','spread'],
+    ['omatome-ninja-rohto','おまとめ忍者 忍者参上！！欠席者をお助けいたす！',19,'紹介','spread'],
     ['omatome-ninja-english','おまとめ忍者（海外版）',15,'紹介','spread'],
     ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'],
     ['life-buzfes','バズフェス',25,'集客','spread'],
@@ -84,22 +114,57 @@ const FALLBACK_WORKS = (function() {
     ['torutoru-kun','トルトルくん',21,'採用','spread'],
     ['hamada-masatada','濱田将匡 信頼を、つなぐ。',20,'ブランド','spread'],
     ['asobi-kyary','ASOBI SYSTEM×きゃりーぱみゅぱみゅ',6,'IP','spread'],
-    ['uike-law','正義の価値',8,'ブランド','spread'],
-    ['lady-column','レディーコラム',8,'紹介','spread']
+    ['uike-law','正義の価値',8,'ブランド','vertical_only'],
+    ['lady-column','レディーコラム',4,'紹介','vertical_only']
   ];
   var out = {};
   F.forEach(function(r) {
-    out[r[0]] = {
-      title: r[1], pages: r[2],
-      path: 'https://contentsx.jp/material/manga/' + r[0] + '/',
-      tags: [r[3]], category: r[3],
-      viewType: r[4]
-    };
+    out[r[0]] = toMangaEntry({ id: r[0], title_ja: r[1], pages: r[2], tags: [r[3]], category: r[3], view_type: r[4] });
   });
   return out;
 })();
 
-// ===== カテゴリ英訳マップ =====
+// ===== WP の作品データ（/library の1件・/manga/{id} の応答）→ mangaData の形 =====
+// /library と /manga/{id}（QR直リンク）の両分岐で必ずこの関数を通す。分岐ごとに書くと
+// ページ数・view_type・CTA 項目がずれる（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。
+// - ページ数: ギャラリーがあれば実際の画像枚数を正とする（WP側の pages 手入力ミスでズレても表示・読込枚数が
+//   実データと一致するように。片方向補正だと gallery > pages（例: pages=25 なのに gallery=30枚）を見逃す）。
+//   ギャラリーが空なら WP の pages、それも無ければ 1（0 だと見開きの組み立て・ページ表示が成り立たない）
+// - タイトル: 空なら作品 ID（ビューアの見出し・画像の alt を空にしない）
+// - path: ギャラリーが空のときの画像の置き場（getImageSrc が path + '01.webp' を作る。無いと 'undefined01.webp'）
+// - view_type: WP の値を使い、強制縦読み（isForcedVertical）と縦読み専用＝切替不可（isVerticalOnly）の判定は
+//   window.bmViewType に委譲する（自前で判定しない）。bm-view-type.js が読めなかったとき（window.bmViewType が無い）だけ、
+//   縦読みの作品を見開きで開かない安全側に倒す: view_type が vertical / vertical_only なら縦読み、vertical_only なら切替不可
+//   （bm-view-type.js 導入前の /library 側の書き方と同じ。縦読み専用の作品が 'vertical_only' のまま見開きの分岐に入るのを防ぐ）
+// ページ数をギャラリー枚数に合わせるのはここだけ（openManga では直さない。他の登録経路〈制作過程のデータ〉も
+// ギャラリーがあればその枚数をページ数にしている）
+function toMangaEntry(w) {
+  var galleryLen = (w.gallery && w.gallery.length) || 0;
+  var wpPages = parseInt(w.pages, 10) || 0;
+  var vt = window.bmViewType;
+  var forcedVertical = vt ? vt.isForcedVertical(w) : (w.view_type === 'vertical' || w.view_type === 'vertical_only');
+  var verticalOnly = vt ? vt.isVerticalOnly(w) : w.view_type === 'vertical_only';
+  var entry = {
+    title: w.title_ja || String(w.id || ''),
+    pages: galleryLen > 0 ? galleryLen : (wpPages > 0 ? wpPages : 1),
+    path: 'https://contentsx.jp/material/manga/' + w.id + '/',
+    tags: w.tags && w.tags.length > 0 ? w.tags : [],
+    category: w.category || '',
+    viewType: forcedVertical ? 'vertical' : (w.view_type || 'spread'),
+    verticalOnly: !!verticalOnly,
+    tallCover: !!w.tall_cover,
+    thumbnail: w.thumbnail || '',
+    gallery: w.gallery || [],
+    akapen_gallery: w.akapen_gallery || [],
+    name_gallery: w.name_gallery || [],
+    client_url: w.client_url || '',
+    cta_label_ja: w.cta_label_ja || '',
+    cta_enabled: !!w.cta_enabled
+  };
+  return entry;
+}
+
+// ===== カテゴリの絞り込みボタン =====
 const worksFilter = document.getElementById('worksFilter');
 
 function buildFilterButtons() {
@@ -238,103 +303,114 @@ function probeCoverImages() {
   });
 }
 
-// フォールバックデータで即座に構築
-Object.assign(mangaData, FALLBACK_WORKS);
-initLibraryUI();
-probeCoverImages();  // 表紙の縦長自動検出
+// フォールバックデータで即座に構築（WP の /library が届くまでの一覧の表示）。
+// 直リンクでは一覧を出さず、作品も WP のデータで開く（下の「QR直リンクの開き方」。WP に未登録の当面の例外を除く）ので、
+// ここでは手書きデータを登録しない
+if (!isDirectMode) {
+  Object.assign(mangaData, FALLBACK_WORKS);
+  initLibraryUI();
+  probeCoverImages();  // 表紙の縦長自動検出
+}
 
-// 現在の言語が英語なら即座に反映
-(function fetchLibraryFromAPI() {
-  fetch('https://cms.contentsx.jp/wp-json/contentsx/v1/library')
-    .then(function(res) { return res.json(); })
-    .then(function(works) {
-      if (!Array.isArray(works) || works.length === 0) return;
+// ===== WP API（/library と QR直リンクの /manga/{id} で共用）=====
+// API の場所は js/bm-wp-config.js の apiBase（ビズ書庫〈biz-library.html。works.js を読む唯一のページ〉は bm-wp-config.js を
+// works.js より前に読む。tools/check-site.py の依存表で確かめる）。読めなかったときだけ既定の場所を使う。
+// 時間切れは bm-wp-config.js の timeout を使わず、QR直リンクの取得ごとに決める（下の DIRECT_FETCH_TIMEOUT_MS）
+var WP_API_BASE = (window.BM_WP_CONFIG && typeof window.BM_WP_CONFIG.apiBase === 'string' && window.BM_WP_CONFIG.apiBase) ||
+  'https://cms.contentsx.jp/wp-json/contentsx/v1';
 
-      // APIの並び順を尊重するため、漫画作品は一度全削除してAPI順で再登録
-      // （プリプロ関連データ _isPreProduction は保持）
-      var apiIds = {};
-      Object.keys(mangaData).forEach(function(k) {
-        if (!mangaData[k]._isPreProduction) delete mangaData[k];
+// WP API を GET して { status, data } を返す（data は応答本文の JSON。JSON として読めなければ null）。
+// timeoutMs を渡すと、本文の読み込みまで含めてその時間で中断する（AbortError で reject。AbortController を使う）。
+// controller（AbortController）を渡すと、呼び出し側が好きなときに中断できる（QR直リンクの /library。startDirectFlow）。
+// 通信の失敗も reject。AbortController が無い古いブラウザでは中断だけ効かない
+function wpApiGet(endpoint, timeoutMs, controller) {
+  if (!controller && timeoutMs > 0 && typeof AbortController === 'function') controller = new AbortController();
+  var timer = (controller && timeoutMs > 0) ? setTimeout(function() { controller.abort(); }, timeoutMs) : null;
+  function stopTimer() { if (timer) clearTimeout(timer); }
+  return fetch(WP_API_BASE + endpoint, controller ? { signal: controller.signal } : undefined)
+    .then(function(res) {
+      return res.text().then(function(text) {
+        var data = null;
+        try { data = JSON.parse(text); } catch (e) { /* JSON でない（HTML のエラーページ等） */ }
+        return { status: res.status, data: data };
       });
-      works.forEach(function(w) {
-        apiIds[w.id] = true;
-        // ギャラリーがある場合は実際の画像枚数を正とする（WP側のpages手入力ミスで
-        // ズレても表示・読込枚数が実データと一致するように。片方向補正だと
-        // gallery > pages のケース(例: pages=25なのにgallery=30枚)を見逃す）
-        var galleryLen = (w.gallery && w.gallery.length) || 0;
-        var pages = galleryLen > 0 ? galleryLen : (w.pages || 0);
-        mangaData[w.id] = {
-          title: w.title_ja || '',
-          pages: pages,
-          path: 'https://contentsx.jp/material/manga/' + w.id + '/',
-          tags: w.tags && w.tags.length > 0 ? w.tags : [],
-          category: w.category || '',
-          viewType: w.view_type || 'spread',
-          verticalOnly: w.view_type === 'vertical_only',
-          tallCover: !!w.tall_cover,
-          thumbnail: w.thumbnail || '',
-          gallery: w.gallery || [],
-          akapen_gallery: w.akapen_gallery || [],
-          name_gallery: w.name_gallery || [],
-          client_url: w.client_url || '',
-          cta_label_ja: w.cta_label_ja || '',
-          cta_enabled: !!w.cta_enabled,
-        };
-        if (window.bmViewType && window.bmViewType.isForcedVertical(w)) {
-          mangaData[w.id].viewType = 'vertical';
-        }
-      });
-
-      // フィルター状態とページを保持してUI再構築
-      var activeFilter = worksFilter.querySelector('.filter-btn.active');
-      var savedCategory = activeFilter ? activeFilter.dataset.cat : 'すべて';
-      var savedPage = gridCurrentPage;
-      initLibraryUI();
-      // フィルターを復元
-      if (savedCategory !== 'すべて') {
-        var targetBtn = worksFilter.querySelector('.filter-btn[data-cat="' + savedCategory + '"]');
-        if (targetBtn) {
-          targetBtn.click();
-          gridCurrentPage = savedPage;
-          updateGridPagination();
-        }
-      } else {
-        gridCurrentPage = savedPage;
-        updateGridPagination();
-      }
-      probeCoverImages();  // WP APIデータでも表紙の縦長自動検出
-
-      // 赤ペン・ネームカルーセルも再構築
-      if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
-
-      // ダイレクトモードで既にモーダルが開いている場合、APIの正しいviewTypeで再オープン
-      if (isDirectMode && autoOpen && mangaData[autoOpen] && mangaModal.classList.contains('open')) {
-        var newMode = mangaData[autoOpen].viewType || 'spread';
-        if (newMode !== currentViewMode) {
-          console.log('[works] ダイレクトモード: APIデータで再オープン (' + currentViewMode + ' → ' + newMode + ')');
-          // closeManga()はダイレクトモードでページ遷移するので、UIだけリセット
-          while (modalManga.firstChild) modalManga.removeChild(modalManga.firstChild);
-          if (verticalObserver) { verticalObserver.disconnect(); verticalObserver = null; }
-          modalPageEls = []; modalThumbItems = []; modalDots = [];
-          mangaModal.classList.remove('open');
-          document.body.style.overflow = '';
-          setTimeout(function() { openManga(autoOpen); }, 50);
-        } else {
-          // 表示モードは変わらない → 再オープン不要だが、CTA等の最新データを再適用する。
-          // ダイレクトモードでフォールバックデータ（CTA情報なし）で先に開いた作品は、
-          // ここで setupMangaCta を呼ばないと最終ページCTAが出ないままになる（BUGS #037）。
-          setupMangaCta(mangaData[autoOpen]);
-        }
-      }
-      // ダイレクトモードでまだモーダルが開いていない場合（mangaDataに無かった）
-      if (isDirectMode && autoOpen && mangaData[autoOpen] && !mangaModal.classList.contains('open')) {
-        openManga(autoOpen);
-      }
     })
-    .catch(function(err) {
-      console.warn('WP API取得失敗、フォールバックデータを使用:', err);
-    });
-})();
+    .then(function(result) { stopTimer(); return result; },
+          function(err) { stopTimer(); throw err; });
+}
+
+// ===== /library（ビズ書庫の作品一覧）=====
+// 作品の配列を返す。取得の失敗・WP 以外の応答・空（0件）・中断なら null（0件は WP の異常として扱い、一覧は手書きデータのまま、
+// QR直リンクは必要なら取り直す）。時間では中断しない（中断したいときは controller を渡す。wpApiGet と同じ）
+function fetchLibrary(controller) {
+  return wpApiGet('/library', 0, controller).then(function(r) {
+    return (r.status >= 200 && r.status < 300 && Array.isArray(r.data) && r.data.length > 0) ? r.data : null;
+  }, function(err) {
+    console.warn('WP API（/library）を取得できません:', (err && err.name === 'AbortError') ? '時間切れ' : err);
+    return null;
+  });
+}
+
+// /library の作品を mangaData に登録し、一覧を作り直す（直リンクでは登録だけ）。QR直リンクの /library の取得でも呼ぶ
+function applyLibrary(works) {
+  if (!works) return;
+
+  // APIの並び順を尊重するため、漫画作品は一度全削除してAPI順で再登録（プリプロ関連データ _isPreProduction は保持）。
+  // 表示中のビューアは開いたときのデータ（見開き/縦読みの切替は currentMangaData、最終ページCTA は currentCtaData）を使うので、
+  // 開いている作品のデータをここで差し替えても・消しても（/library に無い QR限定公開の作品など）表示は変わらない
+  Object.keys(mangaData).forEach(function(k) {
+    if (!mangaData[k]._isPreProduction) delete mangaData[k];
+  });
+  works.forEach(function(w) {
+    // /manga/{id}（QR直リンク）と同じ関数で変換する（BUGS #012/#013）
+    mangaData[w.id] = toMangaEntry(w);
+  });
+
+  // 一覧から WP の到着前に開いた作品（手書きデータ FALLBACK_WORKS で開いている）は、届いた WP のデータを次の見開き/縦読みの
+  // 切替から使う（表示中のページは開き直さない）。QR直リンクは開いたときの WP のデータのまま
+  if (!isDirectMode && currentMangaData && !currentMangaData._isPreProduction && mangaModal.classList.contains('open') &&
+      Object.prototype.hasOwnProperty.call(mangaData, currentMangaKey)) {
+    currentMangaData = mangaData[currentMangaKey];
+  }
+
+  if (isDirectMode) {
+    // 直リンクでは一覧・制作過程カルーセルが隠れているので作り直さない（表紙の縦長判定もしない）。
+    // 制作過程の直リンク（pre-red-* / pre-name-*）だけは、/library の作品の赤ペン・ネームを pre-red-{作品ID} 等で
+    // 登録するために rebuildPreCarousels() を呼ぶ（カルーセルの自動送りは直リンクでは始めない）
+    if (isPreProductionKey(directKey) && typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+    return;
+  }
+
+  // フィルター状態とページを保持してUI再構築
+  var activeFilter = worksFilter.querySelector('.filter-btn.active');
+  var savedCategory = activeFilter ? activeFilter.dataset.cat : 'すべて';
+  var savedPage = gridCurrentPage;
+  initLibraryUI();
+  // フィルターを復元
+  if (savedCategory !== 'すべて') {
+    var targetBtn = worksFilter.querySelector('.filter-btn[data-cat="' + savedCategory + '"]');
+    if (targetBtn) {
+      targetBtn.click();
+      gridCurrentPage = savedPage;
+      updateGridPagination();
+    }
+  } else {
+    gridCurrentPage = savedPage;
+    updateGridPagination();
+  }
+  probeCoverImages();  // WP APIデータでも表紙の縦長自動検出
+
+  // 赤ペン・ネームカルーセルも再構築（/library の作品の赤ペン・ネームを pre-red-{作品ID} 等で登録する）
+  if (typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+}
+
+// 一覧の /library。時間切れで中断しない（遅れて届いても一覧と mangaData を WP のデータに更新する）。
+// QR直リンクは一覧を出さず、/library を直リンク用の時間切れつきで取る（下の「Direct access mode」の startDirectFlow）
+if (!isDirectMode) {
+  fetchLibrary().then(applyLibrary).catch(function(err) {
+    console.warn('WP API（/library）のデータを反映できませんでした:', err);
+  });
+}
 
 // Event delegation for card clicks + hover preloading
 worksGrid.addEventListener('click', (e) => {
@@ -620,6 +696,7 @@ function openVerticalViewer(key, data) {
   modalTitle.textContent = data.title;
   modalTotalPages = data.pages;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
+  currentMangaData = data;
   currentMangaKey = key;
   setupMangaCta(data);
   modalPage.textContent = `1 / ${data.pages}`;
@@ -718,16 +795,20 @@ function preloadImages(srcs, timeout) {
   ]);
 }
 
+// --- ビューアを開く処理（proceedOpen・見開きの組み立て）で例外が出たとき ---
+// 画像の読込後・rAF の中で動くので、呼び出し元（QR直リンクの openDirect の try）では捕まえられない。
+// QR直リンクでは読み込み表示を残さず、まだ漫画を表示できていなければ「表示に時間がかかっています」と
+// 再読み込みボタンを出す（showDirectOpenFailed。暗い画面とスピナーのまま止めない）
+function failOpen(err) {
+  console.error('[works] 漫画を開けませんでした:', err);
+  if (isDirectMode) showDirectOpenFailed();
+}
+
 // --- Open manga (dispatch to correct viewer) ---
+// ページ数はギャラリー枚数に合わせて登録済み（WP のデータは toMangaEntry、制作過程も同じ）なので、ここでは直さない
 function openManga(key) {
   const data = mangaData[key];
   if (!data) return;
-
-  // ギャラリーがある場合、実際の画像数にpagesを補正（存在しないページの読み込み防止 /
-  // WP側pages手入力ミスでgalleryの方が多いケースも実データに合わせる。267行目付近と同ロジック）
-  if (data.gallery && data.gallery.length > 0 && data.pages !== data.gallery.length) {
-    data.pages = data.gallery.length;
-  }
 
   // 1枚目の画像をプローブして縦長判定 → 自動でverticalに切り替え
   const firstSrc = getImageSrc(data, 0);
@@ -757,6 +838,7 @@ function openManga(key) {
     mangaModal.classList.add('mode-' + mode);
     modalTitle.textContent = data.title;
     currentMangaKey = key; // トグルボタン用に早期セット
+    currentMangaData = data;
 
     // 切り替えボタンの表示制御（PC + 非verticalOnlyのみ）
     updateViewToggle(mode, data.verticalOnly);
@@ -772,6 +854,7 @@ function openManga(key) {
     // Show modal immediately with loading indicator
     showMangaLoader();
     mangaModal.classList.add('open');
+    hideDirectLoader();  // QR直リンクで作品データを待つ間の読み込み表示（ビューアが開いたので外す）
     document.body.style.overflow = 'hidden';
 
     if (mode === 'vertical') {
@@ -784,7 +867,11 @@ function openManga(key) {
       // Double rAF ensures layout is fully computed before reading dimensions
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
-          openSpreadViewer(key, data);
+          try {
+            openSpreadViewer(key, data);
+          } catch (e) {
+            failOpen(e);
+          }
         });
       });
     }
@@ -795,12 +882,20 @@ function openManga(key) {
     });
   }
 
+  function proceedOpenSafely() {
+    try {
+      proceedOpen();
+    } catch (e) {
+      failOpen(e);
+    }
+  }
+
   // 画像がキャッシュ済みなら即座に、そうでなければロード後に判定
   if (probe.complete && probe.naturalWidth > 0) {
-    proceedOpen();
+    proceedOpenSafely();
   } else {
-    probe.onload = proceedOpen;
-    probe.onerror = proceedOpen;
+    probe.onload = proceedOpenSafely;
+    probe.onerror = proceedOpenSafely;
   }
 
   // Library mode: push history so browser back closes manga
@@ -846,6 +941,12 @@ let currentViewMode = 'spread';
 let currentMangaKey = '';
 let currentMangaPath = '';
 let currentMangaGallery = null; // WP API gallery URLs
+// 開いている作品のデータ（開いたときのもの）。見開き/縦読みの切替はこれを使う（mangaData[currentMangaKey] を引き直さない。
+// /library の到着で mangaData の作品が差し替わったり、/library に無い QR限定公開の作品が mangaData から消えたりしても、
+// 表示中の作品は開いたときのデータのまま）。最終ページCTA も開いたときのデータ（currentCtaData）を使う。
+// 例外: 一覧から WP の到着前に開いた作品（手書きデータ）は、/library が届いたら applyLibrary() が WP のデータに差し替える
+// （次の切替から WP のページ数・表示モード・CTA になる）
+let currentMangaData = null;
 let spreadTotalPages = 0;
 let currentSpread = 0;
 let spreads = [];
@@ -1054,6 +1155,7 @@ function openSpreadViewer(key, data) {
   currentMangaKey = key;
   currentMangaPath = data.path;
   currentMangaGallery = (data.gallery && data.gallery.length > 0) ? data.gallery : null;
+  currentMangaData = data;
   setupMangaCta(data);
   spreadTotalPages = data.pages;
   currentSpread = 0;
@@ -1546,8 +1648,8 @@ function updateViewToggle(mode, verticalOnly) {
 
 if (viewToggleBtn) {
   viewToggleBtn.addEventListener('click', function() {
-    if (!currentMangaKey || !mangaData[currentMangaKey]) return;
-    var data = mangaData[currentMangaKey];
+    var data = currentMangaData; // 開いている作品のデータ（mangaData から引き直さない。上の currentMangaData の説明）
+    if (!currentMangaKey || !data) return;
     if (data.verticalOnly) return; // 切り替え不可
 
     // 現在のモードを切り替え
@@ -1612,21 +1714,476 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ===== Direct access mode (QR code: works.html?manga=bms-unso) =====
-const params = new URLSearchParams(window.location.search);
-const autoOpen = params.get('manga');
-const isDirectMode = !!autoOpen; // true = ?manga=xxx あり
+// ===== Direct access mode (QR code: biz-library?manga=bms-unso) =====
+// params / autoOpen / isDirectMode はファイル先頭（mangaData の直後）で宣言済み
 // 同一オリジン(ホームギャラリー等)からの内部遷移かどうか
+// 「表示に時間がかかっています」の再読み込みボタン（location.reload）で読み込み直すと、ブラウザは referrer をこのページ自身に
+// する（Chromium で確認）。そのまま判定すると QR経由でも内部遷移になって qr-mode が外れる（BUGS #010）ので、読み込み直す前の
+// 判定をこのタブに残して引き継ぐ（DIRECT_RELOAD_KEY。showDirectStalled のボタンが保存する）。引き継げなかったとき（保存できない
+// ブラウザ）は、このページ自身からの referrer を QR経由として扱う（書庫へ降ろさない側に倒す）
+const DIRECT_RELOAD_KEY = 'bm-direct-reload';
 const isInternalReferrer = (function() {
   try {
+    var saved = JSON.parse(sessionStorage.getItem(DIRECT_RELOAD_KEY) || 'null');
+    sessionStorage.removeItem(DIRECT_RELOAD_KEY);
+    if (saved && saved.url === location.href) return !!saved.internal;
+  } catch (e) { /* 保存できないブラウザ・壊れた値 */ }
+  try {
     if (!document.referrer) return false;
-    return new URL(document.referrer).host === location.host;
+    var ref = new URL(document.referrer);
+    if (ref.host !== location.host) return false;
+    return !(ref.pathname === location.pathname && ref.search === location.search);
   } catch (e) { return false; }
 })();
 // QRコード経由 = URL パラメータあり かつ 同一オリジンからの遷移ではない
 // ホームギャラリー経由の場合は isQrMode=false になり、閉じるボタンで書庫に降りられる
 const isQrMode = isDirectMode && !isInternalReferrer;
 if (isQrMode) document.documentElement.classList.add('qr-mode');
+
+// ----- QR直リンクの開き方（Issue #71。2026-10-15 方針: 手書きの作品データでは開かず、WP のデータが届くまで待つ）-----
+// 直リンクのキー（directKey。ファイル先頭で ?manga= の値を整えたもの）は次の3種類:
+//   - 作品（WP の作品 ID の形〈isDirectIdLike〉）: /manga/{id}（1作品）と /library（一覧）のどちらか先に「その作品のデータ」を
+//     返した方で1回だけ開く（どちらも WP のデータで、toMangaEntry() で同じ形にする）
+//   - 作品（ID の形に合わない値。例 seko_2・日本語の ID）: /manga/{id} には問い合わせず、/library の作品 ID と照合して開く
+//   - 制作過程（pre-red-* / pre-name-*）: 手書きの制作過程データ（FALLBACK_PRE_DATA）にあれば即開く。無ければ /library の
+//     作品の赤ペン・ネームから登録される（rebuildPreCarousels）のを待って開く（制作過程は /manga/{id} に無い）
+// 結果は次の3つだけ:
+//   1. 開く: WP のデータが届いた
+//   2. 「作品が見つかりませんでした」: 届いた /library にその作品（制作過程）が無い。ID の形の作品は、さらに /manga/{id} も
+//      「作品が無い」と答えた（readMangaAnswer）ときだけ
+//   3. それ以外（WP が応答しない・エラー・時間切れ・/library の失敗や0件など）: 待ち続ける（取り直し方は startDirectFlow）。
+//      ビューアを表示できないまま、ページを開いてから DIRECT_SLOW_MS（開く処理を始めた後は、始めてから DIRECT_OPEN_SLOW_MS）
+//      たったら「ただいま表示に時間がかかっています」と再読み込みボタンを出す。後から表示できたらメッセージを消す
+// 手書きの作品データ（FALLBACK_WORKS）では開かない（WP と違う古いページ数・画像で壊れた表示にしない）。
+// 例外は WP に未登録の作品（UNREGISTERED_FALLBACK_IDS）だけ: WP がデータを返せないとき手書きデータで開く。
+// 待っている間は読み込み中の表示（スピナー）を出し、ビューアが開いたら・「見つかりませんでした」を出したら消す
+
+// WP の作品 ID の形か（/manga/{id} で問い合わせられる形: 英数字とハイフン。英数字を1文字以上含む）。WP の作品 ID も
+// 制作過程のキー（pre-red-* / pre-name-*）もふつうはこの形。合わない値は /manga/{id} に問い合わせず、/library で照合する
+function isDirectIdLike(key) {
+  return /^[A-Za-z0-9-]+$/.test(key) && /[A-Za-z0-9]/.test(key);
+}
+
+// 開いた（開く処理を始めた）作品の mangaData のキー。開くのは1回だけ（同じ作品を2回開くと、どちらのデータが最後に
+// 描かれるかが画像の読込と API 到着の順番で変わる）
+var directOpenKey = null;
+var directNotFoundShown = false;
+var directLoaderEl = null;
+var directStalledEl = null;
+
+// WP に未登録で、手書きデータ（FALLBACK_WORKS の素材フォルダの画像）だけで公開している作品（当面の例外。2026-10-16 平澤さん判断）。
+// 直リンクではまず WP を確かめ、WP にデータがあれば WP のデータで開く（登録後は自然に WP のデータになる）。
+// WP が「作品が無い」と答えたとき・WP が応答できないときだけ、手書きデータで開く。他の作品は手書きデータでは開かない。
+// ⚠️ WP に登録したら、この例外から外す
+var UNREGISTERED_FALLBACK_IDS = ['life-school', 'sixtones'];
+
+// 「表示に時間がかかっています」を出すまでの時間（ページを開いてから。まだ開く処理を始めていないとき）
+var DIRECT_SLOW_MS = 5000;
+// 開く処理を始めてから、ビューアを表示できないまま「表示に時間がかかっています」を出すまでの時間（1枚目の画像の読込が
+// 終わらないときなど）
+var DIRECT_OPEN_SLOW_MS = 8000;
+// 取り直すまでの間隔（ミリ秒。/manga/{id} と /library のそれぞれで、失敗の後に順に使い、最後の値を繰り返す）
+var DIRECT_RETRY_MS = [2000, 5000, 10000, 20000, 30000];
+// 1回ごとの取得の時間切れ（ミリ秒。/manga/{id} と /library のそれぞれで1回目から順に使い、最後の値を繰り返す）。
+// WP がいつも遅くても、取り直すたびに長く待つので、いずれ届く
+var DIRECT_FETCH_TIMEOUT_MS = [5000, 10000, 20000];
+// 待つ上限（ミリ秒。タブを表示していた時間で数える）。超えたら取り直しを止め、スピナーを外して
+// 「表示に時間がかかっています」と再読み込みボタンだけを残す（タブを放置しても WP に問い合わせ続けない）
+var DIRECT_RETRY_LIMIT_MS = 10 * 60 * 1000;
+
+// 一覧 list の n 番目（0始まり）。n が範囲の外なら最後の値（上の取り直しの間隔・時間切れの表を引く）
+function nthOrLast(list, n) {
+  return list[Math.min(n, list.length - 1)];
+}
+
+// 登録キーの一覧から URL の値に当たるキーを探す: まず完全一致、無ければ大文字小文字を区別せずに照合する。無ければ null
+function matchKey(keys, raw) {
+  if (!raw) return null;
+  if (keys.indexOf(raw) !== -1) return raw;
+  var lower = raw.toLowerCase();
+  for (var i = 0; i < keys.length; i++) {
+    if (String(keys[i]).toLowerCase() === lower) return keys[i];
+  }
+  return null;
+}
+
+// 直リンクのキーが制作過程（赤ペン・ネーム）か。制作過程のキーは手書きのデータ（FALLBACK_PRE_DATA）も
+// /library・/preproduction から作るものも必ず pre-red-* / pre-name-*。WP の作品 ID が「pre-」で始まるだけ
+// （例: pre-sales）なら作品として開く
+function isPreProductionKey(key) {
+  return /^pre-(red|name)-/i.test(key);
+}
+
+// 応答本文がプラグインのエラーの形（{"error":"not found"} のように error があり code が無い）か
+function isPluginErrorBody(d) {
+  return !!d && typeof d === 'object' && !Array.isArray(d) && typeof d.error === 'string' &&
+    !Object.prototype.hasOwnProperty.call(d, 'code');
+}
+// 応答本文が WordPress の REST API のエラーの形（{"code":"...","message":"..."}）か
+function isWpErrorBody(d) {
+  return !!d && typeof d === 'object' && !Array.isArray(d) && typeof d.code === 'string' && typeof d.message === 'string';
+}
+
+// WP の形のエラーのうち、/manga/{id} の判定に使う code（これ以外の code は「作品が無い」と見なさない）
+// - rest_no_route: その URL のルートが無い。/library が届いて（WP が応答している）その作品が無いときだけ「作品が無い」とする
+//   （startDirectFlow）
+var WP_CODE_NO_ROUTE = 'rest_no_route';
+
+// /manga/{id} の応答の読み分け（データ〈200〉以外）。WP が「作品が無い」と答えたと言えるときだけ 'gone' / 'noRoute'、
+// それ以外は null（「WP が応答できない」扱いで待つ・取り直す）:
+// - 'gone': 404 で本文がプラグインの形（プラグインの「作品が無い」の答え {"error":"not found"}。無い作品・完全非公開の作品）
+//   か、410（もう無い）で本文がプラグインか WP の形
+// - 'noRoute': 404 で本文が WP の形の rest_no_route（上の WP_CODE_NO_ROUTE）
+// - null: それ以外。401/403 は本文が WP の形でも「作品が無い」と見なさない（認証・アクセス制限の code は、作品の有無ではなく
+//   一時的に遮られているだけ）。JSON でない応答（HTML のエラーページ等）は WP の応答ではない
+function readMangaAnswer(r) {
+  if (r.status === 404) {
+    if (isPluginErrorBody(r.data)) return 'gone';
+    if (isWpErrorBody(r.data) && r.data.code === WP_CODE_NO_ROUTE) return 'noRoute';
+    return null;
+  }
+  if (r.status === 410 && (isPluginErrorBody(r.data) || isWpErrorBody(r.data))) return 'gone';
+  return null;
+}
+
+// 読み込み中の表示（暗い背景の上の白とオレンジのスピナー。見た目は bizmanga.css の .bm-manga-loader、位置は css/works.css）
+function showDirectLoader() {
+  if (directLoaderEl) return;
+  directLoaderEl = document.createElement('div');
+  directLoaderEl.className = 'bm-manga-loader-wrap bm-direct-loader';
+  directLoaderEl.setAttribute('role', 'status');
+  directLoaderEl.setAttribute('aria-label', '作品を読み込んでいます');
+  var spinner = document.createElement('span');
+  spinner.className = 'bm-manga-loader';
+  directLoaderEl.appendChild(spinner);
+  document.body.appendChild(directLoaderEl);
+}
+// 読み込み中の表示を外す（「表示に時間がかかっています」も一緒に消える）
+function hideDirectLoader() {
+  if (!directLoaderEl) return;
+  if (directLoaderEl.parentNode) directLoaderEl.parentNode.removeChild(directLoaderEl);
+  directLoaderEl = null;
+  directStalledEl = null;
+}
+
+// 「ただいま表示に時間がかかっています」と再読み込みボタン（読み込み中の表示の中、スピナーの下）。
+// failed = 待っても開かない（開く処理が失敗した・待つ上限に達した）: スピナーを外して再読み込みを案内する。
+// failed でなければ、ビューアがもう開いている（読み込み中の表示を外した後）なら出さない
+function showDirectStalled(failed, message) {
+  if (directNotFoundShown) return;
+  if (!directLoaderEl) {
+    if (!failed) return;
+    showDirectLoader();
+  }
+  if (failed) {
+    var spinner = directLoaderEl.querySelector('.bm-manga-loader');
+    if (spinner) directLoaderEl.removeChild(spinner);
+    directLoaderEl.removeAttribute('aria-label');
+  }
+  if (directStalledEl) return;
+  directStalledEl = document.createElement('div');
+  directStalledEl.className = 'bm-direct-stalled';
+  directStalledEl.setAttribute('role', 'alert');
+  var text = document.createElement('p');
+  text.className = 'bm-direct-stalled__text';
+  text.textContent = message || 'ただいま表示に時間がかかっています';
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'bm-direct-stalled__btn';
+  btn.textContent = '再読み込み';
+  btn.addEventListener('click', function() {
+    // 読み込み直した後も QR経由／サイト内遷移の判定（qr-mode）を変えない（上の isInternalReferrer）
+    try {
+      sessionStorage.setItem(DIRECT_RELOAD_KEY, JSON.stringify({ url: location.href, internal: isInternalReferrer }));
+    } catch (e) { /* 保存できないブラウザ: 読み込み直した後は QR経由として扱われる */ }
+    location.reload();
+  });
+  directStalledEl.appendChild(text);
+  directStalledEl.appendChild(btn);
+  directLoaderEl.appendChild(directStalledEl);
+}
+
+// 開く処理（openManga）で例外が出たとき（failOpen から）: すでに漫画のページを表示できていればそのまま
+// （読み込み中の表示だけ外す）。まだなら開きかけのビューアを閉じ、「表示に時間がかかっています」と再読み込みボタン
+function showDirectOpenFailed() {
+  if (directNotFoundShown) return;
+  if (mangaModal.classList.contains('open') && (modalManga.querySelector('img') || imgRight.getAttribute('src'))) {
+    hideDirectLoader();
+    return;
+  }
+  mangaModal.classList.remove('open');
+  showDirectStalled(true);
+}
+
+// 直リンクのビューアを表示できたか（openManga の proceedOpen がビューアを開いた。開く処理を始めただけでは false）
+function isDirectViewerShown() {
+  return mangaModal.classList.contains('open');
+}
+
+// 直リンクの作品を開く（1回だけ）。開く処理の例外は failOpen() へ（「見つかりませんでした」にはしない）
+function openDirect(key) {
+  if (directOpenKey || directNotFoundShown || !Object.prototype.hasOwnProperty.call(mangaData, key)) return;
+  directOpenKey = key;
+  try {
+    openManga(key);
+  } catch (e) {
+    failOpen(e);
+  }
+}
+
+// 「作品が見つかりませんでした」画面（ページ本体を置き換える）。開いた（開く処理を始めた）ビューアがあるときは出さない
+function showDirectNotFoundOnce() {
+  if (directOpenKey || directNotFoundShown) return;
+  directNotFoundShown = true;
+  hideDirectLoader();
+  var box = document.createElement('div');
+  box.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;';
+  var link = document.createElement('a');
+  link.href = '/';
+  link.style.color = '#eb5200';
+  link.textContent = 'トップページへ戻る';
+  box.appendChild(document.createTextNode('作品が見つかりませんでした。'));
+  box.appendChild(document.createElement('br'));
+  box.appendChild(document.createElement('br'));
+  box.appendChild(link);
+  while (document.body.firstChild) document.body.removeChild(document.body.firstChild);
+  document.body.appendChild(box);
+}
+
+// 直リンクの処理で想定外の例外が出たとき: まだ開いていなければ「表示に時間がかかっています」と再読み込みボタン
+// （暗い画面とスピナーのまま止めない。「作品が見つかりませんでした」は WP が「作品が無い」と答えたときだけ）。
+// 呼ぶのは、下の「if (isDirectMode)」の同期の try/catch と、startDirectFlow の取得の後の処理（Promise）の catch
+function directFlowFailed(err) {
+  console.error('[direct-mode] 直リンクの処理で例外:', err);
+  if (!directOpenKey) showDirectStalled(true);
+}
+
+// 直リンクの処理（上の「結果は次の3つだけ」）。取り直し方:
+// - /manga/{id}: 答えがデータでも「作品が無い」でもなければ、間隔をあけて取り直す（「作品が無い」の答えは変わらないので取り直さない）
+// - /library: 失敗・0件のとき、判定に要る場合だけ取り直す（libraryNeeded。制作過程・ID の形でない値は /library だけが頼り。
+//   ID の形の作品は /manga/{id} が「作品が無い」・ルートが無いと答えた後だけ）。それ以外は /manga/{id} だけを取り直す
+//   （WP が応答しない間に、重い一覧を取り直し続けない）
+// - 1回ごとの時間切れは取り直すたびに延ばす（DIRECT_FETCH_TIMEOUT_MS）。/library の時間切れは判定に /library が要るときだけ
+//   効かせる（要らない間は中断せず、遅れて届いた /library でも開く。armLibraryTimeout）
+// - タブが非表示の間は取り直さず、表示に戻ったら続ける。表示していた時間で DIRECT_RETRY_LIMIT_MS たったら取り直しを止める
+function startDirectFlow() {
+  var preKey = isPreProductionKey(directKey);
+  var askManga = !preKey && isDirectIdLike(directKey);  // /manga/{id} に問い合わせる（WP の作品 ID の形のときだけ）
+  var fallbackKey = preKey ? null : matchKey(UNREGISTERED_FALLBACK_IDS, directKey);  // WP に未登録の作品（当面の例外）か
+
+  var mangaAnswer;           // /manga/{id} の最後の答え（undefined＝まだ、'failed'＝応答できない、'gone'＝作品が無い、'noRoute'＝ルートが無い）
+  var noRouteCounts = false; // 'noRoute' を「作品が無い」に数えるか（/library が失敗していない間に返った答えだけ数える。数えない答えは、
+                             // /library が届いた後に /manga/{id} へ問い合わせ直して確かめる）
+  var mangaAttempts = 0;     // /manga/{id} を取りに行った回数
+  var mangaBusy = false;     // /manga/{id} を取得中
+  var mangaSeq = 0;          // /manga/{id} の取り直しの予定の番号（問い合わせ直したら、それまでの予定を無効にする）
+  var libraryWorks;          // /library の最後の結果（undefined＝まだ、null＝失敗・0件、配列＝届いた）
+  var libraryAttempts = 0;   // /library を取りに行った回数
+  var libraryBusy = false;   // /library を取得中か、取り直しを予定している
+  var libraryFetch = null;   // 取得中の /library（{ started, timeout, controller, timer }。時間切れの見張りに使う）
+  var gaveUp = false;        // 待つ上限に達した
+
+  function finished() { return !!directOpenKey || directNotFoundShown; }
+
+  // ---- 取り直しの予定（/manga/{id} と /library で共用）。タブが非表示の間は取り直さず、表示に戻ったら続ける ----
+  // 上限（DIRECT_RETRY_LIMIT_MS）はタブを表示していた時間で数える（非表示の間は数えない）
+  var visibleSpent = 0;  // 非表示になる前までに表示していた時間の合計
+  var visibleSince = document.visibilityState === 'hidden' ? null : Date.now();
+  var waitingForVisible = [];  // 非表示の間に予定の時刻が来た取り直し
+  function visibleMs() { return visibleSpent + (visibleSince === null ? 0 : Date.now() - visibleSince); }
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+      if (visibleSince !== null) { visibleSpent += Date.now() - visibleSince; visibleSince = null; }
+      return;
+    }
+    if (visibleSince === null) visibleSince = Date.now();
+    var run = waitingForVisible;
+    waitingForVisible = [];
+    run.forEach(runRetry);
+  });
+  function runRetry(request) {
+    if (finished() || gaveUp) return;
+    if (visibleMs() >= DIRECT_RETRY_LIMIT_MS) { giveUp(); return; }
+    if (document.visibilityState === 'hidden') { waitingForVisible.push(request); return; }
+    request();
+  }
+  function retryLater(request, wait) {
+    if (finished() || gaveUp) return;
+    setTimeout(function() { runRetry(request); }, wait);
+  }
+  // 上限に達した: 取り直しを止め、スピナーを外して「表示に時間がかかっています」と再読み込みボタンだけを残す
+  // （取得中の応答が後から届いたら、そのデータで開く）
+  function giveUp() {
+    gaveUp = true;
+    console.warn('[direct-mode] WP から作品のデータを取得できないため、取り直しを止めました');
+    showDirectStalled(true);
+  }
+
+  // ---- 開く ----
+  // 開く処理を始めた後も、ビューアを表示できるまで見張る（1枚目の画像の読込が終わらないときなど）: 始めてから
+  // DIRECT_OPEN_SLOW_MS で「表示に時間がかかっています」と再読み込みボタン、待つ上限でスピナーを外す。
+  // 後から表示できたら openManga（proceedOpen の hideDirectLoader）がメッセージごと消す
+  function open(key) {
+    if (finished()) return;
+    openDirect(key);
+    if (!directOpenKey) return;
+    setTimeout(function() {
+      if (!isDirectViewerShown()) showDirectStalled(false);
+    }, DIRECT_OPEN_SLOW_MS);
+    (function untilLimit() {
+      if (isDirectViewerShown() || directNotFoundShown) return;
+      var rest = DIRECT_RETRY_LIMIT_MS - visibleMs();
+      if (rest > 0) { setTimeout(untilLimit, rest); return; }
+      console.warn('[direct-mode] ビューアを表示できないまま待つ上限に達しました');
+      showDirectStalled(true);
+    })();
+  }
+  // WP に未登録の作品（当面の例外）は、WP がデータを返せない（「作品が無い」・応答できない）と分かったら手書きデータで開く
+  function openUnregisteredFallback() {
+    if (!fallbackKey || finished()) return;
+    mangaData[fallbackKey] = Object.assign({}, FALLBACK_WORKS[fallbackKey]);
+    open(fallbackKey);
+  }
+  // 制作過程の登録キー（手書きの制作過程データと、届いた /library から rebuildPreCarousels() が登録したもの）から探す
+  function findPreKey() {
+    return matchKey(Object.keys(mangaData).filter(function(k) { return mangaData[k]._isPreProduction; }), directKey);
+  }
+
+  // ---- データが届いていないときの判断（/library の答えがそろってから）----
+  function decide() {
+    if (finished() || libraryWorks === undefined) return;
+    if (fallbackKey) {
+      if (mangaAnswer !== undefined) openUnregisteredFallback();
+      return;
+    }
+    if (!libraryWorks) return;  // /library が失敗・0件: 判定に要るなら取り直して確かめる（retryLibraryIfNeeded）
+    // 2. 「作品が見つかりませんでした」: 届いた /library にその作品（制作過程）が無い（ここに来るのは無かったとき）。
+    //    ID の形の作品は /manga/{id} も「作品が無い」と答えたときだけ
+    if (!askManga || mangaAnswer === 'gone' || (mangaAnswer === 'noRoute' && noRouteCounts)) {
+      showDirectNotFoundOnce();
+      return;
+    }
+    // ルートが無いという答えが /library の失敗中だった（WP が止まっていたかもしれない）: /library が届いた今、問い合わせ直す
+    if (mangaAnswer === 'noRoute') askMangaAgain();
+  }
+
+  // ---- /library ----
+  // 判定に /library が要るか（要らないときは、失敗・0件でも取り直さない）
+  function libraryNeeded() {
+    return !askManga || mangaAnswer === 'gone' || mangaAnswer === 'noRoute';
+  }
+  function retryLibraryIfNeeded() {
+    if (finished() || gaveUp || libraryBusy || libraryWorks !== null || !libraryNeeded()) return;
+    libraryBusy = true;
+    retryLater(requestLibrary, nthOrLast(DIRECT_RETRY_MS, libraryAttempts - 1));
+  }
+  function requestLibrary() {
+    var timeout = nthOrLast(DIRECT_FETCH_TIMEOUT_MS, libraryAttempts);  // 取り直すたびに長く待つ
+    libraryAttempts++;
+    libraryBusy = true;
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    libraryFetch = { started: Date.now(), timeout: timeout, controller: controller, timer: null };
+    armLibraryTimeout();
+    fetchLibrary(controller).then(onLibrary).catch(directFlowFailed);
+  }
+  // 取得中の /library の時間切れ: 判定に /library が要る（libraryNeeded）ときだけ、取りに行ってから timeout で中断して
+  // 取り直しに回す（要るようになった時点で過ぎていれば、すぐ中断する）。要らない間（/manga/{id} の答えを待っている間）は
+  // 中断しない（/manga/{id} が応答しない間に遅れて届いた /library でも開ける。取り直しはしないので一覧を取り続けることもない）
+  function armLibraryTimeout() {
+    var f = libraryFetch;
+    if (!f || f.timer || !f.controller || !libraryNeeded()) return;
+    f.timer = setTimeout(function() { f.controller.abort(); }, Math.max(0, f.started + f.timeout - Date.now()));
+  }
+  // 届いた /library にその作品（制作過程）があれば、/manga/{id} を待たずに開く（作品は applyLibrary() が mangaData に登録する。
+  // 制作過程は applyLibrary() から呼ぶ rebuildPreCarousels() が pre-red-{作品ID} 等で登録する）
+  function onLibrary(works) {
+    if (libraryFetch && libraryFetch.timer) clearTimeout(libraryFetch.timer);
+    libraryFetch = null;
+    libraryBusy = false;
+    if (works) applyLibrary(works);
+    if (finished()) return;
+    libraryWorks = works;
+    if (works) {
+      var key = preKey ? findPreKey() : matchKey(works.map(function(w) { return w.id; }), directKey);
+      if (key) {
+        open(key);
+        return;
+      }
+    } else {
+      // /library も取れない＝WP が止まっていたかもしれないので、それまでのルートが無いという答えは「作品が無い」に数えない
+      noRouteCounts = false;
+    }
+    decide();
+    retryLibraryIfNeeded();
+  }
+
+  // ---- /manga/{id} ----
+  function requestManga() {
+    var timeout = nthOrLast(DIRECT_FETCH_TIMEOUT_MS, mangaAttempts);  // 取り直すたびに長く待つ
+    mangaAttempts++;
+    mangaBusy = true;
+    wpApiGet('/manga/' + encodeURIComponent(directKey), timeout).then(function(r) {
+      mangaBusy = false;
+      if (finished()) return;
+      if (r.status === 200 && r.data && typeof r.data === 'object' && !Array.isArray(r.data) && r.data.id) {
+        var key = String(r.data.id);  // 開くキー＝登録したキー（応答の id。?manga=SEKO でも seko）
+        mangaData[key] = toMangaEntry(r.data);
+        open(key);
+        return;
+      }
+      console.warn('[direct-mode] /manga/{id}: HTTP ' + r.status);
+      onMangaAnswer(readMangaAnswer(r) || 'failed');
+    }, function(err) {
+      mangaBusy = false;
+      console.warn('[direct-mode] /manga/{id} を取得できません:', (err && err.name === 'AbortError') ? '時間切れ（' + timeout + 'ms）' : err);
+      onMangaAnswer('failed');
+    }).catch(directFlowFailed);
+  }
+  // データ以外の答え: 'gone' は取り直さない（答えは変わらない）。'noRoute'・'failed' は間隔をあけて取り直す
+  function onMangaAnswer(answer) {
+    if (finished()) return;
+    mangaAnswer = answer;
+    if (answer === 'noRoute') noRouteCounts = libraryWorks !== null;
+    armLibraryTimeout();  // 「作品が無い」・ルートが無い: 取得中の /library が要るようになった
+    if (answer !== 'gone') {
+      var seq = ++mangaSeq;
+      retryLater(function() { if (seq === mangaSeq) requestManga(); }, nthOrLast(DIRECT_RETRY_MS, mangaAttempts - 1));
+    }
+    decide();
+    retryLibraryIfNeeded();
+  }
+  // 予定を待たずに /manga/{id} に問い合わせ直す（取得中ならその答えを待つ）。それまでの取り直しの予定は無効にする
+  function askMangaAgain() {
+    if (mangaBusy) return;
+    var seq = ++mangaSeq;
+    runRetry(function() { if (seq === mangaSeq) requestManga(); });
+  }
+
+  // ---- 始める ----
+  setTimeout(function() {
+    if (finished()) return;  // 開く処理を始めた後は open() が見張る
+    // WP に未登録の作品（当面の例外）は、WP が時間内に応答しなければ手書きデータで開く。他は待ち続ける
+    if (fallbackKey) openUnregisteredFallback(); else showDirectStalled(false);
+  }, DIRECT_SLOW_MS);
+  // 制作過程は、手書きの制作過程データにあれば WP を待たずに開く
+  var preFound = preKey ? findPreKey() : null;
+  if (preFound) {
+    open(preFound);
+    return;
+  }
+  requestLibrary();
+  if (askManga) requestManga();
+}
+
+function startDirectMode() {
+  showDirectLoader();
+  // メンテナンス中（bm-wp-config.js の maintenance）は WP を取り直し続けず、すぐに一時停止の文言を出す（QR配布先向け）
+  if (window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance) {
+    showDirectStalled(true, 'ただいま表示を一時停止しています。しばらくしてから再度ご覧ください。');
+    return;
+  }
+  startDirectFlow();
+}
 
 // 制作過程のフォールバックデータを先に登録（pre-red-*, pre-name-* のダイレクトアクセス用）
 // FALLBACK_PRE_DATA を直接 mangaData に登録
@@ -1666,48 +2223,12 @@ if (isDirectMode) {
   const footerEl = document.querySelector('.footer');
   if (footerEl) footerEl.style.display = 'none';
 
-  if (mangaData[autoOpen]) {
-    // FALLBACK or library API で既に取得済み
-    openManga(autoOpen);
-  } else {
-    // /manga/{id} エンドポイントで単一作品取得（表示フラグ無関係）
-    const apiBase = (window.BM_WP_CONFIG && window.BM_WP_CONFIG.apiBase) || 'https://cms.contentsx.jp/wp-json/contentsx/v1';
-    fetch(apiBase + '/manga/' + encodeURIComponent(autoOpen))
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function(data) {
-        if (!data || !data.id) throw new Error('invalid data');
-        // mangaDataに登録してopenManga
-        // viewType はライブラリAPIと同じくAPIの view_type を最優先
-        // (以前URL内に 'webtoon' を含むか？という代替判定が残っており、
-        //  新作のP1.webp系ファイル名では縦読み判定に失敗して spread になる不具合があった)
-        var apiViewType = data.view_type || 'spread';
-        var viewType = (window.bmViewType && window.bmViewType.isForcedVertical(data)) ? 'vertical' : apiViewType;
-        mangaData[data.id] = {
-          id: data.id,
-          title: data.title_ja || data.id,
-          pages: data.pages || (data.gallery && data.gallery.length) || 1,
-          category: data.category || '',
-          tags: [],
-          gallery: data.gallery || [],
-          thumbnail: data.thumbnail || '',
-          viewType: viewType,
-          verticalOnly: apiViewType === 'vertical_only',
-          tallCover: !!data.tall_cover,
-          point: data.point || '',
-          comment: data.comment || '',
-          client_url: data.client_url || '',
-          cta_label_ja: data.cta_label_ja || '',
-          cta_enabled: !!data.cta_enabled
-        };
-        openManga(autoOpen);
-      })
-      .catch(function(err) {
-        console.warn('[direct-mode] manga fetch failed:', err.message);
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;background:#1a1a1a;font-size:16px;text-align:center;padding:24px;">作品が見つかりませんでした。<br><br><a href="/" style="color:#eb5200;">トップページへ戻る</a></div>';
-      });
+  // 想定外の例外でも暗い画面とスピナーのまま止めない（directFlowFailed）。ここで拾うのは同期の例外（startDirectMode の中で
+  // すぐ起きたもの）。取得の後の処理（Promise の中）の例外は、startDirectFlow の各取得の catch が同じく directFlowFailed へ渡す
+  try {
+    startDirectMode();
+  } catch (e) {
+    directFlowFailed(e);
   }
 }
 
@@ -1942,7 +2463,8 @@ function registerFallbackPreData() {
       autoTimer = null;
     }
     function resetAuto() { stopAuto(); startAuto(); }
-    startAuto();
+    // 直リンク（?manga=）ではカルーセルが隠れていて、ビューアだけを表示するので自動送りを始めない
+    if (!isDirectMode) startAuto();
 
     // Mouse wheel: passive で縦スクロールを絶対にブロックしない
     // トラックパッドの横スワイプはブラウザの overflow-x: auto が自動処理

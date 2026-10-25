@@ -398,6 +398,11 @@
         }
       })
       .catch(function() {
+        // メンテナンス中（bm-wp-config.js の maintenance）は 01〜10.webp を推測して出さない（P1.webp系・縦読み作品で崩れるため）
+        if (window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance) {
+          loading.textContent = 'ただいま表示を一時停止しています';
+          return;
+        }
         var fallback = { view_type: 'spread', gallery: [] };
         for (var i = 1; i <= 10; i++) {
           fallback.gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
