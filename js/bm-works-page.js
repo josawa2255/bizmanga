@@ -160,6 +160,18 @@
 
   }
 
+  // ===== 一覧の1行目を、追従するフィルター帯（.bm-category-filter）のすぐ下へ戻す =====
+  // 送り先の計算（帯が貼り付いているときは帯の実際の高さを差し引く／追従しない画面はヘッダーの下 16px）は
+  // 全ページ共通の window.bmScrollBelowSticky（js/bm-nav.js。SPEC §0.6）。
+  // grid.scrollIntoView だと1行目がヘッダー＋帯の裏に隠れていた（PR #78 レビュー）。
+  //   onlyIfBelow=false: ページ送り（常に送る）
+  //   onlyIfBelow=true : 「すべて」・カテゴリページの無いカテゴリのボタン（その場で絞り込む）。
+  //                      一覧の途中・下で押したときだけ戻し、一覧より上で押したときは動かさない
+  function scrollToGridTop(onlyIfBelow) {
+    if (!window.bmScrollBelowSticky) return;
+    window.bmScrollBelowSticky(grid, filterContainer, { onlyIfBelow: !!onlyIfBelow });
+  }
+
   function buildPagination(totalItems, activePage) {
     var paginationEl = document.getElementById('bmWorksPagination');
     if (!paginationEl) return;
@@ -188,7 +200,7 @@
       btn.addEventListener('click', function() {
         var page = parseInt(btn.getAttribute('data-page'), 10);
         renderWorks(currentAllWorks, currentFilterCategory, page);
-        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        scrollToGridTop();
       });
     });
   }
@@ -217,6 +229,7 @@
         allBtn.textContent = labelJa;
         allBtn.addEventListener('click', function() {
           renderWorks(currentWorks, null, 1);
+          scrollToGridTop(true);
         });
         filterContainer.appendChild(allBtn);
         return;
@@ -237,6 +250,7 @@
         fbtn.textContent = labelJa;
         fbtn.addEventListener('click', function() {
           renderWorks(currentWorks, cat, 1);
+          scrollToGridTop(true);
         });
         filterContainer.appendChild(fbtn);
       }

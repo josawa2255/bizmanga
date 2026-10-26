@@ -35,17 +35,6 @@
 
 .uc-v2 main a { text-underline-offset: 3px; }
 
-/* bizmanga.css の body { overflow-x: hidden; } は、横溢れ防止のためだけの指定だが、
-   hidden は "overflow が visible でない祖先" として scroll container を作ってしまう。
-   body 自身は中身がちょうど収まりスクロールしない（実際に縦スクロールしているのは
-   html 側）ため、sticky 要素は「一度もスクロールしない body」を基準に位置計算してしまい、
-   .uc-scene-detail / .uc-why-aside 等の position:sticky が一切効かなくなる
-   （bizmanga.css 側のコメント「clip は sticky を壊さない」の通り）。
-   clip は横溢れ防止の効果は同じで scroll container を作らないため、このページに限り
-   hidden→clip に上書きして sticky を機能させる。旧Windows Edge(EdgeHTML)は clip 未対応だが
-   2026年時点でシェアほぼ0のため許容する。 */
-body.uc-v2 { overflow-x: clip; }
-
 /* セクション見出しへのアンカー（固定ヘッダー72px分をよける） */
 .uc-v2 section[id] { scroll-margin-top: 92px; }
 /* 旧アンカー（#uc-meishi 等）で飛んできたときも詳細が隠れないように */
