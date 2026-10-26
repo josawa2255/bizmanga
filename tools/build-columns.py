@@ -292,9 +292,15 @@ def build_detail_page(col, detail_data, template):
     # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
 
-    override = DESC_OVERRIDES.get(slug)
-    if override:
-        description = override[:200]
+    # 検索結果・SNS 向けのタイトルと説明文は、WP の「SEOタイトル」「SEO説明文」を優先する
+    # （空なら記事タイトル・抜粋。見出し h1・構造化データの headline・パンくずは記事タイトルのまま）
+    seo_title = normalize_price_text((col.get("seo_title") or "").strip()) or title_ja
+    seo_desc = " ".join(re.sub(r"<[^>]+>", "", normalize_brand_text(col.get("seo_description") or "")).split())
+
+    # 人が書いた説明文（SEO説明文 > 個別の上書き）は長めに残す
+    written = seo_desc or DESC_OVERRIDES.get(slug)
+    if written:
+        description = written[:200]
     else:
         raw_desc = re.sub(r"<[^>]+>", "", excerpt or content).replace("\n", " ").strip()
         description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
@@ -315,6 +321,7 @@ def build_detail_page(col, detail_data, template):
     replacements = {
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
+        "{{seo_title}}": esc(seo_title),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
         "{{category}}": esc(category),

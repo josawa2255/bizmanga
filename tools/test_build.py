@@ -130,6 +130,41 @@ class BuildTests(unittest.TestCase):
                 r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', output, re.S)]
             self.assertTrue(any(d.get('headline', d.get('name')) == title for d in docs))
 
+    def test_column_page_prefers_wp_seo_fields(self):
+        # WP の「SEOタイトル」「SEO説明文」は検索・SNS 向けの欄にだけ使い、見出しは記事タイトルのまま
+        columns = module('build-columns.py')
+        template = columns.TEMPLATE_PATH.read_text(encoding='utf-8')
+        base = {'id': 7, 'slug': 'seo-fields', 'title_ja': '記事タイトル', 'excerpt_ja': '一覧カードの抜粋'}
+
+        def build(**fields):
+            return columns.build_detail_page(dict(base, **fields), {'content': '<p>Body</p>'}, template)
+
+        def article(page):
+            return next(d for d in (json.loads(m[1]) for m in re.finditer(
+                r'<script type="application/ld\+json">(.*?)</script>', page, re.S)) if d['@type'] == 'Article')
+
+        page = build(seo_title='検索用タイトル', seo_description='検索用の<b>説明</b>\r\n文')
+        for tag in ('<title>検索用タイトル | コラム | ビズマンガ</title>',
+                    '<meta property="og:title" content="検索用タイトル | コラム | ビズマンガ">',
+                    '<meta name="twitter:title" content="検索用タイトル | コラム | ビズマンガ">',
+                    '<meta name="description" content="検索用の説明 文">',
+                    '<meta property="og:description" content="検索用の説明 文">',
+                    '<meta name="twitter:description" content="検索用の説明 文">',
+                    '<h1 class="bm-col-static-title">記事タイトル</h1>'):
+            self.assertIn(tag, page)
+        self.assertEqual(article(page)['headline'], '記事タイトル')
+        self.assertEqual(article(page)['description'], '検索用の説明 文')
+        self.assertNotIn('一覧カードの抜粋', page)
+        # 空欄なら従来どおり記事タイトルと抜粋
+        page = build(seo_title=' ', seo_description='')
+        self.assertIn('<title>記事タイトル | コラム | ビズマンガ</title>', page)
+        self.assertIn('<meta name="description" content="一覧カードの抜粋">', page)
+        # SEO説明文にもブランド方針の正規化をかけ、個別の上書き（DESC_OVERRIDES）より優先する
+        self.assertIn('<meta name="description" content="独自の制作メソッドで作ります">',
+                      build(seo_description='人間7割×AI3割で作ります'))
+        slug = next(iter(columns.DESC_OVERRIDES))
+        self.assertIn('<meta name="description" content="WPの説明">', build(slug=slug, seo_description='WPの説明'))
+
     def test_void_tags_do_not_swallow_following_content(self):
         for tag in ('meta charset="utf-8"', 'link href="x"', 'base href="x"', 'embed src="x"'):
             parser = _Sanitizer()
