@@ -886,3 +886,54 @@
     }
   }, true);
 })();
+
+/* =====================================================================
+ * 一覧の先頭を「追従する帯（sticky のフィルター）」のすぐ下へ戻すスクロール（PR #78・SPEC §0.6）
+ * ---------------------------------------------------------------------
+ * window.bmScrollBelowSticky(target, bar, options)
+ *   target  一番上に見せたい要素（一覧のグリッド・表示中の特集記事など）
+ *   bar     追従する帯（.bm-sticky-filter / .bm-column-filter など。無ければ null）
+ *   options.onlyIfBelow  true なら、今の位置が送り先より上（＝一覧の先頭より上にいる）ときは動かさない
+ *                        （絞り込みのボタン用。ページ送りは常に送る）
+ * 送り先（1か所で決める）:
+ *   - 帯が追従している画面（帯の position が sticky）: 帯が貼り付き始める位置。
+ *     ＝ target の上端 − 帯の top（ヘッダーの高さ）− 帯の高さ − 帯の margin-bottom
+ *     （帯の下に本来の余白を挟んで target が来る。帯の高さは行数で変わるので毎回実際の値を読む）
+ *   - 帯が追従しない画面（768px 以下・低い画面など）: 固定ヘッダーの下端から 16px 下に target
+ * 動きを減らす設定（prefers-reduced-motion: reduce）では瞬時に移動する。
+ *   ⚠️ behavior:'auto' は CSS の scroll-behavior（html は smooth）に従ってしまうので使わない。
+ *      瞬時にするときは html の scroll-behavior を一時的に auto にしてから scrollTo(0, y)。
+ * 戻り値: スクロールしたら true。
+ * 呼び出し元: js/bm-column-filter.js（コラムのチップ）・js/bm-works-page.js（制作事例のページ送り・
+ * 「すべて」等）・js/works.js（ビズ書庫のチップ・ページ送り）。いずれもこのファイルより後に defer で読む
+ * （tools/check-site.py の DEPENDENCIES で順序を検査）。
+ * ⚠️ 上の main IIFE は #bmNav が無いページで早期 return するので、ここは独立させる。
+ * ===================================================================== */
+(function () {
+  var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+  window.bmScrollBelowSticky = function (target, bar, options) {
+    if (!target) return false;
+    var opts = options || {};
+    var y = target.getBoundingClientRect().top + window.pageYOffset;
+    var cs = bar ? getComputedStyle(bar) : null;
+    if (cs && cs.position === 'sticky') {
+      y -= (parseFloat(cs.top) || 0) + bar.offsetHeight + (parseFloat(cs.marginBottom) || 0);
+    } else {
+      var header = document.querySelector('.bm-header');
+      y -= (header ? header.getBoundingClientRect().bottom : 0) + 16;
+    }
+    y = Math.max(0, Math.round(y));
+    if (opts.onlyIfBelow && window.pageYOffset <= y + 1) return false;
+    if (reduceMotion && reduceMotion.matches) {
+      var root = document.documentElement;
+      var prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, y);
+      root.style.scrollBehavior = prev;
+    } else {
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    return true;
+  };
+})();

@@ -25,7 +25,9 @@ jobs:
       - run: node --test tools/test-bm-tracking.cjs tools/test-runtime.cjs
 
   browser:
-    runs-on: ubuntu-latest
+    # ubuntu-latest が 26.04 になり、Playwright 1.58 は Chromium を入れられない（2026-10-25〜）。
+    # Playwright を 26.04 対応の版に上げたら ubuntu-latest に戻してよい
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
