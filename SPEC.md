@@ -92,7 +92,7 @@
 | FAQ | `faq.html` | — | 複数項目同時開閉対応 |
 | お問い合わせ | `contact.html` | — | HubSpot Forms API連携 |
 | 資料ダウンロード | `download.html` | `bm-nav` + `bm-tracking` + `js/bm-download.js` + CRM `inbound-v1.js` | 2026-09-28 新設。フォーム入力でサービス資料PDFをその場でダウンロード、CRM の受信箱「資料DL」へ届ける。詳細は §5.2 |
-| 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役 |
+| 制作過程カルーセル | `index.html`（プリプロ枠） | bm-pre-production | 旧 `pre-production.html` は廃止し index.html に統合（`bm-pre-production.js` は index.html のみ読込）。`works.js` の `_isPreProduction` フラグはビューア内の制作過程データ識別に現役。スライドのクリックは `biz-library?manga={キー}` へ遷移し、`/preproduction` の項目のキーは `pre-red-wp{投稿ID}` / `pre-name-wp{投稿ID}`（`works.js` の `registerPreproductionItems()` と同じ形。2026-10 / Issue #84。§2.1）。ページ数はギャラリー枚数を優先（手入力の pages の方が多くても存在しない画像を読まない） |
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。旧 `production-flow.html`（リダイレクト用HTML）は削除済み・sitemapにも無し |
 | プライバシーポリシー | `privacy-policy.html` | — | 個人情報保護法準拠。11条構成（事業者情報・取得情報・利用目的・第三者提供・外部サービス連携・安全管理措置・開示請求・Cookie・未成年・改定・窓口）。日本語固定表示対応。全ページフッターからリンク |
@@ -534,7 +534,7 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 
 | パラメータ | 役割 |
 |---|---|
-| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得） |
+| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得）。**WP が「作品が無い」と答えたとき（404 で本文がプラグインの形 `{"error":...}`〈`code` が無い〉、または 410 で本文がプラグインか WP の形）は画像を推測せず「NO PAGES」**（無い作品・完全非公開の作品。判定はビズ書庫の `works.js` の `readMangaAnswer()` が「作品が無い」とする応答と同じ。2026-10 / Issue #84。以前は `contentsx.jp/material/manga/{id}/01〜30.webp` を推測して出していた）。それ以外のエラー（5xx・401/403・WP の `rest_no_route`・JSON でない応答）とギャラリーが空の作品は従来どおり素材フォルダの 01〜30.webp、通信の失敗は 01〜10.webp を推測する |
 | `slides=1` | 1ページずつのスライド表示（横読み向け）。`interval`で自動切替間隔(ms) |
 | `speed=0.5` | 縦/横自動スクロール速度(px/frame) |
 | `hold=1` | 親から`postMessage('s3d-start')`を受けるまで自動再生を保留 |
@@ -635,7 +635,7 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 - **動作**: 書庫UIを全て非表示 → 漫画ビューアのみ表示
 - **制御**:
   - [biz-library.html](biz-library.html) の `<head>` — 即座に `<html class="direct-mode">` を付与（フリッカ防止）。**`?manga=` の値が空・記号だけ（`?manga=`・`?manga=。` など、末尾の記号を除くと空になる値）のときは付けず、通常のビズ書庫を表示する**（`js/works.js` も読込後に同じ判定で付け外しする。この場合は qr-mode も付かない）
-  - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
+  - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示（ヘッダーは `<header class="bm-header">` なので `.bm-header` を指定する。2026-10 まで存在しない `.header` を指定していて、`works.js` が動くまでヘッダーが見えていた / Issue #84）
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
 - **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与。「表示に時間がかかっています」の再読み込みボタンで読み込み直したときは、読み込み直す前の判定を引き継ぐ（ブラウザは再読み込みの referrer をこのページ自身にするため。引き継げないブラウザでは QR 経由として扱う）
 - **閉じるボタン (✕)**:
@@ -647,7 +647,7 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - **どちらか先に届いた WP のデータで開く**: `/manga/{id}`（1作品）と `/library`（一覧）の**どちらか先に「その作品のデータ」を返した方**で開く（どちらも同じ WP のデータ）。`?manga=` の値が作品 ID の形（英数字とハイフン）でないとき（例 `seko_2`・日本語の ID）は `/manga/{id}` に問い合わせず、`/library` の作品 ID と照合して開く。`/library` に無い作品（QR 限定公開など）は `/manga/{id}` を待つ。後から届いた方では開き直さない。表示中のビューアは開いたときのデータを使う（`/library` が後から届いても、最終ページCTA・見開き/縦読み切替は開いたときのデータのまま。`/library` に無い作品も切り替えられる）
   - **結果は次の3つだけ**:
     1. **開く**: `/manga/{id}` か `/library` から作品のデータが届いた
-    2. **「作品が見つかりませんでした」**（トップへ戻るリンク）: `/library` が届いていてその作品が無く、**かつ** WP の `/manga/{id}` も「その作品は無い」と答えた（`/library` がまだなら届くまで待つ。`/library` が失敗・0件・時間切れなら取り直して確かめる）。作品 ID の形でない値は `/library` に無ければこの画面
+    2. **「作品が見つかりませんでした」**（トップへ戻るリンク）: `/library` が届いていてその作品が無く、**かつ** WP の `/manga/{id}` も「その作品は無い」と答えた（`/library` がまだなら届くまで待つ。`/library` が失敗・0件・時間切れなら取り直して確かめる）。作品 ID の形でない値は `/library` に無ければこの画面。制作過程（`pre-red-*` / `pre-name-*`）は `/library` と `/preproduction` の両方に無いときだけ（下の「制作過程」）
     3. **「ただいま表示に時間がかかっています」＋「再読み込み」ボタン**: それ以外（WP が応答しない・エラー・時間切れ・アクセスの一時的な制限・`/library` の失敗や0件等）。**すぐには打ち切らずに待つ**: ページを開いてから5秒（`DIRECT_SLOW_MS`）たってもビューアを出せていなければ、スピナーの下にメッセージとボタン（`location.reload()`）を出す。作品のデータが届いて開く処理を始めた後も、1枚目の画像の読込が終わらないなどでビューアを表示できないまま8秒（`DIRECT_OPEN_SLOW_MS`）たてば同じメッセージを出す。後から表示できたらメッセージを消す
        - **取り直し**: `/manga/{id}` は間隔をあけて取り直す（`DIRECT_RETRY_MS`。2→5→10→20→30秒、以後30秒ごと。「作品が無い」と答えたら取り直さない）。`/library`（重い一覧）は失敗・0件・時間切れのとき、**判定に要る場合だけ**取り直す: 制作過程・作品 ID の形でない値（`/library` だけが頼り）と、`/manga/{id}` が「作品が無い」と答えた後（`/library` で確かめる）。それ以外（WP が応答しない間など）は `/manga/{id}` だけを取り直し、`/library` を取り直し続けない
        - **時間切れ**: `/manga/{id}` も `/library` も1回ごとの時間切れを取り直すたびに延ばす（`DIRECT_FETCH_TIMEOUT_MS`。5→10→20秒、以後20秒。WP がいつも遅くても届く）。`/library` の時間切れは判定に要るときだけ効かせる（要らない間＝`/manga/{id}` の答えを待っている間は中断せず、遅れて届いた `/library` にその作品があれば開く。要るようになった時点で時間が過ぎていれば、すぐ中断して取り直す）
@@ -658,7 +658,12 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - **待っている間は読み込み中の表示**（暗い背景の上の白とオレンジのスピナー。`showDirectLoader()`、見た目は `bizmanga.css` の `.bm-manga-loader`、位置とメッセージ・ボタンは `css/works.css` の `.bm-direct-loader` / `.bm-direct-stalled`）。ビューアが開いたら（`openManga` の `proceedOpen`）・「見つかりませんでした」を出したら消す
   - **開く処理の例外**（`openManga` 本体・画像読込後の `proceedOpen`・見開きの組み立て）: スピナーを残さない。まだ漫画のページを表示できていなければ開きかけのビューアを閉じ、スピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す（`failOpen()`。「見つかりませんでした」にはしない）
   - **直リンクでは一覧を作らない**: 隠れている書庫の一覧（手書きデータでの初期表示・`/library` 到着時の作り直し・表紙の縦長判定）を省き、制作過程カルーセルの自動送り（rAF）も始めない（ビューアだけを表示するため）
-  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録。直リンクでは制作過程のキーのときだけ呼ぶ）を待って開く。**`/library` が届いてその制作過程が無いときだけ**「作品が見つかりませんでした」。`/library` が失敗・遅いときは作品と同じく「表示に時間がかかっています」を出し、`/library` を取り直して待つ。制作過程は `/manga/{id}` に無いので取得しない（制作過程のキー・`/preproduction` の扱いは Issue #84 で見直し中）
+  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開く。無ければ **`/library` と `/preproduction`（赤ペン・ネーム専用の API）を並行して** `wpApiGet()` で取り、どちらかで登録されたら開く（2026-10 / Issue #84）。制作過程は `/manga/{id}` に無いので取得しない
+    - `/preproduction` の項目で画像（gallery）が無いものは登録しない（開くと空のビューアになるため。直リンクは「見つかりませんでした」）
+    - 登録キー: `/library` の作品の赤ペン・ネームは `pre-red-{作品ID}` / `pre-name-{作品ID}`（`buildPreDataFromAPI()`。直リンクでは制作過程のキーのときだけ呼ぶ）、**`/preproduction` の項目は `pre-red-wp{投稿ID}` / `pre-name-wp{投稿ID}`**（`registerPreproductionItems()`。一覧のカルーセル `rebuildPreCarousels()` も同じ関数を通る）。⚠️ ホームの制作過程スライド（`js/bm-pre-production.js`）が `biz-library?manga=` に渡すキーも同じ `-wp` の形にする（**2つのファイルでキーの形を必ずそろえる**。2026-10 まではホームが `pre-red-{投稿ID}` で開き、ビズ書庫で必ず「作品が見つかりませんでした」になっていた）
+    - 旧形式の URL: `pre-red-{数字}` / `pre-name-{数字}`（大文字小文字を区別しない）は、その値のままの登録キーが無ければ `pre-red-wp{数字}` / `pre-name-wp{数字}` と読み替えて照合する（`startDirectFlow` の `findPreKey()`）
+    - **「作品が見つかりませんでした」は `/library` と `/preproduction` が両方とも配列で届き、どちらにもその制作過程が無いときだけ**。どちらかが失敗・時間切れ（`/library` は0件も）なら作品と同じく「表示に時間がかかっています」を出し、失敗した方を取り直して待つ（`/preproduction` も `DIRECT_RETRY_MS` の間隔・`DIRECT_FETCH_TIMEOUT_MS` の時間切れで取り直す）。`/preproduction` が 200 の空配列 `[]` なのは今の WP の正常な状態（項目が無い）なので失敗にしない
+    - 直リンクでは `/library` の到着時に `rebuildPreCarousels()` を呼ばない（隠れたカルーセルを作り直さず、`/preproduction` を二重に取りに行かない）
   - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）
   - **想定外の例外**（直リンクの処理の中）: 暗い画面とスピナーのまま止めず、まだ開いていなければスピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す
 - **参考: 一覧（`?manga=` なし）から開くとき**: WP の `/library` が届くまでは手書きの `FALLBACK_WORKS` で一覧を表示し、その間に押した作品も手書きデータ（素材フォルダの画像）で開く。手書きデータのページ数は**素材フォルダに実際にある枚数**（WP の値に合わせると素材フォルダに無いページが 404 になる）、表示モード（縦読み専用）は WP に合わせてある（2026-10-16 時点。素材フォルダや WP 側の表示モードを変えたら `works.js` も直す）。**WP の到着前に開いた作品は、`/library` が届いたら次の見開き/縦読みの切替から WP のデータ（ページ数・表示モード・最終ページCTA）を使う**（表示中のページは開き直さない）
@@ -670,6 +675,7 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
   - WP管理画面以外からは一切閲覧できない
+  - 埋込ビューア（`embed-viewer.html`）も `/manga/{id}` が「作品が無い」と答えたら画像を推測せず「NO PAGES」（§2.0b。2026-10 / Issue #84）
   - 運用: 制作中・お蔵入り・クライアント契約切れなどで完全に閉じたい時
 
 ### 2.2 プラン事前選択
@@ -776,7 +782,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
   - ビズマンガの表示には日本語項目だけを使用する。WordPressと共有APIに残る英語用カスタムフィールドは、本サイトのフロントエンドから参照しない互換項目である。
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
-    - `/biz-library`ビューア（`js/works.js`）: WP の作品データの登録（`toMangaEntry()`。`/library` と QR直リンクの `/manga/{id}` の両方）と赤ペン/ネーム（`/library` 由来・`/preproduction`）の登録で gallery優先。`openManga()` は登録済みのページ数を使う（2026-10-15 に補正を `toMangaEntry()` へ一本化。Issue #71）
+    - `/biz-library`ビューア（`js/works.js`）: WP の作品データの登録（`toMangaEntry()`。`/library` と QR直リンクの `/manga/{id}` の両方）と赤ペン/ネーム（`/library` 由来・`/preproduction`〈`registerPreproductionItems()`〉）の登録で gallery優先。ホームの制作過程スライド（`js/bm-pre-production.js`）の `/preproduction` も gallery優先（2026-10 / Issue #84）。`openManga()` は登録済みのページ数を使う（2026-10-15 に補正を `toMangaEntry()` へ一本化。Issue #71）
     - 静的ビルドは `tools/bm_build.py` の `work_page_count()`（数）/ `work_pages_label()`（表示文字列「8P」）に一本化（2026-10-15、Issue #86）: gallery実枚数があればそれ、無ければWP手入力（`spec.pages` → `pages`）。使う箇所: 詳細ページのスペック表記・「この事例について」の「全Nページ」（`build-works.py`）、カテゴリページのモーダル用データ `pages` / `spec.pages`（gallery を5枚に絞る**前**の実枚数。`build_category_works_json`）、LP の CASE STUDY の「/ NP」と並び順（`build-lp-cases.py`）。それまでカテゴリページのデータとLP事例はWP手入力のままだった。ページ数を出す生成物を足すときもこの2関数を通す
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
     - 用途別LPのビズ書庫埋込（`js/bm-lp-library-embed.js` の「○P」表示）: gallery実枚数を優先し、無ければ`pages`（2026-10-15 Issue #85 で逆順だったのを統一）
@@ -999,6 +1005,9 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - **PCデフォルト**: spread
 - **SPデフォルト**: vertical
 - **ページ送り**: `waitForImage()` で画像読込完了を待ってからクリック解放
+- **先読み（2026-10 / Issue #84）**: 開いた直後（`openManga()`）とカードのホバーで最大4ページを先読みする。**作品のページ数を超えて読まない**（`Math.min(4, data.pages)`。ページ数は登録時にギャラリー枚数へ直してある）。以前は開いた直後に必ず2ページ目を読み、1ページの作品で存在しない `02.webp` が 404 になっていた
+- **書庫グリッドのページ送り**（18件/ページ、`updateGridPagination()`）: 端の「‹ Previous」「Next ›」は `disabled` 属性で止める（見た目は従来の `.disabled` クラス）。class だけだとマウスは止まってもキーボードの Enter で押せ、ページが 0 や総ページ数+1 になってグリッドが空になっていた（2026-10 / Issue #84）。押されたときもページ番号は 1〜総ページ数に収める
+- **フッター（biz-library）**: 背景 `#222` に文字 `#aaa`（リンク）/ `#999`（会社情報）/ `#8f8f8f`（コピーライト）、いずれも 4.5:1 以上。2026-05-14 の灰色→`#000` 一括置換で黒地に黒文字になっていたのを 2026-10 に戻した（Issue #84）。⚠️ 灰色の一括置換をするときは背景が暗い箇所を除外する
 
 ### 9.1 最終ページCTA（クライアント送客） ⭐ 2026-04-22 追加
 - **データソース**: WP CMS 漫画事例カスタムフィールド `cx_client_url` / `cx_cta_label_ja` / `cx_cta_enabled`

@@ -376,8 +376,9 @@ function applyLibrary(works) {
   if (isDirectMode) {
     // 直リンクでは一覧・制作過程カルーセルが隠れているので作り直さない（表紙の縦長判定もしない）。
     // 制作過程の直リンク（pre-red-* / pre-name-*）だけは、/library の作品の赤ペン・ネームを pre-red-{作品ID} 等で
-    // 登録するために rebuildPreCarousels() を呼ぶ（カルーセルの自動送りは直リンクでは始めない）
-    if (isPreProductionKey(directKey) && typeof rebuildPreCarousels === 'function') rebuildPreCarousels();
+    // 登録する（buildPreDataFromAPI）。/preproduction の項目は startDirectFlow が /library と並行して取って登録する
+    // （ここで rebuildPreCarousels() を呼ぶと /preproduction をもう一度取りに行くので呼ばない。Issue #84）
+    if (isPreProductionKey(directKey)) buildPreDataFromAPI();
     return;
   }
 
@@ -445,6 +446,7 @@ function updateGridPagination() {
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
 
   if (gridCurrentPage > totalPages) gridCurrentPage = 1;
+  if (!(gridCurrentPage >= 1)) gridCurrentPage = 1; // 0・負数・NaN（範囲外）は1ページ目へ（Issue #84）
 
   // Show/hide cards based on current page
   visibleCards.forEach((card, idx) => {
@@ -464,8 +466,10 @@ function updateGridPagination() {
   }
 
   // Previous
-  const prevBtn = mkPgBtn('‹ Previous', () => { gridCurrentPage--; updateGridPagination(); });
-  if (gridCurrentPage === 1) prevBtn.classList.add('disabled');
+  // 端のボタンは disabled 属性で止める（class だけだと pointer-events は止まってもキーボードの Enter で押せ、
+  // ページが 0 や総ページ数+1 になってグリッドが空になる。Issue #84）。押された場合も範囲内に収める
+  const prevBtn = mkPgBtn('‹ Previous', () => { gridCurrentPage = Math.max(1, gridCurrentPage - 1); updateGridPagination(); });
+  if (gridCurrentPage <= 1) { prevBtn.classList.add('disabled'); prevBtn.disabled = true; }
   frag.appendChild(prevBtn);
 
   // Page numbers
@@ -485,8 +489,8 @@ function updateGridPagination() {
   });
 
   // Next
-  const nextBtn = mkPgBtn('Next ›', () => { gridCurrentPage++; updateGridPagination(); });
-  if (gridCurrentPage >= totalPages) nextBtn.classList.add('disabled');
+  const nextBtn = mkPgBtn('Next ›', () => { gridCurrentPage = Math.min(totalPages, gridCurrentPage + 1); updateGridPagination(); });
+  if (gridCurrentPage >= totalPages) { nextBtn.classList.add('disabled'); nextBtn.disabled = true; }
   frag.appendChild(nextBtn);
 
   gridPagination.innerHTML = '';
@@ -847,9 +851,10 @@ function openManga(key) {
     if (typeof pauseAllCarousels === 'function') pauseAllCarousels();
 
     // Preload first pages then open viewer immediately with loading state
-    var firstPages = [getImageSrc(data, 0), getImageSrc(data, 1)];
-    if (data.pages >= 3) firstPages.push(getImageSrc(data, 2));
-    if (data.pages >= 4) firstPages.push(getImageSrc(data, 3));
+    // 先読みは最大4ページ・作品のページ数まで（以前は必ず2ページ目を読み、1ページの作品で存在しない 02.webp が 404 になった。
+    // Issue #84）。ページ数は登録時にギャラリー枚数へ直してある（上のコメント）ので、ここでは data.pages をそのまま使う
+    var firstPages = [];
+    for (var fp = 0; fp < Math.min(4, data.pages); fp++) firstPages.push(getImageSrc(data, fp));
 
     // Show modal immediately with loading indicator
     showMangaLoader();
@@ -1745,13 +1750,17 @@ if (isQrMode) document.documentElement.classList.add('qr-mode');
 //   - 作品（WP の作品 ID の形〈isDirectIdLike〉）: /manga/{id}（1作品）と /library（一覧）のどちらか先に「その作品のデータ」を
 //     返した方で1回だけ開く（どちらも WP のデータで、toMangaEntry() で同じ形にする）
 //   - 作品（ID の形に合わない値。例 seko_2・日本語の ID）: /manga/{id} には問い合わせず、/library の作品 ID と照合して開く
-//   - 制作過程（pre-red-* / pre-name-*）: 手書きの制作過程データ（FALLBACK_PRE_DATA）にあれば即開く。無ければ /library の
-//     作品の赤ペン・ネームから登録される（rebuildPreCarousels）のを待って開く（制作過程は /manga/{id} に無い）
+//   - 制作過程（pre-red-* / pre-name-*）: 手書きの制作過程データ（FALLBACK_PRE_DATA）にあれば即開く。無ければ /library
+//     （作品の赤ペン・ネーム → pre-red-{作品ID} 等。buildPreDataFromAPI）と /preproduction（専用 API → pre-red-wp{投稿ID} 等。
+//     registerPreproductionItems）を並行して取り、どちらかで登録されたら開く（制作過程は /manga/{id} に無い。Issue #84）。
+//     旧形式 pre-red-{数字}（2026-10 までホームの制作過程スライドが渡していた /preproduction の投稿ID）は pre-red-wp{数字} と読み替える
 // 結果は次の3つだけ:
 //   1. 開く: WP のデータが届いた
 //   2. 「作品が見つかりませんでした」: 届いた /library にその作品（制作過程）が無い。ID の形の作品は、さらに /manga/{id} も
-//      「作品が無い」と答えた（readMangaAnswer）ときだけ
-//   3. それ以外（WP が応答しない・エラー・時間切れ・/library の失敗や0件など）: 待ち続ける（取り直し方は startDirectFlow）。
+//      「作品が無い」と答えた（readMangaAnswer）ときだけ。制作過程は /library と /preproduction の両方が配列で届いて、
+//      どちらにも無いときだけ
+//   3. それ以外（WP が応答しない・エラー・時間切れ・/library の失敗や0件・/preproduction の失敗など。/preproduction の
+//      0件〈200 の空配列〉は今の正常な状態なので失敗にしない）: 待ち続ける（取り直し方は startDirectFlow）。
 //      ビューアを表示できないまま、ページを開いてから DIRECT_SLOW_MS（開く処理を始めた後は、始めてから DIRECT_OPEN_SLOW_MS）
 //      たったら「ただいま表示に時間がかかっています」と再読み込みボタンを出す。後から表示できたらメッセージを消す
 // 手書きの作品データ（FALLBACK_WORKS）では開かない（WP と違う古いページ数・画像で壊れた表示にしない）。
@@ -1981,6 +1990,8 @@ function startDirectFlow() {
   var libraryAttempts = 0;   // /library を取りに行った回数
   var libraryBusy = false;   // /library を取得中か、取り直しを予定している
   var libraryFetch = null;   // 取得中の /library（{ started, timeout, controller, timer }。時間切れの見張りに使う）
+  var preItems;              // 制作過程のキーのとき: /preproduction の最後の結果（undefined＝まだ、null＝失敗、配列＝届いた〈空も正常〉）
+  var preAttempts = 0;       // /preproduction を取りに行った回数
   var gaveUp = false;        // 待つ上限に達した
 
   function finished() { return !!directOpenKey || directNotFoundShown; }
@@ -2044,9 +2055,16 @@ function startDirectFlow() {
     mangaData[fallbackKey] = Object.assign({}, FALLBACK_WORKS[fallbackKey]);
     open(fallbackKey);
   }
-  // 制作過程の登録キー（手書きの制作過程データと、届いた /library から rebuildPreCarousels() が登録したもの）から探す
+  // 制作過程の登録キー（手書きの制作過程データ、届いた /library から buildPreDataFromAPI() が登録したもの、届いた
+  // /preproduction から registerPreproductionItems() が登録したもの）から探す。まず ?manga= の値のまま照合し、無ければ
+  // 旧形式 pre-red-{数字} / pre-name-{数字}（大文字小文字を区別しない）を pre-red-wp{数字} / pre-name-wp{数字} と読み替えて照合する
+  // （2026-10 までホームの制作過程スライド〈js/bm-pre-production.js〉が /preproduction の投稿ID をそのまま付けて開いていた。Issue #84）
   function findPreKey() {
-    return matchKey(Object.keys(mangaData).filter(function(k) { return mangaData[k]._isPreProduction; }), directKey);
+    var keys = Object.keys(mangaData).filter(function(k) { return mangaData[k]._isPreProduction; });
+    var key = matchKey(keys, directKey);
+    if (key) return key;
+    var legacy = directKey.match(/^pre-(red|name)-(\d+)$/i);
+    return legacy ? matchKey(keys, 'pre-' + legacy[1] + '-wp' + legacy[2]) : null;
   }
 
   // ---- データが届いていないときの判断（/library の答えがそろってから）----
@@ -2057,8 +2075,10 @@ function startDirectFlow() {
       return;
     }
     if (!libraryWorks) return;  // /library が失敗・0件: 判定に要るなら取り直して確かめる（retryLibraryIfNeeded）
+    // 制作過程は /preproduction も配列で届くまで決めない（まだ・失敗なら取り直して確かめる。onPreproduction）
+    if (preKey && !preItems) return;
     // 2. 「作品が見つかりませんでした」: 届いた /library にその作品（制作過程）が無い（ここに来るのは無かったとき）。
-    //    ID の形の作品は /manga/{id} も「作品が無い」と答えたときだけ
+    //    ID の形の作品は /manga/{id} も「作品が無い」と答えたときだけ。制作過程は /preproduction にも無かったときだけ
     if (!askManga || mangaAnswer === 'gone' || (mangaAnswer === 'noRoute' && noRouteCounts)) {
       showDirectNotFoundOnce();
       return;
@@ -2095,7 +2115,7 @@ function startDirectFlow() {
     f.timer = setTimeout(function() { f.controller.abort(); }, Math.max(0, f.started + f.timeout - Date.now()));
   }
   // 届いた /library にその作品（制作過程）があれば、/manga/{id} を待たずに開く（作品は applyLibrary() が mangaData に登録する。
-  // 制作過程は applyLibrary() から呼ぶ rebuildPreCarousels() が pre-red-{作品ID} 等で登録する）
+  // 制作過程は applyLibrary() から呼ぶ buildPreDataFromAPI() が pre-red-{作品ID} 等で登録する）
   function onLibrary(works) {
     if (libraryFetch && libraryFetch.timer) clearTimeout(libraryFetch.timer);
     libraryFetch = null;
@@ -2115,6 +2135,38 @@ function startDirectFlow() {
     }
     decide();
     retryLibraryIfNeeded();
+  }
+
+  // ---- /preproduction（制作過程のキーのときだけ。/library と並行して取る。Issue #84）----
+  // 赤ペン・ネーム専用の API。項目は registerPreproductionItems() が pre-red-wp{投稿ID} / pre-name-wp{投稿ID} で登録する。
+  // 200 の配列なら届いた（空配列も正常。今の WP は項目が無く [] を返す）。それ以外（エラー・JSON でない・時間切れ・通信の失敗）は
+  // 失敗として、間隔をあけて取り直す（DIRECT_RETRY_MS。1回ごとの時間切れは DIRECT_FETCH_TIMEOUT_MS で延ばす）
+  function requestPreproduction() {
+    var timeout = nthOrLast(DIRECT_FETCH_TIMEOUT_MS, preAttempts);  // 取り直すたびに長く待つ
+    preAttempts++;
+    wpApiGet('/preproduction', timeout).then(function(r) {
+      if (r.status >= 200 && r.status < 300 && Array.isArray(r.data)) return r.data;
+      console.warn('[direct-mode] /preproduction: HTTP ' + r.status);
+      return null;
+    }, function(err) {
+      console.warn('[direct-mode] /preproduction を取得できません:', (err && err.name === 'AbortError') ? '時間切れ（' + timeout + 'ms）' : err);
+      return null;
+    }).then(onPreproduction).catch(directFlowFailed);
+  }
+  function onPreproduction(items) {
+    if (items) registerPreproductionItems(items);
+    if (finished()) return;
+    preItems = items;
+    if (items) {
+      var key = findPreKey();
+      if (key) {
+        open(key);
+        return;
+      }
+    } else {
+      retryLater(requestPreproduction, nthOrLast(DIRECT_RETRY_MS, preAttempts - 1));
+    }
+    decide();
   }
 
   // ---- /manga/{id} ----
@@ -2172,6 +2224,7 @@ function startDirectFlow() {
     return;
   }
   requestLibrary();
+  if (preKey) requestPreproduction();
   if (askManga) requestManga();
 }
 
@@ -2304,6 +2357,53 @@ function buildPreDataFromAPI() {
       name: apiName.length > 0 ? apiName : FALLBACK_PRE_DATA.name
     };
   }
+}
+
+// /preproduction（赤ペン・ネーム専用の API）の項目を mangaData に登録し、カルーセルの preData も差し替える。
+// 一覧のカルーセル（rebuildPreCarousels）と QR直リンク（startDirectFlow の /preproduction）の両方がこの関数を通る。
+// - キーは pre-red-wp{投稿ID} / pre-name-wp{投稿ID}。⚠️ ホームの制作過程スライド（js/bm-pre-production.js）が
+//   biz-library?manga= に渡すキーと同じ形にする（以前ホームは wp の付かない pre-red-{投稿ID} で開き、ビズ書庫で
+//   「作品が見つかりませんでした」になった。Issue #84。旧形式の URL は直リンクの findPreKey が読み替える）
+// - ページ数は WP 手入力の pages ではなく実際のギャラリー枚数を正とする（BUGS #049/#050。手入力ミスでズレると
+//   カルーセルに壊れた画像URLや欠落が出る）
+// 専用APIのデータがあればフォールバック＋manga_work データ（buildPreDataFromAPI）を上書きする
+function registerPreproductionItems(data) {
+  var apiRed = [];
+  var apiName = [];
+  data.forEach(function(item) {
+    if (!item || typeof item !== 'object') return;
+    var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
+    var galleryLen = (item.gallery && item.gallery.length) || 0;
+    // 画像の無い項目は登録しない（path も無いので開くと空のビューアで /01.webp が 404 になる。
+    // 登録しなければ直リンクは「作品が見つかりませんでした」、カルーセルにも出ない）
+    if (galleryLen === 0) return;
+    var pages = galleryLen;
+    var entry = {
+      key: key,
+      title: item.title,
+      path: '',
+      pages: pages,
+      gallery: item.gallery
+    };
+    if (item.type === 'akapen') {
+      apiRed.push(entry);
+    } else {
+      apiName.push(entry);
+    }
+    // mangaDataに登録してビューアで開けるようにする
+    mangaData[key] = {
+      title: item.title,
+      pages: pages,
+      path: '',
+      gallery: item.gallery,
+      tags: [],
+      category: '制作過程',
+      viewType: 'vertical',
+      _isPreProduction: true
+    };
+  });
+  if (apiRed.length > 0) preData.red = apiRed;
+  if (apiName.length > 0) preData.name = apiName;
 }
 
 function registerFallbackPreData() {
@@ -2514,42 +2614,8 @@ function registerFallbackPreData() {
         return r.json();
       })
       .then(function(data) {
-        if (!data || data.length === 0) { doRebuild(); return; }
-        var apiRed = [];
-        var apiName = [];
-        data.forEach(function(item) {
-          var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
-          // WP手入力のpagesではなく実際のgallery枚数を正とする（BUGS #049と同種、
-          // 手入力ミスでズレるとカルーセルに壊れた画像URLや欠落が出るため）
-          var galleryLen = (item.gallery && item.gallery.length) || 0;
-          var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
-          var entry = {
-            key: key,
-            title: item.title,
-            path: '',
-            pages: pages,
-            gallery: item.gallery
-          };
-          if (item.type === 'akapen') {
-            apiRed.push(entry);
-          } else {
-            apiName.push(entry);
-          }
-          // mangaDataに登録してビューアで開けるようにする
-          mangaData[key] = {
-            title: item.title,
-            pages: pages,
-            path: '',
-            gallery: item.gallery,
-            tags: [],
-            category: '制作過程',
-            viewType: 'vertical',
-            _isPreProduction: true
-          };
-        });
-        // 専用APIのデータがあればフォールバック＋manga_workデータを上書き
-        if (apiRed.length > 0) preData.red = apiRed;
-        if (apiName.length > 0) preData.name = apiName;
+        if (!Array.isArray(data) || data.length === 0) { doRebuild(); return; }
+        registerPreproductionItems(data);
         doRebuild();
       })
       .catch(function() {

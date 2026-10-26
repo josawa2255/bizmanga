@@ -384,9 +384,40 @@
     }
 
     // ============ データ取得 ============
+    // WP が「作品が無い」と答えたか（/manga/{id} のデータ以外の応答）。ビズ書庫の QR直リンク（js/works.js の readMangaAnswer が
+    // 'gone' とする応答）と同じ判定: 404 で本文がプラグインの形（{"error":"not found"} のように error があり code が無い。
+    // 無い作品・完全非公開 cx_private の作品）か、410 で本文がプラグインか WP の形（{"code":"...","message":"..."}）。
+    // それ以外（5xx・401/403・WP の rest_no_route・JSON でない応答）は「作品が無い」とは見なさない（従来どおり画像を推測する）
+    function isPluginErrorBody(d) {
+      return !!d && typeof d === 'object' && !Array.isArray(d) && typeof d.error === 'string' &&
+        !Object.prototype.hasOwnProperty.call(d, 'code');
+    }
+    function isWpErrorBody(d) {
+      return !!d && typeof d === 'object' && !Array.isArray(d) && typeof d.code === 'string' && typeof d.message === 'string';
+    }
+    function isMangaGone(status, body) {
+      if (status === 404) return isPluginErrorBody(body);
+      if (status === 410) return isPluginErrorBody(body) || isWpErrorBody(body);
+      return false;
+    }
+    // 「作品が無い」の目印（render に渡すデータと区別する）
+    var MANGA_GONE = {};
     fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
-      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(r) {
+        if (r.ok) return r.json();
+        return r.text().then(function(text) {
+          var body = null;
+          try { body = JSON.parse(text); } catch (e) { /* JSON でない（HTML のエラーページ等） */ }
+          return isMangaGone(r.status, body) ? MANGA_GONE : null;
+        });
+      })
       .then(function(data) {
+        // WP が「作品が無い」と答えた: 素材フォルダの画像を推測して出すと、WP で完全非公開にした作品が見えてしまうので
+        // 推測せず「NO PAGES」にする（Issue #84。以前は 01〜30.webp を推測していた）
+        if (data === MANGA_GONE) {
+          render(null);
+          return;
+        }
         if (data && data.gallery && data.gallery.length > 0) {
           render(data);
         } else {
