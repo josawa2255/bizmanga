@@ -150,7 +150,8 @@
 
       var pages = document.createElement('span');
       pages.className = 'bm-lp-lib-pages';
-      pages.textContent = (w.pages || (w.gallery && w.gallery.length) || 0) + 'P';
+      // ギャラリーの実枚数を優先し、無いときだけ WP 手入力の pages（BUGS #049/#050。他の表示経路と同じ規則）
+      pages.textContent = ((w.gallery && w.gallery.length) || w.pages || 0) + 'P';
       coverWrap.appendChild(pages);
 
       item.appendChild(coverWrap);

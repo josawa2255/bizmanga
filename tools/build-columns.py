@@ -5,6 +5,7 @@ BizManga コラム静的HTMLビルダー
 WP API `/columns` からコラム記事を取得し、以下を自動生成する:
   1. column/{slug}.html 個別ページを生成（SEOフレンドリーURL）
   2. column.html 内の <!-- BUILD:COLUMN_GRID --> マーカー間に静的カードを展開
+     （一覧はこれが正。静的カードがあればブラウザ側で WP から作り直さないので、新しい記事は次のビルド後に一覧へ出る）
   3. sitemap.xml に個別コラムURLを追加
   4. column.html head に ItemList JSON-LD を挿入
 
@@ -22,13 +23,12 @@ import pathlib
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date as _date
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
     fetch_json, output_batch, remove_file, render_template,
     replace_block, require_records, script_json, write_text,
 )
-from bm_content import make_slug
+from bm_content import COLUMNS_API, column_modified_ymd, make_slug
 from bm_html import _Sanitizer
 from bm_pricing import normalize_price_html, normalize_price_text, write_browser_script
 
@@ -38,7 +38,7 @@ DESC_OVERRIDES = {
 }
 
 
-API_LIST = API_BASE + '/columns?site=bizmanga&per_page=100'
+API_LIST = COLUMNS_API
 API_SINGLE = API_BASE + '/columns/{id}'
 SITE = SITE_URL
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -53,26 +53,27 @@ def esc(s):
 
 def normalize_brand_text(text, *, prices=True):
     """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
-    - AI混在比率表現（「人間7割×AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
+    - AI混在比率表現（「人間7割×AI3割」「人間7割・AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
       （方針: 比率系コピー禁止。memory feedback_no_ai_ratio_copy）
+      区切りは「×」「x」「X」のほか「・」も同じ扱い（Issue #86: 「・」の表記だけ素通りしていた）
     - 旧料金コピー → 現行基本料金25,740円〜（税抜・原稿料別途）
     WP本文がマスターのままでも、ビルド時に公開HTMLを方針準拠へ正規化する。
     """
     if not text:
         return text
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」の体制', '独自の制作メソッド', text)
-    text = re.sub(r'「人間7割[×xX]AI3割」', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割のハイブリッド', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割の体制', '独自の制作メソッド', text)
-    text = re.sub(r'人間7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」の体制', '独自の制作メソッド', text)
+    text = re.sub(r'「人間7割[×xX・]AI3割」', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド制作体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割のハイブリッド', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割の体制', '独自の制作メソッド', text)
+    text = re.sub(r'人間7割[×xX・]AI3割', '独自の制作メソッド', text)
     text = re.sub(r'7割人間・3割AI', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割のハイブリッド制作', '独自の制作メソッド', text)
-    text = re.sub(r'人の手7割[×xX]AI3割', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX・]AI3割のハイブリッド制作', '独自の制作メソッド', text)
+    text = re.sub(r'人の手7割[×xX・]AI3割', '独自の制作メソッド', text)
     return normalize_price_text(text) if prices else text
 
 
@@ -170,7 +171,9 @@ def build_toc_and_inject_ids(content_html):
     return toc_html, content_with_ids
 
 
-def build_card(c):
+def build_card(c, *, featured=False):
+    """一覧カード1枚。featured=True は特集記事と同じ記事のカード（bm-column-card--featured）。
+    PC は特集枠があるので CSS で隠し、特集枠を隠すスマホ（〜768px）でだけ一覧の先頭に見せる。"""
     slug = make_slug(c)
     thumb = c.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp"
     title_ja = normalize_price_text(c.get("title_ja", ""))
@@ -183,8 +186,9 @@ def build_card(c):
     cat_html = (
         f'<span class="bm-column-card-cat">{esc(category)}</span>' if c.get("category") else ""
     )
+    card_class = "bm-column-card bm-column-card--featured" if featured else "bm-column-card"
     return (
-        f'      <a class="bm-column-card" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
+        f'      <a class="{card_class}" href="{esc(detail_url)}" data-category="{esc(category)}">\n'
         f'        <div class="bm-column-card-img">\n'
         f'          <img src="{esc(thumb)}" alt="{esc(title_ja)}" loading="lazy" width="400" height="225">\n'
         f'        </div>\n'
@@ -209,7 +213,9 @@ def update_column_html(columns):
     featured = columns[0] if columns else None
     rest = columns[1:] if featured else columns
 
-    cards = "".join(build_card(c) for c in rest)
+    # 一覧はこの静的カードが正（静的カードがあればブラウザ側で WP から作り直さない。Issue #85 / #74）。
+    # スマホは特集枠を CSS で隠すので、特集の記事も先頭に置き、PC だけ CSS で隠す
+    cards = (build_card(featured, featured=True) if featured else "") + "".join(build_card(c) for c in rest)
     start = "<!-- BUILD:COLUMN_GRID -->"
     end = "<!-- /BUILD:COLUMN_GRID -->"
     block = f"{start}\n{cards}      {end}"
@@ -233,7 +239,8 @@ def update_column_html(columns):
             "title": normalize_price_text(featured.get("title_ja", "")),
             "excerpt": normalize_price_text(featured.get("excerpt_ja", "")),
             "thumbnail": featured.get("thumbnail") or f"{SITE}/material/images/og/og-index.webp",
-            "category": featured.get("category") or "",
+            # 一覧のカード（build_card）と同じく分類なしは「その他」。食い違うと「その他」の絞り込みで特集が消える
+            "category": featured.get("category") or "その他",
             "date": featured.get("date", ""),
             "readtime": featured.get("_readtime", 5),
         } if featured else None,
@@ -279,13 +286,8 @@ def build_detail_page(col, detail_data, template):
     category = col.get("category") or ""
     date = col.get("date") or ""
     date_ymd = col.get("date_ymd") or ""
-    # WP の post_modified が全記事「今日」になっているケースは信頼しない（QRG的に不自然）
-    today_iso = _date.today().isoformat()
-    wp_modified = col.get("modified_ymd") or ""
-    if wp_modified and wp_modified != today_iso and wp_modified >= date_ymd:
-        modified_ymd = wp_modified
-    else:
-        modified_ymd = date_ymd
+    # 更新日の決め方は sitemap・RSS と共通（「今日」や公開日より前の WP 更新日は使わない）
+    modified_ymd = column_modified_ymd(col)
     excerpt = normalize_brand_text(col.get("excerpt_ja") or "")
     # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
@@ -386,7 +388,8 @@ def update_sitemap(columns):
         slug = make_slug(c)
         # lastmod はWP側の実更新日のみ使う。ビルド日を書くと「全記事毎日更新」という
         # 嘘のシグナルになり、Googleがsitemapのlastmodを信用しなくなる(2026-06-12)
-        modified = c.get("modified_ymd") or c.get("date_ymd") or ""
+        # 記事ページの dateModified と同じ決め方にする（公開日より前の WP 更新日は使わない、Issue #86）
+        modified = column_modified_ymd(c)
         lastmod_line = f"    <lastmod>{modified}</lastmod>\n" if modified else ""
         entries.append(
             "  <url>\n"

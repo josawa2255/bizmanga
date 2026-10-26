@@ -258,6 +258,27 @@ class BuildTests(unittest.TestCase):
                         columns.generate_details([{'id': 1, 'slug': 'example'}])
             self.assertEqual(list(root.glob('*.html')), [])
 
+    def test_column_grid_keeps_featured_card_first_for_mobile(self):
+        # 一覧は静的カードが正（Issue #85）。特集記事も先頭カード（PCはCSSで隠す）として出し、他は1回ずつ
+        columns = module('build-columns.py')
+        items = [{'id': i, 'slug': f'col-{i}', 'title_ja': f'T{i}', 'category': 'BtoB戦略' if i % 2 else '',
+                  'date': '2026.10.01', '_readtime': 3} for i in range(1, 5)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / 'column.html').write_bytes((ROOT / 'column.html').read_bytes())
+            with patch.object(columns, 'ROOT', root), redirect_stdout(io.StringIO()):
+                columns.update_column_html(items)
+            html = (root / 'column.html').read_text(encoding='utf-8')
+        grid = html.split('<!-- BUILD:COLUMN_GRID -->', 1)[1].split('<!-- /BUILD:COLUMN_GRID -->', 1)[0]
+        cards = re.findall(r'<a class="([^"]+)" href="([^"]+)" data-category="([^"]*)">', grid)
+        self.assertEqual([href for _, href, _ in cards], [f'/column/col-{i}' for i in range(1, 5)])
+        self.assertEqual([cls for cls, _, _ in cards],
+                         ['bm-column-card bm-column-card--featured'] + ['bm-column-card'] * 3)
+        self.assertEqual([cat for _, _, cat in cards], ['BtoB戦略', 'その他', 'BtoB戦略', 'その他'])
+        self.assertEqual(grid.count('bm-column-card-readtime">3分<'), 4)
+        data = json.loads(re.search(r'<script type="application/json" id="bm-column-data">(.*?)</script>', html, re.S)[1])
+        self.assertEqual((data['total'], data['featured']['slug']), (4, 'col-1'))
+
     def test_all_eight_lps_are_v2(self):
         lp = module('build-lp-cases.py')
         self.assertEqual(len(lp.LP_CATEGORIES), 8)
@@ -305,6 +326,7 @@ class BuildTests(unittest.TestCase):
                                   'thumbnail': 'https://contentsx.jp/a?x=1&y="2"'}, 'column')
         item = ElementTree.fromstring(result)
         self.assertTrue(item.findtext('link').endswith('/column/column-7'))
+        self.assertIsNone(item.find('pubDate'), 'no date is omitted, never filled with the clock')
 
     def test_indexnow_covers_entire_push_and_initial_push(self):
         indexnow = module('indexnow-ping.py')
@@ -340,6 +362,203 @@ class BuildTests(unittest.TestCase):
             with self.assertRaises(ParseError):
                 write_text(path, '<rss><unclosed></rss>')
             self.assertFalse(path.exists())
+
+
+class StaticBuildIssue86Tests(unittest.TestCase):
+    """Generated pages must follow the same copy, page-count, date and markup rules as the hand-written pages."""
+
+    def test_ratio_copy_with_middle_dot_is_normalized(self):
+        columns = module('build-columns.py')
+        cases = {
+            # The three published passages (comic-creation-tool-business, x-twitter-business-manga-2, 1koma-business-manga).
+            '分担の目安は<strong>人間7割・AI3割</strong>で、': '分担の目安は<strong>独自の制作メソッド</strong>で、',
+            '加えて、人間7割・AI3割のハイブリッド制作により、': '加えて、独自の制作メソッドにより、',
+            '<strong>人間7割・AI3割のハイブリッド（次世代ニューマンガ）</strong>':
+                '<strong>独自の制作メソッド（次世代ニューマンガ）</strong>',
+            # The existing separators keep working.
+            '「人間7割×AI3割」の体制': '独自の制作メソッド',
+            '人の手7割xAI3割': '独自の制作メソッド',
+        }
+        for source, expected in cases.items():
+            with self.subTest(source=source):
+                self.assertEqual(columns.normalize_brand_text(source, prices=False), expected)
+                self.assertEqual(columns.sanitize_content_html('<p>' + source + '</p>'), '<p>' + expected + '</p>')
+                self.assertEqual(columns.normalize_brand_text(expected), expected, 'idempotent')
+        prose = '裏を返すと、業として設計しても7割は人の作業として残ります。'
+        self.assertEqual(columns.normalize_brand_text(prose), prose, 'only the ratio copy is replaced')
+
+    def test_old_price_range_copy_is_normalized(self):
+        excerpt = '営業資料・採用案内を「伝わる」コンテンツに。1ページ1万円台の高コスパ漫画制作サービスの活用法と2026年最新トレンドを解説。'
+        result = bm_pricing.normalize_price_text(excerpt)
+        self.assertIn('1ページ25,740円〜（税抜・原稿料別途）の高コスパ', result)
+        self.assertNotIn('1万円台', result)
+        self.assertEqual(bm_pricing.normalize_price_text(result), result, 'idempotent')
+        # Market rates and other amounts are not BizManga's price.
+        for text in ('1ページあたり1万円台から2万円台規模を中心に', '21ページ1万円台'):
+            self.assertEqual(bm_pricing.normalize_price_text(text), text)
+        # The excerpt reaches meta, OG, JSON-LD and the list card.
+        columns = module('build-columns.py')
+        column = {'id': 506, 'slug': 'business-manga-sales-recruiting', 'title_ja': 'T', 'excerpt_ja': excerpt}
+        page = columns.build_detail_page(column, {'content': '<p>Body</p>'},
+                                         columns.TEMPLATE_PATH.read_text(encoding='utf-8'))
+        card = columns.build_card(column)
+        for output in (page, card):
+            self.assertNotIn('1万円台', output)
+            self.assertIn('1ページ25,740円〜（税抜・原稿料別途）', output)
+        article = next(d for d in (json.loads(m[1]) for m in re.finditer(
+            r'<script type="application/ld\+json">(.*?)</script>', page, re.S)) if d['@type'] == 'Article')
+        self.assertEqual(article['description'], result)
+        self.assertIn(f'<meta property="og:description" content="{result}">', page)
+
+    def test_page_count_prefers_real_gallery(self):
+        from bm_build import work_page_count, work_pages_label
+        gallery = [f'https://cms.contentsx.jp/p{i}.webp' for i in range(3)]
+        work = {'id': 'sample', 'title_ja': 'Sample', 'category': '採用', 'gallery': gallery,
+                'pages': 10, 'spec': {'pages': '10P', 'period': '1か月'}, 'show_site': 'both'}
+        self.assertEqual((work_page_count(work), work_pages_label(work)), (3, '3P'))
+        manual = dict(work, gallery=[])
+        self.assertEqual((work_page_count(manual), work_pages_label(manual)), (10, '10P'), 'manual value without images')
+        self.assertEqual((work_page_count({'pages': '?'}), work_pages_label({})), (0, ''))
+
+        works = module('build-works.py')
+        detail = works.build_detail_page(work, works.TEMPLATE_PATH.read_text(encoding='utf-8'))
+        self.assertIn('<dd>3P</dd>', detail)
+        self.assertNotIn('10P', detail)
+        self.assertNotIn('全10ページ', detail)
+        # The category modal data counts the full gallery even though only five images are embedded.
+        long_work = dict(work, gallery=[f'https://cms.contentsx.jp/q{i}.webp' for i in range(7)])
+        payload = json.loads(works.build_category_works_json([work, long_work]))
+        self.assertEqual([(w['pages'], w['spec']['pages'], len(w['gallery'])) for w in payload],
+                         [(3, '3P', 3), (7, '7P', 5)])
+
+        lp = module('build-lp-cases.py')
+        self.assertIn('採用 / 3P / 1か月', lp.render_card(work))
+        self.assertEqual([w['id'] for w in lp.select_top([dict(work, id='few'), dict(long_work, id='many')], 2)],
+                         ['many', 'few'], 'ties are ordered by the real page count')
+
+    def test_lp_comment_is_quoted_once(self):
+        lp = module('build-lp-cases.py')
+        cases = {
+            '「漫画にしたことで伝わりました。」': '「漫画にしたことで伝わりました。」',
+            '漫画にしたことで伝わりました。': '「漫画にしたことで伝わりました。」',
+            '  「前後に空白」\n': '「前後に空白」',
+            '「A」と「B」': '「A」と「B」',
+            '"手書き派"でも使える': '「&quot;手書き派&quot;でも使える」',
+        }
+        for comment, expected in cases.items():
+            with self.subTest(comment=comment):
+                card = lp.render_card({'id': 'sample', 'title_ja': 'Sample', 'comment': comment})
+                quote = re.search(r'<blockquote class="lpv2-case__quote">(.*?)</blockquote>', card)[1]
+                self.assertEqual(quote, expected)
+                self.assertNotIn('「「', card)
+        self.assertNotIn('blockquote', lp.render_card({'id': 'sample', 'title_ja': 'Sample', 'comment': '「」'}))
+
+    def test_column_dates_are_shared_by_page_sitemap_and_feed(self):
+        from xml.etree import ElementTree
+        from bm_content import column_modified_ymd
+        today = '2026-10-15'
+        self.assertEqual(column_modified_ymd({'date_ymd': '2026-10-14', 'modified_ymd': '2026-10-05'}, today),
+                         '2026-10-14', 'a scheduled post saved before publication')
+        self.assertEqual(column_modified_ymd({'date_ymd': '2026-09-01', 'modified_ymd': '2026-10-05'}, today),
+                         '2026-10-05')
+        self.assertEqual(column_modified_ymd({'date_ymd': '2026-09-01', 'modified_ymd': today}, today),
+                         '2026-09-01', 'a bulk "today" is not trusted')
+        self.assertEqual(column_modified_ymd({'date_ymd': '2026-09-01'}, today), '2026-09-01')
+
+        columns = module('build-columns.py')
+        feed = module('build-feed.py')
+        records = [
+            {'id': 1, 'slug': 'scheduled', 'title_ja': 'Scheduled', 'date': '2026.10.14',
+             'date_ymd': '2026-10-14', 'modified_ymd': '2026-10-05'},
+            {'id': 2, 'slug': 'updated', 'title_ja': 'Updated', 'date': '2026.09.01',
+             'date_ymd': '2026-09-01', 'modified_ymd': '2026-10-05'},
+        ]
+        template = columns.TEMPLATE_PATH.read_text(encoding='utf-8')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / 'sitemap.xml').write_text(
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>', encoding='utf-8')
+            with patch.object(columns, 'ROOT', root), redirect_stdout(io.StringIO()), output_batch(root):
+                columns.update_sitemap(records)
+            sitemap = ElementTree.fromstring((root / 'sitemap.xml').read_text(encoding='utf-8'))
+        ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
+        lastmod = {e.findtext(ns + 'loc').rsplit('/', 1)[1]: e.findtext(ns + 'lastmod') for e in sitemap}
+        for record in records:
+            with self.subTest(slug=record['slug']):
+                page = columns.build_detail_page(record, {'content': '<p>Body</p>'}, template)
+                article = next(d for d in (json.loads(m[1]) for m in re.finditer(
+                    r'<script type="application/ld\+json">(.*?)</script>', page, re.S)) if d['@type'] == 'Article')
+                expected = column_modified_ymd(record)
+                self.assertEqual(article['dateModified'], expected)
+                self.assertEqual(lastmod[record['slug']], expected)
+                self.assertGreaterEqual(lastmod[record['slug']], record['date_ymd'])
+                self.assertIn(f'<meta property="article:modified_time" content="{expected}T00:00:00+09:00">', page)
+        # The feed orders columns by the same date; news only has a dotted publication date.
+        xml, count = feed.render_feed(records, [{'id': 9, 'date': '2026.10.12', 'title_ja': 'News'}])
+        channel = ElementTree.fromstring(xml).find('channel')
+        self.assertEqual([i.findtext('link').rsplit('/', 1)[1] for i in channel.findall('item')],
+                         ['scheduled', 'news-detail?id=9', 'updated'])
+        self.assertEqual(channel.findtext('lastBuildDate'), 'Wed, 14 Oct 2026 09:00:00 +0900',
+                         'the newest article date, not the build time')
+        self.assertEqual(channel.findall('item')[1].findtext('pubDate'), 'Mon, 12 Oct 2026 09:00:00 +0900')
+        self.assertEqual(count, 3)
+
+    def test_column_build_publishes_the_feed(self):
+        source = (ROOT / '.github/workflows/build-columns.yml').read_text(encoding='utf-8')
+        steps = re.split(r'\n      - ', source.split('\n    steps:\n', 1)[1])
+        columns = next(i for i, s in enumerate(steps) if 'tools/build-columns.py' in s)
+        feed = next(i for i, s in enumerate(steps) if 'tools/build-feed.py' in s)
+        commit = next(i for i, s in enumerate(steps) if 'tools/commit-generated.py' in s)
+        self.assertLess(columns, feed)
+        self.assertLess(feed, commit)
+        self.assertIn('continue-on-error: true', steps[feed], 'a feed failure must not stop the column pages')
+        self.assertIn(' feed.xml', steps[commit].split('--message', 1)[1])
+
+    def test_generator_steps_skip_while_wordpress_maintenance_is_on(self):
+        # js/bm-wp-config.js の maintenance: true の間は WP から何も取り込まない（SPEC.md「WordPress 一時停止スイッチ」）。
+        # ゲートより後ろの手順は全部 if: steps.gate.outputs.skip != 'true' を持つこと（feed の手順で漏れかけた。PR #95）
+        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml'):
+            with self.subTest(workflow=workflow):
+                source = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8')
+                steps = re.split(r'\n      - ', source.split('\n    steps:\n', 1)[1])
+                gate = next(i for i, s in enumerate(steps) if 'id: gate' in s)
+                for step in steps[gate + 1:]:
+                    self.assertIn("if: steps.gate.outputs.skip != 'true'", step, step.splitlines()[0])
+
+    def test_hero_image_declares_its_real_ratio(self):
+        works = module('build-works.py')
+        base = 'https://cms.contentsx.jp/wp-content/uploads/2026/04/01-4'
+        resized = {'thumbnail': base + '-192x300.webp'}
+        self.assertEqual(works.hero_image_size(resized, base + '.webp'), (192, 300))
+        self.assertEqual(works.hero_image_size(resized, base + '-192x300.webp'), (192, 300))
+        for work, hero in (({'thumbnail': base + '-192x300.webp'}, base + '-other.webp'),
+                           ({'thumbnail': base + '.webp'}, base + '.webp'), ({}, '')):
+            self.assertEqual(works.hero_image_size(work, hero), works.HERO_FALLBACK_SIZE)
+        page = works.build_detail_page(dict(resized, id='sample', title_ja='Sample', gallery=[base + '.webp']),
+                                       works.TEMPLATE_PATH.read_text(encoding='utf-8'))
+        hero = re.search(r'<div class="bm-work-detail-thumb">\s*(<img[^>]*>)', page)[1]
+        self.assertIn('width="192" height="300"', hero)
+
+    def test_templates_match_root_pages(self):
+        def csp(text):
+            return re.search(r'http-equiv="Content-Security-Policy" content="([^"]+)"', text)[1]
+
+        root_csp = csp((ROOT / 'works.html').read_text(encoding='utf-8'))
+        for name in ('column-detail.html.tpl', 'work-detail.html.tpl', 'works-category.html.tpl'):
+            with self.subTest(template=name):
+                text = (ROOT / 'tools/templates' / name).read_text(encoding='utf-8')
+                self.assertEqual(csp(text), root_csp)
+                self.assertIn("gtag('config', 'AW-", text.replace("gtag('config','AW-", "gtag('config', 'AW-"))
+                header = re.search(r'<header class="bm-header".*?</header>', text, re.S)[0]
+                self.assertIn('<ul class="bm-cta-icons" aria-label="CTA">', header)
+                self.assertIn('href="https://line.me/R/ti/p/@626kzaze', header)
+                self.assertIn('href="tel:03-6261-0764"', header)
+                self.assertNotIn('bm-nav-cta--line', text)
+                for logo in re.findall(r'<img[^>]*class="bm-logo-img"[^>]*>', text):
+                    self.assertIn('width="140" height="40"', logo)
+                self.assertIn('<p class="bm-footer-company">Contents X 株式会社</p>', text)
+                self.assertIn('href="/css/bizmanga.css"', text)
+                self.assertIn('src="/js/bm-nav.js"', text)
 
 
 class PublishTests(unittest.TestCase):

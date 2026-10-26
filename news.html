@@ -151,7 +151,7 @@ p{margin:0 0 16px;}
   <section class="bm-news-page" id="newsPage">
     <div class="bm-container">
       <h1 class="bm-news-page-heading">News</h1>
-      <div id="newsPageLoading" class="bm-news-page-loading">読み込み中...</div>
+      <div id="newsPageLoading" class="bm-news-page-loading" role="status">読み込み中...</div>
       <ul class="bm-news-list" id="bmNewsList" style="display:none;"></ul>
     </div>
   </section>
@@ -188,14 +188,34 @@ p{margin:0 0 16px;}
   <script src="js/bm-tracking.js" defer></script>
   <script src="js/bm-wp-config.js" defer></script>
   <script src="js/bm-wp-api.js" defer></script>
-  <script defer>
-    /* bm-wp-api.js がデータを読み込んだ後、一覧を表示 */
-    window.addEventListener('bm-data-ready', function() {
-      var loading = document.getElementById('newsPageLoading');
-      var list = document.getElementById('bmNewsList');
-      if (loading) loading.style.display = 'none';
-      if (list) list.style.display = '';
-    });
+  <script>
+    /* ニュースの取得が終わったら（bm-wp-api.js の bm-news-ready）一覧を表示する。
+       0件・取得失敗は「読み込み中」の位置に短い案内を出す（Issue #85。以前は漫画事例の取得完了で
+       空の一覧を出し、失敗時は何も出なかった） */
+    (function() {
+      var settled = false;
+      function show(state) {
+        settled = true;
+        var loading = document.getElementById('newsPageLoading');
+        var list = document.getElementById('bmNewsList');
+        if (state === 'list') {
+          if (loading) loading.style.display = 'none';
+          if (list) list.style.display = '';
+        } else if (loading) {
+          loading.textContent = state === 'empty'
+            ? '現在、お知らせはありません。'
+            : 'ニュースを読み込めませんでした。時間をおいて再度お試しください。';
+        }
+      }
+      window.addEventListener('bm-news-ready', function(e) {
+        var d = e.detail || {};
+        show(!d.ok ? 'error' : (d.count > 0 ? 'list' : 'empty'));
+      });
+      /* bm-wp-api.js が読めない・WP 接続が無効（bm-wp-config.js の enabled:false）だと合図が来ない */
+      document.addEventListener('DOMContentLoaded', function() {
+        if (!settled && typeof window.bmApiFetch !== 'function') show('error');
+      });
+    })();
   </script>
 
 <!-- JSON-LD -->

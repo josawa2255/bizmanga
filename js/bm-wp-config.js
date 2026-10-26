@@ -18,7 +18,7 @@ var BM_WP_CONFIG = {
   if (!BM_WP_CONFIG.maintenance || typeof window.fetch !== 'function') return;
 
   var WP_API_PREFIX = 'https://cms.contentsx.jp/wp-json/';
-  /* enabled は false にしない（bm-wp-api.js が早期 return して bm-data-ready が出ず、/news が読み込み中のまま止まる） */
+  /* enabled は false にしない（bm-wp-api.js が早期 return して WP のデータを一切読まなくなり、ニュース一覧などが「読み込めませんでした」になる。止めたいときは下の maintenance を使う） */
   var originalFetch = window.fetch;
 
   window.fetch = function (input) {
