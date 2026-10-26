@@ -159,9 +159,18 @@ class BuildTests(unittest.TestCase):
         page = build(seo_title=' ', seo_description='')
         self.assertIn('<title>記事タイトル | コラム | ビズマンガ</title>', page)
         self.assertIn('<meta name="description" content="一覧カードの抜粋">', page)
-        # SEO説明文にもブランド方針の正規化をかけ、個別の上書き（DESC_OVERRIDES）より優先する
+        # SEO欄にもブランド方針の正規化をかける（タグや改行をまたいでも）。説明文は個別の上書き（DESC_OVERRIDES）より優先
         self.assertIn('<meta name="description" content="独自の制作メソッドで作ります">',
-                      build(seo_description='人間7割×AI3割で作ります'))
+                      build(seo_description='人間7割×<b>AI3割</b>で作ります'))
+        self.assertIn('<title>独自の制作メソッドの漫画 | コラム | ビズマンガ</title>',
+                      build(seo_title='人間7割×AI3割の漫画'))
+        # サイト名はテンプレートが付ける。編集者が末尾に書いても並べない（C と共有する記事の「｜ContentsX」も外す）
+        for written in ('検索用｜ビズマンガ', '検索用 | BizManga', '検索用｜コラム｜ビズマンガ', '検索用｜ContentsX'):
+            self.assertIn('<title>検索用 | コラム | ビズマンガ</title>', build(seo_title=written), written)
+        # WP は保存時に単独の「<」を &lt; に変える。検索結果に「&lt;」と出さない
+        page = build(seo_title='費用&lt;相場', seo_description='A&amp;B &lt; C')
+        self.assertIn('<title>費用&lt;相場 | コラム | ビズマンガ</title>', page)
+        self.assertIn('<meta name="description" content="A&amp;B &lt; C">', page)
         slug = next(iter(columns.DESC_OVERRIDES))
         self.assertIn('<meta name="description" content="WPの説明">', build(slug=slug, seo_description='WPの説明'))
 

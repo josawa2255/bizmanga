@@ -51,6 +51,15 @@ def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
 
 
+# 編集者が末尾に書いたサイト名（「｜ビズマンガ」「｜ContentsX」など）。サイト名はテンプレートが付けるので外す
+SITE_NAME_TAIL = re.compile(r"(?:\s*[|｜]\s*(?:コラム|ビズマンガ|BizManga|Contents ?X|イチオシ採用))+\s*$", re.IGNORECASE)
+
+
+def plain_text(value):
+    """WP の入力欄の値を1行の文字列にする（タグを外し、保存時に &lt; などへ変わった文字を戻し、空白をまとめる）"""
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", value or "")).split())
+
+
 def normalize_brand_text(text, *, prices=True):
     """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
     - AI混在比率表現（「人間7割×AI3割」「人間7割・AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
@@ -294,8 +303,8 @@ def build_detail_page(col, detail_data, template):
 
     # 検索結果・SNS 向けのタイトルと説明文は、WP の「SEOタイトル」「SEO説明文」を優先する
     # （空なら記事タイトル・抜粋。見出し h1・構造化データの headline・パンくずは記事タイトルのまま）
-    seo_title = normalize_price_text((col.get("seo_title") or "").strip()) or title_ja
-    seo_desc = " ".join(re.sub(r"<[^>]+>", "", normalize_brand_text(col.get("seo_description") or "")).split())
+    seo_title = SITE_NAME_TAIL.sub("", normalize_brand_text(plain_text(col.get("seo_title")))) or title_ja
+    seo_desc = normalize_brand_text(plain_text(col.get("seo_description")))
 
     # 人が書いた説明文（SEO説明文 > 個別の上書き）は長めに残す
     written = seo_desc or DESC_OVERRIDES.get(slug)
