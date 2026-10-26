@@ -1338,6 +1338,7 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
 - `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test_site_artifact.py`: 公開物（`tools/build-site-artifact.py` を一時ディレクトリに実行）が許可リストのファイルとIndexNowのキーファイルだけで内部資料を含まないこと、HTML/CSSの参照が公開対象から漏れていないこと、キーファイルが `tools/indexnow-ping.py` の `KEY_LOCATION` に中身 `KEY` で出ることを検証（`checks.yml` とデプロイ前の `pages.yml` で実行）。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
@@ -1365,6 +1366,7 @@ WP APIの取得は、タイムアウト・接続失敗・429・5xxに限り間�
 `tools/commit-generated.py` で指定された生成物だけをコミットする。push前にrebaseし、競合はジョブ失敗として残す。
 GSC日次ランクトラッカー（`rank-tracker.yml` / `tools/rank-tracker.py`）は不可侵領域のため対象外で、従来どおり単独でコミットする（日付入りメッセージ）。
 IndexNowはpushのbefore〜after全体を対象とする。beforeが取得できない場合（強制push後など）は直前コミットとの差分で通知し、警告を出す。
+IndexNowのキーファイルはリポジトリに置かず、公開時に `build-site-artifact.py` が `indexnow-ping.py` の `KEY` / `KEY_LOCATION` から作る。キーを替えるときは `indexnow-ping.py` の `KEY` だけ替える。
 
 ### 16.3 ページ固有ファイルの配置（2026-10-05）
 
