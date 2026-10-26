@@ -74,7 +74,8 @@
 
 本文のURLサニタイズはブラウザの `js/bm-sanitize.js` と静的生成の `tools/bm_html.py` で共通の方針を使う。
 制御文字を拒否し、用途別にスキームを許可する。記事中の外部リンクは維持するため、
-自社ドメインに制限する `bmSanitize.url` とは区別する。仕様と回帰検証は [SPEC.md §16.2](SPEC.md) を参照。
+自社ドメインに制限する `bmSanitize.url` とは区別する。ニュースの「リンクURL」など外部サイトへのリンク先は、
+同じスキーム規則の `bmSanitize.linkUrl` を使う（SPEC §12）。仕様と回帰検証は [SPEC.md §16.2](SPEC.md) を参照。
 
 ## GSC日次ランク追跡（2026-04-20〜稼働）
 - 毎朝 JST 09:00 に `.github/workflows/rank-tracker.yml` が自動発火

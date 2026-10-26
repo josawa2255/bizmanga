@@ -96,8 +96,8 @@
 | お客様の声 | `testimonials.html` | bm-testimonials-page | WP連携 |
 | 制作フロー | `index.html#flow` セクション | bm-flow | トップページのギャラリー後に統合。旧 `production-flow.html`（リダイレクト用HTML）は削除済み・sitemapにも無し |
 | プライバシーポリシー | `privacy-policy.html` | — | 個人情報保護法準拠。11条構成（事業者情報・取得情報・利用目的・第三者提供・外部サービス連携・安全管理措置・開示請求・Cookie・未成年・改定・窓口）。日本語固定表示対応。全ページフッターからリンク |
-| ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携 |
-| コラム一覧 | `column.html` | bm-wp-api | カードグリッド3列。`/columns?site=bizmanga` から取得。ホームにも横スクロール枠あり |
+| ニュース | `news.html` / `news-detail.html` | bm-wp-api | WP連携。一覧は `bm-wp-api.js` が `/news?site=bizmanga` を描き、取得が終わった合図（`bm-news-ready`）で「読み込み中...」を消す。0件は「現在、お知らせはありません。」、取得失敗（3秒のタイムアウト含む）・WP接続が無効なときは「ニュースを読み込めませんでした。時間をおいて再度お試しください。」を同じ位置に出す（2026-10-15 Issue #85。以前は漫画事例の取得完了で空の一覧を出し、失敗時は何も出なかった）。各行のリンク先は WP の「リンクURL」（`cx_news_url`、外部サイト可）→ 本文があれば `/news-detail?id=` → どちらも無ければリンクなし。リンクURLは `bmSanitize.linkUrl`（http/https/相対のみ。§12）で確かめ、不正なら使わない |
+| コラム一覧 | `column.html` | 静的ビルド + bm-column-filter（bm-wp-api は予備） | カードグリッド3列。**カードは `tools/build-columns.py` が `BUILD:COLUMN_GRID` マーカー間に書き出す静的HTMLが正**（`per_page=100`・`data-category`・読了時間つき。特集枠・カテゴリチップの件数は同じビルドの埋込JSON `#bm-column-data`）。**静的カードが1枚でもあれば `bm-wp-api.js` は `/columns` を取得せず、一覧も作り直さない**（2026-10-15 Issue #85。作り直すと特集記事の重複・カテゴリ色と読了時間の消失・51件目以降の欠落・選択中のチップの解除が起きていた）。静的カードが無いときだけ WP から描く。特集の記事は先頭カード `bm-column-card--featured` としてもグリッドに出し、PC（769px〜）は特集枠で見せてこのカードを隠す／スマホ（〜768px）は特集枠を隠してこのカードを見せる（css/bizmanga.css。#74 と同じ方式）。新しく WP に公開したコラムが一覧に出るのは次のビルド後（詳細ページ `/column/{slug}` と同じタイミング）。ホームにも横スクロール枠あり（こちらは bm-wp-api が最新8件を描画） |
 | コラム詳細(動的) | `column-detail.html` | `js/bm-column-detail.js` | `?id={post_id}` で WP API `/columns/{id}` から取得。目次自動生成・関連記事・日本語固定・OGP動的更新。Editorial Magazineデザイン。目次の飛び先（本文の `h2#sec-N`）は `scroll-margin-top: calc(var(--bm-header-height, 72px) + 28px)`＝100px（`css/bm-column-detail.css`。固定ヘッダーの下に28px空けて出す。静的コラムの `css/bm-column-static.css` と同じ値。2026-10-15 まで無く、見出しがヘッダーの下に隠れていた。Issue #88） |
 | コラム詳細(静的SEO) | `column/{slug}.html` | GitHub Actions | `tools/build-columns.py` で自動生成。Article JSON-LD・OGP・GA4完備。週1 + 手動実行。**目次自動生成**: 本文の `<h2>` をパースして `id="sec-N"` 付与+`<nav class="bm-col-toc">` を hero 直下に挿入。h2が2個未満なら目次非表示。CSSは [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl) 内、番号は `decimal-leading-zero`(01,02..)。2026-04-29 追加 |
 | **用途別LP 8本** | `product-manga.html` / `recruit-manga.html` / `manga-ad-lp.html` / `company-manga.html` / `sales-manga.html` / `training-manga.html` / `inbound-manga.html` / `ir-manga.html` | `bm-nav` + WP API | 2026-04-26 公開。SEO中核。**v2 デザインシステム `css/bm-lp-v2.css` + `js/bm-lp-v2.js`（`lpv2-*` クラス）で8本すべて稼働**（2026-05-13 `recruit-manga.html` でパイロット導入→全LPへ展開。旧 `css/bm-lp-template.css`（`pm-*`）は削除済み）。各LPは Hero→Manifest(KPI 3 strip)→Chapter 01 PROBLEM→Bridge→Chapter 02 STRENGTH→Chapter 03 FORMATS→Chapter 04 CASE STUDY(WP API動的)→Chapter 05 LIBRARY(ビズ書庫埋込)→Chapter 06 PRODUCTION FLOW(8 Step, HowTo Schema)→Chapter 07 FAQ(12問, FAQPage Schema)→NEXT ISSUE(関連LP7本)→TO BE CONTINUED(Ending) の構成。JSON-LD 5種: WebPage + Service + BreadcrumbList(2階層) + FAQPage、`@id` で相互参照、`inLanguage: ja-JP`、`datePublished/dateModified` を最新化、Service に `url` + `audience` + `offers(/contact)`。FAQ は共通6問+LP固有2問の計8問構成（v2 LPは12問）。1位獲得が目標で `tools/rank-tracker.py` でKW追跡中 |
@@ -522,6 +522,11 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 
 - ホーム・一覧ページのカードリンクは `/column/{slug}` を使用
 - ビルド: `tools/build-columns.py` + `.github/workflows/build-columns.yml`
+- RSS（`/feed.xml`）も同じワークフローで `tools/build-columns.py` の後に `tools/build-feed.py` が生成し、`feed.xml` もコミット対象（2026-10-15、Issue #86。それまでどのワークフローにも無く 2026-04-25 から更新されていなかった。#75 と同じ方式）。
+  - コラムは `build-columns.py` と同じ一覧（`bm_content.COLUMNS_API`、per_page=100）・同じslug（`make_slug`）で `/column/{slug}` を指す。ニュースは `news-detail?id=`（日付 `YYYY.MM.DD` も読む）。
+  - 並びは記事が最後に変わった日の新しい順で最大30件。`lastBuildDate` はその先頭の日付の 09:00 JST（実行時刻ではない＝記事が変わらなければ feed.xml は同じで、空のコミットを作らない）。日付が読めない記事は `pubDate` を省く。
+  - コラム0件・ID欠落は書かずに失敗し既存の feed.xml を残す。ワークフローではフィードの失敗でコラムの公開を止めない（`continue-on-error`）。
+- **コラムの更新日は1か所で決める**（`tools/bm_content.py` の `column_modified_ymd`。2026-10-15、Issue #86）: 記事ページ（`dateModified`・`article:modified_time`・`last-modified`）、sitemap の `lastmod`、RSS の並び順が同じ値を使う。WP の `modified_ymd` が公開日より前（予約投稿など）または「今日」（一括更新の可能性）のときは公開日 `date_ymd` にする。以前は sitemap だけ WP の値をそのまま使い、公開日より前の lastmod が出ていた。
 
 ### 2.0b embed-viewer のパラメータ（埋込ビューア）
 
@@ -610,6 +615,8 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | `/works` | `js/bm-works-page.js` |
 | `/works/category/{slug}` | `js/bm-work-modal.js`（本対応で新設） |
 
+**`/works` のカード（2026-10-15 Issue #85）:** 静的カード（`build-works.py` の `build_card`）も、WP 取得後に `js/bm-works-page.js` が描き直すカード（20件ずつのページ送り）も、中身を `<a class="bm-works-card-link" href="/works/{id}">` で包む。普通のクリックは `preventDefault()` してモーダル、Cmd/Ctrl/Shift+クリック・中クリックはリンク本来の動き（新しいタブ・ウィンドウで個別ページ。判定は `bm-work-modal.js` と同じ）。以前は描き直したカードにリンクが無く、新しいタブで開けなかった。`show_site` が `bizmanga` だけの作品は静的な個別ページが無いので、リンク先は「詳細を見る」と同じく 404 ページ経由で `/biz-library?manga={id}` になる
+
 **`js/bm-work-modal.js`（静的ページ用の汎用モーダル）:**
 - 作品データは `<script type="application/json" id="bmWorksModalData">` からビルド時同梱で読む（カテゴリページはWP APIを読み込まないため。`build_category_works_json()` が生成、gallery は5枚まで）
 - `window.BM_WORKS_DATA` / `bm-data-ready` があればそれで上書き（API併用ページでも動く）
@@ -686,9 +693,9 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | `js/bm-cta.js` | 共通CTAセクション生成 | `<section id="bmCtaMount"></section>` を置く |
 | `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④）+ **一覧の先頭を追従する帯の下へ戻すスクロール `window.bmScrollBelowSticky`**（ファイル末尾の独立IIFE。§0.6） | 全ページで読込（defer） |
 | `js/bm-nav.js` | 日本語固定表示エンジン | 全ページで読込（bm-nav.jsより先） |
-| `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
+| `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()`（自社ドメインのみ）/ `.linkUrl()`（外部サイト可・スキームだけ確認。§12） |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
-| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
+| `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開。**取得するのはそのデータを使う画面要素があるページだけ**（ファイル内の `USED_BY`。2026-10-15 Issue #85）: ホーム＝`/works`・`/works?site=bizmanga`・`/works-new`・`/news`・`/columns`、制作事例＝`/works?site=bizmanga`、ニュース＝`/news`、コラム一覧＝静的カードがあれば無し。`/library` はホームと制作事例でだけ先読みする（結果は使わない。ビズ書庫の `works.js` が同じURLを取得するので、WP の応答の max-age=300 でブラウザのキャッシュに載せておく。`BM_LIBRARY_DATA` は読む側が無いので廃止し、先読みは `bm-all-data-ready` を待たせない）。全部を同時に取りに行き、ニュース・コラムは漫画事例の取得を待たない。イベント: `bm-data-ready`（漫画事例の取得後。使わないページでは即時）/ `bm-news-ready`（ニュースの取得後。`detail = { ok, count }`）/ `bm-all-data-ready`（このページで取得したもの全部の後。失敗があっても出す） |
 | `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL / メンテナンス表示スイッチ（§5「WordPress 一時停止スイッチ」）。ビズ書庫（`works.js`）も `apiBase` を使う（`works.js` より前に読む） |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
@@ -741,9 +748,9 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
 - `/works-new?site=bizmanga` — 新作漫画（ホームギャラリー用）
-- `/library` — ビズ書庫全作品
+- `/library` — ビズ書庫全作品（`js/works.js`・`js/bm-lp-library-embed.js` が取得。`bm-wp-api.js` はホームと制作事例で先読みだけする）
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
-- `/columns?site=bizmanga&per_page=50` — コラム一覧
+- `/columns?site=bizmanga&per_page=50` — ホームのコラム枠（最新8件）。コラム一覧ページは静的カードがあればブラウザで取得しない（静的ビルド `tools/build-columns.py` が `per_page=100` で取得）
 - `/columns/{id}` — コラム個別（本文含む）
 
 ### WordPress 一時停止スイッチ（メンテナンス表示・2026-10-22・Issue #101）⭐
@@ -752,8 +759,8 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - 画面下に中立なお知らせ「ただいま一部の表示を一時停止しています。…」を出す（`css/bm-maintenance-notice.css`。どのセクションがWPかは名指ししない。×で閉じるとそのタブでは再表示しない。追従CTA・TOPへ戻るより上に置き、ビューア・ドロワーより下）。iframe（埋込ビューア）の中では出さない
 - QR直リンク（`/biz-library?manga=`）は WP の取り直し（最大10分）を始めず、すぐに「ただいま表示を一時停止しています。…」と再読み込みボタンを出す（`js/works.js` の `startDirectMode`）
 - 埋込ビューア（`embed-viewer`・用途別LP）は `01〜10.webp` を推測する予備表示を使わず「ただいま表示を一時停止しています」とだけ出す（`js/bm-embed-viewer.js`。P1.webp系・縦読み作品で崩れるため）
-- ⚠️ メンテナンス中も `BM_WP_CONFIG.enabled` は `false` にしない（`bm-wp-api.js` が早期 return して `bm-data-ready` が出ず、/news が読み込み中のまま止まる）
-- 自動ビルド3本（`build-columns` / `build-works` / `build-lp-cases`）はこの行を見て何もせず終わる（取り込み・コミットをしない）
+- ⚠️ メンテナンス中も `BM_WP_CONFIG.enabled` は `false` にしない（`bm-wp-api.js` が早期 return して WP のデータを一切読まなくなり、ニュース一覧などが「読み込めませんでした」になる。2026-10-15 の Issue #85 より前は /news が読み込み中のまま止まっていた）
+- 自動ビルド3本（`build-columns` / `build-works` / `build-lp-cases`）はこの行を見て何もせず終わる（取り込み・コミットをしない）。`build-columns` の RSS（feed.xml）の生成も止まる。ゲートより後ろの手順はすべて `if: steps.gate.outputs.skip != 'true'` を持つ（`tools/test_build.py` で検査）
 - ⚠️ WP を使うページは必ず `bm-wp-config.js` を **WPを読む部品より前**に読み込む（404.html は head の埋め込み処理より前に同期読込）。新しくWPを読むページ・部品を作ったら同じようにする
 - ⚠️ 行の書式（`  maintenance: false`）を変えない。ワークフローが `grep` で判定している
 - ⚠️ WordPress 画像（`/wp-content/uploads/`）は止めない（静的ファイルのため）
@@ -770,8 +777,9 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
     - `/biz-library`ビューア（`js/works.js`）: WP の作品データの登録（`toMangaEntry()`。`/library` と QR直リンクの `/manga/{id}` の両方）と赤ペン/ネーム（`/library` 由来・`/preproduction`）の登録で gallery優先。`openManga()` は登録済みのページ数を使う（2026-10-15 に補正を `toMangaEntry()` へ一本化。Issue #71）
-    - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
+    - 静的ビルドは `tools/bm_build.py` の `work_page_count()`（数）/ `work_pages_label()`（表示文字列「8P」）に一本化（2026-10-15、Issue #86）: gallery実枚数があればそれ、無ければWP手入力（`spec.pages` → `pages`）。使う箇所: 詳細ページのスペック表記・「この事例について」の「全Nページ」（`build-works.py`）、カテゴリページのモーダル用データ `pages` / `spec.pages`（gallery を5枚に絞る**前**の実枚数。`build_category_works_json`）、LP の CASE STUDY の「/ NP」と並び順（`build-lp-cases.py`）。それまでカテゴリページのデータとLP事例はWP手入力のままだった。ページ数を出す生成物を足すときもこの2関数を通す
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
+    - 用途別LPのビズ書庫埋込（`js/bm-lp-library-embed.js` の「○P」表示）: gallery実枚数を優先し、無ければ`pages`（2026-10-15 Issue #85 で逆順だったのを統一）
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
 - `cx_client_url` — ⭐ ビズ書庫最終ページCTA リンク先URL
 - `cx_cta_label_ja` — ⭐ ビズ書庫最終ページCTAラベル（日本語、空欄＝デフォルト「公式サイトを見る →」）
@@ -797,6 +805,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
   WP側の判定は `cxcms_show_flag_meta_query()`（`!= '0'` OR `NOT EXISTS`）に集約されている
 - ホームのギャラリー枠は **`BM_NEW_WORKS_DATA`（`/works-new` から取得）を優先**（[bm-home.js](js/bm-home.js#L112-L122)）。WP側でフィルタ済みなのでフロントは追加フィルタ不要
 - 後方互換: `/works-new` が空 or 未取得時は `BM_WORKS_DATA` でフォールバック
+- ギャラリーを WP データで描くのは `bm-all-data-ready`（`/works-new` の取得後）の1回だけ。それまでは `bm-home.js` 内の予備3作品。`bm-data-ready` では描かない（その時点では `/works-new` がまだ無く、ギャラリーに出さない設定の作品まで `BM_WORKS_DATA` で一瞬出ていた。2026-10-15 Issue #85）
 - 順序制御: ギャラリー枠は `cx_sort_order` 昇順（同順位は `cx_added_date` 降順）。Heroと違って独立順序フィールドは持たず、編集画面の「表示順」入力欄が共通利用される
 
 ## 6. ヘッダー/ナビ仕様
@@ -826,6 +835,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
     - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
   - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示。お問い合わせボタンも 768px 以下では非表示（`.bm-header-right .bm-nav-cta{display:none}`。§6.1a の注記どおり。ヘッダーに残るのはロゴとハンバーガー）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
+- **静的生成ページのテンプレート**（`tools/templates/column-detail.html.tpl` / `work-detail.html.tpl` / `works-category.html.tpl`）もルートページと同じヘッダー（お問い合わせ pill + `bm-cta-icons`、ロゴ `width="140" height="40"`、リンクは `/` 始まり）にする（2026-10-15、Issue #86。それまでコラム・制作事例詳細はアイコン無し、カテゴリは廃止済みの `.bm-nav-cta--line` のままだった）。CSP もルートページ（`works.html` 等）と同じ文字列にし、Google 広告（`AW-…`）用の `googleads.g.doubleclick.net` / `www.googleadservices.com` を含める。`tools/test_build.py` の `test_templates_match_root_pages` が検査する
 - **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視
 
 ### 6.1c 先読みCSS（インライン Critical CSS）のヘッダー部分（2026-10-15 #87）
@@ -1021,6 +1031,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - **Preload**: hero表紙6枚 (index), 3枚 (biz-library) を `<link rel="preload" as="image">`
 - **works個別ページ**: ヒーロー画像を `<link rel="preload" as="image" fetchpriority="high">` + `<img fetchpriority="high" decoding="async">`。LCP候補を明示してクリティカルリクエストを先読み（2026-04-20導入）
 - **works ヒーロー画像の解像度整合**（2026-04-21修正）: build-works.py で `gallery[0]`（フル解像度）を hero に使う。WPの `thumbnail` フィールドは 188x300 の自動生成サムネで、1200x630 として引き延ばすと画質劣化 + LCP要素として機能しないため避ける
+- **works ヒーロー画像の width/height**（2026-10-15、Issue #86）: 以前は縦長の漫画ページに `width="1200" height="630"`（横長）を宣言していた。WP の gallery は URL だけで寸法が無いため、`build-works.py` の `hero_image_size()` が WP の縮小版 `thumbnail`（`…-212x300.webp`）が `gallery[0]` と同じ画像なら、その寸法（＝実画像の縦横比）を出す（2026-10 時点で31作品中26作品）。分からなければ一覧カードと同じ漫画1ページの標準比 `400x560`。**属性を外すと表示領域が確保されず、読み込み時に本文が大きくずれる**（1280x800 で CLS 0.006 → 0.53 を計測）ので外さない
 - **ギャラリー画像**: `loading="lazy" decoding="async"` で非同期デコード（works 17ページ・2026-04-20導入）
 - **dns-prefetch**: `cms.contentsx.jp`
 - **preconnect**: フォント / WP API
@@ -1032,6 +1043,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - [js/bm-sanitize.js](js/bm-sanitize.js) `window.bmSanitize`:
   - `html(s)` — HTMLエスケープ（テキスト・属性値用）
   - `url(s)` — URL検証。スキーム有無で分岐し、制御文字/空白/プロトコル相対(`//host`)を拒否、`http(s)` かつ `contentsx.jp` 系ドメインのみ通過。`javascript:`/`data:`/`vbscript:` は除去
+  - `linkUrl(s)` — 外部サイトも許すリンク先（ニュースの「リンクURL」`cx_news_url`）。本文と同じスキーム規則（§16.2）で http/https/相対だけを通し、制御文字入り・それ以外のスキームは空文字。空なら呼び出し側はリンクにしない（2026-10-15 Issue #85。`url()` に通すと外部URLが `href=""` になり、クリックで再読み込みされていた）
   - `rich(s)` / `richHTML(s)`（同一・エイリアス） — WPリッチ本文用。script/iframe/style/form等の危険タグと on*属性・`javascript:`/`data:text/html` URIを除去
 - **WP API由来の文字列を `innerHTML` に入れるときは必ず `html()`（テキスト/属性）か `rich()`（本文HTML）を通す**。素の `+ item.xxx +` 連結は禁止（2026-06-10 BUGS #039）
   - URLは `url()`、CSSの object-position 等は許可文字チェック（`/^[a-zA-Z0-9% .-]+$/`）、`href`に入れるIDは `encodeURIComponent`
@@ -1307,7 +1319,7 @@ WordPress で works を追加・更新したら以下いずれか:
 
 ## 15. よくある落とし穴（Gotchas）
 
-1. **WP側で漫画事例を編集しても反映されない** → `/works` と `/works-new` は別エンドポイント。ホームギャラリーは `/works` 優先（ [bm-home.js:137-149](js/bm-home.js)）
+1. **WP側で漫画事例を編集しても反映されない** → `/works` と `/works-new` は別エンドポイント。ホームギャラリーは `/works-new` 優先で、空・未取得のときだけ `/works?site=bizmanga`（[bm-home.js](js/bm-home.js) の `refreshFromWp`。§5 表示先・順序制御）
 2. 旧の言語保存値で表示が崩れる → `bm-nav.js` が安全にキーを削除しているか、動的表示が日本語フィールドのみを参照するかを確認
 3. **モバイルでハンバーガー押せない** → §6.1 のチェックリスト
 4. **QRダイレクトモードでの閉じるボタン** → §2.1 参照。閉じる/ESCは `biz-library` 遷移、history.pushState は呼ばない
@@ -1330,7 +1342,7 @@ WP管理者が信頼前提で運用しているが、将来的に侵害された
 
 | # | 場所 | リスク | 対応方針 |
 |---|------|--------|---------|
-| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用。さらに同経路に `normalize_brand_text()`（冪等）を組込み、禁止コピー「人間7割×AI3割」系→「独自の制作メソッド」・旧料金14,700→16,600 をビルド時に自動正規化（BUGS #040。WP本文がマスターのままでも公開HTMLを方針準拠に保つ防壁） |
+| ~~S1~~ | [tools/build-columns.py](tools/build-columns.py) `build_detail_page` の `{{content_html}}` | WP本文をエスケープなしでビルド時テンプレ流入 → script注入で静的コラムページXSS | ✅ **解消(2026-06-10 BUGS #039)** 標準ライブラリ製allowlistサニタイザ `sanitize_content_html()` を追加（新規依存なし）。本文を生成HTMLに流す前に通す。実コラム25本で正規タグ無損失を検証。再ビルドは週次cronで適用。さらに同経路に `normalize_brand_text()`（冪等）を組込み、禁止コピー「人間7割×AI3割」系（区切りが「・」の「人間7割・AI3割」も、2026-10-15 Issue #86）→「独自の制作メソッド」・旧料金14,700→16,600 をビルド時に自動正規化（BUGS #040。WP本文がマスターのままでも公開HTMLを方針準拠に保つ防壁） |
 | S2 | [tools/templates/column-detail.html.tpl](tools/templates/column-detail.html.tpl):80-87 / [work-detail.html.tpl](tools/templates/work-detail.html.tpl):60-86 | `{{title_ja}}` 等が `html.escape(quote=True)` 経由でJSON-LD内に挿入。`\` や `\n` が含まれるとJSON構文破壊リスク | JSON-LD自体を build側で `json.dumps` してテンプレに `{{json_ld}}` で1ブロック差し込む設計に変更 |
 | ~~S3~~ | ランタイムJS全般（bm-wp-api.js / works.js / bm-testimonials*.js / bm-works-page.js / column-detail.html / testimonial-detail.html） | WP由来文字列を未エスケープで `innerHTML` 連結。`column-detail.html` は `richHTML` typoで本文サニタイズ自体が無効だった | ✅ **解消(2026-06-10 BUGS #039)** 全描画を `bmSanitize.html()`/`rich()`/`url()`＋`safePos` 経由に統一、Playwrightでペイロード注入検証済み |
 | S4 | 全HTMLヘッダー | CSP / HSTS / Permissions-Policy ヘッダなし（GitHub Pages制約） | `<meta http-equiv="Content-Security-Policy">` で許容範囲のCSPを meta タグで追加 |
@@ -1369,13 +1381,13 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 ### 16.2 共通チェックと自動生成（2026-10-05）
 
 - `tools/check-site.py`: 全HTML/テンプレートのローカルJS・CSS参照、依存順、JSON-LD、Python/JavaScript構文を検証。
-- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。
+- `tools/test_build.py`: 出力の巻き戻し、マーカー、slug、料金変換、サニタイズ、JSON/XML、LPの再生成、IndexNowのpush範囲を検証。Issue #86 分（`StaticBuildIssue86Tests`）: 「人間7割・AI3割」の正規化、旧料金「1ページ1万円台」の正規化（meta・OG・JSON-LD・一覧カード）、ページ数の gallery 実枚数優先（gallery 3枚・手入力10ページ）、LPコメントの「」の二重化防止、コラム更新日の記事ページ・sitemap・RSS での一致、build-columns.yml の RSS 生成とコミット対象、制作事例ヒーロー画像の縦横比、テンプレートの CSP・ヘッダー・ロゴ寸法・フッター社名がルートページと揃っていること。
 - `tools/test-runtime.cjs`: Service Workerのキャッシュ所有範囲・更新完了、フォームの共通送信処理を検証。計測は既存の `tools/test-bm-tracking.cjs` を併用。
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
 - ブラウザ検査（`browser` ジョブ）は `ubuntu-24.04` に固定（2026-10-25 に ubuntu-latest が 26.04 になり、Playwright 1.58 が Chromium を入れられず全PRで失敗したため）。Playwright を 26.04 対応の版に上げたら ubuntu-latest に戻してよい。
-- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
+- `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性（feed.xml も実行時刻に依存しないので完全一致）を検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
 `tools/bm_html.py`（本文サニタイズ）、`tools/bm_content.py`（コラムslug）へ集約。
@@ -1411,5 +1423,6 @@ IndexNowはpushのbefore〜after全体を対象とする。beforeが取得でき
 - ロゴ表示: `js/client-logos.js` が2種類のデータ・クラス名を扱う。`js/data/` のデータは従来どおり分離。
 - 8本のLPはHTML全体のv2マーカーを判定して事例セクションを生成。繰り返し実行しても空行を増やさない。
 - LP事例は最大3件、カード幅は最大340pxで中央配置し、件数に応じて空の列を残さない。0件時は準備中の案内と制作事例・ビズ書庫へのリンクを表示する。
+- LP事例のお客様コメントはカード側で「」で囲む。WP のコメントが既に「…」で囲まれていれば外してから囲む（`strip_outer_quotes`。2026-10-15、Issue #86。以前は company/ir/product/sales の4LPで「「…」」になっていた）。
 - 参照がなくなっていた `js/bm-flow.js`、`js/bm-product-manga.js`、`css/production-flow.css`、`css/bm-lp-template.css` は削除。画像の元データは保持。
 - Service Workerは `bm-covers-` 系の旧キャッシュだけを削除し、背景の再取得・キャッシュ保存を `waitUntil` で完了させる。

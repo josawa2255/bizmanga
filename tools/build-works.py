@@ -31,7 +31,7 @@ import sys
 from bm_build import API_BASE, SITE_URL
 from bm_build import (
     bizmanga_works, fetch_json as _fetch_json, output_batch, remove_file,
-    render_template, replace_block, script_json, write_text,
+    render_template, replace_block, script_json, work_page_count, work_pages_label, write_text,
 )
 
 API = API_BASE + '/works'
@@ -45,6 +45,12 @@ CATEGORY_DIR = ROOT / "works" / "category"
 # 詳細ページ「ページ一覧」で表示する漫画ページ数の上限（抜粋プレビュー）。
 # 全ページは /biz-library の漫画ビューアで閲覧する想定。
 MAX_GALLERY_PAGES = 4
+
+# 詳細ページのヒーロー画像（縦長の漫画ページ）の width/height。読み込み前の表示領域の縦横比に使う。
+# 縦横比が分からないときは一覧カードと同じ漫画1ページの標準比（400x560）にする。
+# 属性を外すと領域が確保されず、読み込み時に下の本文が大きくずれる（1280x800 で CLS 0.006 → 0.53、Issue #86）。
+HERO_FALLBACK_SIZE = (400, 560)
+_WP_RESIZED = re.compile(r"(.+)-([1-9][0-9]*)x([1-9][0-9]*)(\.[A-Za-z0-9]+)")
 
 
 def esc(s):
@@ -61,6 +67,18 @@ def fetch_works():
 def filter_for_bm(works):
     # show_site: "both" のみ（BizManga で表示される作品）。ID の検証もこの作品だけにかける
     return bizmanga_works(works)
+
+
+def hero_image_size(work, hero_src):
+    """ヒーロー画像の (width, height)。WP の gallery は URL だけで寸法が無いので、
+    WP が同じ画像から作った縮小版（thumbnail の「…-212x300.webp」）の寸法で縦横比を得る
+    （WP の縮小は縦横比を保つ。2026-10 時点で31作品中26作品が該当し、実画像の比率と一致）。
+    同じ画像の縮小版でなければ漫画1ページの標準比（HERO_FALLBACK_SIZE）。"""
+    thumb = work.get("thumbnail") or ""
+    match = _WP_RESIZED.fullmatch(thumb)
+    if match and hero_src in (thumb, match.group(1) + match.group(4)):
+        return int(match.group(2)), int(match.group(3))
+    return HERO_FALLBACK_SIZE
 
 
 # カテゴリ別の活用シーン解説（SEO 用本文増強、約 200-300 字 / カテゴリ）
@@ -205,6 +223,7 @@ def build_detail_page(w, template, all_works=()):
     gallery_list = w.get("gallery") or []
     hero_src = gallery_list[0] if gallery_list else (w.get("thumbnail") or "")
     thumb = hero_src  # 後方互換で thumb 変数名も維持
+    hero_width, hero_height = hero_image_size(w, hero_src)
     category = w.get("category") or "制作事例"
     # title に入れる検索KW（未定義カテゴリは「ビジネス漫画」にフォールバック）
     category_kw = CATEGORY_TITLE_KW.get(category, "ビジネス漫画")
@@ -214,13 +233,7 @@ def build_detail_page(w, template, all_works=()):
         category_kw = "ビジネス漫画"
     # gallery実枚数があればWP手入力(spec.pages/pages)より優先する
     # (BUGS #049/#050と同種。手入力ミスでズレるとスペック表記だけ古いまま残るため)
-    gallery_len_for_spec = len(gallery_list)
-    if gallery_len_for_spec > 0:
-        pages_count = f"{gallery_len_for_spec}P"
-    else:
-        pages_count = (w.get("spec") or {}).get("pages") or (
-            f"{w.get('pages')}P" if w.get("pages") else "—"
-        )
+    pages_count = work_pages_label(w) or "—"
     period = (w.get("spec") or {}).get("period") or "—"
     point = w.get("point") or f"{title_ja}の制作事例です。"
     # コメントが空・ダッシュのみの場合は「お客様コメント」セクション自体を非表示
@@ -259,7 +272,7 @@ def build_detail_page(w, template, all_works=()):
     # === 「この事例について」セクション: クライアント・媒体・期間を文章化 ===
     media_list = w.get("media") or []
     media_phrase = "・".join(media_list[:5]) if media_list else "Web・印刷物"
-    pages_num = w.get("pages") or "—"
+    pages_num = work_page_count(w) or "—"
     if client:
         about_body = (
             f"本作品は{esc(client)}様向けに制作した{esc(category)}マンガです。"
@@ -331,6 +344,8 @@ def build_detail_page(w, template, all_works=()):
         "{{category_kw}}": esc(category_kw),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
+        "{{thumbnail_width}}": str(hero_width),
+        "{{thumbnail_height}}": str(hero_height),
         "{{og_image}}": esc(og_image),
         "{{category}}": esc(category),
         "{{pages_count}}": esc(pages_count),
@@ -524,6 +539,7 @@ def build_category_works_json(works):
     カードクリック直後にモーダルを開くにはビルド時のデータ同梱が必要。
     js/bm-work-modal.js が #bmWorksModalData から読む。
     モーダルのプレビューは最大5ページなので gallery も5枚までに絞る。
+    ページ数（pages / spec.pages）は絞る前の gallery の実枚数を優先する（work_page_count、BUGS #049/#050）。
     """
     payload = []
     for w in works:
@@ -534,12 +550,12 @@ def build_category_works_json(works):
             "category": w.get("category") or "",
             "media": w.get("media") or [],
             "spec": {
-                "pages": spec.get("pages") or "",
+                "pages": work_pages_label(w),
                 "period": spec.get("period") or "",
             },
             "point": w.get("point") or "",
             "comment": w.get("comment") or "",
-            "pages": w.get("pages") or 0,
+            "pages": work_page_count(w),
             "view_type": w.get("view_type") or "",
             "gallery": (w.get("gallery") or [])[:5],
         })
