@@ -591,12 +591,9 @@ body.ba-page .bm-header-inner { position: relative; }
 .ba-anim .ba-device    { animation: ba-fade-left 1.05s cubic-bezier(.22,1,.36,1) .06s both; }
 .ba-anim .ba-wave-deco--player { animation: ba-pulse 6.5s ease-in-out 1.4s infinite; }
 
-/* 動きを減らす設定を尊重（アクセシビリティ） */
-@media (prefers-reduced-motion: reduce) {
-  .ba-anim .ba-copy,
-  .ba-anim .ba-character,
-  .ba-anim .ba-device,
-}
+/* 動きを減らす設定では js/bizanime.js が .ba-anim を付けないので、上の登場演出は始まらない。
+   ここにあった @media (prefers-reduced-motion: reduce) は宣言ブロックを消した残りの
+   セレクタだけで（末尾がカンマ）、ブラウザに捨てられて何も効いていなかったため削除した（Issue #82）。 */
 
 /* ==========================================================================
    9. 幅ごとの調整（PC先行。1280pxまでを担保する）

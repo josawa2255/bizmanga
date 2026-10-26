@@ -70,11 +70,14 @@
   }
 
   // ===== FAQ クリックトラッキング =====
-  document.querySelectorAll('.bm-faq-q').forEach(function(btn) {
+  // 質問部分: faq.html・pricing.html は <details class="lpv2-faq-item"> の <summary>、
+  // bizanime.html は .ba-faq-q 内の <button>（番号 .ba-faq-num はログに含めない）
+  document.querySelectorAll('.lpv2-faq-item > summary, .ba-faq-q > button').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var t = getTracking();
       if (!Array.isArray(t.faqClicked)) t.faqClicked = [];
-      var q = btn.textContent.trim().slice(0, 30);
+      var label = btn.querySelector('.ba-faq-num + span') || btn;
+      var q = label.textContent.trim().slice(0, 30);
       if (t.faqClicked.indexOf(q) === -1) {
         t.faqClicked.push(q);
         saveTracking(t);

@@ -29,6 +29,17 @@
         bmDepartmentInput.setCustomValidity('');
       });
 
+      // 完了表示（HubSpot の受理成功時と、ハニーポットに値がある送信のとき）
+      function showThanks() {
+        var thanks = document.createElement('div');
+        thanks.innerHTML = '<div style="text-align:center;padding:40px 0;">'
+          + '<p style="font-size:20px;font-weight:700;color:var(--bm-accent);margin-bottom:12px;">お問い合わせありがとうございます。</p>'
+          + '<p style="font-size:15px;color:var(--bm-text-muted);">3営業日以内にご連絡いたします。</p>'
+          + '</div>';
+        form.parentNode.insertBefore(thanks, form.nextSibling);
+        form.style.display = 'none';
+      }
+
 form.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -44,6 +55,14 @@ form.addEventListener('submit', function(e) {
         var submitBtn = e.target.querySelector('.bm-form-submit');
         submitBtn.disabled = true;
         submitBtn.classList.add('is-sending');
+
+        // ボット対策の隠し欄（#bmWebsite）に値がある送信は、HubSpot・CRM のどこへも送らず、
+        // 広告CV・generate_lead も発火させずに完了表示だけ出す（ボットに気付かせない。bm-download.js と同じ）
+        var honeypot = form.elements.website;
+        if (honeypot && String(honeypot.value || '').trim()) {
+          showThanks();
+          return;
+        }
 
         var company    = document.getElementById('bmCompany').value;
         var department = document.getElementById('bmDepartment').value;
@@ -102,14 +121,7 @@ form.addEventListener('submit', function(e) {
               'method': 'contact_form'
             });
           }
-          var form = document.getElementById('bmContactForm');
-          var thanks = document.createElement('div');
-          thanks.innerHTML = '<div style="text-align:center;padding:40px 0;">'
-            + '<p style="font-size:20px;font-weight:700;color:var(--bm-accent);margin-bottom:12px;">お問い合わせありがとうございます。</p>'
-            + '<p style="font-size:15px;color:var(--bm-text-muted);">3営業日以内にご連絡いたします。</p>'
-            + '</div>';
-          form.parentNode.insertBefore(thanks, form.nextSibling);
-          form.style.display = 'none';
+          showThanks();
         })
         .catch(function(err) {
           console.error('HubSpot submission error:', err);
