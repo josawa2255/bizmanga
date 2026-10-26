@@ -51,6 +51,16 @@ def esc(s):
     return html.escape(str(s if s is not None else ""), quote=True)
 
 
+# 編集者が末尾に書いたサイト名（「｜ビズマンガ」「｜ContentsX」など）。サイト名はテンプレートが付けるので外す
+SITE_NAME_TAIL = re.compile(r"(?:\s*[|｜]\s*(?:コラム|ビズマンガ|BizManga|Contents ?X|イチオシ採用))+\s*$", re.IGNORECASE)
+
+
+def plain_text(value):
+    """WP の入力欄の値を1行の文字列にする（タグを外し、保存時に &lt; などへ変わった文字を戻し、空白をまとめる）。
+    先に1000字で切る（どの欄も検索結果に出るのは百数十字。極端に長い値で正規表現が遅くなりビルドが止まるのを防ぐ）"""
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", (value or "")[:1000])).split())
+
+
 def normalize_brand_text(text, *, prices=True):
     """ブランド方針に沿ってWP由来テキストを正規化する（冪等）。
     - AI混在比率表現（「人間7割×AI3割」「人間7割・AI3割」「ハイブリッド制作」等）→「独自の制作メソッド」
@@ -292,9 +302,15 @@ def build_detail_page(col, detail_data, template):
     # WP本文はXSS対策でallowlistサニタイズ＋ブランド方針で正規化（SPEC §15.1 S1）
     content = sanitize_content_html(detail_data.get("content") or "")
 
-    override = DESC_OVERRIDES.get(slug)
-    if override:
-        description = override[:200]
+    # 検索結果・SNS 向けのタイトルと説明文は、WP の「SEOタイトル」「SEO説明文」を優先する
+    # （空なら記事タイトル・抜粋。見出し h1・構造化データの headline・パンくずは記事タイトルのまま）
+    seo_title = SITE_NAME_TAIL.sub("", normalize_brand_text(plain_text(col.get("seo_title")))) or title_ja
+    seo_desc = normalize_brand_text(plain_text(col.get("seo_description")))
+
+    # 人が書いた説明文（SEO説明文 > 個別の上書き）は長めに残す
+    written = seo_desc or DESC_OVERRIDES.get(slug)
+    if written:
+        description = written[:200]
     else:
         raw_desc = re.sub(r"<[^>]+>", "", excerpt or content).replace("\n", " ").strip()
         description = (raw_desc or f"{title_ja}｜ビズマンガ コラム")[:150]
@@ -315,6 +331,7 @@ def build_detail_page(col, detail_data, template):
     replacements = {
         "{{slug}}": esc(slug),
         "{{title_ja}}": esc(title_ja),
+        "{{seo_title}}": esc(seo_title),
         "{{description}}": esc(description),
         "{{thumbnail}}": esc(thumb),
         "{{category}}": esc(category),

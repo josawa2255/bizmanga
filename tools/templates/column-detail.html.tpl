@@ -7,14 +7,14 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://*.clarity.ms https://cms.contentsx.jp https://fonts.googleapis.com https://js.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hs-banner.com https://*.hsforms.com https://*.hscollectedforms.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https: wss:; frame-src https: data:; object-src 'none'; base-uri 'self'">
   <meta http-equiv="Permissions-Policy" content="interest-cohort=(), browsing-topics=()">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <title>{{title_ja}} | コラム | ビズマンガ</title>
+  <title>{{seo_title}} | コラム | ビズマンガ</title>
   <meta name="description" content="{{description}}">
   <meta name="keywords" content="ビジネス漫画,{{category}},漫画制作,マンガマーケティング,BtoB漫画,ビズマンガ コラム">
   <meta name="robots" content="index, follow">
   <meta http-equiv="last-modified" content="{{modified_ymd}}T03:00:00+09:00">
   <link rel="canonical" href="{{url}}">
 <!-- OGP -->
-  <meta property="og:title" content="{{title_ja}} | コラム | ビズマンガ">
+  <meta property="og:title" content="{{seo_title}} | コラム | ビズマンガ">
   <meta property="og:description" content="{{description}}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="{{url}}">
@@ -32,7 +32,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@Bizmanga_">
   <meta name="twitter:creator" content="@Bizmanga_">
-  <meta name="twitter:title" content="{{title_ja}} | コラム | ビズマンガ">
+  <meta name="twitter:title" content="{{seo_title}} | コラム | ビズマンガ">
   <meta name="twitter:description" content="{{description}}">
   <meta name="twitter:image" content="{{thumbnail}}">
   <meta name="twitter:image:alt" content="{{title_ja}}｜ビズマンガ コラム">
