@@ -253,57 +253,8 @@
     }
   });
 
-  /* ---------- Review schema 動的注入 ---------- */
-  function injectReviewSchema(items) {
-    var old = document.getElementById('bmTmReviewSchema');
-    if (old) old.remove();
-    var validItems = items.filter(function(i) { return i.id > 0; });
-    if (validItems.length === 0) return;
-
-    var graph = validItems.map(function(i) {
-      return {
-        "@type": "Review",
-        "@id": "https://bizmanga.contentsx.jp/testimonials#id-" + i.id,
-        "itemReviewed": {
-          "@type": "Service",
-          "name": "BizManga ビジネスマンガ制作",
-          "provider": { "@id": "https://contentsx.jp/#organization" }
-        },
-        "author": { "@type": "Organization", "name": i.tag ? (i.tag + "業界の顧客") : "導入企業" },
-        "reviewBody": i.excerpt || i.heading || "",
-        "name": i.heading || "",
-        "reviewRating": {
-          "@type": "Rating",
-          "ratingValue": "5",
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      };
-    });
-
-    var ratingGraph = {
-      "@context": "https://schema.org",
-      "@graph": graph.concat([{
-        "@type": "Service",
-        "@id": "https://bizmanga.contentsx.jp/#service",
-        "name": "BizManga ビジネスマンガ制作",
-        "provider": { "@id": "https://contentsx.jp/#organization" },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "reviewCount": validItems.length,
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      }])
-    };
-
-    var script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'bmTmReviewSchema';
-    script.textContent = JSON.stringify(ratingGraph);
-    document.head.appendChild(script);
-  }
+  /* 構造化データの Review / AggregateRating は出さない。自社サイト上の自社サービスへのレビューは Google の
+     レビュー表示の対象外で、評価（全件5・平均4.9）にも根拠が無かった（2026-10-26 削除） */
 
   /* ---------- API取得 ---------- */
   function fetchFromAPI() {
@@ -317,7 +268,6 @@
         if (data && data.length > 0) {
           currentItems = data;
           buildCards(data);
-          injectReviewSchema(data);
           openFromHash(); // WP データ到着後に URL ハッシュを解釈
         }
       })
@@ -338,7 +288,6 @@
   /* ---------- 初期化 ---------- */
   currentItems = FALLBACK;
   buildCards(FALLBACK);
-  injectReviewSchema(FALLBACK);
   fetchFromAPI();
 
 })();
