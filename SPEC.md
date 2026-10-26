@@ -1311,6 +1311,7 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
+- ブラウザ検査（`browser` ジョブ）は `ubuntu-24.04` に固定（2026-10-25 に ubuntu-latest が 26.04 になり、Playwright 1.58 が Chromium を入れられず全PRで失敗したため）。Playwright を 26.04 対応の版に上げたら ubuntu-latest に戻してよい。
 - `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
