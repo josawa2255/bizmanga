@@ -803,7 +803,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 
 1. `.bm-hamburger` に `order: 10` + `flex-shrink: 0` + `min-width/height: 48px` + `z-index: 99999`
 2. 言語ボタンは `width: 40px; height: 32px` 程度に縮小
-3. `.bm-header-right` は `gap: 8px` + `flex-wrap: nowrap` + `min-width: 0`
+3. `.bm-header-right` は `flex-wrap: nowrap` + `min-width: 0`。gap は 12px（`css/bizmanga.css` の最終値。以前この行は 8px と書いていたが、2026-10 時点の実装と先読みCSS（§6.1c）は 12px。数字を変えるときは両方を揃える）
 4. `.bm-header-inner` の padding は 16px 以下
 5. `touchend` イベントも `click` と一緒に登録（iOS Safari対策）
 6. **320px (iPhone SE) まで想定して計算**
@@ -821,7 +821,7 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - **LINE / 電話（`<ul class="bm-cta-icons">`）**:
   - **PC(≥769px)**: 44×44px 白丸 + box-shadow、ホバーで上に浮上+ブランドカラー塗り、ツールチップ(`.bm-cta-tooltip`)が**下**にポップ（上は画面外で見切れるため、2026-05-17修正）
     - LINE: `#06C755`(緑) / 電話: `#1a1a1a`(ダーク)
-  - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示（お問い合わせpillのみ可視）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
+  - **モバイル(≤768px)**: `.bm-cta-icons { display:none }` でヘッダーから完全に非表示。お問い合わせボタンも 768px 以下では非表示（`.bm-header-right .bm-nav-cta{display:none}`。§6.1a の注記どおり。ヘッダーに残るのはロゴとハンバーガー）。LINE/電話はハンバーガーメニュー末尾の `.bm-nav-mobile-cta` に集約
 - **電話CTA(`tel:03-6261-0764`)**: BizManga専用番号（2026-05-17 設定）、全25ページのヘッダーに展開済み
 - **モバイル ハンバーガーメニュー末尾 (`.bm-nav-mobile-cta`)**: [BizManga/js/bm-nav.js](js/bm-nav.js) がNAV_ITEMS生成後に **LINE + 電話** のCTAリンクを自動付加（2026-05-17）。LINE(`#06C755`緑)/電話(`var(--bm-accent)`オレンジ)。デスクトップでは `display:none`、`.bm-nav.open` のみ可視
 
@@ -829,7 +829,8 @@ WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` �
 - `css/bizmanga.css` は `<link rel="preload" ... onload>` で非同期に読むため、届くまでは `<head>` 内の `/* Critical CSS ... */` ブロックだけでヘッダーが描かれる。このブロックは `index.html` と次の12ページにある: biz-library / column / column-detail / contact / download / faq / news / news-detail / pricing / testimonial-detail / testimonials / works
 - 12ページのヘッダー部分（`.bm-header` 〜 `.bm-hamburger`、`.bm-cta-icon*`、1100 / 1024 / 768px の切替）は、bizmanga.css が**最終的に効かせる値**（後ろのルール・詳細度で上書きされた後の値）と同じにしてある。CSS の読み込み前後でロゴ・お問い合わせボタン・丸アイコン・ハンバーガーが跳ねない
 - ⚠️ **bizmanga.css のヘッダーの見た目を変えたら、この12ページのインラインCSSも同じ値に直す**（ページ間で同一のブロック）
-- 足してよい指定は「bizmanga.css が同じセレクタで上書きするもの」か「読み込み後の計算値と同じもの」だけ。インラインCSSは bizmanga.css より前にあるので、bizmanga.css に無いプロパティは読み込み後も残る（例: `.bm-header{line-height:1.8}` は body の値と同じなので影響なし）
+- 足してよい指定は「bizmanga.css が同じセレクタで上書きするもの」か「読み込み後の計算値と同じもの」だけ。インラインCSSは bizmanga.css より前にあるので、bizmanga.css に無いプロパティは読み込み後も残る（例: `.bm-header{line-height:1.8}` は body の値と同じなので影響なし）。例外: `.bm-header-right{min-width:0}` と `.bm-hamburger{order:10}` は bizmanga.css に無いが、§6.1 のハンバーガーが押せなくなる再発防止（BUGS #003）の要件なので残す
+- フッターのロゴ: ロゴの `.bm-logo-img{height:clamp(38px,4.4vw,58px)}` はフッターの `.bm-logo-img` にも当たるため、bizmanga.css と同じ `.bm-footer-brand .bm-logo-img{height:28px;margin-bottom:12px}` も置く（無いと CSS が届く前だけフッターのロゴが最大58pxになり、届くと28pxに縮んで跳ねる。本文を JS で描く短いページでフッターが画面内に入ると見える）
 - 色は値で書く（お問い合わせボタン `#EB5200` = bizmanga.css の `--bm-accent`）。ブロック先頭の `:root` はヘッダー以外にも効くため触っていない
 - 注意: bizmanga.css の 768px 以下の `.bm-header-inner{gap:10px;padding:0 14px}` と `.bm-header-right{gap:6px}` は、後ろにある基本ルールと 1100px 以下のルールに上書きされて効いていない（最終値は gap 12px・padding 0 12px）。インラインCSSは最終値に合わせている
 - 対象外: `js/bm-nav.js` が作るナビ項目と資料DLボタン（`.bm-nav-dl`）。bizmanga.css より先に bm-nav.js が動くと、これらは装飾なしで一瞬見える（index.html も同じ）。`index.html` のブロックは触っていない（お問い合わせボタンの 14px・padding 12px 22px・outline 2px など細部は bizmanga.css と少し違う）
