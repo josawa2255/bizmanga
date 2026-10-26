@@ -911,3 +911,8 @@
 .uc-v2 .lpv2-guide__text a,
 .uc-v2 .lpv2-related-card__num,
 .uc-v2 .lpv2-related-card__arrow { color: var(--uc-accent-deep); }
+/* 関連LPカードは hover で黒地（--lpv2-ink #0a0a0a）になる。accent-deep のままだと
+   11px の番号が 3.60:1 に落ちるため、hover 中だけ他LPと同じ --uc-accent（#e85500）に
+   戻して 5.40:1 を確保する（Issue #82）。矢印は bm-lp-v2.css の hover 指定（イエロー）が
+   上の上書きより詳細度が高く、そのまま効いている。 */
+.uc-v2 .lpv2-related-card:hover .lpv2-related-card__num { color: var(--uc-accent); }
