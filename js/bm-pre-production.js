@@ -53,6 +53,9 @@
     var allSlides = [];
     items.forEach(function (item) {
       for (var p = 1; p <= item.pages; p++) {
+        // path が無い（API 由来）のに実画像も無いページは、壊れた URL（例: "01.webp"）を作らないよう飛ばす
+        // （js/works.js のビズ書庫のカルーセルと同じ。BUGS #050）
+        if (!(item.gallery && item.gallery.length >= p) && !item.path) continue;
         var src = (item.gallery && item.gallery.length >= p)
           ? item.gallery[p - 1]
           : item.path + String(p).padStart(2, '0') + '.webp';
@@ -221,11 +224,18 @@
         var apiRed = [];
         var apiName = [];
         data.forEach(function (item) {
+          if (!item || typeof item !== 'object') return;
+          // ページ数は WP 手入力の pages ではなく実際のギャラリー枚数を正とする（path が空なので、手入力の方が多いと
+          // 存在しない '09.webp' などを読んで 404 になる。BUGS #049/#050 と同種。js/works.js の registerPreproductionItems と同じ）
+          var galleryLen = (item.gallery && item.gallery.length) || 0;
           var entry = {
-            key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-' + item.id,
+            // ⚠️ キーはビズ書庫（js/works.js の registerPreproductionItems）が登録する形 pre-red-wp{投稿ID} / pre-name-wp{投稿ID} と
+            // 同じにする。以前の pre-red-{投稿ID} だとビズ書庫で「作品が見つかりませんでした」になった（Issue #84。
+            // 旧形式の URL はビズ書庫の直リンクの findPreKey も読み替えて開く）
+            key: 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id,
             title: item.title,
             path: '',
-            pages: item.pages,
+            pages: galleryLen > 0 ? galleryLen : (item.pages || 0),
             gallery: item.gallery
           };
           if (item.type === 'akapen') {
