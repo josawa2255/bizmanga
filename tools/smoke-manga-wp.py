@@ -827,8 +827,18 @@ def check_browser(base, data):
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", True)
             except Exception:
                 rec("スマホ(390px): 縦スクロール枠(#modalManga)に画像が出る", False)
-            hs = pg.evaluate("() => document.body.scrollWidth > window.innerWidth")
-            rec("スマホ(390px): 横スクロール無し", not hs)
+            # ビズ書庫の一覧（?manga= なし）の中身が画面より広くはみ出していないかを body.scrollWidth（切り取る前の中身の幅）で
+            # 見る（SPEC §0.6）。直リンク表示は一覧・フッターを隠す（html.direct-mode）ので、一覧のはみ出しは一覧の表示でしか測れない。
+            # ⚠️ documentElement.scrollWidth に変えない: html/body の overflow-x: clip で切った後の幅なので常に画面幅になり、
+            #    画面からはみ出して切り取られた（見えなくなった）内容を見逃す。ビズ書庫は 390px で body.scrollWidth = 390
+            pg.goto(f"{base}/biz-library.html", wait_until="load")
+            try:
+                pg.wait_for_function("n => document.querySelectorAll('#worksGrid > *').length === n", arg=len(lib), timeout=25000)
+            except Exception:
+                pass
+            sw = pg.evaluate("() => [document.body.scrollWidth, window.innerWidth, document.querySelectorAll('#worksGrid > *').length]")
+            rec("スマホ(390px): ビズ書庫の一覧に横スクロール無し", sw[2] > 0 and not (sw[0] > sw[1]),
+                f"body.scrollWidth={sw[0]} innerWidth={sw[1]} カード={sw[2]}")
             pr.finish("スマホ")
             close_ctx(ctx)
 

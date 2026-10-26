@@ -29,11 +29,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         var data = window.bmPricing.post(await res.json());
 
-        /* プレビュー表示バナー（画面上部・閉じれない） */
+        /* プレビュー表示バナー（固定ヘッダーの下に追従・閉じれない）
+           ⚠️ top:0 だとヘッダーの上に重なり、スマホでハンバーガーが押せなくなる（BUGS #003 の系統）。
+           共通CSSの body が overflow-x:hidden だった間は sticky が効かず表面化していなかった（Issue #73）
+           ⚠️ z-index はヘッダー（1000）より下の 999。PC のドロップダウンとスマホのドロワーはヘッダーの
+           重なり順の中にあるので、バナーがヘッダーより上だとそれらの上端を覆って押せなくなる（PR #78 レビュー） */
         if (isPreview) {
           var banner = document.createElement('div');
           banner.setAttribute('role', 'status');
-          banner.style.cssText = 'position:sticky;top:0;z-index:9999;background:#ffb800;color:#222;padding:10px 16px;text-align:center;font-weight:700;font-size:14px;box-shadow:0 1px 0 rgba(0,0,0,0.08);';
+          banner.style.cssText = 'position:sticky;top:var(--bm-header-height,72px);z-index:999;background:#ffb800;color:#222;padding:10px 16px;text-align:center;font-weight:700;font-size:14px;box-shadow:0 1px 0 rgba(0,0,0,0.08);';
           banner.textContent = 'プレビュー中（status: ' + (data.post_status || 'unknown') + '）— 公開中のページには反映されていません';
           document.body.insertBefore(banner, document.body.firstChild);
         }
