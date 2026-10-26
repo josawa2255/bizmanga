@@ -1,0 +1,63 @@
+/* メンテナンス中のお知らせ帯（js/bm-wp-config.js が maintenance:true のときだけ読み込む）
+   画面下に固定し、ヘッダー・ハンバーガーには重ならない。閉じるとセッション中は出ない。
+   追従CTA(.bm-fab: PC=左下20px+高さ52px / SP=下端56pxバー)と TOPへ戻る(SP=下から72px)より上に置く。
+   z-index はビューア(9999)・ドロワー(10002)より下なので、それらが開くと隠れる。 */
+.bm-maintenance-notice {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 9000;
+  box-sizing: border-box;
+  width: min(640px, calc(100% - 24px));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 6px 10px 16px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+.bm-maintenance-notice__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+
+.bm-maintenance-notice__close {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bm-maintenance-notice__close:hover,
+.bm-maintenance-notice__close:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.bm-maintenance-notice__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .bm-maintenance-notice {
+    bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+  }
+}

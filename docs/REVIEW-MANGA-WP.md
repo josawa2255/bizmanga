@@ -46,7 +46,24 @@ python3 tools/smoke-manga-wp.py --serve .
 3. **制作事例**: カードが出る → クリックでモーダル `#workDetailOverlay` が開き、漫画画像が実際に読み込まれ、読み込み失敗の画像が無い
 4. **ビズ書庫**: グリッドの作品数が `/library` と一致 → クリックで `#mangaModal` が開き画像が読み込まれ、読み込み失敗が無い → 閉じられる
 5. **QRモード**: referrer なしで `?manga=id` を開くと `html.qr-mode` が付く／サイト内遷移（referrer あり）なら付かない（#010）。
-   作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（フォールバックにある作品は WP が壊れていても開けてしまう）
+   作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（ビズ書庫の一覧の初期表示と埋込ビューアは WP に繋がらないとき
+   手書きデータ・素材フォルダの画像を使うので、手書きデータにある作品だと開けたことが WP 接続の確認にならない）
+5b. **QR直リンク（手書きデータにある作品）**: `FALLBACK_WORKS` にも**ある**作品（WP のギャラリーがある＝1枚目が WP の画像になり手書きデータと見分けられるもの・CTA 有効を優先して自動選択。2026-10 時点は `seko`。
+   WP に未登録の一部作品〈`works.js` の `UNREGISTERED_FALLBACK_IDS`〉は手書きデータで開くことがあるので選ばない）を
+   `?manga=id` で開き、ページ数が WP のギャラリー枚数・1枚目が WP の画像・最終ページCTA が WP の `cta_enabled` どおりであること（CTA の URL は前後の空白を除いて比べる）。
+   見るのは `/library` の応答が届いた後（届いても開き直さず WP のデータのままか。届かなければ FAIL）。
+   さらに `/library` を止めても同じく `/manga/{id}` のデータで開くこと（Issue #71）。
+   期待値は `--api` ではなく、ブラウザが実際に使う API（`works.js` の `WP_API_BASE`）から取る。その `/library` を取れなかったときは
+   その1件を FAIL にし、5b・5c は理由を書いて飛ばす（SKIP。前提の FAIL があるので全体は不合格のまま）
+5c. **QR直リンクの分岐**（API の応答はブラウザ側で差し替える。本番の WP は変えない）: ① `/manga/{id}` がプラグインの「作品が無い」404
+   （本文は本番に存在しない ID を GET した実物）で `/library` にも無い → 「作品が見つかりませんでした」（手書きデータにある作品でも開かない）、
+   ② 存在しない ID を実際の API で → 「作品が見つかりませんでした」とトップへのリンク、③ WP 停止（`/manga/{id}` と `/library` が 503）→
+   「ただいま表示に時間がかかっています」と「再読み込み」ボタンが出て、手書きデータでは開かない。続けて WP を戻す（`/manga/{id}` を
+   実際の API に通す）と、取り直しで WP のデータ（ページ数・1枚目）で開き、メッセージが消える（2026-10-15 方針: 直リンクは手書きデータで
+   開かず、WP のデータが届くまで待つ）。あわせて、存在しない ID への `/manga/{id}` の応答がプラグインの形（本文に `error` があり `code` が無い）
+   であることも確かめる（「作品が見つかりませんでした」を出すのはこの応答のときなので、形が変わったらここが FAIL する）。
+   ①〜③の各ページも、他のページと同じく JS のエラー（未捕捉の例外・console.error）とサイト/素材の 404 が無いこと
+   （わざと 4xx/5xx にした WP API の応答と、それに対するブラウザの読込失敗のログだけは数えない）
 6. **埋込ビューア**: `embed-viewer.html?manga=id&manual=1` で画像が出る
 7. **スマホ**（390px）: `?manga=id` で `mode-vertical`（見開き作品もSPでは縦スクロール）で開き、`#modalManga` に画像が出る。
    `#mobileView` は見開き専用要素なので非表示が正常
@@ -71,10 +88,22 @@ python3 tools/smoke-manga-wp.py --serve .
 
 - 生レスポンスを curl で数える（管理画面の設定を疑う前にまず API、#051）:
   `curl -s "https://cms.contentsx.jp/wp-json/contentsx/v1/works-new?site=bizmanga" | jq 'length'`
-- **`/library` と `/manga/{id}` の両分岐**で同じ作品を確認（#012）。新フィールドは両エンドポイントに通す（#001）
+- **`/library` と `/manga/{id}` の両分岐**で同じ作品を確認（#012）。新フィールドは両エンドポイントに通す（#001）。
+  ビズ書庫（`works.js`）は両方を `toMangaEntry()` で同じ形にし、QR直リンクはどちらか先に届いた方で開く（SPEC §2.1）
+- `/manga/{id}` の「作品が無い」応答（404 と本文 `{"error":"not found"}`）の形や、作品 ID に使える文字（ルート）を変えるときは
+  `works.js` の `readMangaAnswer()`・`isDirectIdLike()` も直す
+- QR直リンクは手書きデータ（`FALLBACK_WORKS`）で開かない（SPEC §2.1。結果は「開く／作品が見つかりませんでした／表示に時間がかかっています＋再読み込み」の3つ）。
+  `FALLBACK_WORKS` はビズ書庫の一覧の初期表示（WP 到着前）専用。WP に無い作品を QR で配るときは、先に WP に登録する。
+  `FALLBACK_WORKS` のページ数は**素材フォルダ（`contentsx.jp/material/manga/{id}/`）に実際にある枚数**（WP の値に合わせると素材フォルダに無いページが 404 になる）。表示モード（縦読み専用）は WP の `/library` に合わせる。素材フォルダの画像を増減したら・WP 側で表示モードを変えたら合わせて直す
+  （WP の到着前に一覧から開いた作品が古い値で表示される。到着後の切替からは WP の値になる）。
+  WP に未登録の一部作品は登録までの間、素材フォルダの画像で開く（`works.js` の `UNREGISTERED_FALLBACK_IDS`。**WP に登録したらそこから外す**）
 - WP 出力を `innerHTML` に入れる箇所は `bmSanitize` 経由か（#039、`js/bm-sanitize.js`）
 - 掲載先フラグは「未設定＝表示する」（SPEC §5 表示先・順序制御）。判定を `=== '1'` に戻していないか
-- **フォールバック**: DevTools で `cms.contentsx.jp` をブロック（または `bm-wp-config.js` の `enabled:false`）してホーム・制作事例がローカルデータで表示され、真っ白にならない
+- **フォールバック**: DevTools で `cms.contentsx.jp` をブロック（または `bm-wp-config.js` の `enabled:false`）してホーム・制作事例がローカルデータで表示され、真っ白にならない。
+  ビズ書庫の QR直リンク（`?manga=id`）は手書きデータで開かず、5秒で「ただいま表示に時間がかかっています」と再読み込みボタンが出るのが正常（ブロックを外すと、待っている間に開く。
+  WP に未登録の一部作品だけは素材フォルダの画像で開く）。ビズ書庫は `bm-wp-config.js` の `apiBase` を使うが `enabled` は見ないので、確かめるときはブロックで
+- `bm-wp-config.js` の `apiBase` を変えるときは、ビズ書庫（`works.js` の `WP_API_BASE`）も同じ値を使う。`biz-library.html` で `bm-wp-config.js` を
+  `works.js` より前に読む順番を崩さない（`tools/check-site.py` が確かめる）
 - PHP を直した場合: `php -l` → お名前.com 手動アップロード（#002）→ nginx キャッシュ最大10分を待ってから生URLで新値を確認（#048）
 
 ## 4. 静的ビルドを触った場合
