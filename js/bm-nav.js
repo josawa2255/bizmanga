@@ -68,11 +68,16 @@
   var path = location.pathname;
   var currentFile = path.substring(path.lastIndexOf('/') + 1).replace('.html', '') || 'index';
 
-  // hrefとcurrentFileを正規化して比較する関数（先頭/とindex/末尾スラッシュの差を吸収）
+  // パスを正規化する（先頭・末尾の / と .html の差を吸収し、ルートは index に揃える）
+  function normalizePath(p) {
+    return p.replace(/^\/+/, '').replace(/\/+$/, '').replace(/\.html$/, '') || 'index';
+  }
+  // 現在ページの判定は末尾の1階層ではなくパス全体で比べる。末尾だけだと
+  // /works/category/recruit が「recruit」になり、サブメニュー項目も親（ビズ書庫）も強調されなかった
+  var currentPath = normalizePath(path);
   function isCurrent(href) {
     if (!href) return false;
-    var normalizedHref = href.replace(/^\//, '').replace(/\.html$/, '').replace(/\/$/, '') || 'index';
-    return normalizedHref === currentFile;
+    return normalizePath(href) === currentPath;
   }
 
 
