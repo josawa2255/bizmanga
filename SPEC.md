@@ -534,7 +534,7 @@ Hero の 57〜64%（幅390〜860px）に来るので、66%までは `.86` 以上
 
 | パラメータ | 役割 |
 |---|---|
-| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得）。**WP が「作品が無い」と答えたとき（404 で本文がプラグインの形 `{"error":...}`〈`code` が無い〉、または 410）は画像を推測せず「NO PAGES」**（無い作品・完全非公開の作品。判定はビズ書庫の `works.js` の `readMangaAnswer()` が「作品が無い」とする応答と同じ。2026-10 / Issue #84。以前は `contentsx.jp/material/manga/{id}/01〜30.webp` を推測して出していた）。それ以外のエラー（5xx・401/403・WP の `rest_no_route`・JSON でない応答）とギャラリーが空の作品は従来どおり素材フォルダの 01〜30.webp、通信の失敗は 01〜10.webp を推測する |
+| `manga=id` | 表示する漫画ID（WP API `/manga/{id}` から取得）。**WP が「作品が無い」と答えたとき（404 で本文がプラグインの形 `{"error":...}`〈`code` が無い〉、または 410 で本文がプラグインか WP の形）は画像を推測せず「NO PAGES」**（無い作品・完全非公開の作品。判定はビズ書庫の `works.js` の `readMangaAnswer()` が「作品が無い」とする応答と同じ。2026-10 / Issue #84。以前は `contentsx.jp/material/manga/{id}/01〜30.webp` を推測して出していた）。それ以外のエラー（5xx・401/403・WP の `rest_no_route`・JSON でない応答）とギャラリーが空の作品は従来どおり素材フォルダの 01〜30.webp、通信の失敗は 01〜10.webp を推測する |
 | `slides=1` | 1ページずつのスライド表示（横読み向け）。`interval`で自動切替間隔(ms) |
 | `speed=0.5` | 縦/横自動スクロール速度(px/frame) |
 | `hold=1` | 親から`postMessage('s3d-start')`を受けるまで自動再生を保留 |
@@ -659,6 +659,7 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
   - **開く処理の例外**（`openManga` 本体・画像読込後の `proceedOpen`・見開きの組み立て）: スピナーを残さない。まだ漫画のページを表示できていなければ開きかけのビューアを閉じ、スピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す（`failOpen()`。「見つかりませんでした」にはしない）
   - **直リンクでは一覧を作らない**: 隠れている書庫の一覧（手書きデータでの初期表示・`/library` 到着時の作り直し・表紙の縦長判定）を省き、制作過程カルーセルの自動送り（rAF）も始めない（ビューアだけを表示するため）
   - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開く。無ければ **`/library` と `/preproduction`（赤ペン・ネーム専用の API）を並行して** `wpApiGet()` で取り、どちらかで登録されたら開く（2026-10 / Issue #84）。制作過程は `/manga/{id}` に無いので取得しない
+    - `/preproduction` の項目で画像（gallery）が無いものは登録しない（開くと空のビューアになるため。直リンクは「見つかりませんでした」）
     - 登録キー: `/library` の作品の赤ペン・ネームは `pre-red-{作品ID}` / `pre-name-{作品ID}`（`buildPreDataFromAPI()`。直リンクでは制作過程のキーのときだけ呼ぶ）、**`/preproduction` の項目は `pre-red-wp{投稿ID}` / `pre-name-wp{投稿ID}`**（`registerPreproductionItems()`。一覧のカルーセル `rebuildPreCarousels()` も同じ関数を通る）。⚠️ ホームの制作過程スライド（`js/bm-pre-production.js`）が `biz-library?manga=` に渡すキーも同じ `-wp` の形にする（**2つのファイルでキーの形を必ずそろえる**。2026-10 まではホームが `pre-red-{投稿ID}` で開き、ビズ書庫で必ず「作品が見つかりませんでした」になっていた）
     - 旧形式の URL: `pre-red-{数字}` / `pre-name-{数字}`（大文字小文字を区別しない）は、その値のままの登録キーが無ければ `pre-red-wp{数字}` / `pre-name-wp{数字}` と読み替えて照合する（`startDirectFlow` の `findPreKey()`）
     - **「作品が見つかりませんでした」は `/library` と `/preproduction` が両方とも配列で届き、どちらにもその制作過程が無いときだけ**。どちらかが失敗・時間切れ（`/library` は0件も）なら作品と同じく「表示に時間がかかっています」を出し、失敗した方を取り直して待つ（`/preproduction` も `DIRECT_RETRY_MS` の間隔・`DIRECT_FETCH_TIMEOUT_MS` の時間切れで取り直す）。`/preproduction` が 200 の空配列 `[]` なのは今の WP の正常な状態（項目が無い）なので失敗にしない

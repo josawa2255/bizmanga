@@ -2374,7 +2374,10 @@ function registerPreproductionItems(data) {
     if (!item || typeof item !== 'object') return;
     var key = 'pre-' + (item.type === 'akapen' ? 'red' : 'name') + '-wp' + item.id;
     var galleryLen = (item.gallery && item.gallery.length) || 0;
-    var pages = galleryLen > 0 ? galleryLen : (item.pages || 0);
+    // 画像の無い項目は登録しない（path も無いので開くと空のビューアで /01.webp が 404 になる。
+    // 登録しなければ直リンクは「作品が見つかりませんでした」、カルーセルにも出ない）
+    if (galleryLen === 0) return;
+    var pages = galleryLen;
     var entry = {
       key: key,
       title: item.title,
