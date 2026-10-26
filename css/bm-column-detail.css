@@ -78,11 +78,11 @@
       margin: 56px 0 20px; padding: 0 0 0 20px;
       border-left: 4px solid var(--bm-accent, #e85500);
       border-bottom: none;
+      /* 目次（#sec-N）で飛んだ見出しが固定ヘッダーの下に隠れないように、ヘッダーの下に28px空ける。
+         72px のときは静的コラム（css/bm-column-static.css）と同じ100px（Issue #88。SPEC §0.6） */
+      scroll-margin-top: calc(var(--bm-header-height, 72px) + 28px);
     }
     .bm-col-detail-content h2:first-child { margin-top: 0; }
-    /* 目次（#sec-N）で飛んだ見出しが固定ヘッダー（72px）の下に隠れないように。
-       静的コラム（css/bm-column-static.css）と同じ値（Issue #88） */
-    .bm-col-detail-content h2 { scroll-margin-top: 100px; }
 
     /* h3 */
     .bm-col-detail-content h3 {

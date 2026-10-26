@@ -139,7 +139,16 @@
     // ここから下はスクロール演出だけ（GSAP が必要）。CDN が読めない環境では演出をあきらめるが、
     // 上のボイスコミックの再生ボタン・音声バーは GSAP なしでも動くよう、この return より前で
     // 結び付けておく（Issue #88。以前はこの return が先にあり、ボタンが何もしなかった）。
-    if (!(window.gsap && window.ScrollTrigger)) return;
+    // 演出をあきらめるときは、演出の最後の状態（漫画 iframe を操作できる・見出し・ラベル・CTA が
+    // 見える）にすぐ切り替える。CSS の初期値は透明・操作不可なので、何もしないと消えたままになる。
+    if (!(window.gsap && window.ScrollTrigger)) {
+      var staticGroup = document.getElementById('s3dScreens');
+      if (staticGroup) staticGroup.classList.add('is-settled');
+      section.querySelectorAll('.s3d-heading, .s3d-label, .s3d-heading-cta').forEach(function(el) {
+        el.classList.add('is-shown');
+      });
+      return;
+    }
 
     gsap.registerPlugin(ScrollTrigger);
     var wrap   = document.getElementById('s3dScreensWrap');
