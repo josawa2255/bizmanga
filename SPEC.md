@@ -44,6 +44,36 @@
 - `.bm-about` — `padding: var(--section-py)`、SP は layout (grid→block) のみ media query で切替
 - `.bm-whatis-fold-*` — 見出し/バッジ/本文/リストすべて clamp、SP の media query は 2列→1列のみ
 
+### 0.6 横溢れ防止は `clip`。sticky を殺さない（2026-10-14 / Issue #73・PR #78）
+- `html` と `body` の横溢れ防止は **`overflow-x: hidden; overflow-x: clip;` の2行**。clip に対応したブラウザでは後の clip が勝ち、未対応の古いブラウザ（Safari 15 以前など）は hidden が残る（横スクロールは止まり、sticky だけ効かない＝修正前と同じ）。
+  - 書く場所は **`css/bizmanga.css` と `css/works.css`（ビズ書庫）の2か所だけ**で、**値は必ず同じにする**。ビズ書庫（biz-library.html）は bizmanga.css を非同期（preload → onload）で読むので、届くのが遅い・読み込みに失敗した・切り替えが動かないときも横溢れを止めるため、同期で読む works.css にも置く（PR #78 再レビュー。bizmanga.css を止めて幅 2000px の要素を足すと、works.css に無い版は 320〜1920px の12幅すべてで横に動き、ある版は動かないことを実測）。
+  - ⚠️ works.css は biz-library.html で bizmanga.css より後に書かれて勝つ。値がずれると bizmanga.css を直しても効かない（Issue #73 で works.css だけ hidden のまま残り、ビズ書庫のフィルターが追従しなかった原因）。
+  - ⛔ それ以外のCSSには html/body の `overflow-x` を書かない。
+- **理由**: `hidden`（`auto`/`scroll` も）はスクロールコンテナを作る。body が「一度もスクロールしない箱」になり、その中の `position: sticky` が追従しなくなる。2026-10-14 まで body が hidden だったため、コラム一覧・制作事例・ビズ書庫のフィルターと資料DLのフォームは sticky と書いてあっても追従していなかった。clip は横にはみ出した分を切り取る効果は同じで、スクロールコンテナを作らない。
+- ⛔ **ページごとに html/body を clip で打ち消す書き方はしない**（以前の bizanime.css / use-cases.css / bizanime.js の打ち消しは共通側を直したので削除済み）。sticky を使う要素の祖先に `overflow: hidden` を足さない。切り取りたいときは `overflow: clip` か `clip-path: inset(0)`。
+- **ヘッダーの高さは変数 `--bm-header-height`**（`css/bizmanga.css` の `:root` で 72px、`.bm-header { height: var(--bm-header-height) }`）。ヘッダー直下に貼り付ける帯・位置の計算はこの変数から: 帯は `top: var(--bm-header-height, 72px)`（コラム・制作事例・ビズ書庫のフィルター、LP の目次 `.lpv2-toc`、コラム詳細のプレビューバナー）、カード型（資料DLフォーム）は `top: calc(var(--bm-header-height, 72px) + 24px)`（=96px）。旧ヘッダー用の 56/60/68/80px を書かない。予備値の 72px は、変数を定義する bizmanga.css が届く前（ビズ書庫などは非同期で読む）や、別ファイル・インライン指定から読むときのため。各HTMLの head のインラインCSS（`.bm-header{…height:72px}`）は bizmanga.css が届くまでの仮の値で、同じ 72px。
+  - **例外: bizanime のスマホ（1024px 以下）だけヘッダー 56px**。`css/bizanime.css` が **`body.ba-page` に `--bm-header-height: 56px`** を書き、ヘッダー本体（`.bm-header` の height と `.bm-header-inner`）、ヘッダー内のドロワー（`.bm-nav.open` の top）、Hero の余白（`.ba-hero` の margin-top・`.ba-scroll-wrap` の padding-top）がこの変数を読む。⚠️ 上書きを `.bm-header` の中に書かない（以前はそうなっていて、ヘッダーの外の帯や JS が読む値は 72px のままだった。PR #78 再レビュー）。bizanime には今のところ追従する帯は無い（変更前後でヘッダーの見た目は 320〜1920px の7幅でスクリーンショットが1画素も変わらないことを確認）。
+  - JS で値を読むときは `:root`（documentElement）ではなく、使う要素（帯など）の `getComputedStyle` から読む（bizanime のスマホでは :root は 72px のまま）。
+- **追従させない画面（帯が画面を覆いすぎる）**。目安: 貼り付いたとき、ヘッダー（72px）＋帯＋画面下の追従ボタン（`.bm-fab`、769px 以上 72px・768px 以下 56px。ビズ書庫・資料DLには無い）で画面の高さの約半分以上が埋まる画面では追従させない。値は実測で決めた（PR #78 レビュー）。
+  - 制作事例（`.bm-category-filter`）とビズ書庫（`.works-filter`）: 追従は**共通クラス `.bm-sticky-filter`**（`css/bizmanga.css` に1回だけ定義。works.html・biz-library.html の両方のフィルターに付ける）で付け、`position: sticky; top: var(--bm-header-height, 72px)` と `@media (max-width: 768px), (max-height: 620px)` の `position: static` をまとめて持つ。⚠️ 各フィルターのクラスに position / top を書かない（works.css は bizmanga.css より後に書かれて勝つので、そこに sticky を書くと共通クラスの static を打ち消す）。ビズ書庫は bizmanga.css を非同期で読むので、届くまでの一瞬はフィルターが追従しない（普通の位置に置かれるだけで害は無い）。768px 以下は3〜4行（124〜356px）になり、ヘッダー込みだけで画面の約2〜7割（320px幅の制作事例で67%）。769px 以上でも10カテゴリで2行（制作事例 168px・ビズ書庫 160px）。制作事例は 72＋168＋72＝312px が 1024×600 で 52%・932×430 で 73%・844×390 で 80% を埋める。高さ 621px 以上（1366×768 のノートPCの表示域 約630〜660px で 47〜50%弱、1280×800 で 39%）は追従させる。ビズ書庫は追従ボタンが無いぶん少し余裕がある（ヘッダー込み 232px が 1024×600 で 39%・844×390 で 59%）が、同じ形のフィルターなので条件をそろえる。カテゴリが増えて3行になったら測り直す。
+  - コラム（`.bm-column-filter`）: `@media (max-height: 430px)`（スマホ横向き）で `position: static`。帯は1行の横スクロール（54〜68px）と低いが、72＋68＋72＝212px が 844×390 で 54%・932×430 で 49% を埋め、本文が見えるのは 180〜220px だけになる。高さ 431px 以上（1024×600 で 35%、縦持ちスマホ 390×844 で 22%）は全幅で追従させる。
+  - 資料DLフォーム（`.bm-dl-card`）: `@media (min-width: 861px) and (min-height: 940px)` のときだけ追従。カード（805〜820px）が画面より高いまま貼り付くと、貼り付いている間は送信ボタンが画面の下に隠れたまま動かないため（940px = 96 + 820 + 下の余白 24）。
+- **追従する範囲**: sticky は親の箱の中でしか動かない。コラムは column.html の `.bm-column-listing`（フィルター帯・特集記事・一覧を包む箱。`BUILD:COLUMN_GRID` マーカーの外）で包み、一覧を過ぎたら CTA・フッターの上に残らないようにしている（以前は body 直下でフッターまで貼り付いていた）。制作事例は `.bm-container`、ビズ書庫は `.works-section` の中だけ。
+- **帯の背景は不透明の白（`#fff`）で `backdrop-filter` は付けない**。以前の「白95%＋blur(8px)」は裏が5%しか透けず見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（外した前後の帯の画像の差は各色 最大 2〜5/255）。
+- **一覧の先頭を帯のすぐ下へ戻すスクロールは、全ページ共通の `window.bmScrollBelowSticky(target, bar, options)`（`js/bm-nav.js` 末尾の独立IIFE）1つで計算する**（PR #78 再レビューで3か所の重複を統合）。呼び出し元の JS は bm-nav.js より後に defer で読む（`tools/check-site.py` の `DEPENDENCIES` で順序を検査）。
+  - 送り先: 帯が追従している画面（帯の position が sticky）は「帯が貼り付き始める位置」＝ target の上端 − 帯の top − 帯の高さ − 帯の margin-bottom（帯の下に本来の余白を挟んで一覧の先頭が来る。帯の高さは行数で変わるので毎回実際の値を読む）。帯が追従しない画面（768px 以下・低い画面）は**固定ヘッダーの下端から 16px 下**に一覧の先頭。
+  - `options.onlyIfBelow: true` は、今の位置が送り先より上（一覧の先頭より上にいる）なら動かさない。絞り込みのボタンで使う。ページ送りは常に送る。
+  - 動きを減らす設定（`prefers-reduced-motion: reduce`）では瞬時に移動する。`behavior: 'auto'` は html の `scroll-behavior: smooth` に従ってしまう（ビズ書庫は works.css の smooth が bizmanga.css の reduced-motion 用 `auto` より後に書かれて勝つ）ので、html の scroll-behavior を一時的に auto にしてから `scrollTo(0, y)` する。
+  - 使う場所: コラムのチップ（`js/bm-column-filter.js`、onlyIfBelow。先頭は表示中の特集記事、無ければカード一覧）／制作事例のページ送り（`js/bm-works-page.js`、常に）と「すべて」・カテゴリページの無いカテゴリのボタン（その場で絞り込む `<button>`、onlyIfBelow。カテゴリページのあるカテゴリは `<a>` でページ遷移なので対象外）／ビズ書庫のチップ（`js/works.js`、onlyIfBelow）とページ送り（番号・‹ Previous・Next ›、常に。`#gridPagination` へのクリック委譲で1か所。押したボタンが今のページ・押せない端なら動かさない）。
+  - ⚠️ ビズ書庫のチップは**利用者が押したとき（`event.isTrusted`）だけ**スクロールする。WP の `/library` が届いたときの再構築は、選んでいたカテゴリを戻すために同じボタンを `.click()` する（isTrusted が false）ので、そこで動かすと一覧を読んでいる途中でページが跳ねた（PR #78 再レビュー。修正後は到着時のスクロール命令が0回）。
+  - 以前との差（判断材料）: ビズ書庫の 768px 以下・低い画面（帯が追従しない）のページ送りは、以前の `worksGrid.offsetTop - 120`（一覧の先頭がヘッダーの下 48px）から「ヘッダーの下 16px」になり、一覧の先頭が **32px 上**に来る（制作事例と同じ）。以前は番号のボタンだけ戻り、‹ Previous・Next › は戻らなかった。今のページの番号を押したときは、以前は戻ったが今は動かない（ページが変わらないため）。
+- コラム詳細のプレビューバナー（`?preview=1`、`js/bm-column-detail.js` がインラインで sticky を付ける）は `top: var(--bm-header-height, 72px)` と **`z-index: 999`（ヘッダーの 1000 より下）**。`top:0` だとヘッダーの上に重なりスマホでハンバーガーの中心が押せず、`z-index: 9999` だとヘッダーの重なり順の中にある PC のメガメニュー・1024px 以下のドロワーの先頭を覆い、PC ではメニューへポインタを下ろす途中でバナーに乗ってメニューが閉じ、押せなかった（いずれも実測）。
+- 既知の制限（別 Issue）: ドロワー・モーダルを開いている間のスクロール止め（`body.bm-nav-locked` や `document.body.style.overflow = 'hidden'`）は body をスクロールコンテナに戻すため、開いている間だけ帯の追従が外れる（帯は本来の位置へ移り画面外に出る。閉じると元の位置に戻り、スクロール位置は変わらない）。ドロワー（ヘッダーの下を白で覆う）とビズ書庫のビューア（不透明）では見えない。制作事例のモーダル（黒85%の幕）では、幕の裏で帯が消えるのがうっすら見える。止める対象を html に移す修正は works.js・bm-hero.js・artists.js・bm-work-modal.js・bm-works-page.js・bm-nav.js にまたがるため別 Issue。
+- 副作用（見た目は変わらない）: body は独立した配置の区切り（BFC）ではなくなったので、body の最初の子の `margin-top` が body の外に出る（LP・FAQ・料金などで `document.body.getBoundingClientRect().top` が 68〜72px になる）。html に背景が無く body の背景はキャンバスに描かれるため、表示は同じ（変更前後でスクロール位置0のスクリーンショットを比較し、差は同じ版どうしでも出る揺らぎのみと確認）。
+- **横スクロールの判定は目的で使い分ける**（PR #78 再レビュー）。
+  - 実際に横へ動くか（全ページ共通の検査。`tools/check-browser.py` 等）: `document.documentElement.scrollWidth <= innerWidth + 1`。html/body の clip で切った後の幅なので、はみ出して切り取られた内容があっても画面幅のまま＝この式では見つからない。`document.body.scrollWidth` は全ページ共通の検査に使わない（トップ・コラム一覧のスマホ幅では、変更前から innerWidth を超えるが横には動かない）。
+  - 画面からはみ出して切り取られる内容が無いか（より厳しい）: `document.body.scrollWidth <= innerWidth`（切り取る前の中身の幅）。ビズ書庫の確認（`tools/smoke-manga-wp.py` のスマホ 390px「ビズ書庫の一覧に横スクロール無し」）はこちら（ビズ書庫は 390px で body.scrollWidth = 390。直リンク表示は一覧を隠すので、`?manga=` なしの一覧の表示で測る）。⚠️ documentElement に変えると、切り取られた内容を見逃す。
+
 ---
 
 ## 1. ページ構成
@@ -164,7 +194,7 @@ PCの「左コピー＋中央キャラ＋右モニター」の重なりは幅が
 - **区間内フェーズ配分（1本あたり t=0〜1）**: `0.00-0.58`移動・拡大 → `0.58-0.70`フレーム消滅 → **`0.70-0.88`フルスクリーン静止滞在** → `0.88-1.00`縮小（最後の動画は縮小なし）。vhは1本目180vh／2本目以降170vh（2026-08-30、150vh→170vhに拡張）。**静止滞在区間はフレーム消滅直後に新設**：以前はフレーム消滅(16%)の直後に縮小(18%)へ入り、「普通の枠になった瞬間すぐ次へ流れてほぼ見れない」状態だった（ユーザー指摘で発覚）。滞在中は `grow=1,fade=1,shrink=0` を完全固定し、スクロールしても動画位置・サイズが一切動かない「止め」を作る。詳細コメントは `js/bizanime.js` の `render()` 内
 - **CASE STUDIES**: PC3列/SP2列。一覧はサムネのみ、クリックでモーダル生成・閉じると破棄（ESC/背面クリック/focus trap対応）
 - ⚠️ ハマりどころ（再発防止）:
-  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → このページのみ `clip` に変更
+  - `html` と **`body` 両方**の `overflow-x:hidden` が sticky を殺す → 2026-10-14（Issue #73）に共通CSS側を `clip` に直したので、このページ専用の打ち消し（bizanime.css の `html:has(body.ba-page)`/`body.ba-page` と bizanime.js のインライン指定）は削除済み。§0.6
   - 登場アニメの `animation` はインライン transform より強い → 演出中は `animation:none`
   - スマホの `.ba-device` に `transform:none` を書くと演出が全滅（CSS変数合成を打ち消すため）→ 変数の初期値で調整する
   - CSSコメントの閉じ忘れは**ブレース数が合っていても**メディアクエリを飲み込む → 検査はコメント除去後に行う
@@ -512,7 +542,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 | **`/works/{slug}`** | `/works/diamond` | SEO向け静的な作品説明ページ（説明・ギャラリー・CTA） | ❌ 週1ビルド後（日曜03:00 JST） | Google / ChatGPT / Perplexity |
 
 **動作メカニズム:**
-- `?manga=id`: `biz-library.html` / `works.html` 共に `js/works.js` で URLSearchParams を読んで `isDirectMode` 分岐。WP API `/manga/{id}` でリアルタイム取得。新作品にも即時対応。
+- `?manga=id`: `biz-library.html` の `js/works.js` が URLSearchParams を読んで `isDirectMode` 分岐。作品は WP API の `/manga/{id}` と `/library` のどちらか先に届いた WP のデータで開く（手書きデータでは開かない。WP が応答しない間は「表示に時間がかかっています」と再読み込みボタンを出して待つ。§2.1）。新作品にも即時対応。
 - `/works/{slug}`: [tools/build-works.py](tools/build-works.py) が WP API `/works` を叩いて事前生成する静的HTML。`.github/workflows/build-works.yml` で毎週日曜 03:00 JST 自動ビルド。
 - **ページ一覧（漫画プレビュー）の表示上限**: 詳細ページ下部 `.bm-work-detail-gallery` は抜粋プレビューとして **最大4ページ** のみ表示（`build-works.py` の `MAX_GALLERY_PAGES = 4` で `gallery[:4]` スライス）。全ページ閲覧は `/biz-library` の漫画ビューアで行う想定。2026-05-21導入
 - **個別ページ title に検索KWを含める（2026-08-04追加）⭐SEO**: 旧 title は `{{title_ja}} | 制作事例 | ビズマンガ` で**作品名のみ＝検索KWが1語も入らず検索面で不可視**だった（[docs/content/KEYWORD-VOLUME.md](../docs/content/KEYWORD-VOLUME.md) の実測調査で判明）。`{{title_ja}}｜{{category_kw}}の制作事例｜ビズマンガ` に変更し、20本すべてに用途KWを付与。`category_kw` は `build-works.py` の **`CATEGORY_TITLE_KW`** 辞書でカテゴリ名→実際に検索される語形に変換する（例: `IP`→`IPコラボ漫画`、`紹介`→`サービス紹介漫画`）。**カテゴリ名の素直な連結は「IP漫画」「紹介漫画」など検索されない語になるため辞書経由が必須**。未定義カテゴリは `ビジネス漫画` にフォールバック。**作品名自体がKWを含む場合（例: 作品名「採用漫画」）は重複を避けて `ビジネス漫画` に置換**。表記は**漢字を優先**（実測: 採用漫画は採用マンガの約23倍、漫画制作はマンガ制作の約80倍）。og:title / twitter:title / keywords も同じKWで統一。
@@ -556,6 +586,7 @@ BizManga には**目的の異なる2種類の作品URL**が並列で存在する
 - `js/bm-works-page.js` の `buildFilter()` を改修。「すべて」以外のカテゴリボタンは `<a href="/works/category/{slug}">` リンクとして描画
 - JS フィルター動作は廃止（同URL内での絞り込みはGoogleに別ページとして認識されないため）
 - `CATEGORY_SLUG` マップで JA カテゴリ名 → slug 変換
+- 例外としてその場で絞り込む `<button>` は2種類: 「すべて」（絞り込み解除）と、`CATEGORY_SLUG` に無い（カテゴリページの無い）カテゴリ（保険）。どちらも一覧の途中・下で押したら一覧の先頭を追従する帯のすぐ下へ戻す（`window.bmScrollBelowSticky`、§0.6）
 
 **ビルド統合:**
 - 個別作品ビルド (`generate_details`) と同じパイプラインで `generate_category_pages` を実行
@@ -593,19 +624,38 @@ https://bizmanga.contentsx.jp/biz-library?manga={manga-id}
 - QRコードで直接特定の漫画を開くモード
 - **動作**: 書庫UIを全て非表示 → 漫画ビューアのみ表示
 - **制御**:
-  - [biz-library.html:45](biz-library.html#L45) — `<head>` で即座に `<html class="direct-mode">` を付与（フリッカ防止）
+  - [biz-library.html](biz-library.html) の `<head>` — 即座に `<html class="direct-mode">` を付与（フリッカ防止）。**`?manga=` の値が空・記号だけ（`?manga=`・`?manga=。` など、末尾の記号を除くと空になる値）のときは付けず、通常のビズ書庫を表示する**（`js/works.js` も読込後に同じ判定で付け外しする。この場合は qr-mode も付かない）
   - [css/works.css](css/works.css) の `html.direct-mode` ルールでヘッダー/フッター/書庫UI非表示
   - [js/works.js](js/works.js) `isDirectMode` フラグで分岐
-- **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与
+- **QR経由 vs 内部遷移の判別**: `document.referrer` が同一オリジンなら内部遷移（ホームギャラリー等）、そうでなければ QR 経由。後者は `<html class="qr-mode">` を付与。「表示に時間がかかっています」の再読み込みボタンで読み込み直したときは、読み込み直す前の判定を引き継ぐ（ブラウザは再読み込みの referrer をこのページ自身にするため。引き継げないブラウザでは QR 経由として扱う）
 - **閉じるボタン (✕)**:
   - QR経由 (`qr-mode`): CSS `display:none` で非表示。JSクリック/ESCも無効 → 書庫に降りられない（元の仕様維持）
   - 内部遷移 (ホームギャラリー等): 表示。クリック/ESC で `biz-library`(パラメータなし) に遷移してライブラリを見せる
 - **history.pushState**: ダイレクトモードでは呼ばない → ブラウザ戻る = 書庫ではなく前のページへ
-- **最終ページCTAの再適用（2026-05-29 修正 / BUGS #037）**: フォールバックデータ `FALLBACK_WORKS` に載っている作品をダイレクトモードで開くと、CTA情報を持たない静的データで即オープンされる。その後 `/library` API がCTA付きデータに差し替えるため、`fetchLibraryFromAPI` のダイレクトモード分岐で **表示モード不変時も `setupMangaCta(mangaData[autoOpen])` を再実行**してCTA設定を反映する（これが無いと `?manga=seko` 等でCTAが出ない）
+- **開き方（2026-10-14 / Issue #71。2026-10-15 平澤さんの方針で変更）⭐**: 作品は **WP のデータでだけ・1回だけ**開く（`openDirect()` が2回目以降を無視）。ページ数・画像・最終ページCTA（BUGS #037）が WP と一致する。**手書きの `FALLBACK_WORKS` では開かない**（WP と違う古いページ数・画像で壊れた表示にしない）。WP に未登録の一部作品は登録までの間、素材フォルダの画像で開く
+  - 以前は `FALLBACK_WORKS` にある作品（手書き19件）を手書きデータで即オープンし、`/library` 到着時に開き直し・CTA の貼り直しをしていた（#037 の継ぎ当て）。このため読込の順番次第で手書きのページ数・画像のまま残り（例: `seko` 手書き25P／WP 30P、`lady-column` 手書き8P・見開き／WP 5P・縦読みで 05〜08.webp が 404）、同じ作品を2回開くこともあった
+  - **どちらか先に届いた WP のデータで開く**: `/manga/{id}`（1作品）と `/library`（一覧）の**どちらか先に「その作品のデータ」を返した方**で開く（どちらも同じ WP のデータ）。`?manga=` の値が作品 ID の形（英数字とハイフン）でないとき（例 `seko_2`・日本語の ID）は `/manga/{id}` に問い合わせず、`/library` の作品 ID と照合して開く。`/library` に無い作品（QR 限定公開など）は `/manga/{id}` を待つ。後から届いた方では開き直さない。表示中のビューアは開いたときのデータを使う（`/library` が後から届いても、最終ページCTA・見開き/縦読み切替は開いたときのデータのまま。`/library` に無い作品も切り替えられる）
+  - **結果は次の3つだけ**:
+    1. **開く**: `/manga/{id}` か `/library` から作品のデータが届いた
+    2. **「作品が見つかりませんでした」**（トップへ戻るリンク）: `/library` が届いていてその作品が無く、**かつ** WP の `/manga/{id}` も「その作品は無い」と答えた（`/library` がまだなら届くまで待つ。`/library` が失敗・0件・時間切れなら取り直して確かめる）。作品 ID の形でない値は `/library` に無ければこの画面
+    3. **「ただいま表示に時間がかかっています」＋「再読み込み」ボタン**: それ以外（WP が応答しない・エラー・時間切れ・アクセスの一時的な制限・`/library` の失敗や0件等）。**すぐには打ち切らずに待つ**: ページを開いてから5秒（`DIRECT_SLOW_MS`）たってもビューアを出せていなければ、スピナーの下にメッセージとボタン（`location.reload()`）を出す。作品のデータが届いて開く処理を始めた後も、1枚目の画像の読込が終わらないなどでビューアを表示できないまま8秒（`DIRECT_OPEN_SLOW_MS`）たてば同じメッセージを出す。後から表示できたらメッセージを消す
+       - **取り直し**: `/manga/{id}` は間隔をあけて取り直す（`DIRECT_RETRY_MS`。2→5→10→20→30秒、以後30秒ごと。「作品が無い」と答えたら取り直さない）。`/library`（重い一覧）は失敗・0件・時間切れのとき、**判定に要る場合だけ**取り直す: 制作過程・作品 ID の形でない値（`/library` だけが頼り）と、`/manga/{id}` が「作品が無い」と答えた後（`/library` で確かめる）。それ以外（WP が応答しない間など）は `/manga/{id}` だけを取り直し、`/library` を取り直し続けない
+       - **時間切れ**: `/manga/{id}` も `/library` も1回ごとの時間切れを取り直すたびに延ばす（`DIRECT_FETCH_TIMEOUT_MS`。5→10→20秒、以後20秒。WP がいつも遅くても届く）。`/library` の時間切れは判定に要るときだけ効かせる（要らない間＝`/manga/{id}` の答えを待っている間は中断せず、遅れて届いた `/library` にその作品があれば開く。要るようになった時点で時間が過ぎていれば、すぐ中断して取り直す）
+       - タブが表示されていない間は取り直さず、表示に戻ったら続ける。表示していた時間で10分（`DIRECT_RETRY_LIMIT_MS`）たっても開けなければ（ビューアを表示できなければ）取り直しを止め、スピナーを外してメッセージと再読み込みボタンだけを残す
+  - **WP の作品データ→mangaData の変換は `toMangaEntry(w)` 1つ**: `/library` と `/manga/{id}` の両分岐が同じ関数を通る（BUGS #012/#013 の「両分岐を揃える」を構造で守る）。ページ数はギャラリー枚数→WP の `pages`→1 の順（0 にしない。ギャラリー枚数への補正はここだけで、`openManga` では直さない）、タイトルが空なら作品 ID、`path` は `https://contentsx.jp/material/manga/{id}/`（ギャラリーが空のときの画像の置き場）、view_type は WP の値＋強制縦読み（`window.bmViewType.isForcedVertical`）・縦読み専用＝切替不可（`window.bmViewType.isVerticalOnly`）の判定を委譲（`bm-view-type.js` を読めなかったときは、縦読みの作品を見開きで開かない側に倒す）、CTA 項目（`client_url` / `cta_label_ja` / `cta_enabled`）・赤ペン/ネームのギャラリーも同じ
+  - **API の場所と時間切れ**: ビズ書庫は `js/bm-wp-config.js` を `works.js` より前に読み（`tools/check-site.py` の依存表で確認）、`works.js` の `WP_API_BASE` はその `apiBase`（読めなかったときだけ既定の URL）。取得は `wpApiGet()`（AbortController の時間切れつき GET）1か所で、`/library` と `/manga/{id}` の両方が使う。時間切れは直リンク用に `works.js` で決める（上の `DIRECT_FETCH_TIMEOUT_MS`。`bm-wp-config.js` の `timeout` は使わない）。一覧（`?manga=` なし）の `/library` は中断しない（遅れて届いても使う）
+  - **キーの照合**: `?manga=` の値は、前後の空白と**末尾に付いた句読点・記号・かっこ・空白**（LINE やメールで URL の直後に続いた「。」「.」「)」など。全角も含む）を取り除いてから使う（例 `?manga=seko。` → `seko`。英数字・ハイフン・下線と日本語などの文字は残す）。大文字小文字はそろえず、登録キー（`/library` の作品 ID・制作過程）と**まず完全一致、無ければ大文字小文字を区別せずに**照合する（`matchKey()`。例 `?manga=SEKO` → `seko`）。`/manga/{id}` で開くときは応答の `id` をキーにする
+  - **待っている間は読み込み中の表示**（暗い背景の上の白とオレンジのスピナー。`showDirectLoader()`、見た目は `bizmanga.css` の `.bm-manga-loader`、位置とメッセージ・ボタンは `css/works.css` の `.bm-direct-loader` / `.bm-direct-stalled`）。ビューアが開いたら（`openManga` の `proceedOpen`）・「見つかりませんでした」を出したら消す
+  - **開く処理の例外**（`openManga` 本体・画像読込後の `proceedOpen`・見開きの組み立て）: スピナーを残さない。まだ漫画のページを表示できていなければ開きかけのビューアを閉じ、スピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す（`failOpen()`。「見つかりませんでした」にはしない）
+  - **直リンクでは一覧を作らない**: 隠れている書庫の一覧（手書きデータでの初期表示・`/library` 到着時の作り直し・表紙の縦長判定）を省き、制作過程カルーセルの自動送り（rAF）も始めない（ビューアだけを表示するため）
+  - **制作過程（赤ペン・ネーム）**: キーが `pre-red-*` / `pre-name-*` の形（大文字小文字を区別しない）なら制作過程として扱う（WP の作品 ID が `pre-` で始まるだけなら作品として開く）。手書きの制作過程データにあれば即開き、無ければ `/library` 到着後の登録（`rebuildPreCarousels()` が `pre-red-{作品ID}` / `pre-name-{作品ID}` を登録。直リンクでは制作過程のキーのときだけ呼ぶ）を待って開く。**`/library` が届いてその制作過程が無いときだけ**「作品が見つかりませんでした」。`/library` が失敗・遅いときは作品と同じく「表示に時間がかかっています」を出し、`/library` を取り直して待つ。制作過程は `/manga/{id}` に無いので取得しない（制作過程のキー・`/preproduction` の扱いは Issue #84 で見直し中）
+  - **「作品が見つかりませんでした」は、開いた（開く処理を始めた）ビューアがあるときは出さない**（ページ本体を置き換えて消すため）
+  - **想定外の例外**（直リンクの処理の中）: 暗い画面とスピナーのまま止めず、まだ開いていなければスピナーを外して「表示に時間がかかっています」と再読み込みボタンを出す
+- **参考: 一覧（`?manga=` なし）から開くとき**: WP の `/library` が届くまでは手書きの `FALLBACK_WORKS` で一覧を表示し、その間に押した作品も手書きデータ（素材フォルダの画像）で開く。手書きデータのページ数は**素材フォルダに実際にある枚数**（WP の値に合わせると素材フォルダに無いページが 404 になる）、表示モード（縦読み専用）は WP に合わせてある（2026-10-16 時点。素材フォルダや WP 側の表示モードを変えたら `works.js` も直す）。**WP の到着前に開いた作品は、`/library` が届いたら次の見開き/縦読みの切替から WP のデータ（ページ数・表示モード・最終ページCTA）を使う**（表示中のページは開き直さない）
 - **closeManga()の挙動**: referrer が同一ホストなら back、なければ `./`（ホーム）へ
 - **非公開作品のQRアクセス（限定公開運用）**: WP で全表示フラグを「表示しない」にしていても、`/manga/{id}` エンドポイント経由で取得可能
-  - mangaData に無い場合、`fetch(api + '/manga/' + id)` で取得
-  - 404なら「作品が見つかりませんでした」画面 + トップへ戻るリンク
+  - `/library` に無い作品は `/manga/{id}` の応答で開く（上記）
+  - `/manga/{id}` が「作品が無い」と答え、`/library` にも無ければ「作品が見つかりませんでした」画面 + トップへ戻るリンク
   - これにより「ビズ書庫・ギャラリー・新作情報 全て非表示だがQR経由でだけ見せたい」運用が可能
 - **完全非公開 (`cx_private`)**: WP管理画面の「🔒 完全非公開」で ON にすると、QR直リンクすらアクセス不可になる
   - `/works`, `/works-new`, `/library`, `/manga/{id}` すべてから除外
@@ -624,18 +674,19 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `?utm_source=...` `?utm_medium=...` `?utm_campaign=...` `?source=...`
 - contact フォーム送信時にメッセージ本文末尾に自動付加
 - `[BizManga経由のお問い合わせ]` タグも必ず付与
+- 行動ログ（`js/bm-tracking.js`）の「閲覧FAQ」は、FAQの質問部分のクリックを記録する。対象は `.lpv2-faq-item > summary`（faq・pricing）と `.ba-faq-q > button`（bizanime。番号 `.ba-faq-num` は除く）。FAQの構造を変えたらセレクタと `tools/test-bm-tracking.cjs` も直す
 
 ## 3. 共通 JS コンポーネント
 
 | ファイル | 役割 | 呼び出し方 |
 |---|---|---|
 | `js/bm-cta.js` | 共通CTAセクション生成 | `<section id="bmCtaMount"></section>` を置く |
-| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（ファイル末尾の独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④） | 全ページで読込（defer） |
+| `js/bm-nav.js` | ヘッダーナビ + ハンバーガー + 追従FAB + **Google広告「LINEお問い合わせ」「電話お問い合わせ」CV発火**（独立IIFE、`CONVERSIONS` 表。§5 Google Ads ③④）+ **一覧の先頭を追従する帯の下へ戻すスクロール `window.bmScrollBelowSticky`**（ファイル末尾の独立IIFE。§0.6） | 全ページで読込（defer） |
 | `js/bm-nav.js` | 日本語固定表示エンジン | 全ページで読込（bm-nav.jsより先） |
 | `js/bm-sanitize.js` | HTMLエスケープ + URL検証 | `window.bmSanitize.html()` / `.url()` |
 | `js/bm-tracking.js` | ユーザー行動ログ | `window.bmGetTrackingNote()` で出力 |
 | `js/bm-wp-api.js` | WP API クライアント | `window.BM_WORKS_DATA` 等をグローバル公開 |
-| `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL |
+| `js/bm-wp-config.js` | WP設定 | API baseURL / cache TTL / メンテナンス表示スイッチ（§5「WordPress 一時停止スイッチ」）。ビズ書庫（`works.js`）も `apiBase` を使う（`works.js` より前に読む） |
 | `js/bm-view-type.js` | 漫画ビュー縦読み/見開き判定 **一元管理** | `window.bmViewType.{isForcedVertical, isVerticalOnly, isVerticalByRatio, probeVerticalByImage}`。閾値・優先順を変えるときはこの1ファイルだけ触る |
 | `sw.js` | Service Worker（表紙キャッシュ） | `index.html` / `biz-library.html` で登録 |
 
@@ -651,7 +702,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | サービス | 用途 | 設定値 |
 |---|---|---|
 | HubSpot Forms | お問い合わせ送信 | Portal `48367061` / Form `b6da14d0-d60d-4357-89fc-0015ed32b704`。⚠️ **部署（`busyo`）は HubSpot 側で必須**＝空だと送信が拒否される（B/C 共通フォーム）。そのため `contact.html`・`download.html` とも部署を必須にしている（`required`＋送信時に前後の空白を除いて空なら `setCustomValidity` で止める。HTML の `required` は空白だけの入力を通すため。2026-09-29） |
-| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加・2026-09-26 埋め込みスクリプト方式 inbound-v1 へ移行） | CRM の埋め込みスクリプト `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を `contact.html` の `</body>` 直前で読み込み（`data-source-key`=`60235146e3d11473ea106ca2b89780df`・`data-auto="false"`・`async`）、同ページのインラインの送信処理で入力チェック通過後・HubSpot送信の直前に `window.BizcarteInbound.sendForm(form)` を1回呼ぶ。送信先は `/api/inbound/s/<公開キー>`。公開キーは**秘密ではない**（ブラウザに出る前提）。CRM側は**登録済みの送信元ドメイン（Origin）だけ**を受け付ける＝本番ドメイン `https://bizmanga.contentsx.jp` 以外（`www.` 付き・localhost 等）からの送信は拒否される（HPの受付には影響なし）。ドメインを変える・増やす時は CRM 側で許可ドメインの追加が必要。項目は5欄とも `data-crm-field` で明示（company→company_name / department / fullName→full_name / email / message。プレースホルダーやラベルの文言を変えても対応が崩れない）。ハニーポット `#bmWebsite` はスクリプトタグの `data-honeypot="#bmWebsite"` で明示し、値が入った送信は CRM 側が黙って破棄する。連投制限は送信元ごとに10分5件。`data-auto="false"` は必須（外すと、ページ全体の submit を拾う自動送信と手動の `sendForm` の両方が動き、**二重に届く**）。CSP は `script-src` に **`https://contentsx-crm.vercel.app/embed/inbound-v1.js`（このファイルだけ）** を追加（`connect-src` はもともと `https:` を許可しているので追加不要）。`sendForm` の呼び出しは try/catch と関数の存在確認で囲んである＝**外部スクリプトが読めない・壊れていても HubSpot 送信・完了表示・Google広告CVは従来どおり動く**（読めていないときはコンソールに警告）。⚠️ CRM を独自ドメイン（`crm.contentsx.jp` 等）へ移すときは、`contact.html` のスクリプトの `src` と CSP の `script-src` の**2箇所**を同時に直す（片方だけだとスクリプトが読めず、CRM にだけ届かなくなる）。本番での疎通確認は、フォームを送ると HubSpot 登録と広告CVが発生するため、本番ページのコンソールで `BizcarteInbound.send({...})` を呼んで CRM だけに送る。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。⚠️ 2026-09-24 に CRM 側の仕組みが変わり、旧経路（`/api/inbound/web` への並行 POST・`CRM_ENDPOINT` / `CRM_TOKEN` / CRM側 `INBOUND_SECRET`）は受け付けられなくなった（この間 HubSpot には届き CRM には届いていなかった）。2026-09-26 に本方式へ移行し、**このサイトでは**旧トークンと同期ルールは不要になった（ContentsX・ビズ採用など他サイトが移行を終えるまで、CRM 側の `INBOUND_SECRET` と ContentX_HP の `crm-token-sync` フックは残る＝他サイトの移行後に CRM 側で廃止する） |
+| Contents X CRM | お問い合わせをCRMの受信箱へ連携（2026-07-29 追加・2026-09-26 埋め込みスクリプト方式 inbound-v1 へ移行） | CRM の埋め込みスクリプト `https://contentsx-crm.vercel.app/embed/inbound-v1.js` を `contact.html` の `</body>` 直前で読み込み（`data-source-key`=`60235146e3d11473ea106ca2b89780df`・`data-auto="false"`・`async`）、同ページのインラインの送信処理で入力チェック通過後・HubSpot送信の直前に `window.BizcarteInbound.sendForm(form)` を1回呼ぶ。送信先は `/api/inbound/s/<公開キー>`。公開キーは**秘密ではない**（ブラウザに出る前提）。CRM側は**登録済みの送信元ドメイン（Origin）だけ**を受け付ける＝本番ドメイン `https://bizmanga.contentsx.jp` 以外（`www.` 付き・localhost 等）からの送信は拒否される（HPの受付には影響なし）。ドメインを変える・増やす時は CRM 側で許可ドメインの追加が必要。項目は5欄とも `data-crm-field` で明示（company→company_name / department / fullName→full_name / email / message。プレースホルダーやラベルの文言を変えても対応が崩れない）。ハニーポット `#bmWebsite` はスクリプトタグの `data-honeypot="#bmWebsite"` で明示し、値が入った送信は CRM 側が黙って破棄する。さらに `js/bm-contact.js` も、値が入った送信は HubSpot・CRM のどちらへも送らず、広告CV・`generate_lead` も発火させずに完了表示だけ出す（資料DLの `#dlWebsite` と同じ扱い。§5.2）。連投制限は送信元ごとに10分5件。`data-auto="false"` は必須（外すと、ページ全体の submit を拾う自動送信と手動の `sendForm` の両方が動き、**二重に届く**）。CSP は `script-src` に **`https://contentsx-crm.vercel.app/embed/inbound-v1.js`（このファイルだけ）** を追加（`connect-src` はもともと `https:` を許可しているので追加不要）。`sendForm` の呼び出しは try/catch と関数の存在確認で囲んである＝**外部スクリプトが読めない・壊れていても HubSpot 送信・完了表示・Google広告CVは従来どおり動く**（読めていないときはコンソールに警告）。⚠️ CRM を独自ドメイン（`crm.contentsx.jp` 等）へ移すときは、`contact.html` のスクリプトの `src` と CSP の `script-src` の**2箇所**を同時に直す（片方だけだとスクリプトが読めず、CRM にだけ届かなくなる）。本番での疎通確認は、フォームを送ると HubSpot 登録と広告CVが発生するため、本番ページのコンソールで `BizcarteInbound.send({...})` を呼んで CRM だけに送る。CRM側は受信箱に溜めるだけで、担当者が `/inbox` で承認して初めて会社・担当者・活動が作られる。⚠️ 2026-09-24 に CRM 側の仕組みが変わり、旧経路（`/api/inbound/web` への並行 POST・`CRM_ENDPOINT` / `CRM_TOKEN` / CRM側 `INBOUND_SECRET`）は受け付けられなくなった（この間 HubSpot には届き CRM には届いていなかった）。2026-09-26 に本方式へ移行し、**このサイトでは**旧トークンと同期ルールは不要になった（ContentsX・ビズ採用など他サイトが移行を終えるまで、CRM 側の `INBOUND_SECRET` と ContentX_HP の `crm-token-sync` フックは残る＝他サイトの移行後に CRM 側で廃止する） |
 | Google Analytics 4 | アクセス解析 | 測定ID `G-Q1T3033Q3W`（全HTMLの `<head>` に `gtag.js`、2026-04-16 設置） |
 | Google Ads | コンバージョン計測・リマケ | コンバージョンID `AW-18108125426`（GA4タグ直下に `gtag('config', 'AW-...')` 追加、2026-05-09 設置）。**CV計測イベント2種**: ①「お問合せフォーム到達」(`9tNKCNH49agcEPKh0LpD`) = `contact.html` head（onload内）で発火 / ②「送信完了サンクス」(`F13ECI3R3qgcEPKh0LpD`) = HubSpot送信成功 `.then()` 内で発火（2026-05-20 ラベル末尾を `…Cl…`→`…CI…` に是正） / ③「LINEお問い合わせ」(`LX7_CMndmO0cEPKh0LpD`) ④「電話お問い合わせ」(`Cf7LCMzdmO0cEPKh0LpD`)（いずれも 2026-09-03 Issue #27）= `js/bm-nav.js` 末尾の独立IIFEにある `CONVERSIONS` 表（selector→ラベル）。`document` の click を **capture** で委譲監視し、③は `a[href*="line.me/R/ti/p/"]`、④は `a[href^="tel:"]` に当たるクリックで `gtag('event','conversion')` を発火。対象はヘッダー丸アイコン／ハンバーガー末尾／追従FAB／共通CTA(bm-cta.js)／LP内ボタン／制作事例カテゴリなど**LINE公式URL・電話番号を指す全リンク**（静的HTML・JS生成・ビルド生成を問わず自動で対象。HTML側に onclick は付けない。CVを増やす時は表に1行足す）。LINEは `target="_blank"`・電話は `tel:` で元ページが残るため、Google例の「遷移を止めて `event_callback` で `window.location`」は使わず遷移はブラウザ標準に任せる（同等の関数は `window.bmReportConversion(sendTo, url)` として公開）。シェア用 `social-plugins.line.me` は対象外。**ラベルは管理画面の `send_to` をコピペ・手入力禁止**（BUGS #025） |
 | WordPress REST API | 漫画事例 / ニュース / テスティモニアル / コラム | `https://cms.contentsx.jp/wp-json/contentsx/v1` |
@@ -676,13 +727,13 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 | 資料を差し替えるとき | `js/bm-download.js` の `PDF_URL` / `PDF_FILENAME`、`download.html` の `data-crm-document`（CRM に届く資料名）・ページ内の「全22ページ」「約6MB」「2026年9月版」・メタ説明を合わせて直す |
 | PDF の公開範囲 | **フォームを通らない場所（ナビ・本文）に PDF への直接リンクを置かない**。URL は `js/bm-download.js` と送信後に出す「始まらない場合」リンクだけ。`robots.txt` で `/material/docs/` を全クローラーに Disallow、sitemap にも載せない（`/download` ページ自体は sitemap・llms.txt に掲載） |
 | 項目 | 会社名（必須 `company`）/ お名前（必須 `name`）/ メール（必須 `type=email`）/ 電話（任意 `type=tel name=tel`）/ 部署名（**必須** `department`＝お問い合わせと同じ name。HubSpot 側で必須のため 2026-09-29 に任意→必須へ変更。§5 HubSpot 行参照）/ プライバシーポリシー同意（必須チェックボックス）/ ハニーポット `#dlWebsite`（`name="website"`＋`tabindex="-1"`、画面外）。各欄に `data-crm-field` を付けて CRM 側の項目判別を固定している |
-| 入力チェック | ブラウザ標準（必須・`type=email`・同意）に加えて、`js/bm-download.js` がドメインに「.」の無いメール（`a@b`）を `setCustomValidity` で止める。二重送信ガードは §5.1 と同じフラグ方式。**フォームは `method="post"`、送信ボタンは HTML で `disabled` にしておき `js/bm-download.js` の初期化で有効にする**（JS の読み込み前・失敗時にブラウザ標準の GET 送信で入力内容が URL・GA4・Clarity に載るのを防ぐ） |
+| 入力チェック | ブラウザ標準（必須・`type=email`・同意）に加えて、`js/bm-download.js` がドメインに「.」の無いメール（`a@b`）を `setCustomValidity` で止める。二重送信ガードは §5.1 と同じフラグ方式。**フォームは `method="post"`、送信ボタンは HTML で `disabled` にしておき `js/bm-download.js` の初期化の最後（submit ハンドラー登録後）に有効にする**（JS の読み込み前・失敗時にブラウザ標準の GET 送信で入力内容が URL・GA4・Clarity に載るのを防ぐ） |
 | 送信の順番 | 入力チェック通過後 ①HubSpot（`SEND_TO_HUBSPOT`）②CRM（`BizcarteInbound.sendForm(form)`。外部スクリプトなので try/catch と関数の存在確認で囲む）③PDF のダウンロード開始（`<a download>` をクリック）＋お礼と「始まらない場合」リンクを表示。**①②の応答は待たない**（失敗してもダウンロードは止めない）。ハニーポット `#dlWebsite` に値がある送信は①〜③をせずお礼だけ出す（HubSpot に迷惑なコンタクトを作らない） |
 | CRM | `download.html` の `</body>` 直前で `https://contentsx-crm.vercel.app/embed/inbound-v1.js`（`data-source-key`＝本サイトの公開キー・`data-auto="false"`・`data-honeypot="#dlWebsite"`・`async`）を読み込む。フォームの目印 `<form id="download-form" data-crm-form="download" data-crm-document="ビズマンガ サービス資料（2026年9月版）">` により、送信本文に `form_kind: "download"` と資料名が付く（スクリプト v1.1 以降）。CSP は `download.html` の `script-src` に **`https://contentsx-crm.vercel.app/embed/inbound-v1.js`（このファイルだけ）** を追加（`connect-src` はもともと `https:` を許可）。CRM を独自ドメインへ移すときはスクリプトの `src` と CSP の2箇所を同時に直す。⚠️ **CRM 側の設定（設定＞プラグイン＞ホームページ連携）で「資料ダウンロード」がオンでないと受け付けられない** |
 | HubSpot | お問い合わせと同じフォーム（Portal `48367061` / Form `b6da14d0-…`）に、**お問い合わせと同じ項目の組み合わせ**（company / busyo / lastname / firstname / email / message）で送る。HubSpot 側に「資料DL」を表す欄が無いため、`message` の先頭に `【資料ダウンロード】<資料名>` と電話番号・流入元を入れて区別する（`pageName` は `BizManga - 資料ダウンロード`）。HubSpot 廃止（2026年11月予定）時は `js/bm-download.js` の `SEND_TO_HUBSPOT` を `false` にする |
 | 計測 | GA4・Google広告のコンバージョンは**付けていない**（付けるかは平澤さんの判断待ち。付けるなら②の直後で、お問い合わせの `generate_lead` と区別できる名前にする） |
 | 導線 | ヘッダー（`js/bm-nav.js` が「お問い合わせ」の左に `.bm-nav-dl` を差し込む。1280px 以上は文字入り、1025〜1279px は丸アイコン＋吹き出し、769〜1024px は文字入り、768px 以下は非表示）／ハンバーガーメニュー末尾（`mobileCtas` の先頭）／フッターのリンク列（`bm-nav.js` が「お問い合わせ」の直後に差し込む）／共通CTA `bm-cta.js` の3つ目のボタン `.bm-cta-btn--dl`。ヘッダー・フッターは各HTMLとテンプレートに直書きのため、**JS から1か所で足している**（テンプレート＝レビュー必須領域を触らずに生成ページにも効く）。追従CTA（`.bm-fab`）はこのページでは出さない（§7.1） |
-| レイアウト | PC（861px〜）: 左に表紙・形式と「この資料でわかること」、右にフォーム（sticky）。スマホ（〜860px）: 表紙 → フォーム → わかること の順（`grid-template-areas`。HTML も同じ順） |
+| レイアウト | PC（861px〜）: 左に表紙・形式と「この資料でわかること」、右にフォーム（sticky・`top: 96px`＝ヘッダー＋24px。**画面の高さ 940px 以上のときだけ**追従＝カード 805〜820px が画面より高いまま貼り付くと送信ボタンが隠れるため。フォームの項目を増やしたら測り直す。2026-10-14 まで共通CSSの overflow-x:hidden で効いていなかった → §0.6）。スマホ（〜860px）: 表紙 → フォーム → わかること の順（`grid-template-areas`。HTML も同じ順） |
 
 ### WP API エンドポイント
 - `/works?site=bizmanga` — 全漫画事例
@@ -691,6 +742,19 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - `/news?site=bizmanga&per_page=50` — ニュース一覧
 - `/columns?site=bizmanga&per_page=50` — コラム一覧
 - `/columns/{id}` — コラム個別（本文含む）
+
+### WordPress 一時停止スイッチ（メンテナンス表示・2026-10-22・Issue #101）⭐
+WordPress 側の保守などで止めたいときに、**`js/bm-wp-config.js` の `maintenance: false` を `true` にしてmainへ反映するだけ**で次が一度に起きる。戻すときは `false` に戻して反映する。
+- そのページから WordPress API（`https://cms.contentsx.jp/wp-json/`）へのアクセスを一切しない（`fetch` 自体を設定ファイルで止めるので、URLを直書きしている部品も止まる）。各部品は既存の「読み込めなかったとき」の表示に落ちる（ビズ書庫は `FALLBACK_WORKS`）
+- 画面下に中立なお知らせ「ただいま一部の表示を一時停止しています。…」を出す（`css/bm-maintenance-notice.css`。どのセクションがWPかは名指ししない。×で閉じるとそのタブでは再表示しない。追従CTA・TOPへ戻るより上に置き、ビューア・ドロワーより下）。iframe（埋込ビューア）の中では出さない
+- QR直リンク（`/biz-library?manga=`）は WP の取り直し（最大10分）を始めず、すぐに「ただいま表示を一時停止しています。…」と再読み込みボタンを出す（`js/works.js` の `startDirectMode`）
+- 埋込ビューア（`embed-viewer`・用途別LP）は `01〜10.webp` を推測する予備表示を使わず「ただいま表示を一時停止しています」とだけ出す（`js/bm-embed-viewer.js`。P1.webp系・縦読み作品で崩れるため）
+- ⚠️ メンテナンス中も `BM_WP_CONFIG.enabled` は `false` にしない（`bm-wp-api.js` が早期 return して `bm-data-ready` が出ず、/news が読み込み中のまま止まる）
+- 自動ビルド3本（`build-columns` / `build-works` / `build-lp-cases`）はこの行を見て何もせず終わる（取り込み・コミットをしない）
+- ⚠️ WP を使うページは必ず `bm-wp-config.js` を **WPを読む部品より前**に読み込む（404.html は head の埋め込み処理より前に同期読込）。新しくWPを読むページ・部品を作ったら同じようにする
+- ⚠️ 行の書式（`  maintenance: false`）を変えない。ワークフローが `grep` で判定している
+- ⚠️ WordPress 画像（`/wp-content/uploads/`）は止めない（静的ファイルのため）
+- ⚠️ これはサイト側の表示を守るだけで、WordPress サーバー自体は守らない。サーバー側の対応は非公開の運用手順で行う
 
 ### WP 管理画面メニュー（2026-06-12 再編）
 - B専用コンテンツ（**お客様の声・赤ペン・ネーム**）はWP左メニューの「**ビズマンガ**」親メニュー配下に移動。共通コンテンツ（漫画事例・ニュース・コラム）は従来通り最上階層
@@ -702,7 +766,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
   - ビズマンガの表示には日本語項目だけを使用する。WordPressと共有APIに残る英語用カスタムフィールドは、本サイトのフロントエンドから参照しない互換項目である。
 - `cx_pages` / `cx_client` / `cx_point` / `cx_comment`
   - ⭐ `cx_pages`（手入力の総ページ数）と `cx_gallery`（実際の画像ID一覧、実枚数はカンマ区切りの要素数）は別フィールドでWP側は自動同期しない。**表示側は全経路で2026-08-19にgallery実枚数優先へ統一済み**（BUGS.md #049/#050）。とはいえ表記の正本はWPなので、ギャラリー画像を追加・削除したら `cx_pages` / `cx_spec_pages` も同じタイミングで更新する運用は継続する
-    - `/biz-library`ビューア（`js/works.js`）: `/library`取得・`openManga()`・赤ペン/ネームカルーセルの3箇所とも gallery優先
+    - `/biz-library`ビューア（`js/works.js`）: WP の作品データの登録（`toMangaEntry()`。`/library` と QR直リンクの `/manga/{id}` の両方）と赤ペン/ネーム（`/library` 由来・`/preproduction`）の登録で gallery優先。`openManga()` は登録済みのページ数を使う（2026-10-15 に補正を `toMangaEntry()` へ一本化。Issue #71）
     - 詳細ページのスペック表記（`cx_spec_pages`、`tools/build-works.py` の `pages_count`）: gallery実枚数があれば`{len}P`表示、無ければWP手入力にフォールバック
     - works一覧・ホームのプレビューモーダル（`js/bm-works-page.js` / `js/bm-hero.js` の `previewPages`）: gallery実枚数を優先し、無ければ`work.pages`にフォールバック
 - `cx_sort_order` — 表示順（**数字が小さい＝先に表示**）
@@ -764,6 +828,7 @@ https://bizmanga.contentsx.jp/contact?plan={full|hybrid}
 - PC: hover で展開
 - モバイル: 1回目タップで展開、2回目タップで遷移（親リンクあり）
 - ドロップダウン展開中は他のドロップダウンを自動で閉じる
+- 現在ページの強調（`.active`）: `js/bm-nav.js` が現在のパスと各項目の href を正規化（先頭・末尾の `/` と `.html` を除去、ルートは `index`）し、**パス全体の完全一致**で判定する。メガメニュー内の項目・第3階層が一致したときは最上位の親（例: `/works/category/recruit` なら「採用マンガ」と「ビズ書庫」）も強調する。一致する項目が無いページ（`/works/{slug}`・`/column/{slug}` 等）は何も強調しない
 
 ## 7. ホームページ特殊動作
 
@@ -1080,7 +1145,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 **構造変更**
 1. Hero を h=1019px の全面イラスト → h=360px のシネマスコープ帯（`.bm-column-hero-strip`）に圧縮。LCPを H1 テキストへシフト。新画像 `hero-column.webp` (2400×1018) に差替（旧版は `hero-column.old.webp` にバックアップ）
 2. Editorial Masthead セクション追加: `EYEBROW · ISSUE N` → Noto Serif JP 900 の H1 超大サイズ（clamp 40-88px）→ 赤アクセント線 → リード段落
-3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。WP API の `data.category` から動的生成
+3. カテゴリフィルター帯 (`.bm-column-filter` sticky、チップUI) 追加。追従位置はヘッダー下端 `top: var(--bm-header-height, 72px)`（全幅共通。2026-10-14 に修正・§0.6）。追従する範囲はフィルター帯・特集記事・一覧を包む `.bm-column-listing` の中だけ（CTA・フッターの上には残らない）。一覧の途中・下でチップを押すと、絞り込んだ結果の先頭を帯のすぐ下へ戻す（`scrollToListTop()` → 共通の `window.bmScrollBelowSticky`。§0.6）。WP API の `data.category` から動的生成
 4. Featured 記事セクション追加（最新1件を 21:9 大判＋右本文のグリッドで表示）。JS で `<script id="bm-column-data">` の JSON から注入。**スマホ（`@media max-width:768px`）では `.bm-column-featured` を `display:none !important` で非表示**（2026-06-04）。JS([bm-column-filter.js](js/bm-column-filter.js))のカテゴリ絞り込みは `style.display=""/"none"` を切替えるため、CSS側に `!important` を付けて優先させPCのみ表示
 5. カードを `data-category` 属性 + 読了時間メタ表示対応に拡張
 
@@ -1282,6 +1347,7 @@ python3 ~/.claude/skills/webapp-testing/scripts/with_server.py \
 - `tools/check-browser.py`: 外部通信をすべてモックし、お問い合わせ・資料DL・詳細ページ・8本のLPを検証。実際の送信は行わない。
 - 本文URLの回帰ケースは `tools/fixtures/rich-html-urls.json` をPython・ブラウザで共有する。`check-browser.py --browser webkit` でWebKitも検証できる（事前に `python -m playwright install webkit` を実行）。
 - `.github/workflows/checks.yml` で上記をPR時・main更新時に実行。実行コマンド・依存の導入はREADMEを参照。
+- ブラウザ検査（`browser` ジョブ）は `ubuntu-24.04` に固定（2026-10-25 に ubuntu-latest が 26.04 になり、Playwright 1.58 が Chromium を入れられず全PRで失敗したため）。Playwright を 26.04 対応の版に上げたら ubuntu-latest に戻してよい。
 - `tools/check-builds.py`: 公開WPから読み取り、一時ディレクトリでworks/columns/artists/feed/LPを各2回生成。生成JSONと再実行時の安定性を検証し、作業ツリーは更新しない。
 
 生成処理の共通部は `tools/bm_build.py`（HTTP・JSON・テンプレート・マーカー・ファイル出力）、
@@ -1308,7 +1374,7 @@ IndexNowはpushのbefore〜after全体を対象とする。beforeが取得でき
 ### 16.3 ページ固有ファイルの配置（2026-10-05）
 
 - お問い合わせ: `js/bm-contact.js`。資料DLと共通のHubSpot項目・送信先は `js/bm-lead.js`。お問い合わせの成功待ちと資料DLの非同期送信の違いは維持。
-- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う。
+- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う（例外: ハニーポット `#bmWebsite` に値がある送信は、どこへも送らず広告CVも発火させずに完了表示だけ出す。資料DLと同じ）。
 - 送信機能の準備中はHTML内の `#bmContactStatus` に再読み込み・電話連絡の案内を表示し、初期化成功後に隠す。フォームJSの読込失敗時とJavaScript無効時にも案内を残す。
 - お客様の声の詳細では、共通サニタイザーが利用できない場合に読込表示を終了してエラーを表示し、未処理の本文は挿入しない。
 - 動的詳細: `js/bm-column-detail.js`、`js/bm-news-detail.js`、`js/bm-testimonial-detail.js`。本文のブラウザサニタイズは `bm-sanitize.js` を使用。

@@ -511,16 +511,12 @@ body.ba-page .bm-header-inner { position: relative; }
    Hero を画面に貼り付け、直後の .ba-stage でスクロール距離を稼ぐ。
    高さは動画の本数から JS が決める。スクロール自体は奪わない。
    ========================================================================== */
-/* ⚠️ sticky が効かない2つの落とし穴を回避している。
-   ① 祖先の overflow: 共通CSSの html{overflow-x:hidden} がスクロールコンテナを
-      作ってしまい sticky が無効化される。このページだけ clip に変える
-      （clip は overflow-x:hidden と同じく横スクロールを止めるが、
-       スクロールコンテナを作らないので sticky が生きる）。
+/* ⚠️ sticky が効かない2つの落とし穴に注意。
+   ① 祖先の overflow: hidden/auto の祖先はスクロールコンテナになり sticky が効かなくなる。
+      html/body の横溢れ防止は共通CSS（bizmanga.css）で clip にしてあるので、
+      このページで打ち消す必要はない（Issue #73 で共通側を修正）。
+      Hero の祖先に overflow:hidden を足さないこと（切り取りたいときは clip）。
    ② スクロール余白: Hero と .ba-stage を1つのラッパーに入れ、その中で貼り付ける。 */
-html:has(body.ba-page) { overflow-x: clip; }
-/* ⚠️ body 側にも overflow-x:hidden が効いており、これもスクロールコンテナを作る。
-      html だけ直しても sticky は効かない（実測で確認）。 */
-body.ba-page { overflow-x: clip; }
 .ba-scroll-wrap { position: relative; }
 /* ⚠️ 登場アニメーション(.ba-anim .ba-device)は transform を animation で設定するため、
    インラインの transform（スクロール演出）より優先されてしまう。
@@ -640,15 +636,19 @@ body.ba-page { overflow-x: clip; }
   /* --- ヘッダー: スマホだけ Hero と一体化させる（2026-08-22 指示）---
      PC は他ページと完全共通のまま。スマホは黒背景・コンパクトにして、
      1画面に収まる情報量を増やす。 */
+  /* ヘッダーの高さ 56px は変数で body に書く（SPEC §0.6）。ヘッダー本体（bizmanga.css の
+     .bm-header { height: var(--bm-header-height) }）と中身（下の .bm-header-inner）、
+     ヘッダーの中のドロワー（.bm-nav.open の top）、Hero の余白、ヘッダーの外の帯・JS が読む値まで全部 56px になる。
+     ⚠️ .bm-header の中に書かない（ヘッダーの外には効かず、帯や JS が 72px のままになる。PR #78 再レビュー） */
+  body.ba-page { --bm-header-height: 56px; }
   body.ba-page .bm-header {
-    --bm-header-height: 56px;
     background: rgba(5,5,5,.92);
     -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255,255,255,.08);
-    height: 56px;
   }
-  body.ba-page .bm-header-inner { height: 56px; }
+  /* 中身の高さはヘッダーと同じ 56px（共通の height:100% だと下線 1px のぶん 55px になり、ロゴ等が 0.5px ずれる） */
+  body.ba-page .bm-header-inner { height: var(--bm-header-height); }
   body.ba-page .bm-logo-img { filter: brightness(0) invert(1); height: 30px; }
   /* ハンバーガーの線を白に */
   body.ba-page .bm-hamburger span { background: #fff; }
@@ -667,8 +667,8 @@ body.ba-page { overflow-x: clip; }
   .ba-hero {
     height: auto;
     min-height: 0;
-    /* ヘッダーが 72px→56px に縮むぶんを合わせる */
-    margin-top: 56px;
+    /* ヘッダーが 72px→56px に縮むぶんを合わせる（上の body.ba-page の --bm-header-height） */
+    margin-top: var(--bm-header-height, 56px);
     padding: clamp(20px, 4vw, 40px) 0 clamp(28px, 6vw, 56px);
     overflow: clip;
   }
@@ -1017,8 +1017,8 @@ body.ba-modal-open { overflow: hidden; }
    倍率や移動量は基準寸法から動的に計算する。
    ========================================================================== */
 @media (max-width: 1024px) {
-  /* スマホのヘッダーは56px。sticky中の貼り付き位置と初期余白を合わせる */
-  .ba-scroll-wrap { padding-top: 56px; }
+  /* スマホのヘッダーは56px（body.ba-page の --bm-header-height）。sticky中の貼り付き位置と初期余白を合わせる */
+  .ba-scroll-wrap { padding-top: var(--bm-header-height, 56px); }
   .ba-hero--sticky {
     margin-top: 0;
     height: 100vh;

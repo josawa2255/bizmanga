@@ -525,7 +525,9 @@
  * ------------------------------------------------------------------ */
 .lpv2-toc {
   position: sticky;
-  top: 68px;
+  /* 固定ヘッダー（--bm-header-height: 72px）の下端に貼り付ける。旧ヘッダー高さの 68px は
+     4px ヘッダーに潜る（SPEC §0.6）。2026-10 時点でこの目次を使うページは無い */
+  top: var(--bm-header-height, 72px);
   z-index: 40;
   background: var(--lpv2-ink);
   color: #fff;
