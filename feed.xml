@@ -6,121 +6,13 @@
     <description>ビジネス漫画制作のビズマンガが発信する、採用・営業・研修・BtoBマーケなどのマンガ活用ノウハウ・事例・業界動向。</description>
     <language>ja</language>
     <copyright>© Contents X 株式会社</copyright>
-    <lastBuildDate>Sat, 24 Oct 2026 09:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 09:00:00 +0900</lastBuildDate>
     <atom:link href="https://bizmanga.contentsx.jp/feed.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://contentsx.jp/material/images/logo/bizmanga-logo.webp</url>
       <title>ビズマンガ</title>
       <link>https://bizmanga.contentsx.jp/</link>
     </image>
-    <item>
-      <title>コンプライアンス漫画は既製か自社制作か｜3層で決める判定表</title>
-      <link>https://bizmanga.contentsx.jp/column/compliance-manga-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/compliance-manga-guide</guid>
-      <pubDate>Sat, 24 Oct 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>コンプライアンス漫画は、テーマの自社固有度で既製教材と自社制作を使い分けます。既製で足りるテーマの判定表、自社で作るときに描く範囲と別紙に回す内容、法務確認の入れ方、費用の目安まで整理しました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/コンプラヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>運送業の採用漫画｜長距離・地場・倉庫で変わる描く場面と費用</title>
-      <link>https://bizmanga.contentsx.jp/column/trucking-recruitment-manga</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/trucking-recruitment-manga</guid>
-      <pubDate>Wed, 21 Oct 2026 09:00:00 +0900</pubDate>
-      <category>SNS・採用</category>
-      <description>運送業の採用漫画で何を描けば、応募だけでなく面接辞退と早期離職まで減らせるのか。長距離・地場配送・倉庫作業の勤務形態別に、入社前に見せる実態と夜勤の描き方、費用と期間の目安を整理します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/運送業-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>漫画制作費用の相場は？目的別に必要な金額を逆算する考え方を解説</title>
-      <link>https://bizmanga.contentsx.jp/column/manga-production-cost</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-production-cost</guid>
-      <pubDate>Mon, 19 Oct 2026 09:00:00 +0900</pubDate>
-      <category>プロット・制作</category>
-      <description>漫画制作費用の相場は数千円〜数百万円と幅広く、妥当額は「目的」で変わります。相場・内訳・依頼先の違いを整理し、採用・販促・社内研修など目的別に必要な費用を逆算する考え方を解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>不動産のマンガ広告は何から作る？場面の選び方と表示ルール確認</title>
-      <link>https://bizmanga.contentsx.jp/column/real-estate-manga-ad</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/real-estate-manga-ad</guid>
-      <pubDate>Wed, 14 Oct 2026 09:00:00 +0900</pubDate>
-      <category>漫画</category>
-      <description>不動産のマンガ広告を、どの説明場面から作り、何を描かないか。場面別の判断表、変わる情報の線引き、表示ルールの確認観点、費用と期間の目安を制作前の判断材料としてまとめました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/不動産漫画広告ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「最後の保険」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1507</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1507</guid>
-      <pubDate>Mon, 12 Oct 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/rakuten-mobile-referral-01-768x960.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「マンガでわかる帳票DX【見積書編】」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1506</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1506</guid>
-      <pubDate>Mon, 12 Oct 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/opro-chohyo-dx-01-768x1087.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「マンガでわかる収益管理【AIサービス編】」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1505</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1505</guid>
-      <pubDate>Mon, 12 Oct 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/opro-soasc-01-768x1087.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「マンガでわかるカミレス【公共・自治体編】」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1504</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1504</guid>
-      <pubDate>Mon, 12 Oct 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/opro-kamiless-01-768x1087.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>製造業のマンガ広告は技術部門に通るか｜読み手別の使い方と費用</title>
-      <link>https://bizmanga.contentsx.jp/column/manufacturing-manga-ad</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manufacturing-manga-ad</guid>
-      <pubDate>Sun, 11 Oct 2026 09:00:00 +0900</pubDate>
-      <category>BtoB戦略</category>
-      <description>製造業のマンガ広告で、マンガに任せる説明と仕様書に任せる説明をどう分けるか。技術部門への答え方、読み手別の使い分け、1製品・数ページから試す進め方と費用の目安を整理しました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/営業-商談-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>広告漫画の準備チェックリスト｜依頼前に決める4点と集める材料</title>
-      <link>https://bizmanga.contentsx.jp/column/manga-ad-preparation</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-ad-preparation</guid>
-      <pubDate>Wed, 07 Oct 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>広告漫画の準備は、自分で決める4点と他部署から集める材料を分けると進みます。持ち主別の材料一覧、出稿希望日からの逆算例、複数社に同じ条件で見積もれる依頼シートを紹介します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/広告マンが準備-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>漫画社史はどこまで漫画にする？仕分け表と費用・工期の決め方</title>
-      <link>https://bizmanga.contentsx.jp/column/company-history-manga</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/company-history-manga</guid>
-      <pubDate>Mon, 05 Oct 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>漫画社史は、どこまでを漫画にするかで費用も工期も変わります。漫画にする範囲の仕分け表、依頼先3タイプの違い、周年式典から逆算した着手時期、確認者が多い社史の修正管理まで、周年事務局向けに整理しました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/社史-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>企業理念を漫画にする前に｜改訂頻度で決める4階層の線引き</title>
-      <link>https://bizmanga.contentsx.jp/column/corporate-philosophy-manga</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/corporate-philosophy-manga</guid>
-      <pubDate>Fri, 25 Sep 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>企業理念 漫画の検討で迷うのは「どこまでを漫画にするか」です。理念・ビジョン・中期経営計画・行動指針を更新周期で切り分け、漫画化すべき階層と費用の目安、浸透度の測り方まで解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/企業理念-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
     <item>
       <title>コミック作成ツールの限界は2本目に出る。ビジネス利用の判断軸</title>
       <link>https://bizmanga.contentsx.jp/column/business-comic-creation-tool</link>
@@ -138,33 +30,6 @@
       <category>BtoB戦略</category>
       <description>コミック作成ツールは社内共有までの資料なら実用水準です。社外資料で止まる原因を、素材の範囲・キャラクターの一貫性・コマ間の演出の3軸で線引きし、権利の4条件と外注の費用・期間まで整理しました。</description>
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/営業提案資料ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>社内報漫画の作り方｜読まれる企画7例・費用・効果測定を解説</title>
-      <link>https://bizmanga.contentsx.jp/column/company-newsletter-manga</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/company-newsletter-manga</guid>
-      <pubDate>Wed, 02 Sep 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>社内報が読まれない課題を漫画でどう解決するか。理念浸透、制度説明、社員紹介など7つの企画例、4コマとストーリー漫画の選び方、制作手順、費用、KPIまで企業の広報・人事担当者向けに解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/画像-13-1-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>理念浸透に漫画は効くのか。3段階と改訂頻度で決める判断軸</title>
-      <link>https://bizmanga.contentsx.jp/column/philosophy-manga-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/philosophy-manga-guide</guid>
-      <pubDate>Tue, 08 Sep 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>理念浸透に漫画は効くのか。浸透が止まる3段階と、漫画にすべき理念を見分ける改訂頻度3層モデル、10ページの費用目安と効果指標まで、経営会議で説明できる形にまとめました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/広報ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>IR漫画とは？発注タイミングと費用相場を年次サイクルで解説</title>
-      <link>https://bizmanga.contentsx.jp/column/ir-manga-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/ir-manga-guide</guid>
-      <pubDate>Wed, 26 Aug 2026 09:00:00 +0900</pubDate>
-      <category>BtoB戦略</category>
-      <description>IR漫画とは、統合報告書や決算資料の「読まれない」を解決する手法です。どの部分を漫画化すべきか、決算発表期・統合報告書制作期・中期経営計画策定期のどのタイミングで発注すべきかを、費用相場とあわせて解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/画像-6-1024x576.webp" type="image/webp" />
     </item>
     <item>
       <title>縦読み漫画の費用相場｜「高い」と言われる理由と実際の単価を解説</title>
@@ -212,60 +77,6 @@
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/内製-外注ヘッダーー-1024x576.webp" type="image/webp" />
     </item>
     <item>
-      <title>「マクニカAI研修」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1234</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1234</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/macnica-ai-school-01-768x1086.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「アソビシステム採用漫画(総合職)」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1238</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1238</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/e382a2e382bde38393e68ea1e794a8ae6a188_20260728_compressed-p01-768x960.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「ガウディア４話」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1237</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1237</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/gaudia-4-01-768x960.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「ガウディア３話」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1236</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1236</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/gaudia-3-01-768x960.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「ガウディア２話」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1235</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1235</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/gaudia-2-01-768x960.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>「ガウディア１話」を公開しました</title>
-      <link>https://bizmanga.contentsx.jp/news-detail?id=1233</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/news-detail?id=1233</guid>
-      <pubDate>Wed, 05 Aug 2026 09:00:00 +0900</pubDate>
-      <category>コラム</category>
-      <description>ビジネス漫画制作の詳細記事はサイトでご覧ください。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/スクリーンショット-2026-08-05-16.18.00-768x958.webp" type="image/webp" />
-    </item>
-    <item>
       <title>採用漫画とは？4タイプ・費用相場・効果の測り方と発注先の選び方</title>
       <link>https://bizmanga.contentsx.jp/column/recruitment-manga-guide</link>
       <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/recruitment-manga-guide</guid>
@@ -282,6 +93,195 @@
       <category>BtoB戦略</category>
       <description>ビジネス漫画の種類を、採用・販促・研修・認知の目的別に逆引きで整理しました。7タイプの特徴と活用場面、費用相場（1ページ25,740円〜（税抜・原稿料別途））や最短2週間の納期、まず1種類の選び方まで、自社に最適な種類を迷わず選ぶ方法を解説します。</description>
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/Image-9-1-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>X漫画が読まれない原因と商談につなげる投稿フォーマット別の型</title>
+      <link>https://bizmanga.contentsx.jp/column/x-twitter-business-manga-2</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/x-twitter-business-manga-2</guid>
+      <pubDate>Mon, 13 Jul 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>X（旧Twitter）で漫画が読まれず商談につながらない原因を、初速・1枚目・文脈の3点から整理。1コマ・4コマ・スレッドの使い分けと、継続できる制作コスト設計まで解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/Xヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>サービス紹介マンガで「伝わらない」を解決｜商材タイプ別の作り方</title>
+      <link>https://bizmanga.contentsx.jp/column/service-explainer-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/service-explainer-manga</guid>
+      <pubDate>Sun, 12 Jul 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>多機能SaaSや無形サービスの「結局、何ができるか伝わらない」を解消。サービス紹介マンガ（商品説明漫画）の効果、商材タイプ別の作り方、掲載チャネル別の使い分け、費用の目安までを一気に解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/サービス紹介-ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>導入事例漫画はなぜ商談で刺さるのか｜検討フェーズ別の見せ方と費用</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-case-study</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-case-study</guid>
+      <pubDate>Fri, 10 Jul 2026 09:00:00 +0900</pubDate>
+      <category>漫画</category>
+      <description>導入事例漫画は、文章の事例資料より商談で読まれやすく、検討を前に進めます。興味喚起・比較検討・社内稟議の3フェーズ別に、どの事例をどう見せるか、費用・納期・顧客許諾の取り方まで営業目線で解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/導入ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>読まれない資料を劇的改善！「1コマビジネス漫画」の効果と活用法</title>
+      <link>https://bizmanga.contentsx.jp/column/1koma-business-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/1koma-business-manga</guid>
+      <pubDate>Wed, 08 Jul 2026 09:00:00 +0900</pubDate>
+      <category>SNS・採用</category>
+      <description>読まれない資料を一瞬で伝わるコンテンツに。1コマ漫画の科学的根拠・歴史的背景・具体的活用法を解説。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>SaaSの漫画LPでCVRを上げる商材4タイプ別の設計ポイント</title>
+      <link>https://bizmanga.contentsx.jp/column/btob-manga-cvr-saas-2</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/btob-manga-cvr-saas-2</guid>
+      <pubDate>Tue, 07 Jul 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>SaaSのLPでCVRが頭打ちになるのは、複雑な価値が読み切られず離脱されるからです。商材タイプ別にLPのどこを漫画化すべきか、全面漫画化を避ける取捨と、CVR最大5.4倍を実績とする小さな検証の進め方を解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/ヘッダー-2-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ホワイトペーパー漫画｜DL・読了・商談化を増やす3つの使い分け</title>
+      <link>https://bizmanga.contentsx.jp/column/whitepaper-manga-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/whitepaper-manga-guide</guid>
+      <pubDate>Thu, 18 Jun 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>ホワイトペーパー漫画は効果があるのか。DLされても読まれない資料を、DL数・読了率・商談化の目的別に整理し、作り直さず小さく始める方法・費用感・評価指標まで解説します。社内提案に使える判断軸が手に入ります。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/ホワイトヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>マンガマーケティングとは？6施策別の効果・費用・使い分けを解説</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-marketing-btob-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-marketing-btob-guide</guid>
+      <pubDate>Sun, 14 Jun 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>マンガマーケティングとは何かを、BtoBでの効果（CVR・CTR・CPA）から6つの施策での使い分け、費用相場、失敗しない発注先の選び方まで解説します。自社のどの施策にマンガを当てれば成果につながるかが分かります</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/04/Image-38-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ビジネスマンガ制作の完全ガイド｜7工程・費用相場・失敗しない選び方</title>
+      <link>https://bizmanga.contentsx.jp/column/business-manga-production-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/business-manga-production-guide</guid>
+      <pubDate>Sun, 14 Jun 2026 09:00:00 +0900</pubDate>
+      <category>プロット・制作</category>
+      <description>ビジネス漫画制作を発注する前に知りたい全体像を、発注側の視点で解説します。プロット〜写植の7工程、1ページ25,740円〜（税抜・原稿料別途）の費用相場と内訳、失敗しない依頼先の選び方まで、制作現場の知見をもとに整理した完全ガイドです。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/Image-11-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ビジネス漫画はなぜ必要？「で、なぜマンガ？」に答えられない人へ</title>
+      <link>https://bizmanga.contentsx.jp/column/why-business-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/why-business-manga</guid>
+      <pubDate>Sat, 13 Jun 2026 09:00:00 +0900</pubDate>
+      <category>効果・科学</category>
+      <description>ビジネス漫画はなぜ有効なのか。認知科学の3根拠・情報過多の環境データ・CVR最大5.4倍の実例を出典付きで整理。「で、なぜマンガ？」と問われても3層で答えられる状態を作る記事です。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>マンガLPと通常LPの違いは“離脱”｜効果・費用・作り方を解説</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-lp-vs-standard-lp</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-lp-vs-standard-lp</guid>
+      <pubDate>Mon, 08 Jun 2026 09:00:00 +0900</pubDate>
+      <category>LP最適化</category>
+      <description>広告費は投じているのに、LP経由の問い合わせが思うように伸びない――。流入はあるのにコンバージョンに至らず、原因の特定に…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/03/LP-ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>漫画広告で実効CPAが下がらない真の原因と多段階再利用の設計法</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-ad-roi</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-ad-roi</guid>
+      <pubDate>Mon, 25 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>リスティングとSNSのCPAが目標を超え、別の打ち手を求められている――そんな停滞状況で、漫画広告という選択肢に行き当た…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/ヘッダー-3-1024x572.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>SEO×漫画で記憶定着14倍｜読了率を変える3つの認知科学データ</title>
+      <link>https://bizmanga.contentsx.jp/column/seo-manga-memory-retention</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/seo-manga-memory-retention</guid>
+      <pubDate>Mon, 18 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>「オウンドメディアのPVは伸びたのに、そこからの問い合わせが商談につながらない」。そんな課題を感じているなら、SEO記事…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/SEO画像ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>研修漫画製作の進め方｜3KPIから逆算する品質チェックリスト</title>
+      <link>https://bizmanga.contentsx.jp/column/training-manga-production-checklist</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/training-manga-production-checklist</guid>
+      <pubDate>Thu, 14 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>研修教材を新しくしたいと感じても、製作の各工程で何を判断すれば「読まれて・覚えられて・行動に繋がる」教材になるのか、判断…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/ヘッダー-2-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>営業資料漫画制作で商談化率を動かす『要所4ページ』設計術</title>
+      <link>https://bizmanga.contentsx.jp/column/sales-material-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/sales-material-manga</guid>
+      <pubDate>Mon, 11 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>営業会議で「資料が読まれていないのではないか」という指摘が出たことはありませんか。営業資料の漫画化は有力な選択肢ですが、…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/営業資料ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>チラシ漫画で読まれない悩みを解決｜配布チャネル別の事例構造分解</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-flyer</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-flyer</guid>
+      <pubDate>Wed, 06 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>「チラシ 漫画」というキーワードで情報を集めている方は、おそらくこんな状況ではないでしょうか。展示会で配ったチラシが思う…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/ヘッダー-1-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>マンガの特徴を構造から解剖｜BtoB活用で効く3つの強みとは</title>
+      <link>https://bizmanga.contentsx.jp/column/btob-manga-features</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/btob-manga-features</guid>
+      <pubDate>Fri, 01 May 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>情報があふれる時代に、伝えたいことが伝わらない──そんな課題感から、コンテンツの新しい選択肢としてマンガに注目し始めた経…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/マンガ-特徴-ヘッダーイラスト-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>漫画のプロットとは？企業マンガで手戻りを防ぐ書き方と5要素</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-plot-guide-2</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-plot-guide-2</guid>
+      <pubDate>Wed, 04 Feb 2026 09:00:00 +0900</pubDate>
+      <category>プロット・制作</category>
+      <description>「プロットを書いてきて」と言われたものの、何から手をつければいいか分からない。書いてみても、3部署のフィードバックがバラ…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/プロットヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ビジネス漫画の効果｜営業・マーケ・採用の3用途で測れる成果指標を整理</title>
+      <link>https://bizmanga.contentsx.jp/column/business-manga-effect</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/business-manga-effect</guid>
+      <pubDate>Wed, 04 Feb 2026 09:00:00 +0900</pubDate>
+      <category>効果・科学</category>
+      <description>「ビジネス漫画 効果」で検索しているということは、営業部長や採用担当からの起案を前にしているタイミングではないでしょうか…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/ビジネス漫画-効果-ヘッダーイラスト-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>4コマ漫画の簡単な作り方｜内製15時間で1本仕上げる手順と外注判断</title>
+      <link>https://bizmanga.contentsx.jp/column/4koma-manga-beginner</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/4koma-manga-beginner</guid>
+      <pubDate>Wed, 04 Feb 2026 09:00:00 +0900</pubDate>
+      <category>プロット・制作</category>
+      <description>未経験で4コマ漫画を作ることになり、何から手をつければよいか迷う場面は少なくないはずです。社内報や採用SNSで4コマを企…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/四コマ-書き方-ヘッダー-1024x572.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>4コマ漫画の描き方：ビジネスで成果を出す起承転結3つの型</title>
+      <link>https://bizmanga.contentsx.jp/column/4koma-business-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/4koma-business-guide</guid>
+      <pubDate>Wed, 04 Feb 2026 09:00:00 +0900</pubDate>
+      <category>漫画</category>
+      <description>「4コマ漫画をビジネスに使いたいが、描き方がわからない」。そう感じている広報・マーケティング担当者は少なくありません。社…</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/４コマ漫画-描き方１-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>コンプライアンス漫画は既製か自社制作か｜3層で決める判定表</title>
+      <link>https://bizmanga.contentsx.jp/column/compliance-manga-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/compliance-manga-guide</guid>
+      <pubDate>Sat, 24 Oct 2026 09:00:00 +0900</pubDate>
+      <category>社内</category>
+      <description>コンプライアンス漫画は、テーマの自社固有度で既製教材と自社制作を使い分けます。既製で足りるテーマの判定表、自社で作るときに描く範囲と別紙に回す内容、法務確認の入れ方、費用の目安まで整理しました。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/コンプラヘッダー-1024x576.webp" type="image/webp" />
     </item>
   </channel>
 </rss>
