@@ -1290,7 +1290,7 @@ ui-ux-pro-max の「Swiss Modernism 2.0」+「Newsletter/Content First」パタ�
 - Organization スキーマに `sameAs: https://x.com/Bizmanga_` / `parentOrganization.foundingDate: 2026-03-03` を追加
 - sitemap.xml に 4 ページ追加（strength / manga-types / use-cases / production-flow）
 - pricing.html に `Service` + `Offer`（3プラン: 19,800 / 17,900 / 16,600円/P）JSON-LD を追加
-- testimonials.html に `CollectionPage` JSON-LD を追加（レビューはJS動的描画のため AggregateRating は未付与）
+- testimonials.html に `CollectionPage` JSON-LD を追加（レビューはJS動的描画のため AggregateRating は未付与）。2026-10-26 時点で Review / AggregateRating は出さない方針（下記）
 - faq.html に `FAQPage` JSON-LD を追加（8 Q&A）
 - 全ページに `BreadcrumbList` JSON-LD を追加
 - **コラム個別ページ Article JSON-LD 拡張**（2026-04-20）: `/column/*.html` 15ページに `wordCount`（本文文字数）/ `inLanguage: "ja"` / `articleSection`（カテゴリ）を追加。AI検索エンジンへの記事規模・言語・カテゴリシグナル強化
@@ -1422,10 +1422,10 @@ IndexNowはpushのbefore〜after全体を対象とする。beforeが取得でき
 ### 16.3 ページ固有ファイルの配置（2026-10-05）
 
 - お問い合わせ: `js/bm-contact.js`。資料DLと共通のHubSpot項目・送信先は `js/bm-lead.js`。お問い合わせの成功待ちと資料DLの非同期送信の違いは維持。
-- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う（例外: ハニーポット `#bmWebsite` に値がある送信は、どこへも送らず広告CVも発火させずに完了表示だけ出す。資料DLと同じ）。
+- お問い合わせフォームは `method="post"` と送信ボタンの初期無効化でJS未読込時のGET送信を防ぎ、ハンドラー登録後に有効化する。共通送信JSの未読込・同期例外も失敗案内と状態復旧の対象とし、入力内容を保持する。完了表示・広告CVはHubSpotの受理成功時だけ行う（例外: ハニーポット `#bmWebsite` に値がある送信は、どこへも送らず広告CVも発火させずに完了表示だけ出す。資料DLと同じ）。本物の利用者の送信が消えないよう、ハニーポットには `autocomplete="off"` に加えてパスワード管理ツールの除外指定（`data-1p-ignore` / `data-lpignore="true"` / `data-bwignore="true"` / `data-form-type="other"`）を付ける（2026-10-26。`#dlWebsite` も同じ）。
 - 送信機能の準備中はHTML内の `#bmContactStatus` に再読み込み・電話連絡の案内を表示し、初期化成功後に隠す。フォームJSの読込失敗時とJavaScript無効時にも案内を残す。
 - お客様の声の詳細では、共通サニタイザーが利用できない場合に読込表示を終了してエラーを表示し、未処理の本文は挿入しない。
-- お客様の声の詳細の Review JSON-LD には `datePublished` を出さない。`/testimonials/{id}` が日付を返さないため（2026-10 時点）。2026-10-15 まで閲覧した日を入れていた（Issue #88）。WP が日付を返すようになったら、その値で出す。
+- お客様の声（一覧・詳細）は構造化データの `Review` / `AggregateRating` を出さない（2026-10-26 削除）。自社サイト上の自社サービスへのレビューは Google のレビュー表示の対象外で、評価（全件5・平均4.8/4.9）にも根拠が無かった。評価を外しただけの Review は必須項目不足のエラーになるので、Review ごと出さない。パンくず等ほかの構造化データは残す。（それ以前は詳細の Review に閲覧日を `datePublished` として入れていた問題もあった。Issue #88）
 - 動的詳細: `js/bm-column-detail.js`、`js/bm-news-detail.js`、`js/bm-testimonial-detail.js`。本文のブラウザサニタイズは `bm-sanitize.js` を使用。
 - 埋込ビューア: `js/bm-embed-viewer.js` と `css/bm-embed-viewer.css`。URL・DOM・実行順は維持。
 - ページCSS: `css/bm-{column-detail,news-detail,testimonial-detail,privacy-policy}.css`。静的コラムの共通CSSは `css/bm-column-static.css`（テンプレートも同期）。Critical CSSは初期描画のためインラインで維持。

@@ -54,43 +54,8 @@
           setMeta('meta[name="twitter:image"]', 'content', thumb);
         }
 
-        // Review JSON-LD 動的更新
-        /* datePublished は出さない。/testimonials/{id} は日付を返さず（2026-10 時点）、閲覧した日を
-           入れると毎回「今日公開」の構造化データになっていた（Issue #88） */
-        const oldLd = document.getElementById('testimonialReviewSchema');
-        if (oldLd) oldLd.remove();
-        const ld = document.createElement('script');
-        ld.type = 'application/ld+json';
-        ld.id = 'testimonialReviewSchema';
-        ld.textContent = JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Review",
-          "name": title,
-          "description": plainExcerpt,
-          "url": articleUrl,
-          "image": thumb || undefined,
-          "itemReviewed": {
-            "@type": "Service",
-            "name": "BizManga ビジネスマンガ制作",
-            "provider": {
-              "@type": "Organization",
-              "name": "Contents X 株式会社",
-              "url": "https://contentsx.jp"
-            }
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5",
-            "worstRating": "1"
-          },
-          "author": {
-            "@type": "Organization",
-            "name": tag ? (tag + "業界の導入企業") : "導入企業"
-          },
-          "reviewBody": plainExcerpt
-        });
-        document.head.appendChild(ld);
+        /* 構造化データの Review は出さない。自社サイト上の自社サービスへのレビューは Google の
+           レビュー表示の対象外で、評価（全件5）にも根拠が無かった（2026-10-26 削除） */
 
         // Render
         if (thumb) {
