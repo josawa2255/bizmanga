@@ -51,17 +51,23 @@
 :root{--bm-accent:#e85500;--bm-accent-hover:#cc4600;--bm-bg:#fff;--bm-text:#1a1a1a;--bm-text-sub:#4a4640;--bm-border:#eee;}
 *{box-sizing:border-box;}html,body{margin:0;padding:0;}body{font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif;background:var(--bm-bg);color:var(--bm-text);line-height:1.6;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;height:auto;display:block;}a{color:inherit;text-decoration:none;}
-.bm-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--bm-border);height:72px;}
-.bm-header-inner{max-width:1280px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:100%;gap:12px;}
-.bm-logo-img{height:36px;width:auto;}.bm-nav{flex:1 1 0%;}
-.bm-header-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0;}
-.bm-nav-cta{padding:8px 14px;border-radius:100px;font-size:13px;font-weight:700;background:var(--bm-accent);color:#fff;white-space:nowrap;}
-.bm-nav-cta--line{background:#06C755;}.bm-hamburger{display:none;order:10;width:40px;height:40px;background:transparent;border:none;cursor:pointer;}
+.bm-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.8);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06);height:72px;font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.8;}
+.bm-header-inner{max-width:1280px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:100%;gap:12px;min-width:0;}
+.bm-logo{flex-shrink:0;display:inline-flex;align-items:center;}.bm-logo-img{height:clamp(38px,4.4vw,58px);width:auto;max-width:none;flex-shrink:0;aspect-ratio:1316/370;}.bm-nav{flex:1 1 0%;}
+.bm-footer-brand .bm-logo-img{height:28px;margin-bottom:12px;}
+.bm-header-right{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;min-width:0;flex-shrink:0;}
+.bm-nav-cta{display:inline-flex;align-items:center;padding:12px 26px;border-radius:50px;font-size:15px;font-weight:800;letter-spacing:0.04em;background:transparent;color:#EB5200;outline:2.5px solid #EB5200;min-height:44px;white-space:nowrap;}
+.bm-nav-cta--line{gap:6px;padding:8px 16px;color:#06C755;font-size:13px;font-weight:700;outline:1.5px solid #06C755;min-height:38px;}.bm-hamburger{display:none;order:10;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:44px;height:44px;padding:8px;background:transparent;border:none;cursor:pointer;}
+.bm-hamburger span{display:block;width:22px;height:2px;background:#333;border-radius:2px;}
+.bm-cta-icons{display:inline-flex;align-items:center;gap:12px;list-style:none;margin:0;padding:0;}.bm-cta-icon{position:relative;}
+.bm-cta-icon>a{position:relative;display:inline-flex;justify-content:center;align-items:center;width:44px;height:44px;border-radius:50%;background:#fff;color:#1a1a1a;box-shadow:0 10px 18px -10px rgba(0,0,0,0.28),0 0 0 1px rgba(0,0,0,0.05);}
+.bm-cta-svg{display:block;}.bm-cta-tooltip{position:absolute;top:100%;left:50%;transform:translateX(-50%);white-space:nowrap;opacity:0;pointer-events:none;}
 .bm-container{max-width:1200px;margin:0 auto;padding:0 20px;}
 h1,h2,h3,h4,h5,h6{margin:0 0 16px;font-weight:900;line-height:1.4;}h1{font-size:clamp(28px,5vw,48px);}h2{font-size:clamp(22px,3.5vw,36px);}h3{font-size:18px;}
 p{margin:0 0 16px;}
-@media (max-width:1024px){.bm-hamburger{display:flex;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
-@media (max-width:768px){.bm-nav-cta{display:none;}}
+@media (max-width:1100px){.bm-header-inner{padding:0 12px;}.bm-nav-cta{padding:8px 14px;font-size:13px;}}
+@media (max-width:1024px){.bm-hamburger{display:flex;flex-shrink:0;min-width:48px;min-height:48px;}.bm-nav,.bm-cta-icons{display:none;}}
+@media (max-width:768px){.bm-header{background:rgba(255,255,255,0.97);-webkit-backdrop-filter:none;backdrop-filter:none;}.bm-header-inner .bm-logo-img{height:33px;}.bm-nav-cta{display:none;}}
 </style>
   <link rel="preload" href="/css/bizmanga.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/css/bizmanga.css"></noscript>
@@ -348,7 +354,7 @@ p{margin:0 0 16px;}
       "name": "AI漫画の著作権は大丈夫ですか？商用利用できますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "はい、BizMangaで制作したマンガは商用利用に完全対応しています。BizMangaの独自の制作メソッドでは、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。AIで学習素材が混入するリスクや著作権侵害リスクを避けるため、社内で許諾済み素材とオリジナル生成物のみを使用しています。"
+        "text": "はい、BizMangaで制作したマンガは商用利用に完全対応しています。BizMangaの独自の制作メソッドでは、ストーリー設計・キャラクター造形・最終仕上げなど作品のオリジナリティを担保する創造性部分は熟練のプロ漫画家が担当し、AIツールは背景・効果・レタッチといった反復作業にのみ活用します。このため作品全体の著作権は納品時にクライアント企業様に譲渡可能（買い取り型契約）で、Webサイト掲載、印刷物、SNS投稿、広告出稿、社内研修資料、営業資料など、貴社の事業活動の範囲で自由にご利用いただけます。"
       }
     },
     {
@@ -356,7 +362,7 @@ p{margin:0 0 16px;}
       "name": "動画広告と漫画広告、どちらが効果的ですか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能で、両メディアのハイブリッド展開も選択肢となります。"
+        "text": "目的とターゲットによって使い分けが必要ですが、B2Bコンテンツにおいては漫画が優位なケースが多いです。動画は視聴に時間拘束が発生し、音声オフ環境（職場、通勤）で内容が伝わらないのに対し、漫画はユーザーが自分のペースで読み進められ、かつ記憶に残りやすいメディアです。採用広報、営業資料、研修マニュアル、IR資料のように「じっくり読ませたい」コンテンツには漫画が向き、短尺でブランド認知を広げたい場合は動画が向きます。BizMangaでは漫画制作後に動画化（ボイスコミック +148,000円）にも対応可能です。"
       }
     },
     {
@@ -364,7 +370,7 @@ p{margin:0 0 16px;}
       "name": "なぜビズマンガは大手制作会社の1/5の価格で制作できるのですか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ビズマンガ独自の制作メソッドが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは背景作画、効果線、レタッチ、バリエーション出しといった反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ25,740円〜（税抜・原稿料別途）という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当するため、品質は大手と同等以上を維持。さらに125項目の品質チェックで全作品を検証し、安価でも品質に一切妥協しません。"
+        "text": "ビズマンガ独自の制作メソッドが、品質を保ちながらコスト削減を実現する核心です。従来の大手制作会社では完全手描き制作のため1ページあたり10〜15万円が一般的ですが、ビズマンガは反復作業にAIツールを活用することで制作工数を30〜50%削減し、1ページ25,740円〜（税抜・原稿料別途）という価格を実現しています。ストーリー設計・キャラクター造形・感情表現といった創造性の核となる部分は必ず人間のプロ漫画家が担当し、125項目の品質チェックで全作品を検証します。"
       }
     },
     {
@@ -372,7 +378,7 @@ p{margin:0 0 16px;}
       "name": "採用パンフレットが読まれない悩みを解決できますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "BizMangaの採用マンガは、仕事内容・社員の声・職場の雰囲気などをストーリーとして伝える用途に活用できます。具体的には、(1) 社員1名を主人公にした1日密着型、(2) 創業者の想いを伝える創業ストーリー型、(3) 入社後の成長を描くキャリア型などがあります。ヒアリングで貴社の強みと課題を整理し、目的に合う構成をご提案します。料金・制作期間はプラン、ページ数、確認工程によって異なります。"
+        "text": "採用マンガは、仕事内容・社員の声・職場の雰囲気などをストーリーとして伝える用途に活用できます。社員密着型、創業ストーリー型、キャリア型など目的に応じた構成をご提案します。料金はプラン・ページ数で変動し、制作期間も内容や確認工程によって異なりますので、ご希望の予算・納期に合わせてご相談ください。"
       }
     },
     {
@@ -380,7 +386,7 @@ p{margin:0 0 16px;}
       "name": "営業資料や提案書に興味を持ってもらえない、漫画で解決できますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。従来の営業資料は機能・スペック中心で伝わりにくい傾向がありますが、マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感できるストーリーで描写でき、クライアント企業の担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。展示会や商談、LP、メルマガなどで活用することで、商談化率や成約率の向上が期待できます。"
+        "text": "可能です。営業マンガ・提案マンガは、複雑な商品・サービスを「ユーザー視点のストーリー」で伝えられる強力なツールです。マンガ化することで(1) 導入前の課題、(2) 導入検討時の不安、(3) 導入後の成功体験を共感ストーリーで描写でき、クライアントの担当者が「自分ごと」として受け取りやすくなります。導入事例マンガ、商品紹介マンガ、提案マンガのいずれにも対応可能。"
       }
     }
   ]

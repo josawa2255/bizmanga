@@ -73,6 +73,33 @@ def bizmanga_works(value, *, label="works"):
     return works
 
 
+def work_page_count(work):
+    """作品のページ数（整数。0 は不明）。
+
+    WP の gallery（実際の画像）の枚数を優先し、無いときだけ手入力の pages を使う
+    （BUGS #049/#050「ギャラリーの実枚数を優先」。手入力は画像の追加・削除に追従しない）。
+    ページ数を出す・使う生成物（制作事例の詳細・カテゴリページのモーダル用データ・LP の事例）は必ずここを通す。
+    """
+    gallery = work.get("gallery") or []
+    if gallery:
+        return len(gallery)
+    try:
+        return max(0, int(work.get("pages") or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def work_pages_label(work):
+    """ページ数の表示文字列（例 "8P"）。gallery の実枚数を優先し、無ければ手入力の spec.pages → pages。不明は ""。"""
+    if work.get("gallery"):
+        return f"{work_page_count(work)}P"
+    manual = (work.get("spec") or {}).get("pages") or ""
+    if manual:
+        return manual
+    count = work_page_count(work)
+    return f"{count}P" if count else ""
+
+
 def safe_slug(value):
     """A single URL/file component, never a path or a Windows device name."""
     value = str(value)

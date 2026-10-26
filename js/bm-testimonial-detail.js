@@ -55,6 +55,8 @@
         }
 
         // Review JSON-LD 動的更新
+        /* datePublished は出さない。/testimonials/{id} は日付を返さず（2026-10 時点）、閲覧した日を
+           入れると毎回「今日公開」の構造化データになっていた（Issue #88） */
         const oldLd = document.getElementById('testimonialReviewSchema');
         if (oldLd) oldLd.remove();
         const ld = document.createElement('script');
@@ -67,7 +69,6 @@
           "description": plainExcerpt,
           "url": articleUrl,
           "image": thumb || undefined,
-          "datePublished": new Date().toISOString().slice(0, 10),
           "itemReviewed": {
             "@type": "Service",
             "name": "BizManga ビジネスマンガ制作",

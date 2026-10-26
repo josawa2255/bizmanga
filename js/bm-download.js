@@ -34,10 +34,6 @@
   var emailInput = form.elements.email;
   var submitBtn = form.querySelector('button[type="submit"]');
 
-  // 送信ボタンは download.html で disabled にしてあり、この JS が動いてから押せるようにする
-  // （JS の読み込み前・失敗時にブラウザ標準の送信で入力内容が URL や計測へ載るのを防ぐ。form も method="post"）
-  submitBtn.disabled = false;
-
   // 二重送信ガード: ボタンの disabled だけだと Enter 等の経路をすり抜ける（BUGS #046）
   var isSubmitting = false;
 
@@ -143,4 +139,9 @@
     startDownload();
     showThanks();
   });
+
+  // 送信ボタンは download.html で disabled にしてあり、標準送信を止める submit ハンドラーを
+  // 登録した後で押せるようにする（初期化が途中で失敗したときにハンドラー無しで押せる状態を作らない。
+  // JS の読み込み前・失敗時にブラウザ標準の送信で入力内容が URL や計測へ載るのを防ぐ。form も method="post"）
+  submitBtn.disabled = false;
 })();

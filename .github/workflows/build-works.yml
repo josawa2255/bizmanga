@@ -24,11 +24,22 @@ jobs:
         with:
           # Resolve the branch tip after waiting for the other generators.
           ref: ${{ github.ref_name }}
+      # js/bm-wp-config.js の maintenance: true の間は WordPress から取り込まない（SPEC.md「WordPress 一時停止スイッチ」）
+      - name: Skip while WordPress maintenance is on
+        id: gate
+        run: |
+          if grep -Eq '^[[:space:]]*maintenance:[[:space:]]*true' js/bm-wp-config.js; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::WordPress メンテナンス中のため、ビルドを止めました"
+          fi
       - uses: actions/setup-python@v5
+        if: steps.gate.outputs.skip != 'true'
         with:
           python-version: '3.11'
-      - run: python3 tools/build-works.py
+      - if: steps.gate.outputs.skip != 'true'
+        run: python3 tools/build-works.py
       - name: Commit generated files
+        if: steps.gate.outputs.skip != 'true'
         run: >-
           python tools/commit-generated.py
           --message "chore(works): auto-rebuild static pages [skip ci]"
