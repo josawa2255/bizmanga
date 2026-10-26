@@ -59,6 +59,16 @@
     return null;
   }
 
+  /**
+   * リンク先URL（外部サイトも可。ニュースの「リンクURL」等）。
+   * 本文と同じスキーム規則で http/https/相対だけを通し、それ以外・制御文字入りは ''。
+   * 自社ドメインに限る sanitizeUrl とは別（SPEC §16.2）。
+   */
+  function sanitizeLinkUrl(url) {
+    if (url == null) return '';
+    return safeRichUrl(String(url), false, false) || '';
+  }
+
   function safeRichSrcset(value) {
     if (/[\u0000-\u001f\u007f]/.test(value)) return null;
     var parts = value.split(',').map(function(chunk) { return chunk.trim(); }).filter(Boolean);
@@ -99,6 +109,7 @@
   window.bmSanitize = {
     html: escapeHtml,
     url: sanitizeUrl,
+    linkUrl: sanitizeLinkUrl,
     rich: sanitizeRichHTML,
     richHTML: sanitizeRichHTML // 旧呼び名エイリアス（呼び間違い事故防止）
   };

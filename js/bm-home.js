@@ -110,6 +110,8 @@
   // ホームのギャラリー枠は /works-new?site=bizmanga (= BM_NEW_WORKS_DATA) を優先。
   // WP側で cx_show_gallery_bizmanga=1 の作品のみが入っているため、ここでは追加フィルタ不要。
   // /works-new が空 or 未取得の場合は BM_WORKS_DATA で後方互換フォールバック。
+  // 描くのは /works-new の取得後（bm-all-data-ready）だけ。bm-data-ready の時点では /works-new が
+  // まだ無く、ギャラリー非表示（cx_show_gallery_bizmanga=0）の作品まで BM_WORKS_DATA で一瞬出ていた（Issue #85）
   function refreshFromWp() {
     var wpData = window.BM_NEW_WORKS_DATA;
     if (!wpData || !wpData.length) wpData = window.BM_WORKS_DATA;
@@ -118,6 +120,5 @@
       buildAll();
     }
   }
-  window.addEventListener('bm-data-ready', refreshFromWp);
   window.addEventListener('bm-all-data-ready', refreshFromWp);
 })();

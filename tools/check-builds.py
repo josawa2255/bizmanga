@@ -65,9 +65,9 @@ def main():
                     with redirect_stdout(log):
                         module.main()
                     second = snapshot(target)
-                    # RSS lastBuildDate is intentionally the current time.
+                    # Every output, feed.xml included, depends only on WP data, not the clock.
                     changed_twice = [p for p in first.keys() | second.keys()
-                                     if p != 'feed.xml' and first.get(p) != second.get(p)]
+                                     if first.get(p) != second.get(p)]
                     if changed_twice:
                         raise AssertionError(f'Non-idempotent build: {changed_twice}')
                 except BaseException:
