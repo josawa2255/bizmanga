@@ -190,12 +190,8 @@
        Hero を sticky で貼り付け、その下にスクロール距離を稼ぐための
        空の領域を置く。距離は動画の本数から算出する（§33）。 */
     /* Hero と ステージを1つのラッパーで包む。
-       sticky はスクロール余白を持つ親の中でしか効かないため。 */
-    /* 共通CSSの html{overflow-x:hidden} はスクロールコンテナを作り sticky を無効化する。
-       CSS側でも :has() で上書きしているが、未対応ブラウザ向けにここでも適用しておく。
-       clip は横スクロール抑止の効果は同じで、スクロールコンテナを作らない。 */
-    document.documentElement.style.overflowX = 'clip';
-    document.body.style.overflowX = 'clip';   // body側も同様に効いている（実測）
+       sticky はスクロール余白を持つ親の中でしか効かないため。
+       （html/body の横溢れ防止は共通CSSで clip にしてあり、sticky を妨げない。Issue #73） */
 
     var wrap = document.createElement('div');
     wrap.className = 'ba-scroll-wrap';
