@@ -185,10 +185,12 @@ p{margin:0 0 16px;}
           <!-- ハニーポット: 人には見えない入力欄。ボットだけが埋めるので、
                値が入っていた送信は js/bm-contact.js がどこへも送らず完了表示だけ出す（CRM側も data-honeypot で破棄する）。
                display:none ではなく画面外に飛ばす（display:none を無視するボット対策）。
-               tabindex=-1 と autocomplete=off でキーボード操作・自動補完からも外す。 -->
+               tabindex=-1 と autocomplete=off でキーボード操作・自動補完からも外す。
+               autocomplete=off を無視するパスワード管理ツール向けに data-1p-ignore（1Password）・
+               data-lpignore（LastPass）・data-bwignore（Bitwarden）・data-form-type=other も付ける。 -->
           <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
             <label for="bmWebsite">Website (do not fill)</label>
-            <input type="text" id="bmWebsite" name="website" tabindex="-1" autocomplete="off">
+            <input type="text" id="bmWebsite" name="website" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true" data-form-type="other">
           </div>
           <button type="submit" class="cb-submit bm-form-submit" aria-label="送信する" disabled>
             <span class="cb-label">送信する</span>
