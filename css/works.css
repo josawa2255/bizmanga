@@ -1,6 +1,12 @@
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; overflow-x: hidden; }
+/* 横溢れ防止（html / body の overflow-x）。⚠️ 値は bizmanga.css の html / body と必ず同じにする
+   （hidden → clip の2行。理由は bizmanga.css の html のコメントと SPEC §0.6）。
+   このページ（biz-library.html）は bizmanga.css を非同期（preload → onload）で読むので、届くのが遅い・
+   読み込みに失敗した・切り替えが動かないときも横溢れを止めるため、同期で読むこのファイルにも書く（PR #78 再レビュー）。
+   ⚠️ このファイルは bizmanga.css より後に書かれて勝つ。値がずれると bizmanga.css を直しても効かない
+   （以前ここだけ hidden のまま残り、ビズ書庫のフィルターが追従しなかった。Issue #73）。 */
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', 'Meiryo',
     -apple-system, BlinkMacSystemFont, sans-serif;
@@ -9,6 +15,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overflow-x: clip; /* bizmanga.css の body と同じ2行（上のコメント） */
 }
 
 /* ===== Header / Nav ===== */
@@ -97,12 +104,14 @@ body {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
-  position: sticky;
-  top: 80px;
+  /* 追従（position: sticky・top・追従させない画面）は共通クラス .bm-sticky-filter（bizmanga.css）で付ける
+     （biz-library.html で class="works-filter bm-sticky-filter"）。⚠️ ここに position / top を書かない:
+     このファイルは bizmanga.css より後に書かれて勝つので、ここの sticky が bizmanga.css の
+     「追従させない画面」の static を打ち消してしまう。bizmanga.css が届く前（非同期読込中）は追従しないだけ（害は無い） */
   z-index: 100;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* 不透明の白。以前の「白95%＋backdrop-filter: blur(8px)」は裏のカードが5%しか透けず
+     見た目はほぼ白なのに、スクロールのたびにぼかしを計算し直していた（PR #78 レビュー） */
+  background: #fff;
   padding: 16px 0;
 }
 /* === マンガ吹き出し風 フィルターボタン === */
@@ -1496,7 +1505,8 @@ body {
   .page-hero-desc { font-size: 14px; line-height: 1.7; }
   .works-section { padding: 28px 12px 48px; }
   .works-filter {
-    top: 56px;
+    /* 追従させない指定（768px 以下）は bizmanga.css の共通クラス .bm-sticky-filter にまとめてある
+       （旧ヘッダー56px用の top:56px は Issue #73 で廃止） */
     gap: 6px;
     padding: 10px 4px;
   }
@@ -1694,6 +1704,47 @@ html.direct-mode .footer { display: none !important; }
 html.direct-mode body { background: #1a1a1a; overflow: hidden; }
 /* QR経由(外部リファラー)のときだけ閉じるボタンを非表示にして書庫へ戻らせない */
 html.qr-mode .modal-close { display: none !important; }
+/* 直リンクで作品データを待つ間の読み込み表示（js/works.js の showDirectLoader）。スピナーは bizmanga.css の
+   .bm-manga-loader（暗い背景用の白とオレンジ）。ビューア（.manga-modal z-index 2000）の下に置き、開いたら外す */
+html.direct-mode .bm-direct-loader {
+  position: fixed; inset: 0; z-index: 1999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 28px;
+  padding: 16px;
+  pointer-events: none;
+}
+/* 待っても開けないときの「ただいま表示に時間がかかっています」と再読み込みボタン（showDirectStalled）。
+   スピナーの下に出す。暗い背景（#1a1a1a）の上なので白い文字・白いボタン */
+html.direct-mode .bm-direct-stalled {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  max-width: 100%;
+  pointer-events: auto;
+  text-align: center;
+}
+html.direct-mode .bm-direct-stalled__text {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.7;
+  word-break: auto-phrase;
+  line-break: strict;
+  text-wrap: pretty;
+}
+html.direct-mode .bm-direct-stalled__btn {
+  min-height: 44px;
+  min-width: 160px;
+  padding: 10px 28px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+html.direct-mode .bm-direct-stalled__btn:hover { background: #f1f1f1; }
+html.direct-mode .bm-direct-stalled__btn:focus-visible { outline: 2px solid #EB5200; outline-offset: 3px; }
 
 /* ===== Manga Page Loader ===== */
 /* 見開き: スピナー要素が背景カバー + スピナー表示を兼ねる */

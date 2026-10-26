@@ -1,5 +1,5 @@
 """Canonical column URLs shared by page and feed builders."""
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 import sys
 
 from bm_build import API_BASE, safe_slug
@@ -37,11 +37,12 @@ def column_modified_ymd(column, today=None):
 
     WP の modified_ymd は次の場合に信用せず、公開日（date_ymd）にする:
       - 公開日より前（予約投稿などで公開前に保存した日が入る。sitemap が公開日より前の lastmod を出していた、Issue #86）
-      - 今日（WP 側で全記事の更新日が一括で「今日」になることがあるため。翌日のビルドで反映される）
+      - 今日（WP 側で全記事の更新日が一括で「今日」になることがあるため。翌日のビルドで反映される）。
+        「今日」は日本時間で数える（GitHub のランナーは UTC で、03:00 JST のビルドでは前日扱いがずれるため）
     """
     published = column.get("date_ymd") or ""
     modified = column.get("modified_ymd") or ""
-    today = today or date.today().isoformat()
+    today = today or datetime.now(timezone(timedelta(hours=9))).date().isoformat()
     if modified and modified != today and modified >= published:
         return modified
     return published

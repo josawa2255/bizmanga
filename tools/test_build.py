@@ -493,6 +493,17 @@ class StaticBuildIssue86Tests(unittest.TestCase):
         self.assertIn('continue-on-error: true', steps[feed], 'a feed failure must not stop the column pages')
         self.assertIn(' feed.xml', steps[commit].split('--message', 1)[1])
 
+    def test_generator_steps_skip_while_wordpress_maintenance_is_on(self):
+        # js/bm-wp-config.js の maintenance: true の間は WP から何も取り込まない（SPEC.md「WordPress 一時停止スイッチ」）。
+        # ゲートより後ろの手順は全部 if: steps.gate.outputs.skip != 'true' を持つこと（feed の手順で漏れかけた。PR #95）
+        for workflow in ('build-works.yml', 'build-columns.yml', 'build-lp-cases.yml'):
+            with self.subTest(workflow=workflow):
+                source = (ROOT / '.github/workflows' / workflow).read_text(encoding='utf-8')
+                steps = re.split(r'\n      - ', source.split('\n    steps:\n', 1)[1])
+                gate = next(i for i, s in enumerate(steps) if 'id: gate' in s)
+                for step in steps[gate + 1:]:
+                    self.assertIn("if: steps.gate.outputs.skip != 'true'", step, step.splitlines()[0])
+
     def test_hero_image_declares_its_real_ratio(self):
         works = module('build-works.py')
         base = 'https://cms.contentsx.jp/wp-content/uploads/2026/04/01-4'

@@ -130,7 +130,19 @@
       var t = e.target.closest(".bm-column-filter-chip");
       if (!t) return;
       updateActive(t.getAttribute("data-filter"));
+      scrollToListTop(featured, grid);
     });
+  }
+
+  /* 追従しているチップを一覧の途中・下で押したとき、絞り込んだ結果の先頭を
+     フィルター帯のすぐ下へ戻す（そのままだと結果が画面の上に外れて何も無いように見える。PR #78 レビュー）。
+     先頭 = 表示中の特集記事（スマホと絞り込み外では非表示）、無ければカード一覧。
+     送り先の計算は全ページ共通の window.bmScrollBelowSticky（js/bm-nav.js）。
+     一覧の先頭より上にいるとき（帯がまだ貼り付いていないとき）は動かさない（onlyIfBelow）。 */
+  function scrollToListTop(featured, grid) {
+    if (!grid || !window.bmScrollBelowSticky) return;
+    var first = featured && featured.offsetParent !== null ? featured : grid;
+    window.bmScrollBelowSticky(first, document.querySelector(".bm-column-filter"), { onlyIfBelow: true });
   }
 
   function init() {
