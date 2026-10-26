@@ -56,8 +56,9 @@ SITE_NAME_TAIL = re.compile(r"(?:\s*[|｜]\s*(?:コラム|ビズマンガ|BizMan
 
 
 def plain_text(value):
-    """WP の入力欄の値を1行の文字列にする（タグを外し、保存時に &lt; などへ変わった文字を戻し、空白をまとめる）"""
-    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", value or "")).split())
+    """WP の入力欄の値を1行の文字列にする（タグを外し、保存時に &lt; などへ変わった文字を戻し、空白をまとめる）。
+    先に1000字で切る（どの欄も検索結果に出るのは百数十字。極端に長い値で正規表現が遅くなりビルドが止まるのを防ぐ）"""
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", (value or "")[:1000])).split())
 
 
 def normalize_brand_text(text, *, prices=True):

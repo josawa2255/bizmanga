@@ -168,6 +168,8 @@ class BuildTests(unittest.TestCase):
         for written in ('検索用｜ビズマンガ', '検索用 | BizManga', '検索用｜コラム｜ビズマンガ', '検索用｜ContentsX'):
             self.assertIn('<title>検索用 | コラム | ビズマンガ</title>', build(seo_title=written), written)
         # WP は保存時に単独の「<」を &lt; に変える。検索結果に「&lt;」と出さない
+        # 極端に長い値でもビルドが止まらない（先に1000字で切る。切らないと20万字で約20秒）
+        self.assertIn('<title>| Contents X | Contents X', build(seo_title=' | Contents X' * 20000 + 'x'))
         page = build(seo_title='費用&lt;相場', seo_description='A&amp;B &lt; C')
         self.assertIn('<title>費用&lt;相場 | コラム | ビズマンガ</title>', page)
         self.assertIn('<meta name="description" content="A&amp;B &lt; C">', page)
