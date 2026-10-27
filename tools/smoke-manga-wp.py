@@ -549,7 +549,7 @@ def check_browser(base, data):
             n_grid = pg.locator("#worksGrid > *").count()
             rec("ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）", n_grid == len(lib) and n_grid > 0, f"画面={n_grid} API={len(lib)}")
             # 手書きデータ（FALLBACK_WORKS）には /library にある作品だけを載せる。非公開にした作品・ビズ書庫に出さない作品が
-            # 残ると、WP が届くまで（/library が失敗・0件ならその間ずっと）一覧に出て、素材フォルダの画像で開ける（BUGS #074）
+            # 残ると、WP が届くまで（/library が失敗・0件ならその間ずっと）一覧に出て、素材フォルダの画像で開ける（BUGS #085）
             try:
                 hand_ids = set(fallback_works_hand(get_text(f"{base}/js/works.js")))
                 extra = sorted(hand_ids - {w.get("id") for w in lib})

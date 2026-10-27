@@ -91,7 +91,7 @@ function getImageSrc(data, pageIndex) {
 // ビズ書庫の一覧の初期表示（WP の /library が届くまで）と、その間にカードを押したときに開くデータ（表紙は素材フォルダの画像）。
 // /library が届いたら WP のデータに置き換わる。QR直リンクでは使わない。非公開にした（WP から消した）作品・ビズ書庫の一覧に
 // 出さない作品は載せない（載せると WP が届くまで、/library が失敗・0件ならその間ずっと一覧に出て開けてしまう。
-// tools/smoke-manga-wp.py が「手書きデータの作品はすべて /library にある」を確かめる。BUGS #074）。
+// tools/smoke-manga-wp.py が「手書きデータの作品はすべて /library にある」を確かめる。BUGS #085）。
 // ページ数は WP の値ではなく、素材フォルダ（contentsx.jp/material/manga/{id}/01.webp〜）に実際にある枚数
 // ＝このデータで開いたときに表示できる枚数（WP のギャラリーの方が多い作品もある。WP に合わせると素材フォルダに無いページが
 // 404 になる。2026-10-16 ContentsX の main で数えた値）。表示モードは WP の /library に合わせる（WP 側で変えたらここも直す）。
