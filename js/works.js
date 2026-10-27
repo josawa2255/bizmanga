@@ -89,7 +89,9 @@ function getImageSrc(data, pageIndex) {
 // タグ・カテゴリはWordPress manga_category タクソノミーと統一
 // 統一タクソノミー: 営業 / 採用 / 研修 / 集客 / 紹介 / ブランド / IP
 // ビズ書庫の一覧の初期表示（WP の /library が届くまで）と、その間にカードを押したときに開くデータ（表紙は素材フォルダの画像）。
-// /library が届いたら WP のデータに置き換わる。QR直リンクでは使わない（WP に未登録の当面の例外〈UNREGISTERED_FALLBACK_IDS〉を除く）。
+// /library が届いたら WP のデータに置き換わる。QR直リンクでは使わない。非公開にした（WP から消した）作品・ビズ書庫の一覧に
+// 出さない作品は載せない（載せると WP が届くまで、/library が失敗・0件ならその間ずっと一覧に出て開けてしまう。
+// tools/smoke-manga-wp.py が「手書きデータの作品はすべて /library にある」を確かめる。BUGS #074）。
 // ページ数は WP の値ではなく、素材フォルダ（contentsx.jp/material/manga/{id}/01.webp〜）に実際にある枚数
 // ＝このデータで開いたときに表示できる枚数（WP のギャラリーの方が多い作品もある。WP に合わせると素材フォルダに無いページが
 // 404 になる。2026-10-16 ContentsX の main で数えた値）。表示モードは WP の /library に合わせる（WP 側で変えたらここも直す）。
@@ -108,9 +110,7 @@ const FALLBACK_WORKS = (function() {
     ['omatome-ninja-english','おまとめ忍者（海外版）',15,'紹介','spread'],
     ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'],
     ['life-buzfes','バズフェス',25,'集客','spread'],
-    ['life-school','バズスクール',26,'集客','spread'],
     ['bms-unso','BMS運送',10,'採用','spread'],
-    ['sixtones','SixTONES風キャラ',4,'IP','spread'],
     ['torutoru-kun','トルトルくん',21,'採用','spread'],
     ['hamada-masatada','濱田将匡 信頼を、つなぐ。',20,'ブランド','spread'],
     ['asobi-kyary','ASOBI SYSTEM×きゃりーぱみゅぱみゅ',6,'IP','spread'],
@@ -304,7 +304,7 @@ function probeCoverImages() {
 }
 
 // フォールバックデータで即座に構築（WP の /library が届くまでの一覧の表示）。
-// 直リンクでは一覧を出さず、作品も WP のデータで開く（下の「QR直リンクの開き方」。WP に未登録の当面の例外を除く）ので、
+// 直リンクでは一覧を出さず、作品も WP のデータで開く（下の「QR直リンクの開き方」）ので、
 // ここでは手書きデータを登録しない
 if (!isDirectMode) {
   Object.assign(mangaData, FALLBACK_WORKS);
@@ -1764,7 +1764,6 @@ if (isQrMode) document.documentElement.classList.add('qr-mode');
 //      ビューアを表示できないまま、ページを開いてから DIRECT_SLOW_MS（開く処理を始めた後は、始めてから DIRECT_OPEN_SLOW_MS）
 //      たったら「ただいま表示に時間がかかっています」と再読み込みボタンを出す。後から表示できたらメッセージを消す
 // 手書きの作品データ（FALLBACK_WORKS）では開かない（WP と違う古いページ数・画像で壊れた表示にしない）。
-// 例外は WP に未登録の作品（UNREGISTERED_FALLBACK_IDS）だけ: WP がデータを返せないとき手書きデータで開く。
 // 待っている間は読み込み中の表示（スピナー）を出し、ビューアが開いたら・「見つかりませんでした」を出したら消す
 
 // WP の作品 ID の形か（/manga/{id} で問い合わせられる形: 英数字とハイフン。英数字を1文字以上含む）。WP の作品 ID も
@@ -1779,12 +1778,6 @@ var directOpenKey = null;
 var directNotFoundShown = false;
 var directLoaderEl = null;
 var directStalledEl = null;
-
-// WP に未登録で、手書きデータ（FALLBACK_WORKS の素材フォルダの画像）だけで公開している作品（当面の例外。2026-10-16 平澤さん判断）。
-// 直リンクではまず WP を確かめ、WP にデータがあれば WP のデータで開く（登録後は自然に WP のデータになる）。
-// WP が「作品が無い」と答えたとき・WP が応答できないときだけ、手書きデータで開く。他の作品は手書きデータでは開かない。
-// ⚠️ WP に登録したら、この例外から外す
-var UNREGISTERED_FALLBACK_IDS = ['life-school', 'sixtones'];
 
 // 「表示に時間がかかっています」を出すまでの時間（ページを開いてから。まだ開く処理を始めていないとき）
 var DIRECT_SLOW_MS = 5000;
@@ -1978,7 +1971,6 @@ function directFlowFailed(err) {
 function startDirectFlow() {
   var preKey = isPreProductionKey(directKey);
   var askManga = !preKey && isDirectIdLike(directKey);  // /manga/{id} に問い合わせる（WP の作品 ID の形のときだけ）
-  var fallbackKey = preKey ? null : matchKey(UNREGISTERED_FALLBACK_IDS, directKey);  // WP に未登録の作品（当面の例外）か
 
   var mangaAnswer;           // /manga/{id} の最後の答え（undefined＝まだ、'failed'＝応答できない、'gone'＝作品が無い、'noRoute'＝ルートが無い）
   var noRouteCounts = false; // 'noRoute' を「作品が無い」に数えるか（/library が失敗していない間に返った答えだけ数える。数えない答えは、
@@ -2049,12 +2041,6 @@ function startDirectFlow() {
       showDirectStalled(true);
     })();
   }
-  // WP に未登録の作品（当面の例外）は、WP がデータを返せない（「作品が無い」・応答できない）と分かったら手書きデータで開く
-  function openUnregisteredFallback() {
-    if (!fallbackKey || finished()) return;
-    mangaData[fallbackKey] = Object.assign({}, FALLBACK_WORKS[fallbackKey]);
-    open(fallbackKey);
-  }
   // 制作過程の登録キー（手書きの制作過程データ、届いた /library から buildPreDataFromAPI() が登録したもの、届いた
   // /preproduction から registerPreproductionItems() が登録したもの）から探す。まず ?manga= の値のまま照合し、無ければ
   // 旧形式 pre-red-{数字} / pre-name-{数字}（大文字小文字を区別しない）を pre-red-wp{数字} / pre-name-wp{数字} と読み替えて照合する
@@ -2070,10 +2056,6 @@ function startDirectFlow() {
   // ---- データが届いていないときの判断（/library の答えがそろってから）----
   function decide() {
     if (finished() || libraryWorks === undefined) return;
-    if (fallbackKey) {
-      if (mangaAnswer !== undefined) openUnregisteredFallback();
-      return;
-    }
     if (!libraryWorks) return;  // /library が失敗・0件: 判定に要るなら取り直して確かめる（retryLibraryIfNeeded）
     // 制作過程は /preproduction も配列で届くまで決めない（まだ・失敗なら取り直して確かめる。onPreproduction）
     if (preKey && !preItems) return;
@@ -2214,8 +2196,7 @@ function startDirectFlow() {
   // ---- 始める ----
   setTimeout(function() {
     if (finished()) return;  // 開く処理を始めた後は open() が見張る
-    // WP に未登録の作品（当面の例外）は、WP が時間内に応答しなければ手書きデータで開く。他は待ち続ける
-    if (fallbackKey) openUnregisteredFallback(); else showDirectStalled(false);
+    showDirectStalled(false);
   }, DIRECT_SLOW_MS);
   // 制作過程は、手書きの制作過程データにあれば WP を待たずに開く
   var preFound = preKey ? findPreKey() : null;
