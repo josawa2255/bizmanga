@@ -236,6 +236,13 @@ def pick_wp_only_id(base, lib):
     return ids[0], "全作品が FALLBACK_WORKS にあるため先頭を使用（WP 接続の確認としては弱い）"
 
 
+def fallback_works_hand(src):
+    """works.js の FALLBACK_WORKS の {作品ID: 手書きのページ数}。
+    例: ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → {'seko': 25}"""
+    return {m.group(1): int(m.group(2))
+            for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
+
+
 def pick_fallback_id(base, lib):
     """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
     手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
@@ -246,9 +253,7 @@ def pick_fallback_id(base, lib):
         src = get_text(f"{base}/js/works.js")
     except Exception as e:
         return None, None, f"works.js を取得できない（{str(e)[:60]}）"
-    # ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → id と手書きのページ数
-    hand = {m.group(1): int(m.group(2))
-            for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
+    hand = fallback_works_hand(src)
     both = [w for w in lib if w.get("id") in hand]
     if not both:
         return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い"
@@ -543,6 +548,15 @@ def check_browser(base, data):
                 pass
             n_grid = pg.locator("#worksGrid > *").count()
             rec("ビズ書庫: グリッドの作品数が /library と一致（全カードが DOM にある）", n_grid == len(lib) and n_grid > 0, f"画面={n_grid} API={len(lib)}")
+            # 手書きデータ（FALLBACK_WORKS）には /library にある作品だけを載せる。非公開にした作品・ビズ書庫に出さない作品が
+            # 残ると、WP が届くまで（/library が失敗・0件ならその間ずっと）一覧に出て、素材フォルダの画像で開ける（BUGS #074）
+            try:
+                hand_ids = set(fallback_works_hand(get_text(f"{base}/js/works.js")))
+                extra = sorted(hand_ids - {w.get("id") for w in lib})
+                rec("ビズ書庫: 手書きデータの作品はすべて /library にある（非公開にした作品が残っていない）",
+                    bool(hand_ids) and not extra, f"/library に無い={extra}" if extra else f"手書き={len(hand_ids)}件")
+            except Exception as e:
+                rec("ビズ書庫: 手書きデータの作品はすべて /library にある（非公開にした作品が残っていない）", False, str(e)[:120])
             if n_grid:
                 pg.locator("#worksGrid > *").first.click()
                 try:
