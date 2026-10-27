@@ -48,8 +48,7 @@ python3 tools/smoke-manga-wp.py --serve .
 5. **QRモード**: referrer なしで `?manga=id` を開くと `html.qr-mode` が付く／サイト内遷移（referrer あり）なら付かない（#010）。
    作品は `works.js` の `FALLBACK_WORKS` に**無い**ものを自動選択する（ビズ書庫の一覧の初期表示と埋込ビューアは WP に繋がらないとき
    手書きデータ・素材フォルダの画像を使うので、手書きデータにある作品だと開けたことが WP 接続の確認にならない）
-5b. **QR直リンク（手書きデータにある作品）**: `FALLBACK_WORKS` にも**ある**作品（WP のギャラリーがある＝1枚目が WP の画像になり手書きデータと見分けられるもの・CTA 有効を優先して自動選択。2026-10 時点は `seko`。
-   WP に未登録の一部作品〈`works.js` の `UNREGISTERED_FALLBACK_IDS`〉は手書きデータで開くことがあるので選ばない）を
+5b. **QR直リンク（手書きデータにある作品）**: `FALLBACK_WORKS` にも**ある**作品（WP のギャラリーがある＝1枚目が WP の画像になり手書きデータと見分けられるもの・CTA 有効を優先して自動選択。2026-10 時点は `seko`）を
    `?manga=id` で開き、ページ数が WP のギャラリー枚数・1枚目が WP の画像・最終ページCTA が WP の `cta_enabled` どおりであること（CTA の URL は前後の空白を除いて比べる）。
    見るのは `/library` の応答が届いた後（届いても開き直さず WP のデータのままか。届かなければ FAIL）。
    さらに `/library` を止めても同じく `/manga/{id}` のデータで開くこと（Issue #71）。
@@ -96,12 +95,12 @@ python3 tools/smoke-manga-wp.py --serve .
   `FALLBACK_WORKS` はビズ書庫の一覧の初期表示（WP 到着前）専用。WP に無い作品を QR で配るときは、先に WP に登録する。
   `FALLBACK_WORKS` のページ数は**素材フォルダ（`contentsx.jp/material/manga/{id}/`）に実際にある枚数**（WP の値に合わせると素材フォルダに無いページが 404 になる）。表示モード（縦読み専用）は WP の `/library` に合わせる。素材フォルダの画像を増減したら・WP 側で表示モードを変えたら合わせて直す
   （WP の到着前に一覧から開いた作品が古い値で表示される。到着後の切替からは WP の値になる）。
-  WP に未登録の一部作品は登録までの間、素材フォルダの画像で開く（`works.js` の `UNREGISTERED_FALLBACK_IDS`。**WP に登録したらそこから外す**）
+  ビズ書庫の一覧に出さない作品（WP の「ビズ書庫に表示」が「表示しない」＝QR直リンクだけで開く作品）は `FALLBACK_WORKS` に載せない（載せると WP が届くまでの間だけ一覧に出る）
 - WP 出力を `innerHTML` に入れる箇所は `bmSanitize` 経由か（#039、`js/bm-sanitize.js`）
 - 掲載先フラグは「未設定＝表示する」（SPEC §5 表示先・順序制御）。判定を `=== '1'` に戻していないか
 - **フォールバック**: DevTools で `cms.contentsx.jp` をブロック（または `bm-wp-config.js` の `enabled:false`）してホーム・制作事例がローカルデータで表示され、真っ白にならない。
-  ビズ書庫の QR直リンク（`?manga=id`）は手書きデータで開かず、5秒で「ただいま表示に時間がかかっています」と再読み込みボタンが出るのが正常（ブロックを外すと、待っている間に開く。
-  WP に未登録の一部作品だけは素材フォルダの画像で開く）。ビズ書庫は `bm-wp-config.js` の `apiBase` を使うが `enabled` は見ないので、確かめるときはブロックで
+  ビズ書庫の QR直リンク（`?manga=id`）は手書きデータで開かず、5秒で「ただいま表示に時間がかかっています」と再読み込みボタンが出るのが正常（ブロックを外すと、待っている間に開く）。
+  ビズ書庫は `bm-wp-config.js` の `apiBase` を使うが `enabled` は見ないので、確かめるときはブロックで
 - `bm-wp-config.js` の `apiBase` を変えるときは、ビズ書庫（`works.js` の `WP_API_BASE`）も同じ値を使う。`biz-library.html` で `bm-wp-config.js` を
   `works.js` より前に読む順番を崩さない（`tools/check-site.py` が確かめる）
 - PHP を直した場合: `php -l` → お名前.com 手動アップロード（#002）→ nginx キャッシュ最大10分を待ってから生URLで新値を確認（#048）

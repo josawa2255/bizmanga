@@ -30,8 +30,6 @@ WP API 接続が「壊れていないか」を、人の目に頼らず機械的�
     期待値は --api ではなく、ブラウザが実際に使う API（js/works.js の WP_API_BASE）から取る
   - QR直リンクの分岐（WP が「作品が無い」と答えた／WP が止まっている→「表示に時間がかかっています」→WP が戻ると開く）は、
     ブラウザ側で API の応答を差し替えて確かめる。「作品が無い」の応答は、本番の API に存在しない ID を GET した実物を使う
-  - 手書きデータにある作品を選ぶ項目では、WP に未登録の当面の例外（js/works.js の UNREGISTERED_FALLBACK_IDS）を選ばない
-    （この例外は WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、「手書きデータでは開かない」の確認にならない）
 
 終了コード: 全 PASS で 0、1つでも FAIL なら 1（例外で中断した区画も FAIL として集計）。
 必要なもの: Python 3.9+、playwright（pip install playwright && python3 -m playwright install chromium）
@@ -238,18 +236,11 @@ def pick_wp_only_id(base, lib):
     return ids[0], "全作品が FALLBACK_WORKS にあるため先頭を使用（WP 接続の確認としては弱い）"
 
 
-def unregistered_fallback_ids(src):
-    """works.js の UNREGISTERED_FALLBACK_IDS（WP に未登録の当面の例外。WP がデータを返せないとき手書きデータで開く）"""
-    m = re.search(r"UNREGISTERED_FALLBACK_IDS\s*=\s*\[([^\]]*)\]", src)
-    return set(re.findall(r"'([^']+)'", m.group(1))) if m else set()
-
-
 def pick_fallback_id(base, lib):
     """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
     手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
     見分けられる）→ 最終ページCTA が有効 → 手書きのページ数と WP のギャラリー枚数が違う、の順に優先する（手書きデータの
-    ページ数は素材フォルダの枚数なので、WP のギャラリーの方が多い作品もある）。WP に未登録の当面の例外（UNREGISTERED_FALLBACK_IDS）は選ばない
-    （WP が「作品が無い」と答えたとき・応答できないときに手書きデータで開くので、確認にならない）。
+    ページ数は素材フォルダの枚数なので、WP のギャラリーの方が多い作品もある）。
     戻り値: (作品ID, 手書きのページ数, 理由)"""
     try:
         src = get_text(f"{base}/js/works.js")
@@ -258,10 +249,9 @@ def pick_fallback_id(base, lib):
     # ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → id と手書きのページ数
     hand = {m.group(1): int(m.group(2))
             for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
-    excluded = unregistered_fallback_ids(src)
-    both = [w for w in lib if w.get("id") in hand and w.get("id") not in excluded]
+    both = [w for w in lib if w.get("id") in hand]
     if not both:
-        return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い（WP に未登録の当面の例外を除く）"
+        return None, None, "FALLBACK_WORKS と /library の両方にある作品が無い"
 
     def rank(w):
         differs = len(w.get("gallery") or []) != hand[w["id"]]
