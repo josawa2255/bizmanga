@@ -6,13 +6,22 @@
     <description>ビジネス漫画制作のビズマンガが発信する、採用・営業・研修・BtoBマーケなどのマンガ活用ノウハウ・事例・業界動向。</description>
     <language>ja</language>
     <copyright>© Contents X 株式会社</copyright>
-    <lastBuildDate>Mon, 26 Oct 2026 09:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 28 Oct 2026 09:00:00 +0900</lastBuildDate>
     <atom:link href="https://bizmanga.contentsx.jp/feed.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://contentsx.jp/material/images/logo/bizmanga-logo.webp</url>
       <title>ビズマンガ</title>
       <link>https://bizmanga.contentsx.jp/</link>
     </image>
+    <item>
+      <title>採用ピッチ資料の構成と見せ方｜15項目の判定表と漫画を入れる範囲</title>
+      <link>https://bizmanga.contentsx.jp/column/recruiting-pitch-deck-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/recruiting-pitch-deck-manga</guid>
+      <pubDate>Wed, 28 Oct 2026 09:00:00 +0900</pubDate>
+      <category>SNS・採用</category>
+      <description>採用ピッチ資料の作り方を、5ブロック・15項目の構成と、項目ごとに文字・図表・写真・漫画のどれで見せるかを決める判定表で解説。投資家向け資料の流用範囲や、漫画を入れる場合の費用・期間もわかります。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/採用ピッチ資料-1024x576.webp" type="image/webp" />
+    </item>
     <item>
       <title>コミック作成ツールの限界は2本目に出る。ビジネス利用の判断軸</title>
       <link>https://bizmanga.contentsx.jp/column/business-comic-creation-tool</link>
@@ -23,49 +32,13 @@
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/コミック作成ツール-ヘッダー-1024x576.webp" type="image/webp" />
     </item>
     <item>
-      <title>コミック作成ツールで社外資料は作れるか｜3評価軸と外注の分岐点</title>
-      <link>https://bizmanga.contentsx.jp/column/comic-creation-tool-business</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/comic-creation-tool-business</guid>
-      <pubDate>Fri, 18 Sep 2026 09:00:00 +0900</pubDate>
-      <category>BtoB戦略</category>
-      <description>コミック作成ツールは社内共有までの資料なら実用水準です。社外資料で止まる原因を、素材の範囲・キャラクターの一貫性・コマ間の演出の3軸で線引きし、権利の4条件と外注の費用・期間まで整理しました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/営業提案資料ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>縦読み漫画の費用相場｜「高い」と言われる理由と実際の単価を解説</title>
-      <link>https://bizmanga.contentsx.jp/column/vertical-manga-business</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/vertical-manga-business</guid>
-      <pubDate>Sun, 30 Aug 2026 09:00:00 +0900</pubDate>
-      <category>漫画</category>
-      <description>縦読み漫画はビジネスで本当に使えるのか。SNS・採用・LPでのBtoB活用パターンと、見開き漫画との使い分け基準を発注側の視点で整理しました。市場データや費用・納期の目安もわかります。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/縦読みマンガ-ヘッダー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>ビジネス漫画とは 5つの種類×6つの用途でわかる自社の始め方</title>
-      <link>https://bizmanga.contentsx.jp/column/what-is-business-manga</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/what-is-business-manga</guid>
-      <pubDate>Sun, 23 Aug 2026 09:00:00 +0900</pubDate>
-      <category>漫画</category>
-      <description>ビジネス漫画とは、営業・採用・研修などの課題を漫画で解決するBtoBコンテンツです。5つの種類×6つの用途の適合マトリクスと認知科学の根拠、費用相場までを1本で整理。自社がどこから始めるべきかが分かります。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/ビジネス漫画とは-HD-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>ビジネス漫画のデメリット一覧6つ｜解消できるものと本質的な限界</title>
-      <link>https://bizmanga.contentsx.jp/column/business-manga-demerit</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/business-manga-demerit</guid>
-      <pubDate>Tue, 18 Aug 2026 09:00:00 +0900</pubDate>
-      <category>漫画</category>
-      <description>ビジネス漫画のデメリットには「制作会社選びで解消できるもの」と「漫画の本質的な限界」の2種類があります。6つのデメリットを種類別に整理し、自社に当てはまる種類を3ステップで判断する方法を解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/デメリット-HD-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>漫画広告制作会社の選び方7チェックと費用相場【依頼先4タイプ】</title>
-      <link>https://bizmanga.contentsx.jp/column/manga-ad-selection</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-ad-selection</guid>
-      <pubDate>Tue, 11 Aug 2026 09:00:00 +0900</pubDate>
-      <category>プロット・制作</category>
-      <description>漫画広告の制作会社選びで迷う方へ。制作会社・フリーランス・代理店など依頼先4タイプ別の費用相場と、失敗しない選び方7チェックを解説。自社の予算と目的に合う発注先が分かります。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/マンガ広制作会社ヘッダー-1024x576.webp" type="image/webp" />
+      <title>理念浸透に漫画は効くのか。3段階と改訂頻度で決める判断軸</title>
+      <link>https://bizmanga.contentsx.jp/column/philosophy-manga-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/philosophy-manga-guide</guid>
+      <pubDate>Tue, 08 Sep 2026 09:00:00 +0900</pubDate>
+      <category>社内</category>
+      <description>理念浸透に漫画は効くのか。浸透が止まる3段階と、漫画にすべき理念を見分ける改訂頻度3層モデル、10ページの費用目安と効果指標まで、経営会議で説明できる形にまとめました。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/広報ヘッダー-1024x576.webp" type="image/webp" />
     </item>
     <item>
       <title>漫画制作の内製と外注、8工程のどこから任せるかで決まる判断基準</title>
@@ -75,15 +48,6 @@
       <category>BtoB戦略</category>
       <description>漫画制作は内製と外注のどちらが良いか、1本まるごとではなく8つの工程で切り分けて判断する方法を解説。見積書に出てこない社内工数の計算方法、内製で見落としがちな著作権と二次利用の注意点、本数と用途で選ぶ3つのパターンまで整理します。</description>
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/07/内製-外注ヘッダーー-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>採用漫画とは？4タイプ・費用相場・効果の測り方と発注先の選び方</title>
-      <link>https://bizmanga.contentsx.jp/column/recruitment-manga-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/recruitment-manga-guide</guid>
-      <pubDate>Mon, 03 Aug 2026 09:00:00 +0900</pubDate>
-      <category>SNS・採用</category>
-      <description>採用漫画とは何か、4つのタイプと効く採用課題、費用相場と制作の流れを整理。さらに採用ファネル5段階での効き所、効果が出ない3条件、自社で効果を検証する指標設計、発注先を見極める4項目まで解説します。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/Image-2-1024x576.webp" type="image/webp" />
     </item>
     <item>
       <title>ビジネス漫画の種類とは？目的別に選ぶ7タイプと費用相場の早見表</title>
@@ -147,6 +111,60 @@
       <category>BtoB戦略</category>
       <description>ホワイトペーパー漫画は効果があるのか。DLされても読まれない資料を、DL数・読了率・商談化の目的別に整理し、作り直さず小さく始める方法・費用感・評価指標まで解説します。社内提案に使える判断軸が手に入ります。</description>
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/ホワイトヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>コミック作成ツールで社外資料は作れるか｜3評価軸と外注の分岐点</title>
+      <link>https://bizmanga.contentsx.jp/column/comic-creation-tool-business</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/comic-creation-tool-business</guid>
+      <pubDate>Fri, 18 Sep 2026 09:00:00 +0900</pubDate>
+      <category>BtoB戦略</category>
+      <description>コミック作成ツールは社内共有までの資料なら実用水準です。社外資料で止まる原因を、素材の範囲・キャラクターの一貫性・コマ間の演出の3軸で線引きし、権利の4条件と外注の費用・期間まで整理しました。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/09/営業提案資料ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>縦読み漫画の費用相場｜「高い」と言われる理由と実際の単価を解説</title>
+      <link>https://bizmanga.contentsx.jp/column/vertical-manga-business</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/vertical-manga-business</guid>
+      <pubDate>Sun, 30 Aug 2026 09:00:00 +0900</pubDate>
+      <category>漫画</category>
+      <description>縦読み漫画はビジネスで本当に使えるのか。SNS・採用・LPでのBtoB活用パターンと、見開き漫画との使い分け基準を発注側の視点で整理しました。市場データや費用・納期の目安もわかります。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/06/縦読みマンガ-ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ビジネス漫画とは 5つの種類×6つの用途でわかる自社の始め方</title>
+      <link>https://bizmanga.contentsx.jp/column/what-is-business-manga</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/what-is-business-manga</guid>
+      <pubDate>Sun, 23 Aug 2026 09:00:00 +0900</pubDate>
+      <category>漫画</category>
+      <description>ビジネス漫画とは、営業・採用・研修などの課題を漫画で解決するBtoBコンテンツです。5つの種類×6つの用途の適合マトリクスと認知科学の根拠、費用相場までを1本で整理。自社がどこから始めるべきかが分かります。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/ビジネス漫画とは-HD-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>ビジネス漫画のデメリット一覧6つ｜解消できるものと本質的な限界</title>
+      <link>https://bizmanga.contentsx.jp/column/business-manga-demerit</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/business-manga-demerit</guid>
+      <pubDate>Tue, 18 Aug 2026 09:00:00 +0900</pubDate>
+      <category>漫画</category>
+      <description>ビジネス漫画のデメリットには「制作会社選びで解消できるもの」と「漫画の本質的な限界」の2種類があります。6つのデメリットを種類別に整理し、自社に当てはまる種類を3ステップで判断する方法を解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/デメリット-HD-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>漫画広告制作会社の選び方7チェックと費用相場【依頼先4タイプ】</title>
+      <link>https://bizmanga.contentsx.jp/column/manga-ad-selection</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/manga-ad-selection</guid>
+      <pubDate>Tue, 11 Aug 2026 09:00:00 +0900</pubDate>
+      <category>プロット・制作</category>
+      <description>漫画広告の制作会社選びで迷う方へ。制作会社・フリーランス・代理店など依頼先4タイプ別の費用相場と、失敗しない選び方7チェックを解説。自社の予算と目的に合う発注先が分かります。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/05/マンガ広制作会社ヘッダー-1024x576.webp" type="image/webp" />
+    </item>
+    <item>
+      <title>採用漫画とは？4タイプ・費用相場・効果の測り方と発注先の選び方</title>
+      <link>https://bizmanga.contentsx.jp/column/recruitment-manga-guide</link>
+      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/recruitment-manga-guide</guid>
+      <pubDate>Mon, 03 Aug 2026 09:00:00 +0900</pubDate>
+      <category>SNS・採用</category>
+      <description>採用漫画とは何か、4つのタイプと効く採用課題、費用相場と制作の流れを整理。さらに採用ファネル5段階での効き所、効果が出ない3条件、自社で効果を検証する指標設計、発注先を見極める4項目まで解説します。</description>
+      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/08/Image-2-1024x576.webp" type="image/webp" />
     </item>
     <item>
       <title>マンガマーケティングとは？6施策別の効果・費用・使い分けを解説</title>
@@ -264,24 +282,6 @@
       <category>プロット・制作</category>
       <description>未経験で4コマ漫画を作ることになり、何から手をつければよいか迷う場面は少なくないはずです。社内報や採用SNSで4コマを企…</description>
       <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/四コマ-書き方-ヘッダー-1024x572.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>4コマ漫画の描き方：ビジネスで成果を出す起承転結3つの型</title>
-      <link>https://bizmanga.contentsx.jp/column/4koma-business-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/4koma-business-guide</guid>
-      <pubDate>Wed, 04 Feb 2026 09:00:00 +0900</pubDate>
-      <category>漫画</category>
-      <description>「4コマ漫画をビジネスに使いたいが、描き方がわからない」。そう感じている広報・マーケティング担当者は少なくありません。社…</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/02/４コマ漫画-描き方１-1024x576.webp" type="image/webp" />
-    </item>
-    <item>
-      <title>コンプライアンス漫画は既製か自社制作か｜3層で決める判定表</title>
-      <link>https://bizmanga.contentsx.jp/column/compliance-manga-guide</link>
-      <guid isPermaLink="true">https://bizmanga.contentsx.jp/column/compliance-manga-guide</guid>
-      <pubDate>Sat, 24 Oct 2026 09:00:00 +0900</pubDate>
-      <category>社内</category>
-      <description>コンプライアンス漫画は、テーマの自社固有度で既製教材と自社制作を使い分けます。既製で足りるテーマの判定表、自社で作るときに描く範囲と別紙に回す内容、法務確認の入れ方、費用の目安まで整理しました。</description>
-      <enclosure url="https://cms.contentsx.jp/wp-content/uploads/2026/10/コンプラヘッダー-1024x576.webp" type="image/webp" />
     </item>
   </channel>
 </rss>
