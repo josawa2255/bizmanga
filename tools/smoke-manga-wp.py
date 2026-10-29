@@ -220,16 +220,19 @@ def check_api(api):
     return data
 
 
+# ビズ書庫の手書きの作品データ（window.BM_FALLBACK_WORKS。works.js の FALLBACK_WORKS と埋込ビューアが使う）
+FALLBACK_JS = "js/bm-fallback-works.js"
+
+
 def pick_wp_only_id(base, lib):
-    """works.js の FALLBACK_WORKS に無い作品IDを選ぶ（WP 接続が生きていないと開けない作品）"""
+    """手書きデータ（FALLBACK_JS）に無い作品IDを選ぶ（WP 接続が生きていないと開けない作品）"""
     ids = [w["id"] for w in lib if w.get("id")]
     if not ids:
         return None, "library が空"
     try:
-        src = get_text(f"{base}/js/works.js")
-        fallback = set(re.findall(r"\[\s*'([a-z0-9-]+)'\s*,", src))
+        fallback = set(fallback_works_hand(get_text(f"{base}/{FALLBACK_JS}")))
     except Exception as e:
-        return ids[0], f"works.js を取得できず先頭を使用（{str(e)[:60]}）"
+        return ids[0], f"{FALLBACK_JS} を取得できず先頭を使用（{str(e)[:60]}）"
     for i in ids:
         if i not in fallback:
             return i, "FALLBACK_WORKS に無い作品"
@@ -237,22 +240,22 @@ def pick_wp_only_id(base, lib):
 
 
 def fallback_works_hand(src):
-    """works.js の FALLBACK_WORKS の {作品ID: 手書きのページ数}。
+    """手書きデータ（FALLBACK_JS の window.BM_FALLBACK_WORKS）の {作品ID: 手書きのページ数}。
     例: ['seko','瀬古恭介 始まりのものがたり',25,'ブランド','spread'] → {'seko': 25}"""
     return {m.group(1): int(m.group(2))
             for m in re.finditer(r"\[\s*'([a-z0-9-]+)'\s*,\s*'(?:[^'\\]|\\.)*'\s*,\s*(\d+)\s*,", src)}
 
 
 def pick_fallback_id(base, lib):
-    """works.js の FALLBACK_WORKS に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
+    """手書きデータ（FALLBACK_JS）に**ある**作品を選ぶ（QR直リンクが手書きデータではなく WP のデータで開くかの確認用）。
     手書きデータで開くと1枚目が素材フォルダの画像になり、最終ページCTA も出ないので、WP のギャラリーがある（1枚目の画像で
     見分けられる）→ 最終ページCTA が有効 → 手書きのページ数と WP のギャラリー枚数が違う、の順に優先する（手書きデータの
     ページ数は素材フォルダの枚数なので、WP のギャラリーの方が多い作品もある）。
     戻り値: (作品ID, 手書きのページ数, 理由)"""
     try:
-        src = get_text(f"{base}/js/works.js")
+        src = get_text(f"{base}/{FALLBACK_JS}")
     except Exception as e:
-        return None, None, f"works.js を取得できない（{str(e)[:60]}）"
+        return None, None, f"{FALLBACK_JS} を取得できない（{str(e)[:60]}）"
     hand = fallback_works_hand(src)
     both = [w for w in lib if w.get("id") in hand]
     if not both:
@@ -551,7 +554,7 @@ def check_browser(base, data):
             # 手書きデータ（FALLBACK_WORKS）には /library にある作品だけを載せる。非公開にした作品・ビズ書庫に出さない作品が
             # 残ると、WP が届くまで（/library が失敗・0件ならその間ずっと）一覧に出て、素材フォルダの画像で開ける（BUGS #074）
             try:
-                hand_ids = set(fallback_works_hand(get_text(f"{base}/js/works.js")))
+                hand_ids = set(fallback_works_hand(get_text(f"{base}/{FALLBACK_JS}")))
                 extra = sorted(hand_ids - {w.get("id") for w in lib})
                 rec("ビズ書庫: 手書きデータの作品はすべて /library にある（非公開にした作品が残っていない）",
                     bool(hand_ids) and not extra, f"/library に無い={extra}" if extra else f"手書き={len(hand_ids)}件")
@@ -809,6 +812,47 @@ def check_browser(base, data):
             except Exception:
                 rec("埋込ビューア embed-viewer?manga=&manual=1: 画像が出る", False)
             pr.finish("埋込ビューア")
+            # WP がエラー（503）・通信できない（abort）とき: 手書きデータ（FALLBACK_JS）にある作品だけ素材フォルダの画像で表示し
+            # （ページ数も手書きデータどおり＝素材に無いページを読まない）、無い作品（非公開にした作品など）は推測で表示しない
+            # （「表示に時間がかかっています」）。ルート BUGS.md #085
+            try:
+                hand = fallback_works_hand(get_text(f"{base}/{FALLBACK_JS}"))
+            except Exception:
+                hand = {}
+            known = next(iter(hand), None)
+            rec(f"埋込ビューア: 手書きデータ（{FALLBACK_JS}）を読める", bool(known), f"{len(hand)}件")
+            if not known:
+                return
+            json_headers = {"content-type": "application/json; charset=UTF-8", "access-control-allow-origin": "*"}
+            for mode in ("503", "通信できない"):
+                for mid in (known, "bm-smoke-no-such-work"):
+                    ctx = new_ctx(browser, viewport={"width": 1440, "height": 900})
+                    if mode == "503":
+                        ctx.route("**/wp-json/contentsx/v1/manga/**", lambda route: route.fulfill(
+                            status=503, headers=json_headers, body='{"code":"service_unavailable"}'))
+                    else:
+                        ctx.route("**/wp-json/contentsx/v1/manga/**", lambda route: route.abort())
+                    pr2 = PageProbe(ctx, host, local_http=local_http, expected_api_failures=True)
+                    pg2 = pr2.page
+                    pg2.goto(f"{base}/embed-viewer.html?manga={mid}&manual=1", wait_until="domcontentloaded")
+                    label = f"埋込ビューア ?manga={mid}（WP が{mode}）"
+                    if mid == known:
+                        try:
+                            pg2.wait_for_function(IMG_LOADED, arg="#viewer img", timeout=20000)
+                            first = pg2.evaluate("() => { const i = document.querySelector('#viewer img'); return i ? i.src : null; }")
+                        except Exception as e:
+                            first = f"出ない（{type(e).__name__}）"
+                        rec(f"{label}: 手書きデータにある作品は素材フォルダの画像で表示する",
+                            isinstance(first, str) and f"/material/manga/{known}/01.webp" in first, f"1枚目={str(first)[-60:]}")
+                        pg2.wait_for_timeout(1500)  # 素材に無いページ（404）を読みに行かないかを finish で見る
+                    else:
+                        pg2.wait_for_timeout(4000)
+                        st = pg2.evaluate("""() => ({ imgs: document.querySelectorAll('#viewer img').length,
+                            text: (document.getElementById('loading') || {}).textContent || '' })""")
+                        rec(f"{label}: 手書きデータに無い作品は推測で表示せず「表示に時間がかかっています」",
+                            st["imgs"] == 0 and "表示に時間がかかっています" in st["text"], f"画像={st['imgs']}枚 表示={st['text'][:30]}")
+                    pr2.finish(label)
+                    close_ctx(ctx)
 
         def mobile():
             ctx = new_ctx(browser, viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True,
