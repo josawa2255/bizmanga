@@ -387,7 +387,7 @@
     // WP が「作品が無い」と答えたか（/manga/{id} のデータ以外の応答）。ビズ書庫の QR直リンク（js/works.js の readMangaAnswer が
     // 'gone' とする応答）と同じ判定: 404 で本文がプラグインの形（{"error":"not found"} のように error があり code が無い。
     // 無い作品・完全非公開 cx_private の作品）か、410 で本文がプラグインか WP の形（{"code":"...","message":"..."}）。
-    // それ以外（5xx・401/403・WP の rest_no_route・JSON でない応答）は「作品が無い」とは見なさない（手書きデータにある作品だけ素材フォルダの画像で表示する。renderFromMaterial）
+    // それ以外（5xx・401/403・WP の rest_no_route・JSON でない応答）は「作品が無い」とは見なさない（手書きデータにある作品だけ素材フォルダの画像で表示し、無い作品は取り直して待つ。onWpUnavailable）
     function isPluginErrorBody(d) {
       return !!d && typeof d === 'object' && !Array.isArray(d) && typeof d.error === 'string' &&
         !Object.prototype.hasOwnProperty.call(d, 'code');
@@ -402,9 +402,10 @@
     }
     // 「作品が無い」の目印（render に渡すデータと区別する）
     var MANGA_GONE = {};
-    // WP がエラーを返した・通信できないときに、素材フォルダ（contentsx.jp/material/manga/{id}/NN.webp）の画像で表示してよい
-    // 作品＝ビズ書庫の手書きデータ（js/bm-fallback-works.js。公開中の作品だけを載せる一覧）。ページ数・表示モードもそこから取る。
-    // 一覧に無い ID は推測で表示しない（非公開にした作品の素材画像を出さない。ルート BUGS.md #085）
+    // 素材フォルダ（contentsx.jp/material/manga/{id}/NN.webp）の画像で表示してよい作品＝ビズ書庫の手書きデータ
+    // （js/bm-fallback-works.js。公開中の作品だけを載せる一覧）。ページ数・表示モード・タイトルもそこから取る。
+    // WP がエラーを返した・通信できない・メンテナンス中のとき、一覧に無い ID は推測で表示しない（非公開にした作品の素材画像を
+    // 出さない。ルート BUGS.md #085）。WP が公開中と答えた作品は、ギャラリーが空なら一覧に無くても素材フォルダで表示する
     function knownWork(id) {
       var rows = window.BM_FALLBACK_WORKS || [];
       for (var i = 0; i < rows.length; i++) {
@@ -412,57 +413,74 @@
       }
       return null;
     }
-    function materialGallery(id, pages) {
-      var g = [];
+    // 素材フォルダの画像で表示する。ページ数は手書きデータ（素材の実際の枚数）→ WP の pages → 30 の順
+    function renderMaterial(row, data) {
+      var wpPages = data ? parseInt(data.pages, 10) : 0;
+      var pages = row ? row[2] : (wpPages > 0 ? wpPages : 30);
+      var gallery = [];
       for (var i = 1; i <= pages; i++) {
-        g.push('https://contentsx.jp/material/manga/' + id + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
+        gallery.push('https://contentsx.jp/material/manga/' + mangaId + '/' + (i < 10 ? '0' + i : '' + i) + '.webp');
       }
-      return g;
+      render({
+        title_ja: (data && data.title_ja) || (row ? row[1] : ''),
+        view_type: (data && data.view_type) || (row ? row[4] : 'spread'),
+        gallery: gallery
+      });
     }
-    // WP のデータが無いとき: 一覧にある作品は素材フォルダの画像で表示し、無い作品は待ってもらう
-    function renderFromMaterial() {
+    // 一覧に無い作品は、WP が戻るまで取り直して待つ（取り直すたびに間隔を延ばし、合計 10 分まで。ビズ書庫の QR直リンクと同じ考え方）
+    var RETRY_MS = [5000, 10000, 20000, 40000, 60000];
+    var RETRY_LIMIT_MS = 10 * 60 * 1000;
+    var retryCount = 0;
+    var waitedMs = 0;
+    function onWpUnavailable() {
       var row = knownWork(mangaId);
-      if (!row) {
-        loading.textContent = 'ただいま表示に時間がかかっています';
+      if (row) { renderMaterial(row, null); return; }
+      var delay = RETRY_MS[Math.min(retryCount, RETRY_MS.length - 1)];
+      if (waitedMs + delay > RETRY_LIMIT_MS) {
+        loading.textContent = 'ただいま表示に時間がかかっています。しばらくしてから再度ご覧ください';
         return;
       }
-      render({ view_type: row[4], gallery: materialGallery(mangaId, row[2]) });
+      loading.textContent = 'ただいま表示に時間がかかっています';
+      retryCount++;
+      waitedMs += delay;
+      setTimeout(load, delay);
     }
-    fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
-      .then(function(r) {
-        if (r.ok) return r.json();
-        return r.text().then(function(text) {
-          var body = null;
-          try { body = JSON.parse(text); } catch (e) { /* JSON でない（HTML のエラーページ等） */ }
-          return isMangaGone(r.status, body) ? MANGA_GONE : null;
+    function load() {
+      fetch(WP_API + '/manga/' + encodeURIComponent(mangaId))
+        .then(function(r) {
+          if (r.ok) return r.json();
+          return r.text().then(function(text) {
+            var body = null;
+            try { body = JSON.parse(text); } catch (e) { /* JSON でない（HTML のエラーページ等） */ }
+            return isMangaGone(r.status, body) ? MANGA_GONE : null;
+          });
+        })
+        .then(function(data) {
+          // WP が「作品が無い」と答えた: 素材フォルダの画像を推測して出すと、WP で完全非公開にした作品が見えてしまうので
+          // 推測せず「NO PAGES」にする（Issue #84。以前は 01〜30.webp を推測していた）
+          if (data === MANGA_GONE) {
+            render(null);
+            return;
+          }
+          if (data && data.gallery && data.gallery.length > 0) {
+            render(data);
+          } else if (data) {
+            renderMaterial(knownWork(mangaId), data);  // WP が公開中と答えたがギャラリーが空
+          } else {
+            onWpUnavailable();  // WP がエラーを返した（5xx・401/403 など。「作品が無い」とは分からない）
+          }
+        })
+        .catch(function() {
+          // メンテナンス中（bm-wp-config.js の maintenance）は WP に取りに行かない（取り直さない）。一覧にある作品は
+          // 素材フォルダの画像で表示する（ページ数・表示モードは手書きデータどおりなので崩れない）
+          if (window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance) {
+            var row = knownWork(mangaId);
+            if (row) renderMaterial(row, null);
+            else loading.textContent = 'ただいま表示を一時停止しています';
+            return;
+          }
+          onWpUnavailable();
         });
-      })
-      .then(function(data) {
-        // WP が「作品が無い」と答えた: 素材フォルダの画像を推測して出すと、WP で完全非公開にした作品が見えてしまうので
-        // 推測せず「NO PAGES」にする（Issue #84。以前は 01〜30.webp を推測していた）
-        if (data === MANGA_GONE) {
-          render(null);
-          return;
-        }
-        if (data && data.gallery && data.gallery.length > 0) {
-          render(data);
-        } else if (data) {
-          // WP が公開中と答えたがギャラリーが空: 素材フォルダの画像で表示する。ページ数は手書きデータ（素材の実際の枚数）→
-          // WP の pages → 30 の順
-          var row = knownWork(mangaId);
-          var pages = row ? row[2] : (parseInt(data.pages, 10) > 0 ? parseInt(data.pages, 10) : 30);
-          render({ view_type: data.view_type || (row ? row[4] : 'spread'), gallery: materialGallery(mangaId, pages) });
-        } else {
-          // WP がエラーを返した（5xx・401/403 など。「作品が無い」とは分からない）
-          renderFromMaterial();
-        }
-      })
-      .catch(function() {
-        // メンテナンス中（bm-wp-config.js の maintenance）は素材フォルダの画像も出さない（P1.webp系・縦読み作品で崩れるため）
-        if (window.BM_WP_CONFIG && window.BM_WP_CONFIG.maintenance) {
-          loading.textContent = 'ただいま表示を一時停止しています';
-          return;
-        }
-        renderFromMaterial();
-      });
+    }
+    load();
   })();

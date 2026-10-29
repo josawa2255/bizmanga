@@ -91,6 +91,11 @@ function getImageSrc(data, pageIndex) {
 // 作品の一覧は js/bm-fallback-works.js（window.BM_FALLBACK_WORKS。埋込ビューアと共通。載せてよい作品・ページ数の決まりもそこ）。
 // WP の作品データと同じ形にして toMangaEntry() で変換する（表示モードの判定を window.bmViewType に任せる。BUGS #012/#013）
 const FALLBACK_WORKS = (function() {
+  // 読込順が崩れて bm-fallback-works.js がまだ実行されていないと、一覧が黙って空になる。エラーにして気づけるようにする
+  // （tools/smoke-manga-wp.py は JS エラーで FAIL にし、WP が届く前の一覧の件数も確かめる）
+  if (!Array.isArray(window.BM_FALLBACK_WORKS)) {
+    console.error('[works] js/bm-fallback-works.js が works.js より前に読まれていません（手書きの作品データが空）');
+  }
   var F = window.BM_FALLBACK_WORKS || [];
   var out = {};
   F.forEach(function(r) {

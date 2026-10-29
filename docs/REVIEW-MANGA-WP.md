@@ -92,7 +92,7 @@ python3 tools/smoke-manga-wp.py --serve .
 - `/manga/{id}` の「作品が無い」応答（404 と本文 `{"error":"not found"}`）の形や、作品 ID に使える文字（ルート）を変えるときは
   `works.js` の `readMangaAnswer()`・`isDirectIdLike()` も直す
 - QR直リンクは手書きデータ（`FALLBACK_WORKS`）で開かない（SPEC §2.1。結果は「開く／作品が見つかりませんでした／表示に時間がかかっています＋再読み込み」の3つ）。
-  `FALLBACK_WORKS` はビズ書庫の一覧の初期表示（WP 到着前）専用。WP に無い作品を QR で配るときは、先に WP に登録する。
+  `FALLBACK_WORKS` はビズ書庫の一覧の初期表示（WP 到着前）に使う（同じ一覧を埋込ビューアも WP 障害時に使う。下記）。WP に無い作品を QR で配るときは、先に WP に登録する（ただし WP に無いのは消した作品かもしれない。ルート BUGS.md #085）。
   `FALLBACK_WORKS` のページ数は**素材フォルダ（`contentsx.jp/material/manga/{id}/`）に実際にある枚数**（WP の値に合わせると素材フォルダに無いページが 404 になる）。表示モード（縦読み専用）は WP の `/library` に合わせる。素材フォルダの画像を増減したら・WP 側で表示モードを変えたら合わせて直す
   （WP の到着前に一覧から開いた作品が古い値で表示される。到着後の切替からは WP の値になる）。
   手書きデータの作品の一覧は `js/bm-fallback-works.js`（`window.BM_FALLBACK_WORKS`）。ビズ書庫の `FALLBACK_WORKS` と、埋込ビューアの「WP がエラー・通信できないときに素材フォルダの画像で表示してよい作品」を兼ねる。
