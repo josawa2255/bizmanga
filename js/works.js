@@ -96,7 +96,7 @@ const FALLBACK_WORKS = (function() {
   if (!Array.isArray(window.BM_FALLBACK_WORKS)) {
     console.error('[works] js/bm-fallback-works.js が works.js より前に読まれていません（手書きの作品データが空）');
   }
-  var F = window.BM_FALLBACK_WORKS || [];
+  var F = Array.isArray(window.BM_FALLBACK_WORKS) ? window.BM_FALLBACK_WORKS : [];
   var out = {};
   F.forEach(function(r) {
     out[r[0]] = toMangaEntry({ id: r[0], title_ja: r[1], pages: r[2], tags: [r[3]], category: r[3], view_type: r[4] });
